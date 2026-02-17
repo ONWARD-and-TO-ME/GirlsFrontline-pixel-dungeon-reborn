@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.FieldPot;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -66,7 +67,6 @@ public class Type56FourThree extends ArmorAbility {
             return;
         }
 
-
 		Char ch = Actor.findChar(target);
 
 		if (ch != null || !Dungeon.level.heroFOV[target]) {
@@ -81,15 +81,16 @@ public class Type56FourThree extends ArmorAbility {
             GameScene.add(pot);
             armor.charge -= chargeUse(hero);
             if (Dungeon.hero.hasTalent(Talent.Type56_432)){
-                Dungeon.energy+=Dungeon.hero.pointsInTalent(Talent.Type56_432);
+                pot.HP -= 5;
+                Dungeon.energy+= 2+2*Dungeon.hero.pointsInTalent(Talent.Type56_432);
             }
         }else {
-            FieldPot.getPot().pos = target;
+            FieldPot.getPot().targetPos = target;
             GameScene.updateMap(target);
             Dungeon.observe();
         }
         //消耗充能
-		armor.updateQuickslot();
+		Item.updateQuickslot();
         //更新快捷栏
 		Invisibility.dispel();
         //去除隐形
