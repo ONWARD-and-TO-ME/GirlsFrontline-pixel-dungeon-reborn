@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
@@ -28,10 +30,11 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.ColorBlock;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
@@ -57,10 +60,7 @@ public class AboutScene extends PixelScene {
 		//darkens the arches
 		add(new ColorBlock(w, h, 0x88000000));
 
-		ScrollPane list = new ScrollPane( new Component() );
-		add( list );
-
-		Component content = list.content();
+		Component content = new Component();
 		content.clear();
 
 		//*** Shattered Pixel Dungeon Credits ***
@@ -305,6 +305,21 @@ public class AboutScene extends PixelScene {
 
 		content.setSize( fullWidth, freesound.bottom()+10 );
 
+        ScrollPane list = new ScrollPane(content){
+            @Override
+            public void onClick(float x, float y) {
+                if (x>=onw.left()&&x<=onw.right()&&y>=onw.top()&&y<= onw.bottom()) {
+                    Game.unlockClickTime++;
+                    if (Game.unlockClickTime==10)
+                        Game.isDebug = true;
+                    else if (Game.unlockClickTime==100)
+                        Badges.unlockForPlay();
+                    else if (Game.unlockClickTime==1000)
+                        Badges.validateHappyEnd();
+                }
+            }
+        };
+        add( list );
 		list.setRect( 0, 0, w, h );
 		list.scrollTo(0, 0);
 
