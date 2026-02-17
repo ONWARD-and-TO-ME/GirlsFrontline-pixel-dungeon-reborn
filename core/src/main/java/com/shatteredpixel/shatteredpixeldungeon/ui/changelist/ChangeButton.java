@@ -701,12 +701,12 @@ public class ChangeButton extends Component {
                         Object C, Object D,
                         Object E, Object F,
                         ArrayList<?> G){
-        this(ObjectToArray(A, G),
-                ObjectToArray(B, G),
-                    ObjectToArray(C, G),
-                        ObjectToArray(D, G),
-                            ObjectToArray(E, G),
-                                ObjectToArray(F, G),
+        this(ObjectToArray(A),
+                ObjectToArray(B),
+                    ObjectToArray(C),
+                        ObjectToArray(D),
+                            ObjectToArray(E),
+                                ObjectToArray(F),
                 G,
                 true);
     }
@@ -748,7 +748,7 @@ public class ChangeButton extends Component {
             return null;
             //空数组会填充波波沙
     }
-    private static ArrayList<?> baseObjectToArray(Object A, ArrayList<?> B){
+    private static ArrayList<?> baseObjectToArray(Object A){
         if (A instanceof float[]&&((float[]) A).length>0){
             ArrayList<Float> Array = new ArrayList<>();
             for (float i: ((float[]) A))
@@ -768,16 +768,16 @@ public class ChangeButton extends Component {
             return Array;
         }
         else {
-            return new ArrayList<>(Collections.nCopies(Math.max(1, B == null?0:B.size()), A));
+            return new ArrayList<>(Collections.nCopies(1, A));
         }
     }
-    private static ArrayList<?> ObjectToArray(Object A, ArrayList<?> B){
+    private static ArrayList<?> ObjectToArray(Object A){
         if (A instanceof ArrayList<?>)
             return (ArrayList<?>) A;
         else if (A instanceof Object[])
             return ListToArray((Object[]) A);
         else
-            return baseObjectToArray(A, B);
+            return baseObjectToArray(A);
     }
     public ChangeButton(ArrayList<?> A,ArrayList<?> B,
                         ArrayList<?> C,ArrayList<?> D,

@@ -392,7 +392,7 @@ public class RankingsScene extends PixelScene {
 			align(depth);
 			// 根据是否显示种子图标调整描述文本的最大宽度
 			float descMaxWidth;
-			if (rec.customSeed) {
+			if (rec.customSeed||rec.isLock) {
 				// 显示种子图标，调整文本宽度
 				descMaxWidth = steps.x - (shield.x + shield.width + GAP) - 16;
 				// 设置种子图标位置

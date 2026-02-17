@@ -74,12 +74,12 @@ public class Type56FourThree extends ArmorAbility {
 			return;
 		}
 
+        armor.charge -= chargeUse(hero);
         if (FieldPot.getPot()==null) {
             FieldPot pot = new FieldPot();
             pot.HT = pot.HP = 20+10*Dungeon.hero.pointsInTalent(Talent.Type56_431);
             pot.pos = target;
             GameScene.add(pot);
-            armor.charge -= chargeUse(hero);
             if (Dungeon.hero.hasTalent(Talent.Type56_432)){
                 pot.HP -= 5;
                 Dungeon.energy+= 2+2*Dungeon.hero.pointsInTalent(Talent.Type56_432);

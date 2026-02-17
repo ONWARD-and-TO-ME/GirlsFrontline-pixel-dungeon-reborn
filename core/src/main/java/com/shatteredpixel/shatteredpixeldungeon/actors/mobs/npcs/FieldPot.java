@@ -49,7 +49,7 @@ public class FieldPot extends NPC {
     public int targetPos = -1;
     @Override
     public float speed() {
-        return super.speed()*2;
+        return 2;
     }
 	@Override
 	protected boolean act() {
@@ -139,7 +139,7 @@ public class FieldPot extends NPC {
     public static FieldPot getPot(){
         for (Char ch : Actor.chars()){
             if (ch instanceof FieldPot){
-                if (ch.isAlive()&&ch.HP>0)
+                if (ch.isAlive()&&ch.HP>1)
                     return (FieldPot) ch;
                 else {
                     ch.die("fall");
