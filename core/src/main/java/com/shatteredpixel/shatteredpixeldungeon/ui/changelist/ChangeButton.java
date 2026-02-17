@@ -93,7 +93,7 @@ public class ChangeButton extends Component {
         }
         if (this.icon instanceof CharSprite) {
             if (action != null)
-                ((CharSprite) this.icon).play(action);
+                ((CharSprite) this.icon).playCycle(action, cycle);
             if (color > 0)
                 ((CharSprite) this.icon).aura(color);
         }
@@ -191,7 +191,7 @@ public class ChangeButton extends Component {
             this.icon.scale.set(size.get(0));
         if (this.icon instanceof CharSprite){
             if (action.get(0) != null)
-                ((CharSprite) this.icon).play(action.get(0));
+                ((CharSprite) this.icon).playCycle(action.get(0), pageCycle.get(0));
             if (color.get(0) > 0)
                 ((CharSprite) this.icon).aura(color.get(0));
         }
@@ -823,25 +823,13 @@ public class ChangeButton extends Component {
             return G;
         return null;
     }
-    private static boolean isMixList(ArrayList<?> A){
+    private static boolean notMixList(ArrayList<?> A){
         if (A == null||A.isEmpty())
-            return false;
-        boolean image = false;
-        boolean Char = false;
-        boolean item = false;
-        for (Object i : A){
-            if (i == null)
-                continue;
-            if (i instanceof Image)
-                image = true;
-            else if (i instanceof Char)
-                Char = true;
-            else if (i instanceof Item)
-                item = true;
-            if (image&&Char ||image&&item ||Char&&item)
-                return true;
-        }
-        return false;
+            return true;
+        for (Object i : A)
+            if (i instanceof Char||i instanceof Item)
+                return false;
+        return true;
     }
     private static boolean isImage(ArrayList<?> A){
         if (A == null)
@@ -854,11 +842,9 @@ public class ChangeButton extends Component {
     private static ArrayList<Image> getImage(ArrayList<?> A){
         ArrayList<Image> Array = new ArrayList<>();
         Image image;
-        for (Object i: A){
-            image = getSignalImage(i);
-            if (image!=null)
+        for (Object i: A)
+            if ((image = getSignalImage(i))!=null)
                 Array.add(image);
-        }
         return Array;
     }
     private static ArrayList<Float> getFloatList(ArrayList<?> A, ArrayList<?> B,
@@ -951,7 +937,7 @@ public class ChangeButton extends Component {
             if (title==null||title.isEmpty())
                 return getNameList(A, B, C, D, E, F, G);
             ArrayList<?> mixList = getMixList(A, B, C, D, E, F, G);
-            if (!isMixList(mixList))
+            if (notMixList(mixList))
                 return title;
             if (title.size()<mixList.size())
                 //标题数组长度小于混合数组长度，以混合数组超出长度的项进行补充（允许已提供足够长度的标题/内容数组时，塞进来混合数组而不改变标题/内容页数）
@@ -1051,7 +1037,7 @@ public class ChangeButton extends Component {
             return getInfoList(A, B, C, D, E, F, G);
         else {
             ArrayList<?> mixList = getMixList(A, B, C, D, E, F ,G);
-            if (!isMixList(mixList))
+            if (notMixList(mixList))
                 return body;
             if (body.size()<mixList.size())
                 //内容数组长度小于混合数组的情况下，以混合数组超出长度部分进行补充（允许已提供足够长度的标题/内容数组时，塞进来混合数组而不改变标题/内容页数）

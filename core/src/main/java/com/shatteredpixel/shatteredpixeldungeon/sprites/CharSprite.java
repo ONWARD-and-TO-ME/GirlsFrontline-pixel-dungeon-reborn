@@ -56,8 +56,10 @@ import com.watabou.noosa.tweeners.Tweener;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
+import com.watabou.utils.RectF;
 
 import java.nio.Buffer;
+import java.util.Arrays;
 
 public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip.Listener {
 	
@@ -142,8 +144,15 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
         //Shouldn't interrupt the dieing animation
         if (curAnim == null || curAnim != die) {
             Animation animA = anim.clone();
-            if (cycle!=null)
+            if (cycle!=null) {
                 animA.looped = cycle;
+                if (cycle&&!anim.looped)
+                    while (Math.round( 1 / animA.delay ) > animA.frames.length*2.5F) {
+                        RectF[] frames = Arrays.copyOf(animA.frames, animA.frames.length + 1);
+                        frames[frames.length - 1] = frames[0];
+                        animA.frames = frames;
+                    }
+            }
             super.play(animA);
         }
     }
