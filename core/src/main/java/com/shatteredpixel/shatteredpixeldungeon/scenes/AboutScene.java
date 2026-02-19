@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.pngImage;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
@@ -79,10 +80,10 @@ public class AboutScene extends PixelScene {
         int firstLine = 76;
 		addLine(firstLine, content);
 
-		CreditsBlock alex = new CreditsBlock(false, 0xffbfa6,
+		CreditsBlock alex = new CreditsBlock(true, Blink(),
 				"项目发起人",
-				Icons.BAKA.get(),
-				"西露库",
+                new pngImage("onward.png", 16F, true),
+				"等待响应",
 				null,
 				null);
 		alex.setSize(colWidth/2f, 0);
@@ -98,7 +99,7 @@ public class AboutScene extends PixelScene {
 		charlie.setSize( colWidth/2f, 0);
         charlie.setPos(alex.right(), alex.top());
 		content.add(charlie);
-		addLine(firstLine+28, content);
+		addLine(firstLine+40, content);
 
 		//*** Art Credits ***
 		CreditsBlock arcnor = new CreditsBlock(true, 0xcf3227,
@@ -108,7 +109,7 @@ public class AboutScene extends PixelScene {
 				null,
 				null);
 		arcnor.setSize(colWidth/3f, 0);
-		arcnor.setPos(alex.left(), charlie.bottom()+10);
+		arcnor.setPos(alex.left(), charlie.bottom()+20);
 		content.add(arcnor);
 
 		CreditsBlock purigro = new CreditsBlock(true,0xffd2d2,
@@ -167,7 +168,7 @@ public class AboutScene extends PixelScene {
                 /*是否闪光、闪光颜色，闪光颜色是十六进制六位数，从0x000000到0xFFFFFF*/
 		        "　",
                 /*标题*/
-		        Icons.ONWARD.get(),
+		        new pngImage("to_me.png", 16F, true),
                 /*贴图*/
 		        "ONWARD!", null, null);
         /*名字、null、null*/

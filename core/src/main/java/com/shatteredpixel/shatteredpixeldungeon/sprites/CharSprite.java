@@ -149,7 +149,10 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
                 if (cycle&&!anim.looped)
                     while (Math.round( 1 / animA.delay ) > animA.frames.length*2.5F) {
                         RectF[] frames = Arrays.copyOf(animA.frames, animA.frames.length + 1);
-                        frames[frames.length - 1] = frames[0];
+                        if (idle.frames!=null&&idle.frames.length>0)
+                            frames[frames.length - 1] = idle.frames[0];
+                        else
+                            frames[frames.length - 1] = frames[0];
                         animA.frames = frames;
                     }
             }
