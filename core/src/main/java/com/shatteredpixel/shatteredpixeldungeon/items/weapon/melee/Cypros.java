@@ -170,21 +170,29 @@ public class Cypros extends MeleeWeapon {
     @Override
     public int damageRoll(Char owner) {
 
-        Hero hero = (Hero)owner;
-        Char enemy = (hero != null) ? hero.enemy() : null;
+        Char enemy;
+        if (owner instanceof Hero){
+            enemy = ((Hero) owner).enemy();
+        }
+        else if (owner instanceof Mob){
+            enemy = ((Mob) owner).enemy;
+        }
+        else {
+            enemy = null;
+        }
 
-        if (hero != null && enemy != null) {
+        if (owner != null && enemy != null) {
             switch (mode) {
                 case MAGNUM:
                     if (Random.Int( CHARMCHANCE ) == 0) {
-                        Buff.affect( enemy, Charm.class, Random.IntRange( 3, 7 ) ).object = hero.id();
+                        Buff.affect( enemy, Charm.class, Random.IntRange( 3, 7 ) ).object = owner.id();
                         enemy.sprite.centerEmitter().start( Speck.factory( Speck.HEART ), 0.2f, 5 );
                         Sample.INSTANCE.play( Assets.Sounds.CHARMS );
                     }
                     break;
                 case CONFIRE:
                     Sample.INSTANCE.play(Assets.Sounds.ZAP);
-                    hero.sprite.parent.add(new Beam.DeathRay(hero.sprite.center(), enemy.sprite.center()));
+                    owner.sprite.parent.add(new Beam.DeathRay(owner.sprite.center(), enemy.sprite.center()));
                 break;
                 case TRAVAILLER: default:
                     break;
@@ -192,7 +200,7 @@ public class Cypros extends MeleeWeapon {
         }
 
 
-        if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) {
+        if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(owner)) {
             //deals 85/50/0% toward max to max on surprise with pistol/rifle/shotgun, instead of min to max.
             int diff = max() - min();
             float surpriseMultiplier =  (mode == Mode.MAGNUM)  ? 0.85f :
@@ -201,9 +209,11 @@ public class Cypros extends MeleeWeapon {
             int damage = augment.damageFactor(Random.NormalIntRange(
                     min() + Math.round(diff * surpriseMultiplier),
                     max()));
-            int exStr = hero.STR() - STRReq();
-            if (exStr > 0) {
-                damage += Random.IntRange(0, exStr);
+            if (owner instanceof Hero) {
+                int exStr = ((Hero) owner).STR() - STRReq();
+                if (exStr > 0) {
+                    damage += Random.IntRange(0, exStr);
+                }
             }
             return damage;
         }

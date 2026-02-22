@@ -293,7 +293,7 @@ public class CrystalPathRoom extends SpecialRoom {
                 isEXP = false;
             } else {
                 potions.add(p);
-                scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));//scroll[1]
+                scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));//scroll[2]
                 isEXP = true;
             }
         }

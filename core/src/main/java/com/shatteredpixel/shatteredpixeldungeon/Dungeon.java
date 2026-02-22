@@ -1084,7 +1084,7 @@ public class Dungeon {
 		}
 
         if (!(ch instanceof Hero)){
-            BArray.or( pass, Dungeon.level.special, passable );
+            BArray.or( passable, Dungeon.level.special, passable );
         }
 		if (chars && Char.hasProp(ch, Char.Property.LARGE)){
 			BArray.and( passable, Dungeon.level.openSpace, passable );
@@ -1116,7 +1116,7 @@ public class Dungeon {
 		}
 
         if (!(ch instanceof Hero)){
-            BArray.or( pass, Dungeon.level.special, passable );
+            BArray.or( passable, Dungeon.level.special, passable );
         }
 
 		if (Char.hasProp(ch, Char.Property.LARGE)){
