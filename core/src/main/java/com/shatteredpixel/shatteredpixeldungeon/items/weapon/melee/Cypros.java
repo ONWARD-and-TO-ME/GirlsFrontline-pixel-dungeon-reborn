@@ -78,8 +78,6 @@ public class Cypros extends MeleeWeapon {
         return identify();
     }
 
-
-    boolean canShowDEF = true;
     public enum Mode {
         TRAVAILLER,/*shotgun*/
         CONFIRE,/*rifle*/
@@ -134,7 +132,6 @@ public class Cypros extends MeleeWeapon {
                 DEF = 5;
                 DEFUPGRADE = 2;
                 timeChange = 2f;
-                canShowDEF = true;
                 ACC = 1.1f;
                 timeChange += 3.0f;
                 break;
@@ -142,17 +139,17 @@ public class Cypros extends MeleeWeapon {
                 image = ItemSpriteSheet.CONFIRE;
                 RCH = 3;
                 DLY = 3f;
+                DEF = DEFUPGRADE = 0;
                 ACC = 1.5f;
-                canShowDEF = false;
                 timeChange += 1f;
                 break;
             case MAGNUM:
                 image = ItemSpriteSheet.MAGNUMWEDDING;
                 RCH = 1;
                 DLY = 1f;
+                DEF = DEFUPGRADE = 0;
                 timeChange = 1f;
                 ACC = 1.25f;
-                canShowDEF = false;
                 timeChange += 0.5f;
                 break;
         }
@@ -351,10 +348,10 @@ public class Cypros extends MeleeWeapon {
 
         String info = super.info();
 
-        if(mode.desc()!="")
+        if(mode != Mode.TRAVAILLER)
         // 모드 별 설명 추가
             info += "\n\n" + mode.desc();
-        if(canShowDEF)
+        else
             info += "\n\n" + DEFGAIN();
 
         if(Dungeon.WandLock||wand.lockcharge)
