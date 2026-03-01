@@ -470,6 +470,9 @@ public class Dungeon {
     public static long seedCurLevel(){
         return seedForLevel(levelId);
     }
+    public static long seedCurLevel(Level level){
+        return seedForLevel(level.levelId);
+    }
 	public static long seedForLevel(int createId){
 		Random.pushGenerator( seed );
         //以存档种子为开始的随机数序列

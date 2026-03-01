@@ -117,15 +117,22 @@ public class SeedFindScene extends PixelScene {
                         GirlsFrontlinePixelDungeon.switchNoFade(SecondTitleScene.class);
                         return;
                     }
+                    boolean mimic = false;
+                    String strMimic = "模仿者";
+                    if (itemList.get(0).contains(strMimic)) {
+                        itemList.remove(0);
+                        mimic = true;
+                    }
                     // 重置停止标记，启动无间隔后台线程
                     stopThread = false;
                     int finalFloor = floor;
                     HeroClass finalHeroclass = heroclass;
+                    boolean finalMimic = mimic;
                     findSeedThread = new Thread(() -> {
                         try {
                             SeedFinder finder = new SeedFinder();
                             // 传入当前Scene引用，用于无间隔刷新UI
-                            String result = finder.findSeed(itemList, finalFloor, SPDSettings.challenges(), finalHeroclass, SeedFindScene.this);
+                            String result = finder.findSeed(itemList, finalFloor, finalHeroclass, SeedFindScene.this, finalMimic);
 
                             // 查找完成后主线程更新结果
                             if (!stopThread) {
