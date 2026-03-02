@@ -28,7 +28,7 @@ public class Component extends Group {
 	public float x;
 	public float y;
 	protected float width;
-	protected float height;
+	public float height;
 	
 	public Component() {
 		super();
