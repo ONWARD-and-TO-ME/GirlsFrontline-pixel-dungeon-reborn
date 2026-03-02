@@ -64,7 +64,8 @@ public class SeedFindScene extends PixelScene {
                 1000,
                 true,
                 Messages.get(this, "find"),
-                Messages.get(this, "check")) {
+                Messages.get(this, "check"),
+                true) {
             public void onSelect(boolean positive, String text) {
                 want = "";
                 if (positive && text != "") {

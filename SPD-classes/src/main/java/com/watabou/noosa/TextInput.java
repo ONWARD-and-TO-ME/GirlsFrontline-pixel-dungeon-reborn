@@ -80,6 +80,10 @@ public class TextInput extends Component {
 		textField.setCursorPosition(cursorIdx + contents.length());
 	}
 
+    public void textClear(){
+        textField.setText("");
+        textField.setCursorPosition(0);
+    }
 
 	public TextInput( NinePatch bg, boolean multiline, int size ){
 		super();
