@@ -88,8 +88,10 @@ public class ItemHolder extends Bag {
 
         @Override
         public void onSelect( Item item ) {
-            item.canHold = !item.canHold;
-            item.doDrop(hero);
+            if (item != null) {
+                item.canHold = !item.canHold;
+                item.doDrop(hero);
+            }
         }
     };
 	public int capacity(){

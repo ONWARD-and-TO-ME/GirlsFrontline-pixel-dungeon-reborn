@@ -36,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.utils.PathFinder;
 
 import java.util.ArrayList;
@@ -51,7 +50,6 @@ public class Grass extends Item {
 	private static final String ActA = "ACTA";
     private static final String ActB = "ACTB";
     private static final String ActC = "ACTC";
-    private static final String AC_CHOOSE  = "choose";
 
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
@@ -71,9 +69,6 @@ public class Grass extends Item {
 
 		super.execute( hero, action );
         switch (action) {
-            case AC_CHOOSE:
-                GameScene.show(new WndUseItem(null, this) );
-                break;
             case ActA:
                 GameScene.selectCell(ActAA);
                 break;

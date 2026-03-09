@@ -52,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
@@ -78,6 +79,7 @@ public class Item implements Bundlable {
     protected static final String AC_SKILL = "SKILL";
 	public static final String AC_DROP		= "DROP";
 	public static final String AC_THROW		= "THROW";
+    public static final String AC_CHOOSE    = "CHOOSE";
 	
 	public String defaultAction;
 	public boolean usesTargeting;
@@ -217,9 +219,12 @@ public class Item implements Bundlable {
 				doThrow(hero);
 			}
 			
-		} else if (action.equals( AC_SKILL )&&coolDownLeft>0)
-            if (Dungeon.hero.buff(CooldownTracker.class)==null)
+		} else if (action.equals( AC_SKILL )&&coolDownLeft>0) {
+            if (Dungeon.hero.buff(CooldownTracker.class) == null)
                 Buff.affect(Dungeon.hero, CooldownTracker.class);
+        } else if (action.equals( AC_CHOOSE )){
+            GameScene.show(new WndUseItem(null, this) );
+        }
     }
     public void notedSet(String text) {
         if(this instanceof Scroll||(this instanceof Potion&&!(this instanceof Brew)&&!(this instanceof Elixir)&&!(this instanceof AlchemicalCatalyst))){
