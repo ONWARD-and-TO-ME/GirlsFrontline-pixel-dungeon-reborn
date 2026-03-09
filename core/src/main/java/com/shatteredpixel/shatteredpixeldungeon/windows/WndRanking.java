@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.RankingsScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -72,6 +73,7 @@ public class WndRanking extends WndTabbed {
 	
 	private Image busy;
     private Rankings.Record record;
+    private boolean change = false;
 	
 	public WndRanking( final Rankings.Record rec ) {
 		
@@ -107,7 +109,12 @@ public class WndRanking extends WndTabbed {
 		
 		thread.start();
 	}
-	
+
+    public void hide() {
+        super.hide();
+        if (change)
+            GirlsFrontlinePixelDungeon.switchNoFade(RankingsScene.class);
+    }
 	@Override
 	public void update() {
 		super.update();
@@ -194,6 +201,7 @@ public class WndRanking extends WndTabbed {
                     super.onClick();
                     int i = Rankings.INSTANCE.records.indexOf( record );
                     record.isLock = checked();
+                    change = !change;
                     Rankings.INSTANCE.records.set(i,record);
                     if (checked()) {
                         Rankings.INSTANCE.LockNumber++;
@@ -555,7 +563,7 @@ public class WndRanking extends WndTabbed {
 		@Override
 		protected void onClick() {
             if (item instanceof Bag && !((Bag) item).items.isEmpty())
-                Game.scene().add(new ItemList((Bag) item, x, y));
+                Game.scene().add(new ItemList((Bag) item));
             else
 			    Game.scene().add(new WndInfoItem(item));
 		}
@@ -563,13 +571,14 @@ public class WndRanking extends WndTabbed {
     private class ItemList extends Window {
         private ArrayList<canScrollItemButton> Button = new ArrayList<>();
 
-        public ItemList(Bag bag , float baseX, float baseY) {
+        public ItemList(Bag bag) {
             int width = 120;
             Component content = new Component();
             float pos = 0;
             for (Item item : bag.items){
                 item.canNote =false;
                 item.showSelf = true;
+                item.identify();
                 canScrollItemButton button = new canScrollItemButton(item){
                     protected boolean onClick(float x, float y){
                         if(!inside(x,y)) return false;
