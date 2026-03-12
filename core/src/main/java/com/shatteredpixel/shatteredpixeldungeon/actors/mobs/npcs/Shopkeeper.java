@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -31,6 +32,11 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -39,15 +45,15 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ShopkeeperSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTradeItem;
 import com.watabou.noosa.Game;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 
 public class Shopkeeper extends NPC {
 
-    protected int turnsSinceHarmed;
+    protected int turnsSinceHarmed = -1;
 
     {
 		spriteClass = ShopKeeperSprite();
-        turnsSinceHarmed = -1;
 		properties.add(Property.IMMOVABLE);
 	}
 
@@ -55,6 +61,20 @@ public class Shopkeeper extends NPC {
         if ((Dungeon.depth-1)/5< Statistics.deepestFloor/5&&Dungeon.depth!=16)
             return ShopkeeperSprite.MirrorShopkeeper.class;
         return ShopkeeperSprite.class;
+    }
+
+    private static final String TurnsSinceHarmed = "TurnsSinceHarmed";
+
+    @Override
+    public void storeInBundle( Bundle bundle ) {
+        super.storeInBundle( bundle );
+        bundle.put( TurnsSinceHarmed, turnsSinceHarmed );
+    }
+
+    @Override
+    public void restoreFromBundle( Bundle bundle ) {
+        super.restoreFromBundle( bundle );
+        turnsSinceHarmed = bundle.getInt( TurnsSinceHarmed );
     }
 
     protected boolean act() {
@@ -83,6 +103,7 @@ public class Shopkeeper extends NPC {
     public void processHarm() {
             if (this.turnsSinceHarmed < 1) {
                 this.turnsSinceHarmed = 0;
+                Buff.prolong( this, BlobImmunity.class, BlobImmunity.DURATION );
                 this.yell(Messages.get(this, "warn"));
             }else {
                 this.flee();
@@ -104,6 +125,9 @@ public class Shopkeeper extends NPC {
 		for (Heap heap: Dungeon.level.heaps.valueList()) {
 			if (heap.type == Heap.Type.FOR_SALE) {
 				CellEmitter.get( heap.pos ).burst( ElmoParticle.FACTORY, 4 );
+                if (heap.items.get(heap.size()-1) instanceof Bag)
+                    lostBag((Bag) heap.items.get(heap.size()-1));
+
 				if (heap.size() == 1) {
 					heap.destroy();
 				}else{
@@ -113,6 +137,17 @@ public class Shopkeeper extends NPC {
 			}
 		}
 	}
+    private void lostBag(Bag bag){
+        if (bag instanceof VelvetPouch){
+            Dungeon.LimitedDrops.VELVET_POUCH.lost();
+        } else if (bag instanceof ScrollHolder){
+            Dungeon.LimitedDrops.SCROLL_HOLDER.lost();
+        } else if (bag instanceof PotionBandolier){
+            Dungeon.LimitedDrops.POTION_BANDOLIER.lost();
+        } else if (bag instanceof MagicalHolster){
+            Dungeon.LimitedDrops.MAGICAL_HOLSTER.lost();
+        }
+    }
 	
 	@Override
 	public boolean reset() {

@@ -30,6 +30,7 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.Visual;
 import com.watabou.utils.PointF;
+import com.watabou.utils.Random;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -50,6 +51,10 @@ public class Flare extends Visual {
 	private ShortBuffer indices;
 	
 	private int nRays;
+    private boolean change;
+    private boolean RDown;
+    private boolean GDown;
+    private boolean BDown;
 	
 	public Flare( int nRays, float radius ) {
 		
@@ -124,6 +129,10 @@ public class Flare extends Visual {
 		
 		return this;
 	}
+    public Flare change( boolean change){
+        this.change = change;
+        return this;
+    }
 
 	public Flare show( Group parent, PointF pos, float duration ) {
 		point( pos );
@@ -138,7 +147,7 @@ public class Flare extends Visual {
 	@Override
 	public void update() {
 		super.update();
-		
+
 		if (duration > 0) {
 			if ((lifespan -= Game.elapsed) > 0) {
 				
@@ -150,7 +159,33 @@ public class Flare extends Visual {
 			} else {
 				killAndErase();
 			}
-		}
+		}else if (change){
+            if (ra*256<0)
+                RDown=false;
+            else if (ra*256>255)
+                RDown=true;
+            if (ga*256<0)
+                GDown=false;
+            else if (ga*256>255)
+                GDown=true;
+            if (ba*256<0)
+                BDown=false;
+            else if (ba*256>255)
+                BDown=true;
+            int choice = Random.Int(6);
+            if (RDown&&choice!=0)
+                ra-=Random.Int(5)/256.0F;
+            else
+                ra+=Random.Int(5)/256.0F;
+            if (GDown&&choice!=1)
+                ga-=Random.Int(5)/256.0F;
+            else
+                ga+=Random.Int(5)/256.0F;
+            if (BDown&&choice!=2)
+                ba-=Random.Int(5)/256.0F;
+            else
+                ba+=Random.Int(5)/256.0F;
+        }
 	}
 	
 	@Override
@@ -168,7 +203,7 @@ public class Flare extends Visual {
 	}
 	
 	private void drawRays() {
-		
+
 		NoosaScript script = NoosaScript.get();
 		
 		texture.bind();

@@ -42,8 +42,6 @@ public class NoelShopkeeper extends ImpShopkeeper {
 
 	{
         spriteClass = NoelShopKeeperSprite.class;
-        turnsSinceHarmed = -1;
-        properties.add(Property.IMMOVABLE);
 	}
 
     @Override

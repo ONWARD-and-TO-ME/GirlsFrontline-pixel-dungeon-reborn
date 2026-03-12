@@ -49,7 +49,6 @@ public class ImpShopkeeper extends Shopkeeper {
 
 	{
 		spriteClass = P7Sprite.class;
-        turnsSinceHarmed = -1;
 	}
 	
 	private boolean seenBefore = false;

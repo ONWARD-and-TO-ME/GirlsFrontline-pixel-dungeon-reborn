@@ -81,7 +81,7 @@ public class AboutScene extends PixelScene {
         int firstLine = 76;
 		addLine(firstLine, content);
 
-		CreditsBlock alex = new CreditsBlock(true, Blink(),
+		CreditsBlock alex = new CreditsBlock(true, RandomStart(), true,
 				"项目发起人",
                 new pngImage("onward.png", 16F, true),
 				"等待响应",
@@ -165,7 +165,7 @@ public class AboutScene extends PixelScene {
         sea.setPos(catz.right(), catz.top());
 		content.add(sea);
         /*模板从此处开始*/
-		CreditsBlock onw = new CreditsBlock(true,Blink(),
+		CreditsBlock onw = new CreditsBlock(true,RandomStart(), true,
                 /*是否闪光、闪光颜色，闪光颜色是十六进制六位数，从0x000000到0xFFFFFF*/
 		        "　",
                 /*标题*/
@@ -230,7 +230,7 @@ public class AboutScene extends PixelScene {
 		awsl.setPos(ling.left(), cola.bottom()+14);
 		content.add(awsl);
 
-        CreditsBlock onw2 = new CreditsBlock(true,Blink(),
+        CreditsBlock onw2 = new CreditsBlock(true,RandomStart(), true,
                 " 测  试  协  力 ",
                 Icons.ONWARD.get(),
                 "TO ME!",
@@ -339,55 +339,8 @@ public class AboutScene extends PixelScene {
 		line.y = y;
 		content.add(line);
 	}
-    //转十六进制
-    private int change(int j){
-        if(j == 0){
-            return 0x000000;
-        }else if( j == 1){
-            return 0x000001;
-        }else if( j == 2){
-            return 0x000002;
-        }else if( j == 3){
-            return 0x000003;
-        }else if( j == 4){
-            return 0x000004;
-        }else if( j == 5){
-            return 0x000005;
-        }else if( j == 6){
-            return 0x000006;
-        }else if( j == 7){
-            return 0x000007;
-        }else if( j == 8){
-            return 0x000008;
-        }else if( j == 9){
-            return 0x000009;
-        }else if( j == 10){
-            return 0x00000A;
-        }else if( j == 11){
-            return 0x00000B;
-        }else if( j == 12){
-            return 0x00000C;
-        }else if( j == 13){
-            return 0x00000D;
-        }else if( j == 14){
-            return 0x00000E;
-        }else{
-            return 0x00000F;
-        }
-    }
-    //颜色是一个6位的十六进制数，这里对每一位随机一个数，然后转换成十六进制后再加到一起
-    private int Blink(){
-        int RP = Random.Int(16);
-        int GP = Random.Int(16);
-        int BP = Random.Int(16);
-        int RT = Random.Int(16);
-        int GT = Random.Int(16);
-        int BT = Random.Int(16);
-        int R = change(RP)*0x010000+change(RT)*0x100000;
-        int G = change(GP)*0x000100+change(GT)*0x001000;
-        int B = change(BP)*0x000001+change(BT)*0x000010;
-        int i =R+G+B;
-        return i;
+    private int RandomStart(){
+        return Random.Int(16*16 *16*16 *16*16);
     }
 
 	private static class CreditsBlock extends Component {
@@ -403,7 +356,11 @@ public class AboutScene extends PixelScene {
 		PointerArea linkButton;
 
 		//many elements can be null, but body is assumed to have content.
-		private CreditsBlock(boolean large, int highlight, String title, Image avatar, String body, String linkText, String linkUrl){
+
+        private CreditsBlock(boolean large, int highlight, String title, Image avatar, String body, String linkText, String linkUrl){
+            this(large, highlight, false, title, avatar, body, linkText, linkUrl);
+        }
+		private CreditsBlock(boolean large, int highlight, boolean change, String title, Image avatar, String body, String linkText, String linkUrl){
 			super();
 
 			this.large = large;
@@ -420,7 +377,7 @@ public class AboutScene extends PixelScene {
 			}
 
 			if (large && highlight != -1 && this.avatar != null){
-				this.flare = new Flare( 7, 24 ).color( highlight, true ).show(this.avatar, 0);
+				this.flare = new Flare( 7, 24 ).color( highlight, true ).show(this.avatar, 0).change(change);
 				this.flare.angularSpeed = 20;
 			}
 

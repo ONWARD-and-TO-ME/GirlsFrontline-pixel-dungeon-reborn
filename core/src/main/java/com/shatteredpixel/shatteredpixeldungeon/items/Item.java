@@ -64,8 +64,6 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class Item implements Bundlable {
-    public static ArrayList<Class> itemA = new ArrayList<>();
-    public static ArrayList<String> NOTEA = new ArrayList<>();
 
 	protected static final String TXT_TO_STRING_LVL		= "%s %+d";
 	protected static final String TXT_TO_STRING_X		= "%s x%d";
@@ -231,29 +229,25 @@ public class Item implements Bundlable {
             Item changItem = ScrollOfTransmutation.changeItem(this);
             NoteItem(this,text);
             NoteItem(changItem,text);
-        }else if(this.stackable){
+        }else if(stackable){
             NoteItem(this,text);
         }
         //上面是保存到类，下面是无论如何都对物品本身打标签，用于显示到排行榜
-        this.noted = text;
-
+        noted = text;
     }
     private void NoteItem(Item item,String text){
-        if(itemA.contains(item.getClass())){
+        if(Dungeon.itemAOfSave.contains(item.getClass())){
             int j=0;
-            for(Class i:itemA){
+            for(Class<?> i:Dungeon.itemAOfSave){
                 if(item.getClass()==i){
                     break;
                 }else {
                     j++;
                 }
             }
-            NOTEA.set(j,text);
             Dungeon.NOTEAOfSave.set(j,text);
         }else {
-            itemA.add(item.getClass());
             Dungeon.itemAOfSave.add(item.getClass());
-            NOTEA.add(text);
             Dungeon.NOTEAOfSave.add(text);
         }
     }
@@ -262,16 +256,16 @@ public class Item implements Bundlable {
         if(item.showSelf){
             note = item.noted;
         }
-        else if (itemA.contains(item.getClass())) {
+        else if (Dungeon.itemAOfSave.contains(item.getClass())) {
             int j = 0;
-            for (Class i : itemA) {
+            for (Class<?> i : Dungeon.itemAOfSave) {
                 if (item.getClass() == i) {
                     break;
                 } else {
                     j++;
                 }
             }
-            note = NOTEA.get(j);
+            note = Dungeon.NOTEAOfSave.get(j);
         }
         else {
             note = item.noted;

@@ -264,7 +264,7 @@ public class WndTradeItem extends WndInfoItem {
         Hero hero = Dungeon.hero;
         for(int ofs : PathFinder.NEIGHBOURS9) {
             Char target = Actor.findChar(hero.pos + ofs);
-            if(target!=null&&target.getClass()== Shopkeeper.class)
+            if(target instanceof Shopkeeper)
                 continue;
             if (!item.selled && !Dungeon.level.solid[hero.pos + ofs] && Dungeon.level.heaps.get(hero.pos + ofs) == null && Dungeon.level.passable[hero.pos + ofs]) {
                 Dungeon.level.drop(item, hero.pos + ofs).type = Heap.Type.FOR_SALE;

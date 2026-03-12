@@ -150,6 +150,9 @@ public class Dungeon {
 		public void drop(){
 			count = 1;
 		}
+        public void lost(){
+            count = 0;
+        }
 
 		public static void reset(){
 			for (LimitedDrops lim : values()){
@@ -221,7 +224,7 @@ public class Dungeon {
         }
     }
     public static boolean lockXMAS;
-    public static ArrayList<Class> itemAOfSave ;
+    public static ArrayList<Class<?>> itemAOfSave ;
     public static ArrayList<String> NOTEAOfSave ;
 
 	public static QuickSlot quickslot = new QuickSlot();
@@ -254,8 +257,6 @@ public class Dungeon {
         }
         itemAOfSave = new ArrayList<>();
         NOTEAOfSave = new ArrayList<>();
-        Item.itemA = new ArrayList<>();
-        Item.NOTEA = new ArrayList<>();
 		version = Game.versionCode;
 		challenges = paramChallenges;
 		mobsToChampion = -1;
@@ -636,7 +637,7 @@ public class Dungeon {
 			bundle.put( DEPTH, depth );
             bundle.put( ROLLTIMES, RollTimes);
 
-            Class[] ItemToSave = itemAOfSave.toArray(new Class[0]);
+            Class<?>[] ItemToSave = itemAOfSave.toArray(new Class[0]);
             bundle.put(NOTESAVEA,ItemToSave);
             //物品类型
             String[] NoteToSave =NOTEAOfSave.toArray(new String[0]);
@@ -737,26 +738,19 @@ public class Dungeon {
         RollTimes = bundle.getInt( ROLLTIMES );
 		seed = bundle.contains( SEED ) ? bundle.getLong( SEED ) : DungeonSeed.randomSeed();
         customSeedText = bundle.contains( SEED_CODE ) ? bundle.getString( SEED_CODE ) : "";
-        itemAOfSave = new ArrayList<>();
         if (bundle.contains(NOTESAVEA)) {
-            itemAOfSave = new ArrayList<>(Arrays.asList(bundle.getClassArray(NOTESAVEA)));
-            Item.itemA = itemAOfSave;
+            itemAOfSave = new ArrayList<>(Arrays.asList((Class<?>[]) bundle.getClassArray(NOTESAVEA)));
         }else {
-            Item.itemA = new ArrayList<>();
+            itemAOfSave = new ArrayList<>();
         }
 
-        NOTEAOfSave = new ArrayList<>();
         if (bundle.contains(NOTESAVEB)) {
             NOTEAOfSave = new ArrayList<>(Arrays.asList(bundle.getStringArray(NOTESAVEB)));
-            Item.NOTEA = NOTEAOfSave;
         }else {
-            Item.NOTEA = new ArrayList<>();
+            NOTEAOfSave = new ArrayList<>();
         }
 
-        lockXMAS = false;
-        if (bundle.contains(LOCKXMAS)) {
-            lockXMAS = bundle.getBoolean(LOCKXMAS);
-        }
+        lockXMAS = bundle.getBoolean(LOCKXMAS);
 
 		Actor.clear();
 		Actor.restoreNextID( bundle );
