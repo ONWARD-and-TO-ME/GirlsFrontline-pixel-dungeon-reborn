@@ -138,7 +138,7 @@ public class RedBook extends Artifact{
     }
 
     public boolean canCast(BookSpell spell) {
-        return charge>=spell.chargeUse;
+        return charge>=spell.chargeUse || spell.chargeUse==0;
     }
 
     public class BookRecharge extends ArtifactBuff{
@@ -151,11 +151,12 @@ public class RedBook extends Artifact{
                 if (level() > 7) {
                     missing += (float)(5 * (level() - 7)) / 3.0F;
                 }
+                if (charge<0)
+                    missing = -5;
                 float turnsToCharge = 60.0F - missing*2;
                 turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(this.target);
                 float chargeGain = 1.0F / turnsToCharge;
 
-                chargeGain *= RingOfEnergy.artifactChargeMultiplier(target);
                 if (!isEquipped(Dungeon.hero)){
                     chargeGain *= 0.75f*Dungeon.hero.pointsInTalent(Talent.Type56Three_Book)/3f;
                 }

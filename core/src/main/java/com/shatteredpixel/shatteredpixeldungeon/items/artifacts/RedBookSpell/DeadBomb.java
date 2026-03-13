@@ -56,11 +56,22 @@ public class DeadBomb extends TargetSpell{
         Sample.INSTANCE.play( Assets.Sounds.READ );
         Invisibility.dispel();
 
-        int damage = (int) Math.ceil(target.HP * 0.6f);
+        int damage;
         if (target.properties().contains(Mob.Property.MINIBOSS)) {
-            damage = Math.min(damage, (int) (target.HP * 0.4f));
+            damage = (int) Math.ceil(target.HT/2F);
         } else if (target.properties().contains(Mob.Property.BOSS)) {
-            damage = Math.min(damage, (int) (target.HP * 0.3f));
+            damage = Math.min(100, (int) (target.HT * 0.3f));
+        } else {
+            if ((damage = (int) Math.ceil(target.HT/2F))>=target.HP){}
+            else if ((damage = (int) Math.ceil(target.HT*0.7F))>=target.HP){
+                extraUse = 1;
+            }
+            else if ((damage = (int) Math.ceil(target.HT*0.9F))>=target.HP){
+                extraUse = 2;
+            }else {
+                damage = (int) Math.ceil(target.HT*1.1F);
+                extraUse = 3;
+            }
         }
         target.damage(damage, this);
 

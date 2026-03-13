@@ -58,9 +58,14 @@ public class BookSpell {
 
     public int chargeUse = 1;
     public float timeUse = 1;
+    public int extraUse = 0;
 
     public void onCast(RedBook book, Hero hero) {
         book.onUse(chargeUse);
+        if (extraUse!=0){
+            book.charge -= extraUse;
+            extraUse = 0;
+        }
         Dungeon.hero.spendAndNext(timeUse);
         Item.updateQuickslot();
         Sample.INSTANCE.play("sounds/read.mp3");
