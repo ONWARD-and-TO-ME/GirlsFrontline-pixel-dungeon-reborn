@@ -29,14 +29,6 @@ public class Dp extends MachineGun {
         image = ItemSpriteSheet.DP;
 
         tier = 1;
-        ACC = 0.85f;
-        DLY = 0.2f;
-    }
-
-    @Override
-    public int max(int lvl) {
-        return  Math.round(2.1f*(tier+1)) +    //5 base, down from 20
-                lvl*Math.round(0.5f*(tier+1));   //+1 per level, down from +2
     }
 
 }

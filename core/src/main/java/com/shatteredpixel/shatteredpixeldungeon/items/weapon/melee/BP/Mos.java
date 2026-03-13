@@ -32,12 +32,8 @@ public class Mos extends BulletProof {
 		tier = 3;
         DEF = 5;
         DEFUPGRADE = 2;
-	}
-
-	@Override
-	public int max(int lvl) {
-		return  3*(tier+1) +    //12 base, down from 20
-				lvl*(tier-1);   //+2 per level, down from +4
+        dmgBaseMul = 3;
+        dmgUpgradeDiffer = -2;
 	}
 
 }

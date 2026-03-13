@@ -53,15 +53,8 @@ public class Ump45 extends SubMachineGun {
         DEFUPGRADE = 1;
 
         defaultAction = AC_SKILL;
-        usesTargeting = true;
     }
 /**/
-    @Override
-    public int max(int lvl) {
-        return  5*(tier+1) +    //8 base, down from 10
-                lvl*(tier+1);   //scaling unchanged
-    }
-
     @Override
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);

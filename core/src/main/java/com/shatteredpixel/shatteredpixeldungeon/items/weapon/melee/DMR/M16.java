@@ -32,12 +32,9 @@ public class M16 extends DesignatedMarksmanRifle {
 		tier = 2;
         DEF = 3;
         DEFUPGRADE = 1;
-	}
-
-	@Override
-	public int max(int lvl) {
-		return  2*(tier+2) +    //12 base, down from 20
-				lvl*Math.round(0.8f*(tier+1));   //+2 per level, down from +4
+        dmgBaseMul = 2;
+        dmgBaseDiffer = 1;
+        dmgUpgradeMul = 0.8F;
 	}
 
 }

@@ -31,26 +31,19 @@ public class M99 extends DesignatedMarksmanRifle {
 		image = ItemSpriteSheet.GLAIVE;
 
 		tier = 5;
-		//去除命中加成
-		//ACC = 2f;	// 60% additional accuracy
 		DLY = 1.5f;	// 攻击延迟设置为1.5f
-		RCH = 2;// 攻击距离改为2格
+        dmgBaseMul = 20/3F;
+        dmgUpgradeMul = 3/4F;
 	}
 
-	@Override
-    public boolean canReach(Char owner, int target) {
-        // 15级及以上时无视墙体，只检查距离；15级以下使用默认的可达性检查
-        //if (level() >= 15) {
-          //  return Dungeon.level.distance(owner.pos, target) <= reachFactor(owner);
-        //} else {
-            return super.canReach(owner, target);
-        }
-    //}
-
-	@Override
-	public int max(int lvl) {
-		return  Math.round(6.67f*(tier+1)) +    //40 base, up from 30
-				lvl*Math.round(1.33f*(tier+1)); //+8 per level, up from +6
-	}
+//	@Override
+//    public boolean canReach(Char owner, int target) {
+//        //15级及以上时无视墙体，只检查距离；15级以下使用默认的可达性检查
+//        if (level() >= 15) {
+//            return Dungeon.level.distance(owner.pos, target) <= reachFactor(owner);
+//        } else {
+//            return super.canReach(owner, target);
+//        }
+//    }
 
 }

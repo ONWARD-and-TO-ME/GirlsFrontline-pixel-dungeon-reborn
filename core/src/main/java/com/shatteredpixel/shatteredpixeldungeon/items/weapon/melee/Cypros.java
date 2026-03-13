@@ -61,7 +61,7 @@ public class Cypros extends MeleeWeapon {
         bones = false;
 
         tier= 2;
-        ACC = 1.1f; //10% boost to accuracy
+        ACC = 1.1f;
 
         name = Messages.get(this, "name", mode.title());
     }
@@ -97,11 +97,13 @@ public class Cypros extends MeleeWeapon {
     public static final String AC_ZAP	= "ZAP";
     public static final String AC_SWITCH= "SWITCH";
     private static final float STAFF_SCALE_FACTOR = 0.75f;
+    public float surpriseMultiplier;
 
     public Cypros(){
         Wand wand = new RabbitWeaponGenoise();
         Wand wandold = new WandOfGenoise();
 
+        setMode(Mode.TRAVAILLER, false);
         wand.cursed = false;
         wand.maxCharges = 1;
         wand.curCharges = wand.maxCharges;
@@ -131,8 +133,11 @@ public class Cypros extends MeleeWeapon {
                 DLY = 1f;
                 DEF = 5;
                 DEFUPGRADE = 2;
-                timeChange = 2f;
+                dmgBaseMul = 2;
+                dmgUpgradeMul = 1.1F;
+                surpriseMultiplier = 0;
                 ACC = 1.1f;
+                timeChange = 2f;
                 timeChange += 3.0f;
                 break;
             case CONFIRE:
@@ -140,6 +145,9 @@ public class Cypros extends MeleeWeapon {
                 RCH = 3;
                 DLY = 3f;
                 DEF = DEFUPGRADE = 0;
+                dmgBaseMul = 6;
+                dmgUpgradeMul = 2.5F;
+                surpriseMultiplier = 0.5F;
                 ACC = 1.5f;
                 timeChange += 1f;
                 break;
@@ -148,6 +156,9 @@ public class Cypros extends MeleeWeapon {
                 RCH = 1;
                 DLY = 1f;
                 DEF = DEFUPGRADE = 0;
+                dmgBaseMul = 4.5F;
+                dmgUpgradeMul = 2;
+                surpriseMultiplier = 0.85F;
                 timeChange = 1f;
                 ACC = 1.25f;
                 timeChange += 0.5f;
@@ -200,9 +211,6 @@ public class Cypros extends MeleeWeapon {
         if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(owner)) {
             //deals 85/50/0% toward max to max on surprise with pistol/rifle/shotgun, instead of min to max.
             int diff = max() - min();
-            float surpriseMultiplier =  (mode == Mode.MAGNUM)  ? 0.85f :
-                                        (mode == Mode.CONFIRE) ? 0.5f :
-                                                                 0;
             int damage = augment.damageFactor(Random.NormalIntRange(
                     min() + Math.round(diff * surpriseMultiplier),
                     max()));
@@ -219,36 +227,48 @@ public class Cypros extends MeleeWeapon {
     }
 
     @Override
-    public int min(int lvl) {
+    public float minBaseDmg() {
+        return minBaseDmg(mode.ordinal());
+    }
+    public float minBaseDmg(int mode){
         switch (mode) {
-            case TRAVAILLER: default:
-                return  Math.round(1.5f*tier) +         //base
-                        lvl;                            //level scaling
-            case CONFIRE:
-                return 3*tier + lvl;
-            case MAGNUM:
-                return tier + lvl;
+            case 0: default:
+                return  Math.round(1.5f*tier);
+            case 1:
+                return 3*tier;
+            case 2:
+                return tier;
         }
     }
 
     @Override
-    public int max(int lvl) {
-
+    public float maxBaseDmg(){
+        return maxBaseDmg(mode.ordinal());
+    }
+    @Override
+    public float maxUpgrade(int lvl){
+        return maxUpgrade(mode.ordinal(), lvl);
+    }
+    public float maxBaseDmg(int mode){
         switch (mode) {
-            case TRAVAILLER:
-                return  Math.round(2.0f*(tier+1)) +        // 6 base
-                        lvl*Math.round(1.1f*(tier+1));    //+3(3.3) per level
-            case CONFIRE:
-                return  Math.round(6.0f*(tier+1)) +        // 18 base
-                        lvl*Math.round(2.5f*(tier+1));    //+8(7.5)= per level
-            case MAGNUM:
-                return  Math.round(4.5f*(tier+1)) +        // 14 base
-                        lvl*Math.round(2.0f*(tier+1));    //+6 per level
-            default:
-                return super.max(lvl);
+            case 0: default:
+                return  2*(tier+1);// 6 base
+            case 1:
+                return  6*(tier+1);// 18 base
+            case 2:
+                return  4.5f*(tier+1);// 14 base
         }
     }
-
+    public float maxUpgrade(int mode, int lvl){
+        switch (mode) {
+            case 0: default:
+                return  lvl* 1.1f*(tier+1);    //+3(3.3) per level
+            case 1:
+                return  lvl* 2.5f*(tier+1);    //+8(7.5)= per level
+            case 2:
+                return  lvl* 2.0f*(tier+1);    //+6 per level
+        }
+    }
 
     @Override
     public ArrayList<String> actions(Hero hero) {
@@ -317,12 +337,6 @@ public class Cypros extends MeleeWeapon {
             return true;
         } else {
             return false;
-        }
-    }
-
-    public void gainCharge( float amt ){
-        if (wand != null){
-            wand.gainCharge(amt);
         }
     }
 

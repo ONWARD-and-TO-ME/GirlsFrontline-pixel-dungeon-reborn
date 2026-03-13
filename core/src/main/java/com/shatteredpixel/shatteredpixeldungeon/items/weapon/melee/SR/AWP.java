@@ -27,18 +27,8 @@ public class AWP extends SniperRifle {
 
     {
         image = ItemSpriteSheet.AWP;
-
         tier = 4;
-        ACC = 1.75f;
-        DLY = 5f;
-        RCH = 50;
-    }
-
-
-    @Override
-    public int max(int lvl) {
-        return  Math.round(15.4f*(tier+1)) +    //40 base, up from 35
-                lvl*Math.round(2.1f*(tier+3)); //+4 per level, up from +3
+        dmgUpgradeDiffer = 2;
     }
 
 }

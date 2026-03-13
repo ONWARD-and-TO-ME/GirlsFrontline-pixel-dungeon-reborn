@@ -33,12 +33,9 @@ public class AK47 extends DesignatedMarksmanRifle {
 
 		tier = 4;
 		ACC = 0.8f;
+        dmgBaseMul = 7;
+        dmgUpgradeMul = 1.6F;
 		//also cannot surprise attack, see Hero.canSurpriseAttack
 	}
 
-	@Override
-	public int max(int lvl) {
-		return  Math.round(7*(tier+1)) +        //35 base, up from 25
-				lvl*Math.round(1.6f*(tier+1));  //+8 per level, up from +5
-	}
 }

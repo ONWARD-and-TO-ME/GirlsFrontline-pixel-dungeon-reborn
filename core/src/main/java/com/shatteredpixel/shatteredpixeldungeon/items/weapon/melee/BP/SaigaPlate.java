@@ -32,12 +32,8 @@ public class SaigaPlate extends BulletProof {
 		tier = 5;
         DEF = 10;
         DEFUPGRADE = 3;
-	}
-
-	@Override
-	public int max(int lvl) {
-		return  Math.round(2.5f*(tier+1)) +     //15 base, down from 30
-				lvl*(tier-2);                   //+3 per level, down from +6
+        dmgBaseMul = 2.5F;
+        dmgUpgradeDiffer = -3;
 	}
 
 }

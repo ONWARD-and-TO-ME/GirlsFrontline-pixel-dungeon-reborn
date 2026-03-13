@@ -30,12 +30,8 @@ public class M1911 extends LongRange {
 
 		tier = 2;
 		RCH = 3;    //lots of extra reach
-	}
-
-	@Override
-	public int max(int lvl) {
-		return  2*(tier+2) +  //9 base, down from 15
-				lvl*(tier+1);   //scaling unchanged
+        dmgBaseMul = 2;
+        dmgBaseDiffer = 1;
 	}
 
 }

@@ -35,6 +35,9 @@ public class Thunder extends MeleeWeapon {
         tier = 1;
         ACC = 0.09f;
         //RCH = 3;
+        dmgBaseMul = 5.5F;
+        dmgBaseDiffer = 9;
+        dmgUpgradeMul = 3.5F;
     }
 
 
@@ -46,9 +49,4 @@ public class Thunder extends MeleeWeapon {
         return super.damageRoll(owner);
     }
 
-    @Override
-    public int max(int lvl) {
-        return  Math.round(5.5f*(tier+10)) +    //5 base, down from 20
-                lvl*Math.round(3.5f*(tier+1));   //+1 per level, down from +2
-    }
 }

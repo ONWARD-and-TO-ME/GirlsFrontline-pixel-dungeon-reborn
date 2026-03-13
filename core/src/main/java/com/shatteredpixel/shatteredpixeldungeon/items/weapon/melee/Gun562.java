@@ -28,25 +28,16 @@ public class Gun562 extends ShootGun {
         tier = 3;
         RCH = 2;
         cooldownTurns=150;
+        dmgBaseMul = 6;
+        dmgUpgradeDiffer = -1;
     }
 
-    @Override
-    public int min(int lvl) {
-        return 3+lvl;
-        //初始3成长1
-    }
-    @Override
-    public int max(int lvl) {
-        return 24+lvl*3;
-        //初始24成长3
-    }
     @Override
     protected int BombDamage(int lvl){
         return Random.NormalIntRange(6+lvl,48+3*lvl);
     }
     @Override
     public void onShootComplete(int cell, int lvl) {
-        Hero hero=Dungeon.hero;
         super.onShootComplete(cell, lvl);
     }
 }

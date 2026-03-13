@@ -34,12 +34,8 @@ public class SR3 extends UniversaleGun {
 
         tier = 1;
         DEF = 3;
-    }
-
-    @Override
-    public int max(int lvl) {
-        return  4*(tier+1) +    //8 base, down from 10
-                lvl*(tier+3);   //scaling unchanged
+        dmgBaseMul = 4;
+        dmgUpgradeDiffer = 2;
     }
 
     @Override

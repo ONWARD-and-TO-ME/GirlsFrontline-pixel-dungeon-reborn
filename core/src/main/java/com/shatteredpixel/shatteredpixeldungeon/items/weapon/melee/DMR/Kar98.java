@@ -30,12 +30,7 @@ public class Kar98 extends DesignatedMarksmanRifle {
 
 		tier = 3;
 		DLY = 0.8f; //1.25x speed
-	}
-
-	@Override
-	public int max(int lvl) {
-		return 3*(tier+1) +    //20 base, down from 25
-				lvl*(tier+1);   //scaling unchanged
+        dmgBaseMul = 3;
 	}
 
 }

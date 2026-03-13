@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
@@ -28,6 +29,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cypros;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Launcher.Launcher;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SA.SurpriseAttack;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -36,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -774,21 +780,93 @@ public class WndJournal extends WndTabbed {
                         if (item instanceof ClassArmor) {
                             GameScene.show(new WndTitledMessage(new Image(icon),
                                     Messages.titleCase(item.trueName()), item.desc()));
-                        } else {
+                        }
+                        else if (item instanceof MeleeWeapon) {
+                            GameScene.show(new WndItemStory(new Image(icon),
+                                    Messages.titleCase(item.trueName()), item.info(), property((MeleeWeapon) item)));
+                        }
+                        else {
                             GameScene.show(new WndTitledMessage(new Image(icon),
                                     Messages.titleCase(item.trueName()), item.info()));
                         }
                     }else if (!(item instanceof Potion|| item instanceof Scroll|| item instanceof Ring)){
                         GameScene.show(new WndTitledMessage(new ItemSprite(item),
-                                Messages.titleCase("???"),"???"));
+                                Messages.titleCase(item.trueName()),"???"));
                     }
 					return true;
 				} else {
 					return false;
 				}
 			}
+            private static String property(MeleeWeapon weapon){
+                String info = "";
+                if (weapon instanceof Cypros){
+                    info+=Messages.format("该武器阶数_%d_。\n", weapon.tier);
+                    ((Cypros) weapon).setMode(Cypros.Mode.MAGNUM, false);
+                    ((Cypros) weapon).setMode(Cypros.Mode.TRAVAILLER, false);
+                    info+=Messages.format("_特拉维小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。基础防御_0_~_%d_，防御成长_0_~_%d_。",
+                            ((Cypros) weapon).minBaseDmg(0), ((Cypros) weapon).maxBaseDmg(0),
+                            weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(0, 1),
+                            weapon.RCH, weapon.DLY, weapon.ACC, weapon.DEF, weapon.DEFUPGRADE);
+                    info+="\n\n";
+                    ((Cypros) weapon).setMode(Cypros.Mode.CONFIRE, false);
+                    info+=Messages.format("_康菲尔小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
+                            ((Cypros) weapon).minBaseDmg(1), ((Cypros) weapon).maxBaseDmg(1),
+                            weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(1, 1),
+                            weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier*100);
+                    info+="\n\n";
+                    ((Cypros) weapon).setMode(Cypros.Mode.MAGNUM, false);
+                    info+=Messages.format("_马格南婚礼_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
+                            ((Cypros) weapon).minBaseDmg(2), ((Cypros) weapon).maxBaseDmg(2),
+                            weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(2, 1),
+                            weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier*100);
+                }
+                else {
+                    info += Messages.format("该武器阶数_%d_，基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。",
+                            weapon.tier,
+                            weapon.minBaseDmg(), weapon.maxBaseDmg(),
+                            weapon.minUpgrade(1), weapon.maxUpgrade(1),
+                            weapon.RCH, weapon.DLY, weapon.ACC);
+                    if (weapon.DEF > 0)
+                        info += Messages.format("基础防御_0_~_%d_。", weapon.DEF);
+                    if (weapon.DEFUPGRADE > 0)
+                        info += Messages.format("防御成长_0_~_%d_。", weapon.DEFUPGRADE);
+                    if (weapon instanceof Launcher)
+                        info += "\n该类武器对_.50_有伤害加成。";
+                    else if (weapon instanceof SurpriseAttack)
+                        info += Messages.format("\n该类武器在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。", ((SurpriseAttack) weapon).damageMin * 100);
+                }
+                return info;
+            }
+            private static class WndItemStory extends WndTitledMessage{
+                public WndItemStory(Image image, String title, String trueMessage, String message) {
+                    super(new Image(image), title, trueMessage);
+                    IconButton showProperty = new IconButton(Icons.INFO.get()){
+                        protected void onClick() {
+                            GameScene.show(new WndItemProperty(new Image(image), title, message, trueMessage));
+                            WndItemStory.this.hide();
+                        }
+                    };
+                    showProperty.setRect(width-16, 0 , 16 ,16);
+                    showProperty.visible = Badges.isUnlocked(Badges.Badge.HAPPY_END);
+                    showProperty.enable(showProperty.visible);
+                    add(showProperty);
+                }
+            }
+            private static class WndItemProperty extends WndTitledMessage{
+                public WndItemProperty(Image image, String title, String trueMessage, String message) {
+                    super(new Image(image), title, trueMessage);
+                    IconButton showStory = new IconButton(Icons.CHANGESLOG.get()){
+                        protected void onClick() {
+                            GameScene.show(new WndItemStory(new Image(image), title, message, trueMessage));
+                            WndItemProperty.this.hide();
+                        }
+                    };
+                    showStory.setRect(width-16, 0 , 16 ,16);
+                    add(showStory);
+                }
+            }
 		}
 		
 	}
-	
 }

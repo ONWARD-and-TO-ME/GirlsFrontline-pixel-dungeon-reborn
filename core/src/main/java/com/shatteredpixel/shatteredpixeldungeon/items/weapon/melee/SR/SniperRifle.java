@@ -8,7 +8,10 @@ public abstract class  SniperRifle extends MeleeWeapon {
     // 기본 사거리가 50 이상 반동이 5턴 이상인 무기
     {
         DLY = 5f;
-        RCH = 50;
+        RCH = 60;
         ACC = 1.75f;
+
+        dmgBaseMul = 15.4F;
+        dmgUpgradeMul = 2.1F;
     }
 }

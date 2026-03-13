@@ -30,12 +30,8 @@ public class G36 extends AssaultRifle {
 
         tier = 2;
         DLY = 0.8f;
-    }
-
-    @Override
-    public int max(int lvl) {
-        return  3*(tier+1) +    //8 base, down from 10
-                lvl*(tier+3);   //scaling unchanged
+        dmgBaseMul = 3;
+        dmgUpgradeDiffer = 2;
     }
 
 }

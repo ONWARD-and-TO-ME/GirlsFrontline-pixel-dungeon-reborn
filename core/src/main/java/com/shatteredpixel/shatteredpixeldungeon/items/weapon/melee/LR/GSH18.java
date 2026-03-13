@@ -41,18 +41,7 @@ public class GSH18 extends LongRange {
 		tier = 1; // 设置为1级武器
 		RCH = 2; // 默认射程2格
         defaultAction = AC_SWITCH_MODE;
-	}
-
-	@Override
-	public int min(int lvl) {
-		return 1 + // 基础最小值1
-				lvl;   // 每级成长1
-	}
-
-	@Override
-	public int max(int lvl) {
-		return 8 +  // 基础最大值8
-				lvl * 2;   // 每级成长2
+        dmgBaseMul = 4;
 	}
 
 	@Override
@@ -87,16 +76,6 @@ public class GSH18 extends LongRange {
 			hero.spendAndNext(1f);
 		} else {
 			super.execute(hero, action);
-		}
-	}
-
-	// 重写actionName方法，为模式切换操作提供显示名称
-	@Override
-	public String actionName(String action, Hero hero) {
-		if (action.equals(AC_SWITCH_MODE)) {
-			return Messages.get(this, "ac_switch_mode");
-		} else {
-			return super.actionName(action, hero);
 		}
 	}
 

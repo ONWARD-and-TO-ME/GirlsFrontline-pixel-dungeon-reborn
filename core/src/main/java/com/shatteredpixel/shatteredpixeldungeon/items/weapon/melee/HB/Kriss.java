@@ -35,6 +35,9 @@ public class Kriss extends MeleeWeapon {
 
 		tier = 3;
         DEF = 3;
+        dmgBaseMul = 3;
+        dmgUpgradeMul = 0.5F;
+        dmgUpgradeDiffer = 1;
 	}
 
 	@Override
@@ -43,12 +46,6 @@ public class Kriss extends MeleeWeapon {
 			Buff.prolong(attacker, Speed.class, 1.5f);
 		}
 		return super.proc(attacker, defender, damage);
-	}
-
-	@Override
-	public int max(int lvl) {
-		return  Math.round(3f*(tier+1)) +     //10 base, down from 20
-				lvl*Math.round(0.5f*(tier+2));  //+2 per level, down from +4
 	}
 
 }

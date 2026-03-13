@@ -30,12 +30,8 @@ public class Wa extends LongRange {
 
 		tier = 3;
 		RCH = 4;    //lots of extra reach
-	}
-
-	@Override
-	public int max(int lvl) {
-		return  3*(tier+1) +    //12 base, down from 20
-				lvl*(tier);     //+3 per level, down from +4
+        dmgBaseMul = 3;
+        dmgUpgradeDiffer = -1;
 	}
 
 }

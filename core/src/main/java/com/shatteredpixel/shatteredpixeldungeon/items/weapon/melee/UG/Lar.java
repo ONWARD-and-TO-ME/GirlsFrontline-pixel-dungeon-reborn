@@ -36,6 +36,8 @@ public class Lar extends UniversaleGun {
         ACC = 1.475f; // 命中率提升47.5%
         DLY = 0.5f; // 攻击间隔为0.5(比普通武器更快)
         RCH = 3; // 射程为3格
+        dmgBaseMul = 2;
+        dmgUpgradeMul = 0.5F;
     }
     
     // 我加的，重写STRReq方法，让初始力量需求减少1点
@@ -43,12 +45,6 @@ public class Lar extends UniversaleGun {
     public int STRReq(int lvl) {
         // 调用父类方法计算标准力量需求，然后减1
         return super.STRReq(lvl) - 1;
-    }
-    
-    @Override
-    public int max(int lvl) {
-        return  2*(tier+1) +    //5-12点基础伤害
-                lvl*Math.round(0.5f*(tier+1));   //每升一级增加约3点伤害
     }
 
     @Override

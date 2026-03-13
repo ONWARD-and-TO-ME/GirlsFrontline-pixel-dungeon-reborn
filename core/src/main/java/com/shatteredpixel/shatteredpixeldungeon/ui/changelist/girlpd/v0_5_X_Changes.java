@@ -114,7 +114,7 @@ public class v0_5_X_Changes {
         changes.hardlight( Window.TITLE_COLOR );
         changeInfos.add(changes);
 
-        changes.addButton( new ChangeButton(new BuffIcon(new EquipLevelUp(), false),1.8F, "临时升级", "现在所有的临时升级都可以保存到排行榜了，那么现在排行榜武器最高等级是多少呢？"));
+        changes.addButton( new ChangeButton(new BuffIcon(new EquipLevelUp(), true), 0.8F, "临时升级", "现在所有的临时升级都可以保存到排行榜了，那么现在排行榜武器最高等级是多少呢？"));
         changes.addButton( new ChangeButton(new HeroIcon(new Education()), 0.8F, "高等教育",
                 "_-_ 新增一个通用的四层转职，以放弃护甲技能为代价，将四层天赋点轮流加到前三层。\n\n"+
                 "某人依旧没有考过四级......QAQ"

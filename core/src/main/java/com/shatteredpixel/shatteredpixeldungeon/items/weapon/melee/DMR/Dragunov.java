@@ -30,12 +30,8 @@ public class Dragunov extends DesignatedMarksmanRifle {
 
 		tier = 4;
 		DLY = 0.8f;
-	}
-
-	@Override
-	public int max(int lvl) {
-		return  Math.round(3.5f*(tier+1)) +    //20 base, down from 25
-				lvl * Math.round(0.8f * (tier+1));   //scaling unchanged
+        dmgBaseMul = 3.5F;
+        dmgUpgradeMul = 0.8F;
 	}
 
 }

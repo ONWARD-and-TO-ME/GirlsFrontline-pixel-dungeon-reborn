@@ -14,12 +14,8 @@ public class Mg42 extends MachineGun {
         tier = 6;
         ACC = 0.65f;
         DLY = 0.1f;
-    }
-
-    @Override
-    public int max(int lvl) {
-        return  Math.round(1.3f*(tier+1)) +    //5 base, down from 20
-                lvl*Math.round(0.4f*(tier+1));   //+1 per level, down from +2
+        dmgBaseMul = 1.3F;
+        dmgUpgradeMul = 0.4F;
     }
 
 }

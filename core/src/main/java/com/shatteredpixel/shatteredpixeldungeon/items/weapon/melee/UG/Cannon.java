@@ -99,7 +99,7 @@ public class Cannon extends UniversaleGun {
                         damage += Random.IntRange(0, exStr);
                     }
                     owner.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
-                    hero.HP += Math.min(damage, hero.HT-hero.HP);
+                    hero.HP += Math.min(Math.max(damage, 0), hero.HT-hero.HP);
                     return damage;
                 }
             }

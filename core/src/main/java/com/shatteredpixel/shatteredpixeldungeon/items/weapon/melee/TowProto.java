@@ -32,13 +32,9 @@ public class TowProto extends MeleeWeapon {
         ACC = 10000f;
         DLY = 50f;
         RCH = 60;
-    }
-
-
-    @Override
-    public int max(int lvl) {
-        return  Math.round(5f*(tier+1)) +    //40 base, up from 35
-                lvl*Math.round(6*(tier)); //+4 per level, up from +3
+        dmgBaseMul = 5;
+        dmgUpgradeMul = 6;
+        dmgUpgradeDiffer = -1;
     }
 
 }

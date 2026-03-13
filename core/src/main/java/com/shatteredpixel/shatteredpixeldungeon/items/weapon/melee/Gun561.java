@@ -47,17 +47,20 @@ public class Gun561 extends ShootGun {
 		image = ItemSpriteSheet.GUN561;
 		RCH = 2;
         cooldownTurns=200;
+        dmgBaseMul = 4;
 	}
 
 	@Override
-	public int min(int lvl) {
-		return hasCharge ? 1 :1+lvl;
-        //初始1成长1
+	public float minUpgrade(int lvl) {
+		return hasCharge ? 0 :super.minUpgrade(lvl);
 	}
+    @Override
+    public float maxUpgrade(int lvl) {
+        return hasCharge ? 0 :super.maxUpgrade(lvl);
+    }
 	@Override
-	public int max(int lvl) {
-		return hasCharge ? 2 :8+lvl*2;
-        //初始8成长2
+	public float maxBaseDmg() {
+		return hasCharge ? 2 :super.maxBaseDmg();
 	}
     @Override
     protected int BombDamage(int lvl){
@@ -66,10 +69,6 @@ public class Gun561 extends ShootGun {
 
 	@Override
 	public void onShootComplete(int cell, int lvl){
-
-
-		Hero hero=Dungeon.hero;
-
 		super.onShootComplete(cell, lvl);
 	}
 }

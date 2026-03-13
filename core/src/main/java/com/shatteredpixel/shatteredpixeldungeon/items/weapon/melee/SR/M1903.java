@@ -29,16 +29,7 @@ public class M1903 extends SniperRifle {
 		image = ItemSpriteSheet.M1903;
 
 		tier = 2;
-		ACC = 1.75f;
-		DLY = 5f;
-		RCH = 60;
-	}
-
-
-	@Override
-	public int max(int lvl) {
-		return  Math.round(15.4f*(tier+1)) +    //40 base, up from 35
-				lvl*Math.round(2.1f*(tier+2)); //+4 per level, up from +3
+        dmgUpgradeDiffer = 1;
 	}
 
 }

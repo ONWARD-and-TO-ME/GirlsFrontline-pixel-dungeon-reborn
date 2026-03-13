@@ -31,11 +31,8 @@ public class M9 extends SubMachineGun {
 		tier = 1;
 		ACC = 0.65f;
         DLY = 0.333f;
+        dmgBaseMul = 3;
+        dmgUpgradeDiffer = -1;
 	}
 
-	@Override
-	public int max(int lvl) {
-		return  3*(tier+1) +    //20 base, down from 25
-				lvl*(tier);     //+4 per level, down from +5
-	}
 }

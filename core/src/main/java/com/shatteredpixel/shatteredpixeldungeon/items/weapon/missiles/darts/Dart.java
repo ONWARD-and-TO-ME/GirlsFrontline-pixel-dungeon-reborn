@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Launcher.Gepard;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Launcher.Launcher;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
@@ -76,7 +76,7 @@ public class Dart extends MissileWeapon {
 	@Override
 	public int min(int lvl) {
 		if (bow != null){
-			return  4 +                    //4 base
+			return  bow.tier +                    //4 base
 					bow.buffedLvl() + lvl; //+1 per level or bow level
 		} else {
 			return  1 +     //1 base, down from 2
@@ -87,19 +87,19 @@ public class Dart extends MissileWeapon {
 	@Override
 	public int max(int lvl) {
 		if (bow != null){
-			return  12 +                       //12 base
-					3*bow.buffedLvl() + 2*lvl; //+3 per bow level, +2 per level (default scaling +2)
+			return Math.round((bow.tier/2F+1)*(4 //对于GM6，保留其基础12和成长3，对于SRS，令其基础6成长1.5，因为SRS的成长1-1是真的太废了
+                    +bow.buffedLvl())) + 2*lvl; //+3 per bow level, +2 per level (default scaling +2)
 		} else {
 			return  2 +     //2 base, down from 5
 					2*lvl;  //scaling unchanged
 		}
 	}
 	
-	private static Gepard bow;
+	private static Launcher bow;
 	
-	private void updateGepard(){
-		if (Dungeon.hero.belongings.weapon() instanceof Gepard){
-			bow = (Gepard) Dungeon.hero.belongings.weapon();
+	private void updateLauncher(){
+		if (Dungeon.hero.belongings.weapon() instanceof Launcher){
+			bow = (Launcher) Dungeon.hero.belongings.weapon();
 		} else {
 			bow = null;
 		}
@@ -129,19 +129,19 @@ public class Dart extends MissileWeapon {
 
 	@Override
 	public int throwPos(Hero user, int dst) {
-		updateGepard();
+		updateLauncher();
 		return super.throwPos(user, dst);
 	}
 
 	@Override
 	protected void onThrow(int cell) {
-		updateGepard();
+		updateLauncher();
 		super.onThrow(cell);
 	}
 
 	@Override
 	public void throwSound() {
-		updateGepard();
+		updateLauncher();
 		if (bow != null) {
 			Sample.INSTANCE.play(Assets.Sounds.ATK_CROSSBOW, 1, Random.Float(0.87f, 1.15f));
 		} else {
@@ -151,7 +151,7 @@ public class Dart extends MissileWeapon {
 	
 	@Override
 	public String info() {
-		updateGepard();
+		updateLauncher();
 		if (bow != null && !bow.isIdentified()){
 			int level = bow.level();
 			//temporarily sets the level of the bow to 0 for IDing purposes

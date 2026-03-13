@@ -490,7 +490,7 @@ public enum Talent {
 
 		// 2x/instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
-            factor=1.25f+hero.pointsInTalent(Type56One_Identify)*0.75f;
+            factor*=1.25f+hero.pointsInTalent(Type56One_Identify)*0.75f;
 			factor*=1f+hero.pointsInTalent(ARMSMASTERS_INTUITION);
 		}
 		// 3x/instant for mage (see Wand.wandUsed())

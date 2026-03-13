@@ -8,6 +8,8 @@ public abstract class  MachineGun extends MeleeWeapon {
     //기본 5연타가 가능하며 기습을 할수 없는 무기
     {
         DLY = 0.2f;
-        ACC = 0.9f;
+        ACC = 0.85f;
+        dmgBaseMul = 2.1F;
+        dmgUpgradeMul = 0.5F;
     }
 }

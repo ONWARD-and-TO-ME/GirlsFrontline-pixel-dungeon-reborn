@@ -29,13 +29,7 @@ public class SRS extends Launcher {
         image = ItemSpriteSheet.SRS;
 
         tier = 1;
-        DLY = 1f;
         ACC = 2f;
     }
 
-    @Override
-    public int max(int lvl) {
-        return  4*(tier+1) +    //20 base, down from 25
-                lvl*(tier);     //+4 per level, down from +5
-    }
 }

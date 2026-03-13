@@ -1,14 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR;
 
-/**
- * Created by LoveKirsi on 2017-11-05.
+/*
+  Created by LoveKirsi on 2017-11-05.
  */
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-
-import java.util.ArrayList;
 
 public class Ump40 extends LongRange {
 
@@ -17,22 +13,8 @@ public class Ump40 extends LongRange {
 
         tier = 1;
         RCH = 4;
-    }
-    public Char owner;
-    public ArrayList<Item> items = new ArrayList<Item>();
-
-    //@Override
-    //public int proc(Char attacker, Char defender, int damage ) {
-    //collect(hero.belongings.backpack);
-    //   damage = 999;
-    //    return damage;
-    //}
-
-
-    @Override
-    public int max(int lvl) {
-      return  3*(tier+1) +                	//20 base, down from 25
-              lvl*(tier+1);	//+6 per level, up from +5
+        dmgBaseMul = 3;
+        dmgUpgradeDiffer = -1;
     }
 
 }

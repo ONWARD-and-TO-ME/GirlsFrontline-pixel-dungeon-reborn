@@ -91,10 +91,14 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfPrismaticLight
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cypros;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.AK47;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.AN94;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gun561;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gun562;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.GSH18;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SR.AWP;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SR.MOSINNAGANT;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.C96;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MG.Dp;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.Dragunov;
@@ -166,24 +170,26 @@ public enum Catalog {
 	}
 	
 	static {
+        WEAPONS.seen.put( Gun561.class,                   false);
+        WEAPONS.seen.put( Ump45.class,                   false);
+        WEAPONS.seen.put( MagesStaff.class,                 false);
+        WEAPONS.seen.put( Welrod.class,                     false);
 		WEAPONS.seen.put( M9.class,                   false);
-		WEAPONS.seen.put( Welrod.class,                     false);
-		WEAPONS.seen.put( MagesStaff.class,                 false);
-		WEAPONS.seen.put( Ump45.class,                   false);
-		WEAPONS.seen.put( Gun561.class,                   false);
-		WEAPONS.seen.put( Gun562.class,                   false);
+        WEAPONS.seen.put( Dp.class,                   false);
+        WEAPONS.seen.put( SR3.class,                   false);
 		WEAPONS.seen.put( Ump40.class,                   false);
-		WEAPONS.seen.put( Dp.class,                   false);
-		WEAPONS.seen.put( SR3.class,                   false);
 		WEAPONS.seen.put( SRS.class,                   false);
 		WEAPONS.seen.put( Thunder.class,				false);
+        WEAPONS.seen.put( GSH18.class,				false);
 
 		WEAPONS.seen.put( M16.class,                 false);
 		WEAPONS.seen.put( M1911.class,                    false);
 		WEAPONS.seen.put( M1903.class,                      false);
 		WEAPONS.seen.put( M1a1.class,               false);
-		WEAPONS.seen.put( NagantRevolver.class,        false);
 		WEAPONS.seen.put( G36.class,                   false);
+        WEAPONS.seen.put( NagantRevolver.class,        false);
+        WEAPONS.seen.put( Cypros.class,        false);
+
 		WEAPONS.seen.put( Ks23.class,                      false);
 		WEAPONS.seen.put( Kar98.class,                       false);
 		WEAPONS.seen.put( Negev.class,                   false);
@@ -191,22 +197,28 @@ public enum Catalog {
 		WEAPONS.seen.put( Kriss.class,                      false);
 		WEAPONS.seen.put( Wa.class,                         false);
 		WEAPONS.seen.put( C96.class,                        false);
+        WEAPONS.seen.put( Gun562.class,                   false);
+        WEAPONS.seen.put( MOSINNAGANT.class,                   false);
+
 		WEAPONS.seen.put( Win97.class,                      false);
-		WEAPONS.seen.put( Dragunov.class,                  false);
-		WEAPONS.seen.put( AK47.class,                      false);
-		WEAPONS.seen.put( Hk416.class,                      false);
-		WEAPONS.seen.put( GUA91.class,             false);
-		WEAPONS.seen.put( AWP.class,                        false);
-		WEAPONS.seen.put( Gepard.class,                   false);
-		WEAPONS.seen.put( Usas12.class,                 false);
-		WEAPONS.seen.put( Sass.class,                       false);
-		WEAPONS.seen.put( M99.class,                     false);
-		WEAPONS.seen.put( SakuraBlade.class,                   false);
-		WEAPONS.seen.put( SaigaPlate.class,                false);
-		WEAPONS.seen.put( Lar.class,         			       false);
+        WEAPONS.seen.put( Hk416.class,                      false);
+        WEAPONS.seen.put( AWP.class,                        false);
+        WEAPONS.seen.put( AK47.class,                      false);
+        WEAPONS.seen.put( GUA91.class,             false);
+        WEAPONS.seen.put( Gepard.class,                   false);
+        WEAPONS.seen.put( AN94.class,                   false);
+
+        WEAPONS.seen.put( Sass.class,                       false);
+        WEAPONS.seen.put( Lar.class,         			       false);
+        WEAPONS.seen.put( Usas12.class,                 false);
+        WEAPONS.seen.put( M99.class,                     false);
+        WEAPONS.seen.put( SakuraBlade.class,                   false);
+        WEAPONS.seen.put( SaigaPlate.class,                false);
+
+//		WEAPONS.seen.put( Dragunov.class,                  false);
 		WEAPONS.seen.put( SAIGA.class,                        false);
+        WEAPONS.seen.put( Ntw20.class,                   false);
 		WEAPONS.seen.put( Mg42.class,                     false);
-		WEAPONS.seen.put( Ntw20.class,                   false);
 		WEAPONS.seen.put( GROZA.class,                false);
 	
 		ARMOR.seen.put( ClothArmor.class,                   false);

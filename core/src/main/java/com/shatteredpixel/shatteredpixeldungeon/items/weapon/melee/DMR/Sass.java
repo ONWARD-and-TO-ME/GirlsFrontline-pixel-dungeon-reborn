@@ -30,12 +30,7 @@ public class Sass extends DesignatedMarksmanRifle {
 
 		tier = 5;
 		DLY = 0.8f; //1.25x speed
-	}
-
-	@Override
-	public int max(int lvl) {
-		return   3*(tier+1) +    //24 base, down from 30
-				lvl*Math.round(1f*(tier+1));
+        dmgBaseMul = 3;
 	}
 
 }

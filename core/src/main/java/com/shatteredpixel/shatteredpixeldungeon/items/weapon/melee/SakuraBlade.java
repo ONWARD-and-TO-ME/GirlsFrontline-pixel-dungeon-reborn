@@ -58,6 +58,8 @@ public class SakuraBlade extends MeleeWeapon {
         image = ItemSpriteSheet.GREATAXE;
         tier = 5;
         defaultAction = AC_SKILL;
+
+        dmgBaseDiffer = 4;
     }
 
     // 保存冷却状态
@@ -82,12 +84,6 @@ public class SakuraBlade extends MeleeWeapon {
         if (BuffLevelPoint==0)
             lvl+=skillBuffedLevels;
         return lvl;
-    }
-
-    @Override
-    public int max(int lvl) {
-        return  5*(tier+5) +    //50 base, up from 30
-                lvl*(tier+1);   //scaling unchanged
     }
 
     @Override

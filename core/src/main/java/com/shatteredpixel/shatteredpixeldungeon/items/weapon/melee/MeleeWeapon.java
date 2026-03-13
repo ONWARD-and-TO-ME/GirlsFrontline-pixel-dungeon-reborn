@@ -23,32 +23,42 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 
 import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Random;
 
 public class MeleeWeapon extends Weapon {
 
 	public int tier;
+    protected float dmgBaseMul = 5;
+    protected float dmgBaseDiffer;
+    protected float dmgUpgradeDiffer;
+    protected float dmgUpgradeMul = 1F;
 
 	@Override
 	public int min(int lvl) {
-		return  tier +  //base
-				lvl;    //level scaling
+		return  Math.round(minBaseDmg()) +  //base
+                Math.round(minUpgrade(lvl));    //level scaling
 	}
-
+    public float minBaseDmg(){
+        return tier;
+    }
+    public float minUpgrade(int lvl){
+        return lvl;
+    }
 	@Override
 	public int max(int lvl) {
-		return  5*(tier+1) +    //base
-				lvl*(tier+1);   //level scaling
+		return  Math.round(maxBaseDmg())+    //base
+				Math.round(maxUpgrade(lvl));   //level scaling
 	}
-
+    public float maxBaseDmg(){
+        return Math.round(dmgBaseMul *(tier+1+ dmgBaseDiffer));
+    }
+    public float maxUpgrade(int lvl){
+        return lvl* dmgUpgradeMul *(tier+1+ dmgUpgradeDiffer);
+    }
 	public int STRReq(int lvl){
 		return STRReq(tier, lvl);
 	}

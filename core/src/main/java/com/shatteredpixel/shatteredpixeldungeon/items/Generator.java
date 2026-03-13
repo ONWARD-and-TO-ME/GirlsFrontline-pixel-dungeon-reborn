@@ -21,8 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Challenges.NO_FOOD;
-
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
@@ -126,6 +124,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.M16;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.M99;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.Sass;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.AN94;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.Ump40;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cypros;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gun561;
@@ -159,7 +158,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SR.MOSINNAGAN
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SakuraBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Thunder;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.C96;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.Cannon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.Lar;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.SR3;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Bolas;
@@ -365,12 +363,12 @@ public class Generator {
 					M9.class,
 					Dp.class,
 					SR3.class,
-                    Cannon.class,
+                    Ump40.class,
 					SRS.class,
 					Thunder.class,
 					GSH18.class
 			};
-			WEP_T1.probs = new float[]{ 0, 1, 0, 1, 1, 1, 1, 0, 0, 0.09f, 0.75f };
+			WEP_T1.probs = new float[]{ 0, 1, 0, 1, 1, 1, 1, 1, 1, 0.09f, 0.75f };
 			
 			WEP_T2.classes = new Class<?>[]{
 					M16.class,

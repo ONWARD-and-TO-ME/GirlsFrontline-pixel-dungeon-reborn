@@ -48,6 +48,7 @@ public class C96 extends UniversaleGun {
         RCH = 5;    //lots of extra reach
 
         defaultAction = AC_SKILL;
+        dmgBaseMul = 2;
     }
 
     @Override
@@ -88,12 +89,6 @@ public class C96 extends UniversaleGun {
                 updateQuickslot();
             }
         }
-    }
-
-    @Override
-    public int max(int lvl) {
-        return  2*(tier+1) +    //8 base, down from 10
-                lvl*(tier+1);   //scaling unchanged
     }
 
     @Override
