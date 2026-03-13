@@ -335,6 +335,7 @@ public enum HeroClass {
 		Dungeon.quickslot.setSlot(1,gun561);
 
         new ScrollOfTerror().identify().collect();
+        new PotionOfMindVision().identify();
 		new SaltyZongzi().collect();
         new SugarZongzi().collect();
 	}

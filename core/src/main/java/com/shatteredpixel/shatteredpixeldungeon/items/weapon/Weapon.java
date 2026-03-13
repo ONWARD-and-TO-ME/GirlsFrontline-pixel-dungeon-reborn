@@ -194,21 +194,19 @@ abstract public class Weapon extends KindOfWeapon {
 	
 	@Override
 	public float delayFactor( Char owner ) {
-        if(baseDelay(owner)>1.0f){
-            //基础攻速大于1回合，有可能受到额外收益
-            if((1f/speedMultiplier(owner))<=1.0f){
-                //攻速乘数小于1时
-                if(baseDelay(owner) * (1f/speedMultiplier(owner))<=1.0f){
-                    //受狂怒影响后攻速小于1回合，不受额外收益
-                    return baseDelay(owner) * (1f/speedMultiplier(owner));
-                }else
-                    //受狂怒影响后攻速仍大于1回合，额外吃一倍狂怒戒指收益
-                    //吃两倍狂怒收益小于1回合时，设置为1回合
-                    //吃两倍狂怒后仍大于1回合，则返回两倍狂怒收益的攻速
-                    return Math.max(1, baseDelay(owner) * (1f/speedMultiplier(owner))* (1f/speedMultiplier(owner)));
-            }
+        float baseDelay = baseDelay(owner) * (1f/speedMultiplier(owner));
+        if(baseDelay<2F){
+            //攻速小于2回合，返回常态值，无论是基础攻速还是受一次狂怒增益后的攻速
+            return baseDelay;
         }
-		return baseDelay(owner) * (1f/speedMultiplier(owner));
+        if((1f/speedMultiplier(owner))>1F){
+            //攻速乘数大于1时，即诅咒时，返回常态值
+            return baseDelay;
+        }
+        //受狂怒影响后攻速仍大于2回合，额外吃一倍狂怒戒指收益
+        //吃两倍狂怒收益小于2回合时，设置为2回合
+        //吃两倍狂怒后仍大于2回合，则返回两倍狂怒收益的攻速
+        return Math.max(2, baseDelay* (1f/speedMultiplier(owner)));
 	}
 
 	protected float baseDelay( Char owner ){

@@ -480,7 +480,7 @@ public class Hero extends Char {
 			if (!b.revivePersists) b.detach();
 		}
 		Buff.affect( this, Regeneration.class );
-		Buff.affect( this, Hunger.class );
+		Buff.affect( this, Hunger.class ).satisfy(Hunger.minLevel);
         Buff.affect( this, TalentSecondSight.class).Set(0, 0);
         Buff.affect( this, Item.CooldownTracker.class );
 	}

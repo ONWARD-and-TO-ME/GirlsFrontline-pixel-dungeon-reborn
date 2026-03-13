@@ -26,6 +26,7 @@ import static com.watabou.utils.Reflection.newInstance;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -540,8 +541,10 @@ public class Item implements Bundlable {
 	public Item identify( boolean byHero ) {
 
 		if (byHero && hero != null && hero.isAlive()){
-			Catalog.setSeen(getClass());
-			if (!isIdentified()) Talent.onItemIdentified(hero, this);
+            if(!Dungeon.isChallenged(Challenges.TEST_MODE))
+			    Catalog.setSeen(getClass());
+			if (!isIdentified())
+                Talent.onItemIdentified(hero, this);
 		}
 
 		levelKnown = true;
