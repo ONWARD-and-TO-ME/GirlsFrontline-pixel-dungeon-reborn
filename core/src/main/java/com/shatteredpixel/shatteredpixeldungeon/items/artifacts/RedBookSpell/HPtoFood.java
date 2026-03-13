@@ -100,6 +100,7 @@ public class HPtoFood extends BookSpell{
                             Dungeon.hero.HP-=dmgB;
                             if (Dungeon.hero.HP<=0){
                                 Dungeon.hero.die(this);
+                                Dungeon.fail(RedBook.class);
                             }else {
                                 if (hunger!=null){
                                     hunger.satisfy(foodB);

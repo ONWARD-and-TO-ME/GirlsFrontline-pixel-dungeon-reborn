@@ -205,7 +205,7 @@ public class ItemSlot extends Button {
 		} else {
 			status.visible = extra.visible = level.visible = true;
 		}
-
+        item.update();
 		status.text( item.status() );
 
 		if (item.icon != -1 && (item.isIdentified() || (item instanceof Ring && ((Ring) item).isKnown()))){

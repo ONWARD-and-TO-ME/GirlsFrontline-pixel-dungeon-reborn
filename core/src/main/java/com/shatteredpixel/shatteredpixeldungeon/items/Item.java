@@ -146,7 +146,11 @@ public class Item implements Bundlable {
 		return name;
 	}
 
-	public final String trueName() {
+    public void update() {
+
+    }
+
+    public final String trueName() {
 		return name;
 	}
 	
