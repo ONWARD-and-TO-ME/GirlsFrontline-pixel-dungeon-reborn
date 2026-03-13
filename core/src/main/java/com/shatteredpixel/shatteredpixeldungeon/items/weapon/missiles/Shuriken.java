@@ -22,8 +22,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class Shuriken extends MissileWeapon {
@@ -42,7 +44,22 @@ public class Shuriken extends MissileWeapon {
 		return  4 * tier +                      //8 base, down from 10
 				(tier == 1 ? 2*lvl : tier*lvl); //scaling unchanged
 	}
-	
+//    @Override
+//	public void update(){
+//        tier = 2;
+//        if (Dungeon.hero!=null)
+//            tier += Dungeon.hero.pointsInTalent(Talent.HIGH_EDUCATION);
+//    }
+    @Override
+    public String info(){
+        update();
+        return super.info();
+    }
+    @Override
+    public int damageRoll(Char owner) {
+        update();
+        return super.damageRoll(owner);
+    }
 	@Override
 	public float delayFactor(Char owner) {
 		if (owner instanceof Hero && ((Hero) owner).justMoved)  return 0;
