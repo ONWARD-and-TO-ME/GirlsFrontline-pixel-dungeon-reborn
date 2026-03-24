@@ -112,43 +112,28 @@ public abstract class EquipableItem extends Item {
 		Sample.INSTANCE.play( Assets.Sounds.CURSED );
 	}
 
-	protected float time2equip( Hero hero ) {
+	protected float time2equip( ) {
 		return 1;
 	}
 
 	public abstract boolean doEquip( Hero hero );
+    protected boolean unEquipable(Hero hero){
+        // 魔免buff下、复活未选中，允许被脱下
+        return !cursed || hero.buff(MagicImmune.class) != null ||
+                hero.buff(LostInventory.class)!=null && !keptThoughLostInvent;
+    }
 
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
 
-        if (hero.buff(LostInventory.class)!=null&& !this.keptThoughLostInvent){
-            //进入十字架复活且未选中的物品，允许被脱下
-            //留空不做处理以进入正常脱下装备的下一步
-        }
-		// 检查是否被诅咒且没有魔法免疫buff
-		else if (cursed && hero.buff(MagicImmune.class) == null) {
-			// 检查GSH18_DOCTOR_INTUITION天赋
-			boolean hasDoctorIntuition = hero.hasTalent(Talent.GSH18_DOCTOR_INTUITION);
-			if (hasDoctorIntuition) {
-				int talentLevel = hero.pointsInTalent(Talent.GSH18_DOCTOR_INTUITION);
-				// +1级允许取下被诅咒的防具
-				// +2级允许取下被诅咒的武器
-				if ((talentLevel >= 1 && this instanceof Armor) || 
-					(talentLevel >= 2 && this instanceof Weapon)) {
-					// 允许取下，不显示警告
-				} else {
-					GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
-					return false;
-				}
-			} else {
-				GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
-				return false;
-			}
+		if ( !unEquipable(hero) ) {
+            GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
+            return false;
 		}
 
 		if (single) {
-			hero.spendAndNext( time2equip( hero ) );
+			hero.spendAndNext( time2equip() );
 		} else {
-			hero.spend( time2equip( hero ) );
+			hero.spend( time2equip() );
 		}
 
 		//temporarily keep this item so it can be collected

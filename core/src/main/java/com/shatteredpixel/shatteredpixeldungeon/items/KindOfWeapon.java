@@ -78,6 +78,11 @@ abstract public class KindOfWeapon extends EquipableItem {
 			return false;
 		}
 	}
+    @Override
+    protected boolean unEquipable(Hero hero){
+        // +2级允许取下被诅咒的武器
+        return  super.unEquipable(hero) || hero.pointsInTalent(Talent.GSH18_DOCTOR_INTUITION) >= 2;
+    }
 
 	@Override
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {

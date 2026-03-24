@@ -231,7 +231,7 @@ public class ShadowClone extends ArmorAbility {
 			damage = super.defenseProc(enemy, damage);
 			if (Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.CLONED_ARMOR)
 					&& Dungeon.hero.belongings.armor() != null){
-				return Dungeon.hero.belongings.armor().proc( enemy, this, damage );
+				return Dungeon.hero.belongings.ArmorProc( enemy, this, damage );
 			} else {
 				return damage;
 			}

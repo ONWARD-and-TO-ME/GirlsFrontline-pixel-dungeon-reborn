@@ -52,7 +52,9 @@ public class Bag extends Item implements Iterable<Item> {
 	public ArrayList<Item> items = new ArrayList<>();
 
 	public int capacity(){
-		return 20; // default container size
+		return 20 -  // default container size
+                (Dungeon.hero!=null &&
+                        Dungeon.hero.belongings.secArmor!=null ? 1 : 0);
 	}
 	
 	@Override

@@ -186,7 +186,7 @@ public class PrismaticImage extends NPC {
 	public int defenseProc(Char enemy, int damage) {
 		damage = super.defenseProc(enemy, damage);
 		if (hero != null && hero.belongings.armor() != null){
-			return hero.belongings.armor().proc( enemy, this, damage );
+			return hero.belongings.ArmorProc( enemy, this, damage );
 		} else {
 			return damage;
 		}
@@ -196,9 +196,9 @@ public class PrismaticImage extends NPC {
 	public void damage(int dmg, Object src) {
 		
 		//TODO improve this when I have proper damage source logic
-		if (hero != null && hero.belongings.armor() != null && hero.belongings.armor().hasGlyph(AntiMagic.class, this)
+		if (hero != null && hero.belongings.hasGlyph(AntiMagic.class, this)
 				&& AntiMagic.RESISTS.contains(src.getClass())){
-			dmg -= AntiMagic.drRoll(hero.belongings.armor().buffedLvl());
+			dmg -= AntiMagic.drRoll(hero.belongings.GlyphLevel(AntiMagic.class));
 		}
 		
 		super.damage(dmg, src);
@@ -207,7 +207,10 @@ public class PrismaticImage extends NPC {
 	@Override
 	public float speed() {
 		if (hero != null && hero.belongings.armor() != null){
-			return hero.belongings.armor().speedFactor(this, super.speed());
+            float speed = hero.belongings.armor().speedFactor(this, super.speed());
+            if (hero.belongings.SecondArmor() != null)
+                speed = hero.belongings.SecondArmor().speedFactor(this, speed);
+            return speed;
 		}
 		return super.speed();
 	}
@@ -237,9 +240,7 @@ public class PrismaticImage extends NPC {
 	@Override
 	public boolean isImmune(Class effect) {
 		if (effect == Burning.class
-				&& hero != null
-				&& hero.belongings.armor() != null
-				&& hero.belongings.armor().hasGlyph(Brimstone.class, this)){
+				&& hero.belongings.hasGlyph(Brimstone.class, this)){
 			return true;
 		}
 		return super.isImmune(effect);

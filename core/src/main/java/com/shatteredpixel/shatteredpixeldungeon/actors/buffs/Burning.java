@@ -173,20 +173,9 @@ public class Burning extends Buff implements Hero.Doom {
 	public void reignite( Char ch, float duration ) {
         if (ch.isImmune(Burning.class)&&ch instanceof Hero ) {
             Hero hero = (Hero) ch;
-            if(hero.belongings.armor != null &&hero.belongings.armor.hasGlyph(Brimstone.class, hero)) {
-                float BrimstoneShieldInc = 0;
-                int level = Math.max(0, hero.belongings.armor.buffedLvl());
-
-                boolean luck = Random.Int(level + 40) >= 36;
-                boolean thorns = Random.Int(level + 12) >= 10;
-                if (thorns) {
-                    BrimstoneShieldInc += (float) level / 2 + (float) Dungeon.curDepth() / 5;
-                }
+            if(hero.belongings.hasGlyph(Brimstone.class, hero)) {
                 Barrier barrier = Buff.affect(ch, Barrier.class);
-                while (BrimstoneShieldInc >= 1) {
-                    BrimstoneShieldInc--;
-                    barrier.incShield(1);
-                }
+                barrier.incShield(1);
             }
         }
 

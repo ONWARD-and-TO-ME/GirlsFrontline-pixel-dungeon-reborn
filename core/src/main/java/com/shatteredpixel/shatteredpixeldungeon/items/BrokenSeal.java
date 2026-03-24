@@ -235,7 +235,7 @@ public class BrokenSeal extends Item {
 
 	public static class WarriorShield extends ShieldBuff {
 
-		private Armor armor;
+		public Armor armor;
 		private float partialShield;
 
 		@Override

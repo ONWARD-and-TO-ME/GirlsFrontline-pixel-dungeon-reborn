@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
@@ -70,6 +71,9 @@ public class CurseInfusion extends InventorySpell {
 				((MagesStaff) w).updateWand(true);
 			}
 		} else if (item instanceof Armor){
+            if (Dungeon.hero.belongings.secArmor == item){
+                Armor.curseMoving(Dungeon.hero);
+            }
 			Armor a = (Armor) item;
 			if (a.glyph != null){
 				a.inscribe(Armor.Glyph.randomCurse(a.glyph.getClass()));

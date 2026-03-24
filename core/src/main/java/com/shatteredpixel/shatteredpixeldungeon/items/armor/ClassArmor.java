@@ -62,8 +62,6 @@ abstract public class ClassArmor extends Armor {
 		bones = false;
 	}
 
-	private int armorTier;
-
     @Override
     public String info(){
         String info =super.info();

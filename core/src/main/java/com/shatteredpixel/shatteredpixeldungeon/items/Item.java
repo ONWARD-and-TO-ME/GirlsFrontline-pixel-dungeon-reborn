@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -783,12 +784,12 @@ public class Item implements Bundlable {
             revivePersists = true;
         }
 
+        public float num;
         @Override
         public boolean act() {
             if (target instanceof Hero) {
                 Hero hero = (Hero) target;
                 Item weapon = hero.belongings.weapon;
-
                 if (weapon!=null){
                     if (hero.buff(LostInventory.class)!=null&&!weapon.keptThoughLostInvent) {
                         spend(TICK);
@@ -799,10 +800,37 @@ public class Item implements Bundlable {
                         updateQuickslot();
                     }
                 }
+
+                boolean mixArmor = hero.belongings.armor()!=null &&
+                        hero.belongings.SecondArmor()!=null;
+                if (mixArmor){
+                    hero.belongings.armor.broken+=1;
+                    hero.belongings.secArmor.broken+=0.5F;
+                }
+                for (Item i :hero.belongings){
+                    if (i instanceof Armor){
+                        if (!mixArmor && i.isEquipped(hero))
+                            ((Armor) i).broken-= num - ((Armor) i).FixTime;
+                        else if (!i.isEquipped(hero))
+                            ((Armor) i).broken-= 2*(num - ((Armor) i).FixTime);
+                        ((Armor) i).FixTime = num;
+                        ((Armor) i).broken = Math.max(0, ((Armor) i).broken);
+                    }
+                }
             }
 
+            num++;
             spend(TICK);
             return true;
+        }
+        private static final String STATIC_NUM = "staticNum";
+        @Override
+        public void storeInBundle( Bundle bundle ) {
+            bundle.put(STATIC_NUM, num);
+        }
+        @Override
+        public void restoreFromBundle( Bundle bundle ) {
+            num = bundle.getFloat(STATIC_NUM);
         }
     }
 }

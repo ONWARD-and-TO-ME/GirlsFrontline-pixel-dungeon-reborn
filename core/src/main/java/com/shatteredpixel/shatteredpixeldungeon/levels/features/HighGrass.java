@@ -128,35 +128,13 @@ public class HighGrass {
 			if (ch instanceof Hero) {
 				Hero hero = (Hero) ch;
                 float time = 0;
-                boolean TalentAdd = false;
-                int ExtraSTR = 0;
+
 				if (hero.belongings.armor() != null ) {
-                    if (hero.belongings.armor().hasGlyph(Camouflage.class, hero)) {
-                        time += Camouflage.HeroActivate(hero.belongings.armor.buffedLvl());
+                    if (hero.belongings.hasGlyph(Camouflage.class, hero)) {
+                        time += Camouflage.HeroActivate(hero.belongings.GlyphLevel(Camouflage.class));
                     }
-                    if (hero.belongings.armor().STRReq()<=Dungeon.hero.STR()){
-                        TalentAdd = true;
-                        ExtraSTR = Dungeon.hero.STR()-hero.belongings.armor().STRReq();
-                    }
-				}else {
-                    TalentAdd = true;
-                }//装了护甲不超力或者不装护甲时允许天赋给予隐身
+				}
 
-                Hunger hunger = Dungeon.hero.buff(Hunger.class);
-                if (hunger != null && hunger.isStarving()){
-                    TalentAdd = false;
-                }//处于极度饥饿时截停天赋给予隐身
-
-                if (TalentAdd && Dungeon.hero.hasTalent(Talent.Type56Two_Grass)) {
-                    time += 1 + Dungeon.hero.pointsInTalent(Talent.Type56Two_Grass);
-                }
-
-                int timeV2 = 0;
-                if (Dungeon.hero.hasTalent(Talent.Type56_23V2)){
-                    timeV2 += ExtraSTR*Dungeon.hero.pointsInTalent(Talent.Type56_23V2);
-                    timeV2 = Math.max(4+2*Dungeon.hero.pointsInTalent(Talent.Type56_23V2), timeV2);
-                }
-                time = Math.max(timeV2, time);
                 if (time != 0) {
                     Sample.INSTANCE.play(Assets.Sounds.MELD);
                     Buff.prolong(hero, Invisibility.class, time);

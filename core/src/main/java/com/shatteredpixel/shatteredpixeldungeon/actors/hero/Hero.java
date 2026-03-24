@@ -44,7 +44,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.HoldFast;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
@@ -83,6 +82,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Obfuscation;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Stone;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CapeOfThorns;
@@ -188,6 +189,7 @@ public class Hero extends Char {
 	public ArmorAbility armorAbility = null;
 	public ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
 	public LinkedHashMap<Talent, Talent> metamorphedTalents = new LinkedHashMap<>();
+    public LinkedHashMap<Talent, Integer> addTalents = new LinkedHashMap<>();
 	
 	public int attackSkill = 10;
 	public int defenseSkill = 5;
@@ -280,11 +282,6 @@ public class Hero extends Char {
             }
 		}
 		*/
-
-
-		if (hasTalent(Talent.STRONGMAN)){
-			strBonus += (int)Math.floor(STR * (0.03f + 0.05f*pointsInTalent(Talent.STRONGMAN)));
-		}
 
 		return STR + strBonus;
 	}
@@ -384,8 +381,17 @@ public class Hero extends Char {
     }
 
     public boolean hasTalentA( Talent talent ){
-        int need= Talent.tierLevelThresholds[TierOfTalent.Tier(talent)]-1;
-        return Dungeon.hero.lvl>=need &&pointsInTalentA(talent) >= 0;
+        if (TierOfTalent.Tier(talent)>=3 && Dungeon.hero.subClass == HeroSubClass.NONE){
+            return false;
+        }
+        if (TierOfTalent.Tier(talent)>=4 && Dungeon.hero.armorAbility == null){
+            return false;
+        }
+        int need = Talent.tierLevelThresholds[TierOfTalent.Tier(talent)]-1;
+        return Dungeon.hero.lvl>=need && pointsInTalentA(talent) >= 0;
+    }
+    public boolean hasTalentB( Talent talent){
+        return pointsInTalentA(talent)>=0;
     }
 
     public int pointsInTalentA( Talent talent ){
@@ -573,7 +579,7 @@ public class Hero extends Char {
 			float chance = 0.15f;
 			if(level >= 3){
 				chance = 0.4f;
-			}else if(level >= 2){
+			}else if(level == 2){
 				chance = 0.25f;
 			}
 
@@ -590,9 +596,16 @@ public class Hero extends Char {
 			evasion /= 2;
 		}
 
+
 		if (belongings.armor() != null) {
-			evasion = belongings.armor().evasionFactor(this, evasion);
+            // Use the only or first
+			evasion = belongings.armor().evasionFactor(this, evasion, false);
 		}
+        if (belongings.SecondArmor() != null) {
+            evasion = belongings.SecondArmor().evasionFactor(this, evasion, true);
+        }
+        if (belongings.hasGlyph(Stone.class, this))
+            evasion = 0;
 
 		return Math.round(evasion);
 	}
@@ -615,13 +628,22 @@ public class Hero extends Char {
 	public int drRoll() {
 		int dr = 0;
 
-		if (belongings.armor() != null) {
-			int armDr = Random.NormalIntRange( belongings.armor().DRMin(), belongings.armor().DRMax());
-			if (STR() < belongings.armor().STRReq()){
-				armDr -= 2*(belongings.armor().STRReq() - STR());
-			}
-			if (armDr > 0) dr += armDr;
-		}
+        if (belongings.armor() != null) {
+            // Use the only or first
+            int armDr = Random.NormalIntRange( belongings.armor().DRMin(), belongings.armor().DRMax());
+            if (STR() < belongings.armor().STRReq()){
+                armDr -= 2*(belongings.armor().STRReq() - STR());
+            }
+            if (armDr > 0) dr += armDr;
+        }
+        if (belongings.SecondArmor() != null) {
+            int armDr = Random.NormalIntRange( belongings.SecondArmor().DRMin(), belongings.SecondArmor().DRMax());
+            if (STR() < belongings.SecondArmor().STRReq()){
+                armDr -= 2*(belongings.SecondArmor().STRReq() - STR());
+            }
+            armDr = Math.min( armDr, belongings.SecondArmor().tier * (1 + pointsInTalent( Talent.HOLD_FAST )));
+            if (armDr > 0) dr += armDr;
+        }
 		if (belongings.weapon() != null)  {
 			int wepDr = Random.NormalIntRange( 0 , belongings.weapon().defenseFactor( this ) );
 			if (STR() < ((Weapon)belongings.weapon()).STRReq()){
@@ -632,10 +654,6 @@ public class Hero extends Char {
 
 		Barkskin bark = buff(Barkskin.class);
 		if (bark!=null) dr+= Random.NormalIntRange(0,bark.level());
-
-		if (buff(HoldFast.class) != null){
-			dr += Random.NormalIntRange(0, 2*pointsInTalent(Talent.HOLD_FAST));
-		}
 		
 		return dr;
 	}
@@ -732,10 +750,13 @@ public class Hero extends Char {
 		float speed = super.speed();
 
 		speed *= RingOfHaste.speedMultiplier(this);
-		
-		if (belongings.armor() != null) {
-			speed = belongings.armor().speedFactor(this, speed);
-		}
+
+        if (belongings.armor() != null) {
+            speed = belongings.armor().speedFactor(this, speed);
+        }
+        if (belongings.SecondArmor() != null) {
+            speed = belongings.SecondArmor().speedFactor(this, speed);
+        }
 		
 		Momentum momentum = buff(Momentum.class);
 		if (momentum != null){
@@ -1389,9 +1410,6 @@ public class Hero extends Char {
 	public void rest( boolean fullRest ) {
 		spendAndNext( TIME_TO_REST );
 		if (!fullRest) {
-			if (hasTalent(Talent.HOLD_FAST)){
-				Buff.affect(this, HoldFast.class);
-			}
 			if (sprite != null) {
 				sprite.showStatus(CharSprite.DEFAULT, Messages.get(this, "wait"));
 			}
@@ -1465,9 +1483,9 @@ public class Hero extends Char {
                 && Dungeon.hero.buff(LloydsBeacon.beaconRecharge.class).isCursed()){
             LloydsBeacon.proc(this);
         }
-		if (belongings.armor() != null) {
-			damage = belongings.armor().proc( enemy, this, damage );
-		}
+        if (belongings.armor() != null) {
+            damage = belongings.ArmorProc( enemy, this, damage );
+        }
 		
 		Earthroot.Armor armor = buff( Earthroot.Armor.class );
 		if (armor != null) {
@@ -1517,9 +1535,9 @@ public class Hero extends Char {
 		dmg = (int)Math.ceil(dmg * RingOfTenacity.damageMultiplier( this ));
 
 		//TODO improve this when I have proper damage source logic
-		if (belongings.armor() != null && belongings.armor().hasGlyph(AntiMagic.class, this)
+		if ( belongings.hasGlyph(AntiMagic.class, this)
 				&& AntiMagic.RESISTS.contains(src.getClass())){
-			dmg -= AntiMagic.drRoll(belongings.armor().buffedLvl());
+			dmg -= AntiMagic.drRoll( belongings.GlyphLevel(AntiMagic.class) );
 		}
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){
@@ -1779,7 +1797,7 @@ public class Hero extends Char {
 	}
 	
 	public void earnExp( int exp, Class source ) {
-		this.exp += exp;
+		this.exp += (int) (exp * (1+pointsInTalent(Talent.ELITE_ARMY)*2/3F));
 
 		float percent = exp/(float)maxExp();
 
@@ -1906,8 +1924,8 @@ public class Hero extends Char {
 	public float stealth() {
 		float stealth = super.stealth();
 
-		if (belongings.armor() != null){
-			stealth = belongings.armor().stealthFactor(this, stealth);
+		if (belongings.hasGlyph(Obfuscation.class, this)){
+			stealth = Armor.stealthFactor(stealth);
 		}
 
 		return stealth;
@@ -2187,8 +2205,7 @@ public class Hero extends Char {
 	@Override
 	public boolean isImmune(Class effect) {
 		if (effect == Burning.class
-				&& belongings.armor() != null
-				&& belongings.armor().hasGlyph(Brimstone.class, this)){
+				&& belongings.hasGlyph(Brimstone.class, this)){
 			return true;
 		}
 		return super.isImmune(effect);

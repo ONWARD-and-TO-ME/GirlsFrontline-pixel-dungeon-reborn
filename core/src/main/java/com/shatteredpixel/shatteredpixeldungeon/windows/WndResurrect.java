@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -107,7 +108,16 @@ public class WndResurrect extends Window {
 				if (btnItem2.item != null){
 					btnItem2.item.keptThoughLostInvent = true;
 				}
-				
+                if (Dungeon.hero.belongings.armor != null &&
+                        Dungeon.hero.belongings.secArmor !=null) {
+                    if (Dungeon.hero.belongings.secArmor.keptThoughLostInvent &&
+                            !Dungeon.hero.belongings.armor.keptThoughLostInvent){
+                        final Armor armor = Dungeon.hero.belongings.armor;
+                        Dungeon.hero.belongings.armor = Dungeon.hero.belongings.secArmor;
+                        Dungeon.hero.belongings.secArmor = null;
+                        armor.collect(Dungeon.hero.belongings.backpack);
+                    }
+                }
 				InterlevelScene.mode = InterlevelScene.Mode.RESURRECT;
 				Game.switchScene( InterlevelScene.class );
 			}
