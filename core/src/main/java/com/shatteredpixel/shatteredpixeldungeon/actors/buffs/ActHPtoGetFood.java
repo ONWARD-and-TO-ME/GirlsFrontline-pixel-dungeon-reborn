@@ -166,8 +166,13 @@ public class ActHPtoGetFood extends CounterBuff implements ActionIndicator.Actio
 //        public int icon(){
 //            return BuffIndicator.MIND_VISION;
 //        }
+        private static final float TICK = 1F;
+        @Override
+        protected void spend(float time){
+            super.spend( target.buff( Shadows.class ) == null ? TICK : TICK*1.5F );
+        }
         public void lost(float lost){
-            spend(-lost);
+            super.spend(-lost);
         }
     }
 }

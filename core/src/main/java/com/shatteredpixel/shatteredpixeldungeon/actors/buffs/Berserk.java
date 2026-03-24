@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal.WarriorShield;
@@ -103,11 +104,11 @@ public class Berserk extends Buff {
 			if (powerLossBuffer > 0){
 				powerLossBuffer--;
 			} else {
-				power -= GameMath.gate(0.1f, power, 1f) * 0.067f * Math.pow((target.HP / (float) target.HT), 2);
-
-				if (power <= 0) {
-					detach();
-				}
+                if (power > Dungeon.hero.STR()*0.015F) {
+                    power -= GameMath.gate(0.1f, power, 1f) * 0.067f * Math.pow((target.HP / (float) target.HT), 2);
+                    power = Math.max(Dungeon.hero.STR()*0.015F, power);
+                }
+                powerLossBuffer = Dungeon.hero.pointsInTalent(Talent.ENDLESS_RAGE)/2;
 			}
 		}
 		spend(TICK);
@@ -126,10 +127,12 @@ public class Berserk extends Buff {
 	public boolean berserking(){
 		if (target.HP == 0 && state == State.NORMAL && power >= 1f){
 
-			WarriorShield shield = target.buff(WarriorShield.class);
+			WarriorShield shield = null;
+            if (((Hero) target).heroClass == HeroClass.WARRIOR)
+                shield = Buff.affect( target, WarriorShield.class);
 			if (shield != null){
 				state = State.BERSERK;
-				int shieldAmount = shield.maxShield() * 8;
+				int shieldAmount = Math.max(4, shield.maxShield()) * 8;
 				shieldAmount = Math.round(shieldAmount * (1f + Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA)/4f));
 				shield.supercharge(shieldAmount);
 

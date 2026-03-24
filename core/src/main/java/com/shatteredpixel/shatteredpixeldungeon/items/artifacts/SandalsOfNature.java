@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.items.artifacts;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -87,7 +86,6 @@ public class SandalsOfNature extends Artifact {
 			if (!isEquipped( hero )) GLog.i( Messages.get(Artifact.class, "need_to_equip") );
 			else if (charge == 0)    GLog.i( Messages.get(this, "no_charge") );
 			else {
-				Buff.prolong(hero, Roots.class, Roots.DURATION);
 				Buff.affect(hero, Earthroot.Armor.class).level(charge);
 				CellEmitter.bottom(hero.pos).start(EarthParticle.FACTORY, 0.05f, 8);
 				Camera.main.shake(1, 0.4f);
