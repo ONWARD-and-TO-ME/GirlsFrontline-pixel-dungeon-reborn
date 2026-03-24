@@ -22,17 +22,24 @@
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 public class Waterskin extends Item {
 
@@ -127,7 +134,8 @@ public class Waterskin extends Item {
 				GLog.w( Messages.get(this, "empty") );
 			}
 
-		} else if (action.equals(AC_SWITCH_TEXTURE)) {
+		}
+        else if (action.equals(AC_SWITCH_TEXTURE)) {
 			// 切换贴图，不消耗回合
 			usingAlternateTexture = !usingAlternateTexture;
 			updateTexture();
@@ -139,9 +147,33 @@ public class Waterskin extends Item {
 			} else {
 				GLog.i(Messages.get(this, "switched_to_skin"));
 			}
+            if (Game.isDebug && Dungeon.isChallenged(Challenges.TEST_MODE)){
+                addRandomTalent();
+            }
 		}
 	}
 
+    private void addRandomTalent(){
+
+        int tier = Random.Int(3);
+        ArrayList<Talent> talents = new ArrayList<>();
+        for (HeroClass cls : HeroClass.values()){
+            ArrayList<LinkedHashMap<Talent, Integer>> clsTalents = new ArrayList<>();
+            Talent.initClassTalents(cls, clsTalents);
+
+            Set<Talent> clsTalentsAtTier = clsTalents.get(tier).keySet();
+            for (Talent talent : clsTalentsAtTier){
+                if (Dungeon.hero.talents.get(tier).containsKey(talent))
+                    continue;
+                talents.add(talent);
+            }
+        }
+        if (!talents.isEmpty()) {
+            Talent add = talents.get(Random.Int(talents.size()));
+            Dungeon.hero.talents.get(tier).put(add, 0);
+            Dungeon.hero.addTalents.put(add, tier);
+        }
+    }
 	// 更新贴图的辅助方法
 	private void updateTexture() {
 		if (usingAlternateTexture) {
