@@ -120,6 +120,7 @@ public enum HeroClass {
 	HUNTRESS( HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
 	TYPE561(HeroSubClass.EMP_BOMB, HeroSubClass.GUN_MASTER),
 	GSH18(HeroSubClass.FUTURE_STAR, HeroSubClass.MOBILE_MEDICALTABLE),
+    PUBLIC_1(  HeroSubClass.NONE ),
 	NONE(  HeroSubClass.NONE );
 	private HeroSubClass[] subClasses;
 

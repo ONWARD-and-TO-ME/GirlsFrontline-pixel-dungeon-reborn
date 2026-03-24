@@ -132,7 +132,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			top = text.bottom() + 2;
 
 			ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
-			Talent.initClassTalents(Dungeon.hero.heroClass, talents, Dungeon.hero.metamorphedTalents);
+			Talent.initClassTalents(Dungeon.hero.heroClass, talents, Dungeon.hero.metamorphedTalents, Dungeon.hero.addTalents);
 
 			for (LinkedHashMap<Talent, Integer> tier : talents){
 				for (Talent talent : tier.keySet()){
@@ -236,6 +236,8 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 			for (HeroClass cls : HeroClass.values()){
 				ArrayList<LinkedHashMap<Talent, Integer>> clsTalents = new ArrayList<>();
+                if (cls == HeroClass.NONE || cls == HeroClass.PUBLIC_1 && (tier<=2))
+                    cls = HeroClass.values()[Random.Int(6)];
 				Talent.initClassTalents(cls, clsTalents);
 
 				Set<Talent> clsTalentsAtTier = clsTalents.get(tier-1).keySet();

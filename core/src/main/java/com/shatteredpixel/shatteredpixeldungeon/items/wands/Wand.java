@@ -346,9 +346,13 @@ public abstract class Wand extends Item {
 				}
 			}
 
-			if (charger.target.buff(ScrollEmpower.class) != null){
-				lvl += 3;
+            ScrollEmpower scrollEmpower = charger.target.buff(ScrollEmpower.class);
+            if (scrollEmpower != null){
+				lvl += scrollEmpower.level;
 			}
+            if (curCharges == 1 && charger.target instanceof Hero && ((Hero)charger.target).hasTalent(Talent.DESPERATE_POWER)){
+                lvl += ((Hero)charger.target).pointsInTalent(Talent.DESPERATE_POWER);
+            }
 
 			WandOfMagicMissile.MagicCharge buff = charger.target.buff(WandOfMagicMissile.MagicCharge.class);
 			if (buff != null && buff.level() > lvl){

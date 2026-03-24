@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -54,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.RedBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -71,6 +73,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
@@ -89,7 +92,7 @@ public enum Talent {
 	//Warrior T2
 	IRON_STOMACH(4), RESTORED_WILLPOWER(5), RUNIC_TRANSFERENCE(6), LETHAL_MOMENTUM(7), IMPROVISED_PROJECTILES(8),
 	//Warrior T3
-	HOLD_FAST(9, 3), STRONGMAN(10, 3),
+	HOLD_FAST(9, 3), STRONGMAN(10, 3, 655),
 	//Berserker T3
 	ENDLESS_RAGE(11, 3), BERSERKING_STAMINA(12, 3), ENRAGED_CATALYST(13, 3),
 	//Gladiator T3
@@ -107,6 +110,7 @@ public enum Talent {
 	ENERGIZING_MEAL(36), ENERGIZING_UPGRADE(37), WAND_PRESERVATION(38), ARCANE_VISION(39), SHIELD_BATTERY(40),
 	//Mage T3
 	EMPOWERING_SCROLLS(41, 3), ALLY_WARP(42, 3),
+    EMPOWERING_SCROLLS_V2(41, 3),DESPERATE_POWER(41, 3),
 	//Battlemage T3
 	EMPOWERED_STRIKE(43, 3), MYSTICAL_CHARGE(44, 3), EXCESS_CHARGE(45, 3),
 	//Warlock T3
@@ -119,7 +123,7 @@ public enum Talent {
 	TELEFRAG(55, 4), REMOTE_BEACON(56, 4), LONGRANGE_WARP(57, 4),
 
 	//Rogue T1
-	CACHED_RATIONS(64), THIEFS_INTUITION(65), SUCKER_PUNCH(66), PROTECTIVE_SHADOWS(67),
+	CACHED_RATIONS(64, 2, 655), THIEFS_INTUITION(65), SUCKER_PUNCH(66), PROTECTIVE_SHADOWS(67),
 	//Rogue T2
 	MYSTICAL_MEAL(68), MYSTICAL_UPGRADE(69), WIDE_SEARCH(70), SILENT_STEPS(71), ROGUES_FORESIGHT(72),
 	//Rogue T3
@@ -159,7 +163,7 @@ public enum Talent {
 	//Ratmogrify T4
 	RATSISTANCE(124, 4), RATLOMACY(125, 4), RATFORCEMENTS(126, 4),
     //type561 T1
-    Type56One_FOOD(128), Type56One_Identify(129), Type56One_Damage(130), Type56_14(131),
+    Type56One_FOOD(128, 2 ,655), Type56One_Identify(129), Type56One_Damage(130), Type56_14(131),
     //type561 T2
     Type56Two_FOOD(132),Type56Two_Armor(133),Type56Two_Grass(134),Type56Two_Sight(135),Type56Two_Damage(136),
 
@@ -279,8 +283,9 @@ public enum Talent {
 	public static class SuckerPunchTracker extends Buff{};
 	public static class FollowupStrikeTracker extends Buff{};
 
-	int icon;
-	int maxPoints;
+	final int icon;
+	final int maxPoints;
+    final int version;
 
 	// tiers 1/2/3/4 start at levels 2/7/13/21
 	public static int[] tierLevelThresholds = new int[]{0, 2, 7, 13, 21, 31};
@@ -289,10 +294,14 @@ public enum Talent {
 		this(icon, 2);
 	}
 
-	Talent( int icon, int maxPoints ){
-		this.icon = icon;
-		this.maxPoints = maxPoints;
-	}
+    Talent( int icon, int maxPoints ){
+        this(icon, maxPoints, 0);
+    }
+    Talent( int icon, int maxPoints, int lastVersion ){
+        this.icon = icon;
+        this.maxPoints = maxPoints;
+        this.version = lastVersion;
+    }
 
 	public int icon(){
 		if (this == HEROIC_ENERGY){
@@ -331,17 +340,26 @@ public enum Talent {
 	}
 
 	public static void onTalentUpgraded( Hero hero, Talent talent){
-		if (talent == NATURES_BOUNTY){
-			if ( hero.pointsInTalent(NATURES_BOUNTY) == 1) Buff.count(hero, NatureBerriesAvailable.class, 4);
-			else                                           Buff.count(hero, NatureBerriesAvailable.class, 2);
-		}
+        if (talent == NATURES_BOUNTY){
+            if ( hero.pointsInTalent(NATURES_BOUNTY) == 1) Buff.count(hero, NatureBerriesAvailable.class, 4);
+            else                                           Buff.count(hero, NatureBerriesAvailable.class, 2);
+        }
+        else if (talent == CACHED_RATIONS){
+            if ( hero.pointsInTalent(CACHED_RATIONS) == 1) Buff.count(hero, CachedRationsDropped.class, 4);
+            else                                           Buff.count(hero, CachedRationsDropped.class, 2);
+        }
+        else if (talent == Type56One_FOOD){
+            if ( hero.pointsInTalent(Type56One_FOOD) == 1) Buff.count(hero, ZongziDropped.class, 4);
+            else                                           Buff.count(hero, ZongziDropped.class, 2);
+        }
 
-		if (talent == ARMSMASTERS_INTUITION && hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2){
+		else if (talent == ARMSMASTERS_INTUITION && hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2){
 			if (hero.belongings.weapon() != null) hero.belongings.weapon().identify();
-			if (hero.belongings.armor() != null)  hero.belongings.armor.identify();
+            if (hero.belongings.armor() != null)  hero.belongings.armor.identify();
+            if (hero.belongings.SecondArmor() != null)  hero.belongings.secArmor.identify();
 		}
-		if (talent == THIEFS_INTUITION && hero.pointsInTalent(THIEFS_INTUITION) == 2){
-			if (hero.belongings.ring instanceof Ring) hero.belongings.ring.identify();
+		else if (talent == THIEFS_INTUITION && hero.pointsInTalent(THIEFS_INTUITION) == 2){
+			if (hero.belongings.ring != null) hero.belongings.ring.identify();
 			if (hero.belongings.misc instanceof Ring) hero.belongings.misc.identify();
 			for (Item item : Dungeon.hero.belongings){
 				if (item instanceof Ring){
@@ -349,19 +367,44 @@ public enum Talent {
 				}
 			}
 		}
-        if (talent == Type56One_Identify && hero.pointsInTalent(Type56One_Identify) == 2){
+        else if (talent == Type56One_Identify && hero.pointsInTalent(Type56One_Identify) == 2){
             for (Item item : Dungeon.hero.belongings){
                 if (item instanceof MeleeWeapon||item instanceof Armor){
                     item.cursedKnown=true;
-                    item.updateQuickslot();
+                    Item.updateQuickslot();
                 }
             }
         }
-		if (talent == THIEFS_INTUITION && hero.pointsInTalent(THIEFS_INTUITION) == 1){
-			if (hero.belongings.ring instanceof Ring) hero.belongings.ring.setKnown();
+		else if (talent == THIEFS_INTUITION && hero.pointsInTalent(THIEFS_INTUITION) == 1){
+			if (hero.belongings.ring != null) hero.belongings.ring.setKnown();
 			if (hero.belongings.misc instanceof Ring) ((Ring) hero.belongings.misc).setKnown();
 		}
-
+        else if (talent == STRONGMAN){
+            int times ;
+            if (hero.STR>=1_789_569_706){
+                times = 1;
+                hero.STR = 2_147_483_647;
+            }
+            else if (hero.STR>=100_000){
+                times = 1000;
+                hero.STR = hero.STR/1000 * (int) ( 1000 * Random.Float(1.155F, 1.17F) );
+            }else {
+                times = hero.STR;
+            }
+            for (int i = 0; i < times; i++) {
+                if (hero.STR == 2_147_483_647 || hero.STR == -2_147_438_648){
+                    if (Random.Float()<1/3F){
+                        continue;
+                    }
+                    break;
+                }
+                if (Random.Float() < 0.05F) {
+                    hero.STR++;
+                    times++;
+                }
+            }
+            Badges.validateStrengthAttained();
+        }
 		if (talent == LIGHT_CLOAK && hero.pointsInTalent(LIGHT_CLOAK) == 1){
 			for (Item item : Dungeon.hero.belongings.backpack){
 				if (item instanceof CloakOfShadows){
@@ -763,17 +806,20 @@ public enum Talent {
 	public static final int MAX_TALENT_TIERS = 4;
 
 	public static void initClassTalents( Hero hero ){
-		initClassTalents( hero.heroClass, hero.talents, hero.metamorphedTalents );
+        //重建角色的天赋表，做蜕变处理（如果有），对角色的天赋表填写，不做额外返回值+
+		initClassTalents( hero.heroClass, hero.talents, hero.metamorphedTalents, hero.addTalents );
 	}
 
 	public static void initClassTalents( HeroClass cls, ArrayList<LinkedHashMap<Talent, Integer>> talents){
-		initClassTalents( cls, talents, new LinkedHashMap<>());
+        //创建角色职业拥有的原始天赋表，创建完成后，输入参数的talents将包含原始天赋表，目的是原始表，所以不输入蜕变关系、额外天赋
+		initClassTalents( cls, talents, new LinkedHashMap<>(), new LinkedHashMap<>());
 	}
 
-	public static void initClassTalents( HeroClass cls, ArrayList<LinkedHashMap<Talent, Integer>> talents, LinkedHashMap<Talent, Talent> replacements ){
-		while (talents.size() < MAX_TALENT_TIERS){
-			talents.add(new LinkedHashMap<>());
-		}
+	public static void initClassTalents( HeroClass cls, ArrayList<LinkedHashMap<Talent, Integer>> talents, LinkedHashMap<Talent, Talent> replacements, LinkedHashMap<Talent, Integer> addTalents ){
+        while (talents.size() < MAX_TALENT_TIERS){
+            talents.add(new LinkedHashMap<>());
+            //令输入的天赋表扩大到至少4个Map以装下四个层的天赋
+        }
 
 		ArrayList<Talent> tierTalents = new ArrayList<>();
 
@@ -798,13 +844,18 @@ public enum Talent {
 				Collections.addAll(tierTalents, GSH18_MEAL_TREATMENT, GSH18_DOCTOR_INTUITION, GSH18_CLOSE_COMBAT, GSH18_STAR_SHIELD);
 				break;
 		}
+        //用一个临时ArrayList记录下t1的原始天赋，Collections.addAll的用法，首个参数是表，后面的是要加入的元素
 		for (Talent talent : tierTalents){
+            //将上面ArrayList记录的天赋逐个加入到天赋表的Map中
 			if (replacements.containsKey(talent)){
+                //在加入前先检索该天赋是否有被蜕变，如果有则加入蜕变后的天赋
 				talent = replacements.get(talent);
 			}
 			talents.get(0).put(talent, 0);
+            //对天赋表talents的第一个Map【get(0)】即t1天赋表，加入上面得到的天赋【 put(talent 】，天赋加点为0【 ,0) 】
 		}
 		tierTalents.clear();
+        //清空临时ArrayList，以完成对第二个Map即t2天赋表的重建
 
 		//tier 2
 		switch (cls){
@@ -853,9 +904,12 @@ public enum Talent {
 			case TYPE561:
 				Collections.addAll(tierTalents, Type56Three_Bomb, Type56Three_Book);
 				break;
-			case GSH18:
-				Collections.addAll(tierTalents,GSH18_INTELLIGENCE_AWARENESS,GSH18_AGILE_MOVEMENT);
-				break;
+            case PUBLIC_1:
+                Collections.addAll(tierTalents, EMPOWERING_SCROLLS_V2, DESPERATE_POWER, ELITE_ARMY);
+                break;
+            case GSH18:
+                Collections.addAll(tierTalents,GSH18_INTELLIGENCE_AWARENESS,GSH18_AGILE_MOVEMENT);
+                break;
 		}
 		for (Talent talent : tierTalents){
 			if (replacements.containsKey(talent)){
@@ -865,6 +919,10 @@ public enum Talent {
 		}
 		tierTalents.clear();
 
+        //将新增的天赋加入到对应的天赋层中
+        for (Talent talent : addTalents.keySet()){
+            talents.get(addTalents.get(talent)).put(talent, 0);
+        }
 		//tier4
 		//TBD
 	}
@@ -967,6 +1025,11 @@ public enum Talent {
 			replacementsBundle.put(t.name(), hero.metamorphedTalents.get(t));
 		}
 		bundle.put("replacements", replacementsBundle);
+        Bundle addTalentBundle = new Bundle();
+        for (Talent t : hero.addTalents.keySet()){
+            addTalentBundle.put(t.name(), hero.addTalents.get(t));
+        }
+        bundle.put("addTalents", addTalentBundle);
 	}
 
 	public static void restoreTalentsFromBundle( Bundle bundle, Hero hero ){
@@ -977,6 +1040,13 @@ public enum Talent {
 				hero.metamorphedTalents.put(Talent.valueOf(key), replacements.getEnum(key, Talent.class));
 			}
 		}
+        if (bundle.contains("addTalents")){
+            Bundle addTalentsBundle = bundle.getBundle("addTalents");
+            hero.addTalents = new LinkedHashMap<>();
+            for (String key : addTalentsBundle.getKeys()){
+                hero.addTalents.put(Talent.valueOf(key), addTalentsBundle.getInt(key));
+            }
+        }
 
 		if (hero.heroClass != null)     initClassTalents(hero);
 		if (hero.subClass != null)      initSubclassTalents(hero);
@@ -989,10 +1059,24 @@ public enum Talent {
 			if (tierBundle != null){
 				for (Talent talent : tier.keySet()){
 					if (tierBundle.contains(talent.name())){
-						tier.put(talent, Math.min(tierBundle.getInt(talent.name()), talent.maxPoints()));
+                        TalentUpdate(tier, hero, talent, Math.min(tierBundle.getInt(talent.name()), talent.maxPoints()));
 					}
 				}
 			}
 		}
 	}
+    private static void TalentUpdate(LinkedHashMap<Talent, Integer> tier, Hero hero, Talent talent, int point){
+        //因版本变更导致的天赋更改，对于那些获得了升级收益的天赋，在这里单次逐级升级重新获得收益
+        if (Dungeon.version < talent.version){
+            tier.put(talent, 0);
+            for(int i = 1; i<=point; i++){
+                tier.put(talent, i);
+                onTalentUpgraded(hero, talent);
+            }
+            //记得return
+            return;
+        }
+        tier.put(talent, point);
+        //对读档时重建的天赋表进行加点记录，不触发加点效果
+    }
 }

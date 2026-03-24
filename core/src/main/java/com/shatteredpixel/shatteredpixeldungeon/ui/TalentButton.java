@@ -26,6 +26,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -157,25 +159,40 @@ public class TalentButton extends Button {
 				@Override
 				public void call() {
 					Talent replacing = ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.replacing;
-
+                    int point = 0;
 					for (LinkedHashMap<Talent, Integer> tier : Dungeon.hero.talents){
 						if (tier.containsKey(replacing)){
 							LinkedHashMap<Talent, Integer> newTier = new LinkedHashMap<>();
 							for (Talent t : tier.keySet()){
 								if (t == replacing){
-									newTier.put(talent, tier.get(replacing));
-
-									if (!Dungeon.hero.metamorphedTalents.containsValue(replacing)){
+                                    //将旧天赋的加点记录
+                                    point = tier.get(replacing);
+                                    //暂时加入加点为0的天赋，我希望蜕变是获取天赋然后重新加点，从而获得那些在加点过程中获得的收益
+									newTier.put(talent, 0);
+                                    //被蜕变的是额外天赋，则直接修改额外天赋表，而非记录蜕变关系
+                                    //蜕变的替换在生成初始表时，而额外天赋的加入是在生成完成后，时机滞后了，以蜕变逻辑实行，在读档的时候无法复原
+                                    if (Dungeon.hero.addTalents.containsKey(replacing)){
+                                        final int tierA = Dungeon.hero.addTalents.get(replacing);
+                                        Dungeon.hero.addTalents.remove(replacing);
+                                        Dungeon.hero.addTalents.put(talent, tierA);
+                                    }
+                                    //将这个蜕变关系记录到蜕变Map中，以用于在读档时恢复蜕变关系
+									else if (!Dungeon.hero.metamorphedTalents.containsValue(replacing)){
+                                        //未记录过旧天赋，即旧天赋未被蜕变过时，加入这组蜕变关系
 										Dungeon.hero.metamorphedTalents.put(replacing, talent);
 
 									//if what we're replacing is already a value, we need to simplify the data structure
-									} else {
-										//a->b->a, we can just remove the entry entirely
+									}
+                                    else {
+										//以旧天赋为索引寻找蜕变关系时，找到的原始天赋是新天赋，即蜕变回原始天赋时，移除蜕变关系，以简化结构
+                                        //A-B-A时，将删除这组蜕变关系，而非保留A-A
 										if (Dungeon.hero.metamorphedTalents.get(talent) == replacing){
 											Dungeon.hero.metamorphedTalents.remove(talent);
 
-										//a->b->c, we need to simplify to a->c
-										} else {
+										}
+                                        //以旧天赋为索引寻找到的不是原始天赋时，由于读档是以原始天赋为索引，所以要更新蜕变关系
+                                        //A-B-C，将更改为A-C
+                                        else {
 											for (Talent t2 : Dungeon.hero.metamorphedTalents.keySet()){
 												if (Dungeon.hero.metamorphedTalents.get(t2) == replacing){
 													Dungeon.hero.metamorphedTalents.put(t2, talent);
@@ -184,17 +201,39 @@ public class TalentButton extends Button {
 										}
 									}
 
-								} else {
+								}
+                                else {
+                                    //将未改变的天赋原封不动放到新天赋Map中
 									newTier.put(t, tier.get(t));
 								}
 							}
+                            //将新天赋Map替换掉旧的Map
 							Dungeon.hero.talents.set(ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.tier-1, newTier);
+                            if (replacing == Talent.HOLD_FAST){
+                                if (Dungeon.hero.belongings.secArmor != null){
+                                    final Armor armor = Dungeon.hero.belongings.secArmor;
+                                    Dungeon.hero.belongings.secArmor = null;
+                                    armor.collect(Dungeon.hero.belongings.backpack);
+                                    BrokenSeal.WarriorShield sealBuff = Dungeon.hero.buff(BrokenSeal.WarriorShield.class);
+                                    if (sealBuff != null && armor == sealBuff.armor) {
+                                        sealBuff.setArmor(null);
+                                    }
+                                }
+                            }
+                            //对已在玩家天赋表中的新天赋逐次加点并获得各级收益
+                            for(int i = 1; i<=point; i++){
+                                Dungeon.hero.talents.get(ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.tier-1).put(talent, i);
+                                Talent.onTalentUpgraded(Dungeon.hero, talent);
+                                //我希望蜕变天赋是对天赋重新升级，令那些在升级时有收益的天赋重新获取一遍收益
+                            }
 							break;
 						}
 					}
 
+                    //结束的动画
 					ScrollOfMetamorphosis.onMetamorph(replacing, talent);
 
+                    //关闭窗口
 					if (ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE != null){
 						ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.hide();
 					}

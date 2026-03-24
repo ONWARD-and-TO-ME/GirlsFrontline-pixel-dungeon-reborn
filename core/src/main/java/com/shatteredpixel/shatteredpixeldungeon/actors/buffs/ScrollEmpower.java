@@ -35,10 +35,12 @@ public class ScrollEmpower extends Buff {
 		type = buffType.POSITIVE;
 	}
 
-	private int left;
+	public int left;
+    public int level;
 
-	public void reset(){
-		left = Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS);
+	public void reset( int left, int level){
+		this.left = left;
+        this.level = level;
 		Item.updateQuickslot();
 	}
 
@@ -82,20 +84,23 @@ public class ScrollEmpower extends Buff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS), left);
+		return Messages.get(this, "desc", level, left);
 	}
 
-	private static final String LEFT = "left";
+    private static final String LEFT = "left";
+    private static final String LEVEL = "level";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(LEFT, left);
+        bundle.put(LEVEL, level);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		left = bundle.getInt(LEFT);
+        level = bundle.getInt(LEVEL);
 	}
 }

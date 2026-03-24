@@ -23,10 +23,12 @@ package com.shatteredpixel.shatteredpixeldungeon.items.potions;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.utils.Random;
 
 public class PotionOfStrength extends Potion {
 
@@ -45,6 +47,9 @@ public class PotionOfStrength extends Potion {
 		GLog.p( Messages.get(this, "msg_2") );
 		
 		Badges.validateStrengthAttained();
+        if (hero.hasTalentB(Talent.STRONGMAN))
+            if (Random.Int(20)<hero.pointsInTalent(Talent.STRONGMAN)+1)
+                apply(hero);
 	}
 
 	@Override

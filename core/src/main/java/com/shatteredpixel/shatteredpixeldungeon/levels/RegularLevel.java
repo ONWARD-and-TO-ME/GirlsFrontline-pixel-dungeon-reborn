@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
@@ -420,10 +421,11 @@ public abstract class RegularLevel extends Level {
 			}
 		}
 
+        CounterBuff dropped;
+        dropped = Dungeon.hero.buff(Talent.CachedRationsDropped.class);
 		//cached rations try to drop in a special room on floors 2/3/4/6/7/8, to a max of 4/6
-		if (Dungeon.hero.hasTalent(Talent.CACHED_RATIONS)){
-			Talent.CachedRationsDropped dropped = Buff.affect(Dungeon.hero, Talent.CachedRationsDropped.class);
-			if (dropped.count() < 2 + 2*Dungeon.hero.pointsInTalent(Talent.CACHED_RATIONS)){
+		if (dropped!=null){
+			if (dropped.count() > 0){
 				int cell;
 				int tries = 100;
 				boolean valid;
@@ -441,13 +443,15 @@ public abstract class RegularLevel extends Level {
 						losBlocking[cell] = false;
 					}
 					drop(new SmallRation(), cell).type = Heap.Type.CHEST;
-					dropped.countUp(1);
+					dropped.countDown(1);
+                    if (dropped.count()<=0)
+                        dropped.detach();
 				}
 			}
 		}
-        if (Dungeon.hero.hasTalent(Talent.Type56One_FOOD)){
-            Talent.ZongziDropped dropped = Buff.affect(Dungeon.hero, Talent.ZongziDropped.class);
-            if (dropped.count() < 2 + 2*Dungeon.hero.pointsInTalent(Talent.Type56One_FOOD)){
+        dropped = Dungeon.hero.buff(Talent.ZongziDropped.class);
+        if (dropped!=null){
+            if (dropped.count() > 0){
                 int cell;
                 int tries = 100;
                 boolean valid;
@@ -465,7 +469,9 @@ public abstract class RegularLevel extends Level {
                         losBlocking[cell] = false;
                     }
                     drop(new SugarZongzi(), cell).type = Heap.Type.CHEST;
-                    dropped.countUp(1);
+                    dropped.countDown(1);
+                    if (dropped.count()<=0)
+                        dropped.detach();
                 }
             }
         }

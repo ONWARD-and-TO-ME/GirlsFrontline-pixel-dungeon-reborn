@@ -193,10 +193,13 @@ public abstract class Scroll extends Item {
 		curUser.busy();
 		((HeroSprite)curUser.sprite).read();
 
-		if (curUser.hasTalent(Talent.EMPOWERING_SCROLLS)){
-			Buff.affect(curUser, ScrollEmpower.class).reset();
-			updateQuickslot();
-		}
+        if (curUser.hasTalent(Talent.EMPOWERING_SCROLLS)){
+            Buff.affect(curUser, ScrollEmpower.class).reset( 1, curUser.pointsInTalent(Talent.EMPOWERING_SCROLLS)*2);
+            updateQuickslot();
+        }else if (curUser.hasTalent(Talent.EMPOWERING_SCROLLS_V2)){
+            Buff.affect(curUser, ScrollEmpower.class).reset( curUser.pointsInTalent(Talent.EMPOWERING_SCROLLS_V2), 3);
+            updateQuickslot();
+        }
 
 	}
 
@@ -216,6 +219,19 @@ public abstract class Scroll extends Item {
 			}
 		}
 	}
+
+    public void setIgnore(){
+        if (isKnown()) {
+            if (this instanceof ExoticScroll)
+                handler.ignore((Scroll) ScrollOfTransmutation.changeItem(this));
+            else
+                handler.ignore(this);
+        }
+        else {
+            initLabels();
+        }
+        updateQuickslot();
+    }
 
 	@Override
 	public Item identify( boolean byHero ) {

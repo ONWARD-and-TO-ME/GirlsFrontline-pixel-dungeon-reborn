@@ -104,7 +104,7 @@ public class WndStartGame extends Window {
 		// 收集所有可见角色（排除NONE）
 		visibleClasses = new ArrayList<>();
 		for (HeroClass cl : HeroClass.values()) {
-			if (cl != HeroClass.NONE) {
+			if (cl != HeroClass.NONE && cl != HeroClass.PUBLIC_1) {
 				visibleClasses.add(cl);
 			}
 		}
