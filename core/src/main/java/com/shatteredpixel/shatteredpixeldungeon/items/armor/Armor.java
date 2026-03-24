@@ -29,15 +29,12 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TalentGrass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.type561.Type56FourTwo;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
@@ -65,10 +62,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Thorns;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -84,24 +83,24 @@ public class Armor extends EquipableItem {
 	protected static final String AC_DETACH       = "DETACH";
 	
 	public enum Augment {
-		EVASION (2f , -1f),
-		DEFENSE (-2f, 1f),
-		NONE	(0f   ,  0f);
+		EVASION (2 , -1),
+		DEFENSE (-2, 1),
+		NONE	(0   ,  0);
 		
-		private float evasionFactor;
-		private float defenceFactor;
+		private final int evasionFactor;
+		private final int defenceFactor;
 		
-		Augment(float eva, float df){
+		Augment(int eva, int df){
 			evasionFactor = eva;
 			defenceFactor = df;
 		}
 		
 		public int evasionFactor(int level){
-			return Math.round((2 + level) * evasionFactor);
+			return (2 + level) * evasionFactor;
 		}
 		
 		public int defenseFactor(int level){
-			return Math.round((2 + level) * defenceFactor);
+			return (2 + level) * defenceFactor;
 		}
 	}
 	
@@ -114,6 +113,8 @@ public class Armor extends EquipableItem {
 	protected BrokenSeal seal;
 	
 	public int tier;
+    public float broken;
+    public float FixTime;
 	
 	private static final int USES_TO_ID = 10;
 	private float usesLeftToID = USES_TO_ID;
@@ -130,6 +131,8 @@ public class Armor extends EquipableItem {
 	private static final String MASTERY_POTION_BONUS = "mastery_potion_bonus";
 	private static final String SEAL            = "seal";
 	private static final String AUGMENT			= "augment";
+    private static final String BROKEN          = "broken";
+    private static final String FIX_TIME = "fixTime";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -141,6 +144,8 @@ public class Armor extends EquipableItem {
 		bundle.put( MASTERY_POTION_BONUS, masteryPotionBonus );
 		bundle.put( SEAL, seal);
 		bundle.put( AUGMENT, augment);
+        bundle.put( BROKEN, broken);
+        bundle.put(FIX_TIME, FixTime);
 	}
 
 	@Override
@@ -154,6 +159,8 @@ public class Armor extends EquipableItem {
 		seal = (BrokenSeal)bundle.get(SEAL);
 		
 		augment = bundle.getEnum(AUGMENT, Augment.class);
+        broken = bundle.getFloat(BROKEN);
+        FixTime = bundle.getFloat(FIX_TIME);
 	}
 
 	@Override
@@ -211,33 +218,195 @@ public class Armor extends EquipableItem {
 
 	@Override
 	public boolean doEquip( Hero hero ) {
-		
 		detach(hero.belongings.backpack);
-
-		if (hero.belongings.armor == null || hero.belongings.armor.doUnequip( hero, true, false )) {
-			
-			hero.belongings.armor = this;
-			
-			cursedKnown = true;
-			if (cursed) {
-				equipCursed( hero );
-				GLog.n( Messages.get(Armor.class, "equip_cursed") );
-			}
-			
-			((HeroSprite)hero.sprite).updateArmor();
-			activate(hero);
-			Talent.onItemEquipped(hero, this);
-			hero.spendAndNext( time2equip( hero ) );
+        //主护甲为空，此时全空或复活未选
+		if (hero.belongings.armor() == null) {
+            //有且仅有复活未选时，armor()为空而armor不为空，直接脱下即可
+            changeFirst(hero);
+			onEquip(hero);
 			return true;
-			
-		} else {
-			
-			collect( hero.belongings.backpack );
-			return false;
-			
 		}
-	}
+        //新旧护甲都不适用于调整至副护甲时，按旧逻辑处理
+        if (hero.belongings.armor().tier() > hero.pointsInTalent(Talent.HOLD_FAST) &&
+                this.tier() > hero.pointsInTalent(Talent.HOLD_FAST) ||
+                hero.belongings.armor().tier() == this.tier()){
+            //因为加入了副护甲自动调整至主护甲的机制，所以旧逻辑不方便直接调用doUnequip，把原doUnequip的代码复制一份出来使用
+            if (hero.belongings.armor.unEquipable(hero)) {
+                changeFirst(hero);
+                onEquip(hero);
+                return true;
+            }
+            else {
+                GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
+                collect( hero.belongings.backpack );
+                return false;
+            }
+        }
+        //对于pointsInTalent，无加点等效加点0，阶数至少为1
+        //所以上述逻辑完全覆盖了旧逻辑，并且执行代码相同，只是为了新内容而更改表述方式，下面的逻辑是为天赋改动新增的
+        if (hero.hasTalent(Talent.HOLD_FAST)){
+            //主护甲无红底的情况下，允许与副护甲交互
+            if (!hero.belongings.armor.cursed) {
+                //副护甲阶数不小于新护甲，那么新护甲只能与副护甲交换
+                if (hero.belongings.SecondArmor() != null && hero.belongings.secArmor.tier()>= this.tier()){
+                    BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
+                    if (sealBuff !=null && hero.belongings.secArmor == sealBuff.armor)
+                        sealBuff.setArmor(null);
+                    hero.belongings.secArmor.collect(hero.belongings.backpack);
+                    hero.belongings.secArmor = this;
+                    onEquip(hero);
+                    curseMoving(hero);
+                    return true;
+                }
+                //新护甲只能与主护甲交换的情况已在旧逻辑部分处理掉了
+                //主>天赋 && 新>天赋、主 == 新已处理，那么装备新护甲，新大于主则有顶替主或者主进入副护甲两种情况，主大于新同理，属于复杂情况
+                //复杂情况让玩家选择
+                //由于要先移除物品以流出空位给原来的装备，而这里是一个监听窗口，不做处理，所以先收集回来
+                collect(hero.belongings.backpack);
+                armorChoose(hero, this);
+                return false;
+            }
+            else {
+                //主护甲红底，新护甲高阶，无副护甲，主护甲可移动至副护甲，则允许移动，否则不允许
+                if (this.tier() > hero.belongings.armor.tier() &&
+                        hero.belongings.SecondArmor() == null &&
+                        hero.belongings.armor.tier() <= hero.pointsInTalent(Talent.HOLD_FAST)){
+                    if (hero.belongings.secArmor!=null)
+                        hero.belongings.secArmor.collect( hero.belongings.backpack );
+                    hero.belongings.secArmor = hero.belongings.armor;
+                    hero.belongings.armor = this;
+                    onEquip(hero);
+                    curseMoving(hero);
+                    return true;
+                }
+                GLog.w(Messages.get(Armor.class, "unequip_cursed_second"));
+            }
+        }
 
+        collect( hero.belongings.backpack );
+        return false;
+	}
+    private int tier(){
+        if (this instanceof ClassArmor)
+            return 6;
+        else
+            return tier;
+    }
+    private void onEquip( Hero hero ) {
+        cursedKnown = true;
+        if (cursed) {
+            equipCursed( hero );
+            GLog.n( Messages.get(Armor.class, "equip_cursed") );
+        }
+        if (hero.belongings.armor == this)
+            ((HeroSprite)hero.sprite).updateArmor();
+        activate(hero);
+        Talent.onItemEquipped(hero, this);
+        hero.spendAndNext( time2equip() );
+    }
+    @Override
+    protected boolean unEquipable(Hero hero){
+        // +1级允许取下被诅咒的防具
+        return  super.unEquipable(hero) || hero.pointsInTalent(Talent.GSH18_DOCTOR_INTUITION) >= 1;
+    }
+    private void changeFirst(Hero hero){
+        BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
+        if (sealBuff != null && hero.belongings.armor == sealBuff.armor) {
+            sealBuff.setArmor(null);
+        }
+        if (hero.belongings.armor != null) {
+            hero.belongings.armor.collect(hero.belongings.backpack);
+            hero.spend( time2equip() );
+        }
+        hero.belongings.armor = this;
+        ((HeroSprite)hero.sprite).updateArmor();
+    }
+    public static void curseMoving( Hero hero ) {
+        if (hero.belongings.secArmor != null && hero.belongings.secArmor.cursed){
+            //红底转移
+            if (!hero.belongings.armor.cursed){
+                hero.belongings.armor.cursed = true;
+                hero.belongings.secArmor.cursed = false;
+                GLog.n( Messages.get(Armor.class, "cursed_moving") );
+            }
+            //破坏正面附魔
+            if (hero.belongings.armor.hasGoodGlyph()) {
+                hero.belongings.armor.glyph = null;
+                GLog.n( Messages.get(Armor.class, "broken") );
+            }
+        }
+    }
+    private static void armorChoose (Hero hero, Armor armor){
+        String armor1;
+        String armor2;
+        final String nothing = "---";
+        //armor必定不为空，为空已被第一个if截取到了
+        //当前结构
+        if (hero.belongings.secArmor != null)
+            armor1 = Messages.titleCase(hero.belongings.armor.toString());
+        //复合结构
+        else if (hero.belongings.armor.tier() > armor.tier())
+            armor1 =  Messages.titleCase(hero.belongings.armor.toString());
+        else
+            armor1 = nothing;
+
+        //当前结构
+        if (hero.belongings.secArmor != null)
+            armor2 = Messages.titleCase(hero.belongings.secArmor.toString());
+        //复合结构
+        else if (hero.belongings.armor.tier() < armor.tier())
+            armor2 =  Messages.titleCase(hero.belongings.armor.toString());
+        else
+            armor2 = nothing;
+        String finalArmor1 = armor1;
+        String finalArmor2 = armor2;
+        GameScene.show(
+                new WndOptions(new ItemSprite(armor),
+                        Messages.get(Armor.class, "select_title"),
+                        Messages.get(Armor.class, "select_message"),
+                        finalArmor1,
+                        finalArmor2) {
+
+                    @Override
+                    protected void onSelect(int index) {
+                        if (index == 0) {
+                            armor.detach(hero.belongings.backpack);
+                            //选择第一个，那么就是准备占据掉主护甲，在没有副护甲的情况下将主护甲移动到副护甲
+                            if (finalArmor1.equals(nothing)) {
+                                hero.belongings.secArmor = hero.belongings.armor;
+                                hero.belongings.armor = null;
+                            }
+                            armor.changeFirst(hero);
+                            armor.onEquip(hero);
+                            curseMoving(hero);
+                        } else if (index == 1) {
+                            armor.detach(hero.belongings.backpack);
+                            if (finalArmor2.equals(nothing)){
+                                hero.belongings.secArmor = armor;
+                            }
+                            else if (finalArmor1.equals(nothing)){
+                                hero.belongings.armor.collect(hero.belongings.backpack);
+                                hero.belongings.armor = armor;
+                            }
+                            else {
+                                if (hero.belongings.secArmor != null) {
+                                    hero.belongings.secArmor.collect(hero.belongings.backpack);
+                                }
+                                if (hero.belongings.armor.tier() < armor.tier()) {
+                                    hero.belongings.secArmor = hero.belongings.armor;
+                                    hero.belongings.armor = armor;
+                                }
+                                else {
+                                    hero.belongings.secArmor = armor;
+                                }
+                            }
+                            armor.onEquip(hero);
+                            curseMoving(hero);
+                        }
+                    }
+                }
+        );
+    }
 	@Override
 	public void activate(Char ch) {
 		if (seal != null) Buff.affect(ch, BrokenSeal.WarriorShield.class).setArmor(this);
@@ -265,13 +434,24 @@ public class Armor extends EquipableItem {
 
 	@Override
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
+        //主护甲红底不允许解除副护甲
+        if (hero.belongings.armor()!=null  && hero.belongings.armor.cursed &&
+                hero.belongings.secArmor == this && !unEquipable(hero)) {
+            GLog.w(Messages.get(Armor.class, "unequip_cursed_second"));
+            return false;
+        }
+
 		if (super.doUnequip( hero, collect, single )) {
 
-			hero.belongings.armor = null;
-			((HeroSprite)hero.sprite).updateArmor();
-
-			BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
-			if (sealBuff != null) sealBuff.setArmor(null);
+            if (hero.belongings.armor == this){
+                hero.belongings.armor = hero.belongings.secArmor;
+                ((HeroSprite)hero.sprite).updateArmor();
+            }
+            hero.belongings.secArmor = null;
+            BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
+            if (sealBuff != null && hero.belongings.armor != sealBuff.armor) {
+                sealBuff.setArmor(null);
+            }
 
 			return true;
 
@@ -284,7 +464,7 @@ public class Armor extends EquipableItem {
 	
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero.belongings.armor() == this;
+		return hero.belongings.armor() == this || hero.belongings.SecondArmor() == this;
 	}
 
 	public final int DRMax(){
@@ -320,14 +500,14 @@ public class Armor extends EquipableItem {
 			return lvl;
 		}
 	}
-	
-	public float evasionFactor( Char owner, float evasion ){
+
+    public float evasionFactor( Char owner, float evasion ,boolean isSecond){
 		
 		if (hasGlyph(Stone.class, owner) && !((Stone)glyph).testingEvasion()){
 			return 0;
 		}
 		
-		if (owner instanceof Hero){
+		if (owner instanceof Hero && !isSecond){
 			int aEnc = STRReq() - ((Hero) owner).STR();
 			if (aEnc > 0) evasion /= Math.pow(1.5, aEnc);
 			
@@ -336,8 +516,11 @@ public class Armor extends EquipableItem {
 				evasion += momentum.evasionBonus(((Hero) owner).lvl, Math.max(0, -aEnc));
 			}
 		}
-		
-		return evasion + augment.evasionFactor(buffedLvl());
+		int add = augment.evasionFactor(buffedLvl());
+        if ( isSecond ){
+            add = Math.min( tier * (1 + hero.pointsInTalent(Talent.HOLD_FAST)), add);
+        }
+		return evasion + add;
 	}
 	
 	public float speedFactor( Char owner, float speed ){
@@ -370,15 +553,22 @@ public class Armor extends EquipableItem {
 		return speed;
 		
 	}
-	
-	public float stealthFactor( Char owner, float stealth ){
-		
-		if (hasGlyph(Obfuscation.class, owner)){
-			stealth += 1 + buffedLvl()/3f;
-		}
-		
-		return stealth;
-	}
+
+    public float stealthFactor( Char owner, float stealth ){
+
+        if (hasGlyph(Obfuscation.class, owner)){
+            stealth += 1 + buffedLvl()/3f;
+        }
+
+        return stealth;
+    }
+    public static float stealthFactor( float stealth ){
+
+        if ( hero.belongings.hasGlyph(Obfuscation.class, hero) ){
+            stealth += 1 + hero.belongings.GlyphLevel(Obfuscation.class)/3F;
+        }
+        return stealth;
+    }
 	
 	@Override
 	public int level() {
@@ -408,6 +598,7 @@ public class Armor extends EquipableItem {
                     }
                 }
             }
+            lvl -= (int) (broken/200);
 			return lvl;
 		} else {
 			return level();
@@ -421,6 +612,7 @@ public class Armor extends EquipableItem {
 	
 	public Item upgrade( boolean inscribe ) {
 
+        broken = 0;
 		if (inscribe){
 			if (glyph == null){
 				inscribe( Glyph.random() );
@@ -517,6 +709,18 @@ public class Armor extends EquipableItem {
 		} else if (!isIdentified() && cursedKnown){
 			info += "\n\n" + Messages.get(Armor.class, "not_cursed");
 		}
+        if (broken>0) {
+            float num = FixTime;
+            if (hero!=null &&
+                    hero.buff(CooldownTracker.class)!=null &&
+                    !isEquipped(hero))
+                num = hero.buff(CooldownTracker.class).num;
+            broken-= 2*(num - FixTime);
+            FixTime = num;
+            broken = Math.max(0, broken);
+            if (broken>0)
+                info += "\n\n" + Messages.get(Armor.class, "broken_times", broken);
+        }
 		
 		return info;
 	}
@@ -574,7 +778,7 @@ public class Armor extends EquipableItem {
 		lvl = Math.max(0, lvl);
 
 		//strength req decreases at +1,+3,+6,+10,etc.
-		return (8 + Math.round(tier * 2)) - (int)(Math.sqrt(8 * lvl + 1) - 1)/2;
+		return (8 + tier * 2) - (int)(Math.sqrt(8 * lvl + 1) - 1)/2;
 	}
 	
 	@Override
@@ -617,17 +821,8 @@ public class Armor extends EquipableItem {
 		return inscribe( gl );
 	}
 
-    public static ArrayList<Class> shouldHas = new ArrayList<>();
 	public boolean hasGlyph(Class<?extends Glyph> type, Char owner) {
-        if (owner== hero){
-            if (hero.buff(TalentGrass.class)!=null){
-                if (!shouldHas.contains(Camouflage.class))
-                    shouldHas.add(Camouflage.class);
-            }else {
-                shouldHas.remove(Camouflage.class);
-            }
-        }
-		return (shouldHas.contains(type)||glyph != null && glyph.getClass() == type)&& owner.buff(MagicImmune.class) == null;
+		return glyph != null && glyph.getClass() == type&& owner.buff(MagicImmune.class) == null;
 	}
 
 	//these are not used to process specific glyph effects, so magic immune doesn't affect them
