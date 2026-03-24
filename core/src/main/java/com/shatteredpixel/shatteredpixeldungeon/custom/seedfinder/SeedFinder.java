@@ -66,7 +66,7 @@ public class SeedFinder {
             for(HeapItem item : items) {
                 Item i = item.item;
                 Heap h = item.heap;
-                if ((i instanceof Armor && ((Armor)i).hasGoodGlyph() || i instanceof Weapon && ((Weapon)i).hasGoodEnchant() || i instanceof Ring || i instanceof Wand) && i.cursed) {
+                if ((i instanceof Armor && ((Armor)i).hasGoodGlyph() || i instanceof Weapon && ((Weapon)i).hasGoodEnchant() || i instanceof Ring || i instanceof Artifact || i instanceof Wand) && i.cursed) {
                     builder.append("- " + Messages.get(this, "cursed")).append(i.toString().toLowerCase());
                 } else {
                     builder.append("- ").append(i.toString().toLowerCase());

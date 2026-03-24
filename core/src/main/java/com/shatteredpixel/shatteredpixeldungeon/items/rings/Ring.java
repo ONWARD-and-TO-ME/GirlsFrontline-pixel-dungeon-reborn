@@ -148,7 +148,17 @@ public class Ring extends KindofMisc {
 			}
 		}
 	}
-	
+
+    public void setIgnore(){
+        if (levelKnown || cursedKnown){
+            levelKnown = false;
+            cursedKnown = false;
+        }else if (isKnown()){
+            handler.ignore(this);
+        }else {
+            initGems();
+        }
+    }
 	@Override
 	public String name() {
 		return isKnown() ? super.name() : Messages.get(Ring.class, gem);

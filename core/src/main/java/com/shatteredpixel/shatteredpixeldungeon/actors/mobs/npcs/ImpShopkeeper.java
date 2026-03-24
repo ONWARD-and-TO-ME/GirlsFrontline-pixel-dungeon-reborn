@@ -24,23 +24,15 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
-import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.minigames.PlayGame;
-import com.shatteredpixel.shatteredpixeldungeon.minigames.WndPlayGame;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ImpSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.P7Sprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
-import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -59,7 +51,7 @@ public class ImpShopkeeper extends Shopkeeper {
     @Override
 	protected boolean act() {
 		if (!seenBefore && Dungeon.level.heroFOV[pos]) {
-			yellgood( Messages.get(this, "greetings", Dungeon.hero.name() ) );
+			yellGood( Messages.get(this, "greetings", Dungeon.hero.name() ) );
 			seenBefore = true;
 		}
 		
@@ -90,7 +82,7 @@ public class ImpShopkeeper extends Shopkeeper {
                                 Shopkeeper.sell();
                             } else if (index == 1) {
                                 if (Random.Int(5)==0) {
-                                    impShopkeeper.yellnormal("谢谢惠顾~");
+                                    impShopkeeper.yellNormal("谢谢惠顾~");
                                 }
                                 else {
                                     Dungeon.gold -= RollNeed * (Dungeon.RollTimes + 1);

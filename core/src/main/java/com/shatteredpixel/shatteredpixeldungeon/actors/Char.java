@@ -472,6 +472,7 @@ public abstract class Char extends Actor {
             KindOfWeapon w =  hero.belongings.weapon;
             if (w instanceof Cannon && ((Cannon) w).mustDie) {
                 defender.MustDie( w );
+                return true;
             }
         }
 		//if accuracy or evasion are large enough, treat them as infinite.

@@ -195,6 +195,9 @@ public class ItemStatusHandler<T extends Item> {
 	public void know( T item ) {
 		known.add( (Class<? extends T>)item.getClass() );
 	}
+    public void ignore( T item ) {
+        known.remove( (Class<? extends T>)item.getClass() );
+    }
 	
 	public void know( Class<?extends T> itemCls ){
 		known.add( itemCls );

@@ -27,7 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KingsCrown;
 import com.shatteredpixel.shatteredpixeldungeon.items.XMasGift;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Choco;
@@ -177,7 +176,7 @@ public class RatKing extends NPC {
                                     SetLast(1);
                                     crown.upgradeArmor(hero, hero.belongings.armor(), new Ratmogrify());
                                     ((FncSprite) sprite).resetAnims();
-                                    yellgood(Messages.get(RatKing.class, "crown_thankyou"));
+                                    yellGood(Messages.get(RatKing.class, "crown_thankyou"));
                                 } else if (index == 1) {
                                     GameScene.show(new WndInfoArmorAbility(hero.heroClass, new Ratmogrify()));
                                 } else {
@@ -193,12 +192,12 @@ public class RatKing extends NPC {
             SetLast(2);
             gift.GiftCost();
             if(!hasGivenChoco){
-                yellgood(Messages.get(this, "both") );
+                yellGood(Messages.get(this, "both") );
                 hero.spendAndNext( -1 );
                 GetChock();
             }
             else {
-                yellgood(Messages.get(this, "onlysugar") );
+                yellGood(Messages.get(this, "onlysugar") );
             }
             GetSugar();
             ((FncSprite) sprite).resetAnims();
@@ -212,7 +211,7 @@ public class RatKing extends NPC {
             GetChock();
             if (isMidAutumn && !hasMooncake) {
                 // 中秋节期间，且玩家没有月饼，显示中秋节对话
-                yellgood(Messages.get(this, "mid_autumn_greeting"));
+                yellGood(Messages.get(this, "mid_autumn_greeting"));
             }
             if(hero.buff(HintTracker.class)!=null)
                 hero.buff(HintTracker.class).detach();
@@ -224,7 +223,7 @@ public class RatKing extends NPC {
             }
             else if(hasGivenSugar){
                 // FNC获得礼物后的诚挚祝福
-                yellgood(Messages.get(this,"wish_"+hintCount));
+                yellGood(Messages.get(this,"wish_"+hintCount));
 //                if (hintCount == 0) {
 //                    yell(Messages.get(this, "no_more"));
 //                } else if (hintCount == 1) {
@@ -236,9 +235,9 @@ public class RatKing extends NPC {
                 // FNC护食哈气了
                 String argue = Messages.get(this,"argue_"+hintCount);
                 if (hintCount == 0) {
-                    yellgood(argue);
+                    yellGood(argue);
                 } else if (hintCount == 1) {
-                    yellnormal(argue);
+                    yellNormal(argue);
                 } else {
                     yell(argue);
                 }
@@ -254,11 +253,11 @@ public class RatKing extends NPC {
                 GLog.n("取消开启。");
         }
         else if (hero.armorAbility instanceof Ratmogrify) {
-            yellgood( Messages.get(this, "crown_after") );
+            yellGood( Messages.get(this, "crown_after") );
         }
         else if (hasGivenSugar) {
             // 给予了礼物后，循环文案是祝福而非护食哈气
-            yellgood(Messages.get(this, "wish_cyc"));
+            yellGood(Messages.get(this, "wish_cyc"));
         }
         else {
             // 没有交易鼠王护甲，并且没有给予礼物，还在获取巧克力后点击多次，触发护食哈气

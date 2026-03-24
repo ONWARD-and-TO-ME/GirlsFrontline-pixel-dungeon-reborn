@@ -414,30 +414,33 @@ public class Badges {
 	}
 	
 	public static void validateStrengthAttained() {
-		Badge badge = null;
+		Badge badge;
 		
 		if (!local.contains( Badge.STRENGTH_ATTAINED_1 ) && Dungeon.hero.STR >= 12) {
 			badge = Badge.STRENGTH_ATTAINED_1;
 			local.add( badge );
+            displayBadge( badge );
 		}
 		if (!local.contains( Badge.STRENGTH_ATTAINED_2 ) && Dungeon.hero.STR >= 14) {
 			badge = Badge.STRENGTH_ATTAINED_2;
 			local.add( badge );
+            displayBadge( badge );
 		}
 		if (!local.contains( Badge.STRENGTH_ATTAINED_3 ) && Dungeon.hero.STR >= 16) {
 			badge = Badge.STRENGTH_ATTAINED_3;
 			local.add( badge );
+            displayBadge( badge );
 		}
 		if (!local.contains( Badge.STRENGTH_ATTAINED_4 ) && Dungeon.hero.STR >= 18) {
 			badge = Badge.STRENGTH_ATTAINED_4;
 			local.add( badge );
+            displayBadge( badge );
 		}
 		if (!local.contains( Badge.STRENGTH_ATTAINED_5 ) && Dungeon.hero.STR >= 20) {
 			badge = Badge.STRENGTH_ATTAINED_5;
 			local.add( badge );
+            displayBadge( badge );
 		}
-		
-		displayBadge( badge );
 	}
 	
 	public static void validateFoodEaten() {
@@ -954,9 +957,14 @@ public class Badges {
 	
 	private static void displayBadge(Badge badge) {
 		
-		if (badge == null || Dungeon.isChallenged(TEST_MODE) || SeedFinder.SeedFinding) {
+		if (badge == null || SeedFinder.SeedFinding) {
 			return;
 		}
+        if (Dungeon.isChallenged(TEST_MODE)){
+            GLog.h( Messages.get(Badges.class, "endorsed", badge.title()) );
+            GLog.newLine();
+            return;
+        }
 		
 		if (global.contains( badge )) {
 			

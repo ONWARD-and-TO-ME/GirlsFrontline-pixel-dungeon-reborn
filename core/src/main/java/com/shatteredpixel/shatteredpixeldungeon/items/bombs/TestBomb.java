@@ -46,6 +46,7 @@ public class TestBomb extends Bomb {
 	
 	{
 		image = ItemSpriteSheet.BOMB_HOLDER;
+        unique = true;
 	}
 
 

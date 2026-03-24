@@ -440,16 +440,15 @@ public class debugBook extends TestItem {
         public void onSelect( Item item ) {
 
             if(item != null){
-                if (item instanceof Ring&&!item.levelKnown&&!item.cursedKnown){
-                    Ring.initGems();
-                }
-                if(item instanceof EquipableItem ||item instanceof Wand){
+                if (item instanceof Ring){
+                    ((Ring) item).setIgnore();
+                } else if(item instanceof Scroll){
+                    ((Scroll) item).setIgnore();
+                } else if(item instanceof Potion){
+                    ((Potion) item).setIgnore();
+                } else if (item instanceof EquipableItem ||item instanceof Wand){
                     item.levelKnown = false;
                     item.cursedKnown = false;
-                }else if(item instanceof Scroll){
-                    Scroll.initLabels();
-                }else if(item instanceof Potion){
-                    Potion.initColors();
                 }
                 Sample.INSTANCE.play( Assets.Sounds.READ );
             }
