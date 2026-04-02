@@ -137,10 +137,10 @@ public class Belongings implements Iterable<Item> {
             return 0;
 
         int lvl = 0;
-        if (FirstArmor().glyph.getClass() == type){
+        if (FirstArmor().glyph != null && FirstArmor().glyph.getClass() == type){
             lvl += FirstArmor().buffedLvl();
         }
-        if (SecondArmor() != null &&SecondArmor().glyph.getClass() == type){
+        if (SecondArmor() != null && SecondArmor().glyph != null && SecondArmor().glyph.getClass() == type){
             lvl += SecondArmor().buffedLvl();
             if (FirstArmor().glyph == SecondArmor().glyph)
                 lvl++;

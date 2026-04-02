@@ -116,7 +116,10 @@ public class TimekeepersHourglass extends Artifact {
 									activeBuff = new timeFreeze();
 									Talent.onArtifactUsed(Dungeon.hero);
 									activeBuff.attachTo(Dungeon.hero);
-									((timeFreeze)activeBuff).processTime(0f);
+                                    if (hero.hasTalent(Talent.ENHANCED_RINGS_V2))
+                                        ((timeFreeze)activeBuff).reduceCharge(0f);
+                                    else
+                                        ((timeFreeze)activeBuff).processTime(0f);
 								}
 							}
 						}
@@ -322,6 +325,11 @@ public class TimekeepersHourglass extends Artifact {
 		float turnsToCost = 0f;
 
 		ArrayList<Integer> presses = new ArrayList<>();
+        public void reduceCharge(float time){
+            turnsToCost = 2F;
+            charge--;
+            processTime(time);
+        }
 
 		public void processTime(float time){
             lockcha();

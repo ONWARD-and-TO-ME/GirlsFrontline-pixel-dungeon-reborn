@@ -60,7 +60,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
@@ -138,7 +137,7 @@ public abstract class Level implements Bundlable {
 	
 	public boolean[] passable;
 	public boolean[] losBlocking;
-	public boolean[] flamable;
+	public boolean[] flammable;
 	public boolean[] secret;
 	public boolean[] solid;
 	public boolean[] avoid;
@@ -146,6 +145,7 @@ public abstract class Level implements Bundlable {
 	public boolean[] pit;
     public boolean[] breakable;
     public boolean[] special;
+    public boolean[] flammableB;
 
 	public boolean[] openSpace;
 	
@@ -313,7 +313,7 @@ public abstract class Level implements Bundlable {
 		
 		passable	= new boolean[length];
 		losBlocking	= new boolean[length];
-		flamable	= new boolean[length];
+		flammable = new boolean[length];
 		secret		= new boolean[length];
 		solid		= new boolean[length];
 		avoid		= new boolean[length];
@@ -321,6 +321,7 @@ public abstract class Level implements Bundlable {
 		pit			= new boolean[length];
         breakable	= new boolean[length];
         special     = new boolean[length];
+        flammableB  = new boolean[length];
 
 		openSpace   = new boolean[length];
 		
@@ -340,15 +341,16 @@ public abstract class Level implements Bundlable {
 	public void playLevelMusic(){
 		//do nothing by default
 	}
-	
+
+    private final static String FLAME   = "FLAME_B";
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
         FirstSave =bundle.getBoolean(FIRSTSAVE);
         FirstSight=bundle.getBoolean(FIRSTSAVE);
         SecondSight=bundle.getBoolean(SECONDSIGHT);
 		levelDepth=bundle.getInt(LEVEL_DEPTH);
-        levelId   =bundle.getInt(LEVEL_ID   );
-		version   =bundle.getInt(VERSION    );
+        levelId   =bundle.getInt(LEVEL_ID);
+		version   =bundle.getInt(VERSION);
 		
 		//saves from before v0.9.2b are not supported
 		if (version < GirlsFrontlinePixelDungeon.v0_9_2b){
@@ -443,6 +445,11 @@ public abstract class Level implements Bundlable {
 		}
 
 		buildFlagMaps();
+        if (bundle.contains(FLAME)){
+            flammableB = bundle.getBooleanArray(FLAME);
+        }else {
+            flammableB = new boolean[length()];
+        }
 		cleanWalls();
 	}
 	
@@ -473,6 +480,7 @@ public abstract class Level implements Bundlable {
         bundle.put(FIRSTSAVE, FirstSave);
         bundle.put(FIRSTSIGHT,FirstSight);
         bundle.put(SECONDSIGHT,SecondSight);
+        bundle.put(FLAME, flammableB);
 	}
 	
 	public int tunnelTile() {
@@ -717,7 +725,7 @@ public abstract class Level implements Bundlable {
 			int flags = Terrain.flags[map[i]];
 			passable[i]		= (flags & Terrain.PASSABLE) != 0;
 			losBlocking[i]	= (flags & Terrain.LOS_BLOCKING) != 0;
-			flamable[i]		= (flags & Terrain.FLAMABLE) != 0;
+			flammable[i]		= (flags & Terrain.FLAMABLE) != 0;
 			secret[i]		= (flags & Terrain.SECRET) != 0;
 			solid[i]		= (flags & Terrain.SOLID) != 0;
 			avoid[i]		= (flags & Terrain.AVOID) != 0;
@@ -767,11 +775,21 @@ public abstract class Level implements Bundlable {
 
 	public void destroy( int pos ) {
 		//if raw tile type is flammable or empty
-		int terr = map[pos];
-		if (terr == Terrain.EMPTY || terr == Terrain.EMPTY_DECO
-				|| (Terrain.flags[map[pos]] & Terrain.FLAMABLE) != 0 ) {
-			set(pos, Terrain.EMBERS);
-		}
+        if (flammableB[pos] && !flammable[pos]){
+            flammableB[pos] = false;
+            if (Random.Int(8) == 0) {
+                set(pos, Terrain.EMBERS);
+                GameScene.updateMap(pos);
+                Dungeon.observe();
+            }
+        }
+        else {
+            int terr = map[pos];
+            if (terr == Terrain.EMPTY || terr == Terrain.EMPTY_DECO
+                    || (Terrain.flags[map[pos]] & Terrain.FLAMABLE) != 0) {
+                set(pos, Terrain.EMBERS);
+            }
+        }
 		Blob web = blobs.get(Web.class);
 		if (web != null){
 			web.clear(pos);
@@ -831,7 +849,7 @@ public abstract class Level implements Bundlable {
 		int flags = Terrain.flags[terrain];
 		level.passable[cell]		= (flags & Terrain.PASSABLE) != 0;
 		level.losBlocking[cell]	    = (flags & Terrain.LOS_BLOCKING) != 0;
-		level.flamable[cell]		= (flags & Terrain.FLAMABLE) != 0;
+		level.flammable[cell]		= (flags & Terrain.FLAMABLE) != 0;
 		level.secret[cell]		    = (flags & Terrain.SECRET) != 0;
 		level.solid[cell]			= (flags & Terrain.SOLID) != 0;
 		level.avoid[cell]			= (flags & Terrain.AVOID) != 0;

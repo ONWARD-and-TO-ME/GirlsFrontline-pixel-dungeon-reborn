@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 
 public class EnhancedRings extends FlavourBuff{
 
@@ -44,6 +45,26 @@ public class EnhancedRings extends FlavourBuff{
 		return false;
 	}
 
+    public int level;
+    public EnhancedRings set(int level){
+        this.level = level;
+        if (level>=2) Buff.prolong(target, CoolDown.class, 6);
+        return this;
+    }
+
+    private static final String LEVEL = "level";
+
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put( LEVEL, level );
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        level = bundle.getInt(LEVEL);
+    }
 	@Override
 	public void detach() {
 		super.detach();
@@ -62,17 +83,35 @@ public class EnhancedRings extends FlavourBuff{
 
 	@Override
 	public float iconFadePercent() {
-		float max = 3*Dungeon.hero.pointsInTalent(Talent.ENHANCED_RINGS);
+		float max;
+        if (Dungeon.hero.hasTalent(Talent.ENHANCED_RINGS))
+            max = 3*Dungeon.hero.pointsInTalent(Talent.ENHANCED_RINGS);
+        else
+            max = 3;
 		return Math.max(0, (max-visualcooldown()) / max);
 	}
 
 	@Override
-	public String toString() {
-		return Messages.get(this, "name");
-	}
-
-	@Override
 	public String desc() {
-		return Messages.get(this, "desc", (int)visualcooldown());
+		return Messages.get(this, "desc", (int)visualcooldown(), level);
 	}
+    public static class CoolDown extends FlavourBuff{
+        {
+            type = Buff.buffType.POSITIVE;
+        }
+        @Override
+        public int icon() {
+            return target.buff(EnhancedRings.class)!=null ? BuffIndicator.NONE : BuffIndicator.UPGRADE;
+        }
+
+        @Override
+        public void tintIcon(Image icon) {
+            icon.hardlight(0, 1, 1);
+        }
+
+        @Override
+        public String desc() {
+            return Messages.get(this, "desc", (int)visualcooldown());
+        }
+    }
 }

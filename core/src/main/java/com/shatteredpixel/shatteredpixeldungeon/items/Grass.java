@@ -27,16 +27,21 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.noosa.Image;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -54,17 +59,19 @@ public class Grass extends Item {
 	private static final String ActA = "ACTA";
     private static final String ActB = "ACTB";
     private static final String ActC = "ACTC";
+    private static final int costA = 1;
+    private static final int costB = 3;
+    private static final int costC = 3456;
 
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-        actions.add(ActA);
-        if (enough(2)){
+        if (enough(costA))
+            actions.add(ActA);
+        if (enough(costB))
             actions.add(ActB);
-        }
-        if (enough(3456)){
+        if (enough(costC))
             actions.add(ActC);
-        }
 		return actions;
 	}
 	
@@ -100,6 +107,7 @@ public class Grass extends Item {
     private static final String cant_select = Messages.get(Grass.class,"cant_select");
     private static final String cant_build = Messages.get(Grass.class,"cant_build");
     private static final String prompt = Messages.get(Grass.class, "prompt");
+    private static final String fail = Messages.get(Grass.class, "fail");
 
     public static CellSelector.Listener ActAA = new  CellSelector.Listener() {
         //格子选择监听器
@@ -118,26 +126,41 @@ public class Grass extends Item {
                     GLog.n(far);
                     return;
                 }
-                if (enough(1)){
-                    Char ch = Actor.findChar(target);
-                    if (ch != null) {
-                        if (ch.alignment == Char.Alignment.ALLY) {
-                            Buff.affect(ch, Invisibility.class, 2);
-                            removeGrass(1);
+                if (!enough(costA)) {
+                    GLog.n(not_enough);
+                    return;
+                }
+                Char ch = Actor.findChar(target);
+                if (ch != null) {
+                    if (ch.alignment == Char.Alignment.ALLY) {
+                        if (Invisibility.isInvisibility(ch)) {
+                            Buff.affect(ch, GrassInvisibility.class, 2);
                         } else {
-                            GLog.n(enemy);
+                            Detection detection = ch.buff(Detection.class);
+                            float count = 0;
+                            if (detection != null)
+                                count = detection.count();
+                            if (Random.Float() < count) {
+                                GLog.n(fail);
+                                Dungeon.hero.spendAndNext(0.5F);
+                            } else {
+                                Buff.affect(ch, GrassInvisibility.class, 1);
+                            }
                         }
-                    } else if (Dungeon.level.map[target] == Terrain.TRAP) {
-                        set(target, Terrain.TRAP_GRASS);
-                        Dungeon.level.setTrap(Dungeon.level.traps.get(target).halfHide(), target);
-                        GameScene.updateMap(target);
-                        removeGrass(1);
-                    } else {
-                        GLog.n(nothing);
+                        removeGrass(costA);
+                    }
+                    else {
+                        GLog.n(enemy);
                     }
                 }
+                else if (Dungeon.level.map[target] == Terrain.TRAP) {
+                    set(target, Terrain.TRAP_GRASS);
+                    Dungeon.level.setTrap(Dungeon.level.traps.get(target).halfHide(), target);
+                    GameScene.updateMap(target);
+                    removeGrass(costA);
+                }
                 else {
-                    GLog.n(not_enough);
+                    GLog.n(nothing);
                 }
             }
         }
@@ -169,25 +192,32 @@ public class Grass extends Item {
                     GLog.n(cant_select);
                     return;
                 }
-                if (enough(2)){
+                if (enough(costB)){
                     if (Dungeon.level.map[target] == Terrain.EMPTY || Dungeon.level.map[target] == Terrain.EMBERS
                             || Dungeon.level.map[target] == Terrain.PEDESTAL || Dungeon.level.map[target] == Terrain.EMPTY_SP
                             || Dungeon.level.map[target] == Terrain.EMPTY_DECO || Dungeon.level.map[target] == Terrain.WATER) {
                         set(target, Terrain.GRASS);
                         GameScene.updateMap(target);
-                        removeGrass(2);
+                        removeGrass(costB);
                         Dungeon.hero.spend(1);
                     } else if (Dungeon.level.map[target] == Terrain.INACTIVE_TRAP && !(Dungeon.level instanceof CavesBossLevel)) {
                         set(target, Terrain.GRASS);
                         GameScene.updateMap(target);
-                        removeGrass(2);
+                        removeGrass(costB);
                         Dungeon.hero.spend(1);
                     } else if (Dungeon.level.map[target] == Terrain.GRASS) {
                         set(target, Terrain.FURROWED_GRASS);
                         GameScene.updateMap(target);
-                        removeGrass(2);
+                        removeGrass(costB);
                         Dungeon.hero.spend(1);
-                    } else {
+                    }
+                    else if (Dungeon.level.solid[target] && !Dungeon.level.flammable[target] &&
+                            !Dungeon.level.flammableB[target] && Dungeon.depth %5 != 0) {
+                        Dungeon.level.flammableB[target] = true;
+                        removeGrass(costB);
+                        Dungeon.hero.spend(1);
+                    }
+                    else {
                         GLog.n(cant_build);
                     }
                 }
@@ -225,7 +255,7 @@ public class Grass extends Item {
                     GLog.n(cant_select);
                     return;
                 }
-                if (enough(3456)){
+                if (enough(costC)){
                     if (Dungeon.level.passable[target]&&Dungeon.level.map[target] != Terrain.ENTRANCE
                             &&Dungeon.level.map[target] != Terrain.UNLOCKED_EXIT&&Dungeon.level.map[target] != Terrain.EXIT
                             //从passable中去除入口和出口
@@ -235,7 +265,7 @@ public class Grass extends Item {
                         set(target, Terrain.BARRICADE);
                         GameScene.updateMap(target);
                         Dungeon.observe();
-                        removeGrass(81);
+                        removeGrass((int) Math.sqrt(costC));
                         Dungeon.hero.spend(2);
                     } else {
                         GLog.n(cant_build);
@@ -256,14 +286,13 @@ public class Grass extends Item {
     @Override
     public String info(){
         String info = super.info();
-        info +="\n" + Messages.get(this,"ActAB");
         Grass grass = Dungeon.hero.belongings.getItem(Grass.class);
-        if (grass.quantity>=2){
+        if (grass.quantity>=costA)
+            info +="\n" + Messages.get(this,"ActAB");
+        if (grass.quantity>=costB)
             info +="\n" + Messages.get(this,"ActBB");
-        }
-        if (grass.quantity>=3456){
+        if (grass.quantity>=costC)
             info +="\n" + Messages.get(this,"ActCB");
-        }
         return info;
     }
 	
@@ -282,4 +311,74 @@ public class Grass extends Item {
 		return 2 * quantity;
 	}
 
+    public static class GrassInvisibility extends Invisibility{
+        @Override
+        public void dispelA(){
+            Buff.count(target, Detection.class, 0.15F);
+            super.detach();
+        }
+        @Override
+        public void detach() {
+            CounterBuff detection = target.buff(Detection.class);
+            float max = 0.5F;
+            float count = 0.075F;
+            if (detection != null && detection.count()  > max - count){
+                count = Math.max(0, max - detection.count());
+            }
+            Buff.count(target, Detection.class, count);
+            super.detach();
+        }
+    }
+    public static class Detection extends CounterBuff{
+
+        @Override
+        public boolean act() {
+            if (count()<=0)
+                detach();
+            if (Dungeon.level!=null){
+                if (inFOV( target )){
+                    if (Invisibility.isInvisibility(target))
+                        countDown(0.001F);
+                    else
+                        countUp(0.002F);
+                }
+                else
+                    countDown(0.005F);
+            }
+            spend(1);
+            return true;
+        }
+        private static boolean inFOV(Char target){
+            for (Mob mob : Dungeon.level.mobs){
+                if (mob.alignment == target.alignment)
+                    continue;
+                if (mob.enemy != target)
+                    continue;
+                for (int i : PathFinder.NEIGHBOURS9){
+                    int cell = mob.target+i;
+                    Char ch = Actor.findChar(cell);
+                    if (ch == null || ch != target)
+                        continue;
+                    return true;
+                }
+            }
+            return false;
+        }
+        public int icon() {
+            return BuffIndicator.INVISIBLE;
+        }
+
+        public void tintIcon(Image icon) {
+            icon.hardlight(1.0F, 1.0F, 0.0F);
+        }
+        @Override
+        public String toString() {
+            return Messages.get(this, "name");
+        }
+
+        @Override
+        public String desc() {
+            return Messages.get(this, "desc", count()*100);
+        }
+    }
 }

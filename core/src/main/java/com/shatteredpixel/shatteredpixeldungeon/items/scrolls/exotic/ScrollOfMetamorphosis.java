@@ -27,7 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.TierOfTalent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Transmuting;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.InventoryScroll;
@@ -46,6 +45,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -175,7 +175,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 		//talents that can only be used by one hero class
 		//TODO could some of these be made more generic?
-		private static HashMap<Talent, HeroClass> restrictedTalents = new HashMap<>();
+		private static final HashMap<Talent, HeroClass> restrictedTalents = new HashMap<>();
 		static {
             // 从蜕变池子移除以下天赋
 			restrictedTalents.put(Talent.IRON_WILL, HeroClass.WARRIOR);
@@ -196,6 +196,13 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
             restrictedTalents.put(Talent.Type56Three_Book, HeroClass.TYPE561);
 		}
 
+        private static final ArrayList<ArrayList<Talent>> against = new ArrayList<>();
+        static {
+            //旧回流、新回流、绝境迫能
+            against.add(new ArrayList<>(Arrays.asList(Talent.EMPOWERING_SCROLLS, Talent.EMPOWERING_SCROLLS_V2, Talent.DESPERATE_POWER)));
+            //旧戒指强化、新戒指强化
+            against.add(new ArrayList<>(Arrays.asList(Talent.ENHANCED_RINGS, Talent.ENHANCED_RINGS_V2)));
+        }
 		public static WndMetamorphReplace INSTANCE;
 
 		public Talent replacing;
@@ -232,31 +239,43 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			this.tier = tier;
 
 			LinkedHashMap<Talent, Integer> options = new LinkedHashMap<>();
-			Set<Talent> curTalentsAtTier = Dungeon.hero.talents.get(tier-1).keySet();
 
-			for (HeroClass cls : HeroClass.values()){
+            for (HeroClass cls : HeroClass.values()){
 				ArrayList<LinkedHashMap<Talent, Integer>> clsTalents = new ArrayList<>();
                 if (cls == HeroClass.NONE || cls == HeroClass.PUBLIC_1 && (tier<=2))
                     cls = HeroClass.values()[Random.Int(6)];
 				Talent.initClassTalents(cls, clsTalents);
 
 				Set<Talent> clsTalentsAtTier = clsTalents.get(tier-1).keySet();
-				boolean replacingIsInSet = false;
 				for (Talent talent : clsTalentsAtTier.toArray(new Talent[0])){
-					if (talent == replacing){
-						replacingIsInSet = true;
-						break;
+                    //在池子中移除准备蜕变的天赋，以免污染池子降低概率
+                    //在池子中移除已有的天赋，以免出现重复天赋
+					if (talent == replacing || hero.hasTalentB(talent)){
+                        clsTalentsAtTier.remove(talent);
 					} else {
-						if (curTalentsAtTier.contains(talent)){
-							clsTalentsAtTier.remove(talent);
-						}
 						if (restrictedTalents.containsKey(talent)
 								&& restrictedTalents.get(talent) != curUser.heroClass){
 							clsTalentsAtTier.remove(talent);
 						}
+                        for (ArrayList<Talent> array : against){
+                            //新蜕变的天赋属于互斥天赋
+                            if (array.contains(talent)) {
+                                //查找玩家身上可能存在的与新天赋互斥的天赋
+                                Talent againstOne = null;
+                                for (Talent t : array) {
+                                    if (hero.hasTalentB(t)) {
+                                        againstOne = t;
+                                        break;
+                                    }
+                                }
+                                //存在互斥且旧天赋并不为互斥天赋，移除此选项
+                                if (againstOne != null && againstOne != replacing)
+                                    clsTalentsAtTier.remove(talent);
+                            }
+                        }
 					}
 				}
-				if (!replacingIsInSet && !clsTalentsAtTier.isEmpty()) {
+				if (!clsTalentsAtTier.isEmpty()) {
 					options.put(Random.element(clsTalentsAtTier), Dungeon.hero.pointsInTalent(replacing));
 				}
 			}

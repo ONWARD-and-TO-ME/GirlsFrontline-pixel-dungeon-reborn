@@ -327,8 +327,28 @@ public class Ring extends KindofMisc {
 	@Override
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
-		if (Dungeon.hero.buff(EnhancedRings.class) != null){
-			lvl++;
+        EnhancedRings buff = Dungeon.hero.buff(EnhancedRings.class);
+		if ( buff != null ){
+            if (buff.level != 3)
+			    lvl += buff.level;
+            else {
+                if ( this == Dungeon.hero.belongings.ring() ){
+                    if ( Dungeon.hero.belongings.misc() instanceof Ring ){
+                        if (Dungeon.hero.belongings.misc().level() <= this.level())
+                            lvl += 3;
+                    }
+                    else
+                        lvl += 3;
+                }
+                else if ( this == Dungeon.hero.belongings.misc() ){
+                    if ( Dungeon.hero.belongings.ring() != null){
+                        if ( Dungeon.hero.belongings.ring().level() < this.level() )
+                            lvl += 3;
+                    }
+                    else
+                        lvl += 3;
+                }
+            }
 		}
 		return lvl;
 	}

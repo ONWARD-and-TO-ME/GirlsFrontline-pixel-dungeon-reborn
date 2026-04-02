@@ -172,13 +172,18 @@ public class TalentButton extends Button {
                                     //被蜕变的是额外天赋，则直接修改额外天赋表，而非记录蜕变关系
                                     //蜕变的替换在生成初始表时，而额外天赋的加入是在生成完成后，时机滞后了，以蜕变逻辑实行，在读档的时候无法复原
                                     if (Dungeon.hero.addTalents.containsKey(replacing)){
-                                        final int tierA = Dungeon.hero.addTalents.get(replacing);
-                                        Dungeon.hero.addTalents.remove(replacing);
-                                        Dungeon.hero.addTalents.put(talent, tierA);
+                                        LinkedHashMap<Talent, Integer> newAddTalents = new LinkedHashMap<>();
+                                        for (Talent oddAdd : Dungeon.hero.addTalents.keySet()){
+                                            if (oddAdd == replacing)
+                                                newAddTalents.put(talent, Dungeon.hero.addTalents.get(replacing));
+                                            else
+                                                newAddTalents.put(oddAdd, Dungeon.hero.addTalents.get(oddAdd));
+                                        }
+                                        Dungeon.hero.addTalents = newAddTalents;
                                     }
                                     //将这个蜕变关系记录到蜕变Map中，以用于在读档时恢复蜕变关系
 									else if (!Dungeon.hero.metamorphedTalents.containsValue(replacing)){
-                                        //未记录过旧天赋，即旧天赋未被蜕变过时，加入这组蜕变关系
+                                        //旧天赋不是键值，即旧天赋为原始天赋时，将旧天赋作为键名，新天赋作为键值保存
 										Dungeon.hero.metamorphedTalents.put(replacing, talent);
 
 									//if what we're replacing is already a value, we need to simplify the data structure
@@ -213,7 +218,10 @@ public class TalentButton extends Button {
                                 if (Dungeon.hero.belongings.secArmor != null){
                                     final Armor armor = Dungeon.hero.belongings.secArmor;
                                     Dungeon.hero.belongings.secArmor = null;
+                                    boolean kept = armor.keptThoughLostInvent;
+                                    armor.keptThoughLostInvent = true;
                                     armor.collect(Dungeon.hero.belongings.backpack);
+                                    armor.keptThoughLostInvent = kept;
                                     BrokenSeal.WarriorShield sealBuff = Dungeon.hero.buff(BrokenSeal.WarriorShield.class);
                                     if (sealBuff != null && armor == sealBuff.armor) {
                                         sealBuff.setArmor(null);

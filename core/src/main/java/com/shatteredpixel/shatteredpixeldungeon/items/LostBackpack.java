@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.RedBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
@@ -71,6 +72,15 @@ public class LostBackpack extends Item {
 				}
 			}
 		}
+
+        if (hero.belongings.armor() != null && hero.belongings.SecondArmor() != null){
+            if (hero.belongings.armor.tier() < hero.belongings.secArmor.tier()){
+                final Armor armor = hero.belongings.armor;
+                hero.belongings.armor = hero.belongings.secArmor;
+                hero.belongings.secArmor = armor;
+            }
+            Armor.curseMoving(hero);
+        }
 
 		hero.updateHT(false);
 
