@@ -101,7 +101,7 @@ public class Potion extends Item {
 		}
 	};
 	
-	private static final HashSet<Class<?extends Potion>> mustThrowPots = new HashSet<>();
+	public static final HashSet<Class<?extends Potion>> mustThrowPots = new HashSet<>();
 	static{
 		mustThrowPots.add(PotionOfToxicGas.class);
 		mustThrowPots.add(PotionOfLiquidFlame.class);
@@ -117,7 +117,7 @@ public class Potion extends Item {
 		//also all brews, hardcoded
 	}
 	
-	private static final HashSet<Class<?extends Potion>> canThrowPots = new HashSet<>();
+	public static final HashSet<Class<?extends Potion>> canThrowPots = new HashSet<>();
 	static{
 		canThrowPots.add(AlchemicalCatalyst.class);
 		

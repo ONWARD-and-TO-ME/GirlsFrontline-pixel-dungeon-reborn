@@ -333,6 +333,8 @@ public abstract class Wand extends Item {
 	@Override
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
+        if (BuffLevelPoint != 0)
+            return lvl;
 
 		if (charger != null && charger.target != null) {
 			if (charger.target.buff(WildMagic.WildMagicTracker.class) != null){

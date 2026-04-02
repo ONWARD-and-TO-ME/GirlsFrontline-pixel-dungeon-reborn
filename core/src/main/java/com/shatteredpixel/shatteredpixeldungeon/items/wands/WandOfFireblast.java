@@ -36,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blazing;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -93,7 +92,7 @@ public class WandOfFireblast extends DamageWand {
 			}
 
 			//only ignite cells directly near caster if they are flammable
-			if (Dungeon.level.adjacent(bolt.sourcePos, cell) && !Dungeon.level.flamable[cell]){
+			if (Dungeon.level.adjacent(bolt.sourcePos, cell) && !Dungeon.level.flammable[cell]){
 				adjacentCells.add(cell);
 			} else {
 				GameScene.add( Blob.seed( cell, 1+chargesPerCast(), Fire.class ) );
@@ -110,7 +109,7 @@ public class WandOfFireblast extends DamageWand {
 		for (int cell : adjacentCells){
 			for (int i : PathFinder.NEIGHBOURS4){
 				if (Dungeon.level.trueDistance(cell+i, bolt.sourcePos) > Dungeon.level.trueDistance(cell, bolt.sourcePos)
-						&& Dungeon.level.flamable[cell+i]
+						&& Dungeon.level.flammable[cell+i]
 						&& Fire.volumeAt(cell+i, Fire.class) == 0){
 					GameScene.add( Blob.seed( cell+i, 1+chargesPerCast(), Fire.class ) );
 				}

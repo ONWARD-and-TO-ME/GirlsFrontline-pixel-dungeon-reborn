@@ -10,13 +10,14 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 public class GetGrass extends TargetSpell{
 
     public static final GetGrass INSTANCE = new GetGrass();
 
     public int icon() {
-        return 3;
+        return 42;
     }
 
     {
@@ -39,10 +40,12 @@ public class GetGrass extends TargetSpell{
         }
         if (Dungeon.level.map[cell] == Terrain.HIGH_GRASS){
             set(cell, Terrain.GRASS);
-            Grass grass = new Grass();
-            if (Dungeon.hero.pointsInTalent(Talent.Type56_23V4)>=2){
-                grass.quantity(2);
+            if (Random.Int(3)>Dungeon.hero.pointsInTalentA(Talent.Type56_23V4)) {
+                GLog.n("收割失败");
+                Stop = false;
+                return;
             }
+            Grass grass = new Grass();
             if(grass.doPickUp(Dungeon.hero, cell)){
                 Dungeon.hero.spendAndNext(-timeUse);
                 //成功捡起则对冲时间

@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.RedBookSpell.BookSpell;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 
@@ -42,6 +43,12 @@ public class BuffIcon extends Image {
 		this.large = large;
 		refresh(buff);
 	}
+
+    public BuffIcon(BookSpell spell){
+        super(Assets.Interfaces.BUFFS_LARGE);
+        this.large = true;
+        refresh(spell.icon());
+    }
 
 	public BuffIcon(int icon, boolean large){
 		super( large ? Assets.Interfaces.BUFFS_LARGE : Assets.Interfaces.BUFFS_SMALL );

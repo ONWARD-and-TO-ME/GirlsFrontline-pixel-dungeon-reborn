@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -803,7 +804,8 @@ public class Item implements Bundlable {
 
                 boolean mixArmor = hero.belongings.armor()!=null &&
                         hero.belongings.SecondArmor()!=null;
-                if (mixArmor){
+                if (mixArmor &&
+                        ( hero.buff(LockedFloor.class) == null || hero.buff(LockedFloor.class).regenOn())){
                     hero.belongings.armor.broken+=1;
                     hero.belongings.secArmor.broken+=0.5F;
                 }

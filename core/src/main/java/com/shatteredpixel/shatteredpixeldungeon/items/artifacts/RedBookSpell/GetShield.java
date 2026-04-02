@@ -12,7 +12,7 @@ public class GetShield extends BookSpell{
     public static final GetShield INSTANCE = new GetShield();
 
     public int icon() {
-        return 5;
+        return 20;
     }
 
     {

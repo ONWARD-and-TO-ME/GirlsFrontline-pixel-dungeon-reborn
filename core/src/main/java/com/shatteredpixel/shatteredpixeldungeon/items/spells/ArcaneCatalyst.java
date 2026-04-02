@@ -44,6 +44,7 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class ArcaneCatalyst extends Spell {
 	
@@ -51,7 +52,7 @@ public class ArcaneCatalyst extends Spell {
 		image = ItemSpriteSheet.SCROLL_CATALYST;
 	}
 	
-	private static HashMap<Class<? extends Scroll>, Float> scrollChances = new HashMap<>();
+	public static final HashMap<Class<? extends Scroll>, Float> scrollChances = new HashMap<>();
 	static{
 		scrollChances.put( ScrollOfIdentify.class,      3f );
 		scrollChances.put( ScrollOfRemoveCurse.class,   2f );
@@ -65,7 +66,28 @@ public class ArcaneCatalyst extends Spell {
 		scrollChances.put( ScrollOfTerror.class,        2f );
 		scrollChances.put( ScrollOfTransmutation.class, 1f );
 	}
-	
+
+    private static final HashSet<Class<? extends Scroll>> nonCombatScrolls = new HashSet<>();
+    static {
+        nonCombatScrolls.add( ScrollOfIdentify.class );
+        nonCombatScrolls.add( ScrollOfRemoveCurse.class );
+        nonCombatScrolls.add( ScrollOfMagicMapping.class );
+        nonCombatScrolls.add( ScrollOfRecharging.class );
+        nonCombatScrolls.add( ScrollOfLullaby.class );
+        nonCombatScrolls.add( ScrollOfTeleportation.class );
+        nonCombatScrolls.add( ScrollOfTransmutation.class );
+    }
+
+    private static final HashSet<Class<? extends Scroll>> combatScrolls = new HashSet<>();
+    static {
+        combatScrolls.add( ScrollOfMirrorImage.class );
+        combatScrolls.add( ScrollOfRecharging.class );
+        combatScrolls.add( ScrollOfLullaby.class );
+        combatScrolls.add( ScrollOfRetribution.class );
+        combatScrolls.add( ScrollOfRage.class );
+        combatScrolls.add( ScrollOfTeleportation.class );
+        combatScrolls.add( ScrollOfTerror.class );
+    }
 	@Override
 	protected void onCast(Hero hero) {
 		
@@ -73,6 +95,17 @@ public class ArcaneCatalyst extends Spell {
 		updateQuickslot();
 		
 		Scroll s = Reflection.newInstance(Random.chances(scrollChances));
+
+        //reroll the scroll until it is relevant for the situation (whether there are visible enemies)
+        if (hero.visibleEnemies() == 0){
+            if (!nonCombatScrolls.contains(s.getClass())){
+                s = Reflection.newInstance(Random.chances(scrollChances));
+            }
+        } else {
+            if (!combatScrolls.contains(s.getClass())){
+                s = Reflection.newInstance(Random.chances(scrollChances));
+            }
+        }
 		s.anonymize();
 		curItem = s;
 		s.doRead();

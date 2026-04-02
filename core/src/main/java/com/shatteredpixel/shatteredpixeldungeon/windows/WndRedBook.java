@@ -15,7 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -73,7 +73,7 @@ public class WndRedBook extends Window {
                 top += 3;
             }
 
-            ArrayList<IconButton> spellBtns = new ArrayList();
+            ArrayList<IconButton> spellBtns = new ArrayList<>();
 
             for(BookSpell spell : spells) {
                 IconButton spellBtn = new SpellButton(spell, book, info);
@@ -103,7 +103,7 @@ public class WndRedBook extends Window {
         NinePatch bg;
 
         public SpellButton(BookSpell spell, RedBook book, boolean info) {
-            super(new HeroIcon(spell));
+            super(new BuffIcon(spell));
             this.spell = spell;
             this.book = book;
             this.info = info;
@@ -137,7 +137,7 @@ public class WndRedBook extends Window {
 
         protected void onClick() {
             if (this.info) {
-                GameScene.show(new WndTitledMessage(new HeroIcon(this.spell), Messages.titleCase(this.spell.name()), this.spell.desc()));
+                GameScene.show(new WndTitledMessage(new BuffIcon(this.spell), Messages.titleCase(this.spell.name()), this.spell.desc()));
             } else {
                 WndRedBook.this.hide();
                 if (!this.book.canCast(this.spell)) {

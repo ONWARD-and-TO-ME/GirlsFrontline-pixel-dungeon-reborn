@@ -32,7 +32,7 @@ public class BookSpell {
             if (lvl >= 4) {
                 spells.add(DeadBomb.INSTANCE);
             }
-            if (Dungeon.hero.hasTalent(Talent.Type56_23V4)) {
+            if (Dungeon.hero.hasTalentB(Talent.Type56_23V4)) {
                 spells.add(GetGrass.INSTANCE);
             }
             if (Dungeon.hero.buff(ActHPtoGetFood.class)!=null){

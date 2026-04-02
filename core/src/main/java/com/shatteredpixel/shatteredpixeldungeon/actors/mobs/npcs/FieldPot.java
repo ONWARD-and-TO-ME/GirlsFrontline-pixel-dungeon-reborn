@@ -56,8 +56,7 @@ public class FieldPot extends NPC {
         super.act();
         if (targetPos==pos)
             targetPos=-1;
-        StoneOfAggression stone = new StoneOfAggression();
-        stone.activate(pos);
+        Buff.prolong(this, StoneOfAggression.Aggression.class, 1F);
         if (--HP <= 0){
             die("fall");
         }

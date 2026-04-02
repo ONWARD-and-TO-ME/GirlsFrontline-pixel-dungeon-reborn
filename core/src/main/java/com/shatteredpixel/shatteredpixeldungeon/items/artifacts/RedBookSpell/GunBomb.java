@@ -11,7 +11,7 @@ public class GunBomb extends BookSpell{
     public static final GunBomb INSTANCE = new GunBomb();
 
     public int icon() {
-        return 6;
+        return 48;
     }
 
     {

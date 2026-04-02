@@ -16,7 +16,7 @@ public class GetLight extends BookSpell{
     public static final GetLight INSTANCE = new GetLight();
 
     public int icon() {
-        return 4;
+        return 22;
     }
 
 

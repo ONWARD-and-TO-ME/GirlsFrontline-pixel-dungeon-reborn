@@ -8,7 +8,7 @@ public class GunCd extends ItemSpell{
     public static final GunCd INSTANCE = new GunCd();
 
     public int icon() {
-        return 7;
+        return 33;
     }
 
     {

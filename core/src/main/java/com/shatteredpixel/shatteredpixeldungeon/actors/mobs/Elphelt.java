@@ -399,7 +399,7 @@ public class Elphelt extends Mob {
 		boolean terrainAffected = false;
 
 		for (int c : traceGenoise.subPath(1, traceGenoise.dist)) {
-			if (Dungeon.level.flamable[c]) {
+			if (Dungeon.level.flammable[c]) {
 				Dungeon.level.destroy(c);
 				GameScene.updateMap(c);
 				terrainAffected = true;
@@ -898,7 +898,7 @@ public class Elphelt extends Mob {
 						CellEmitter.get( c ).burst( SmokeParticle.FACTORY, 4 );
 					}
 
-					if (Dungeon.level.flamable[c]) {
+					if (Dungeon.level.flammable[c]) {
 						Dungeon.level.destroy( c );
 						GameScene.updateMap( c );
 						terrainAffected = true;

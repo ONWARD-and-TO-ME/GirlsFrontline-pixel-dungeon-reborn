@@ -181,7 +181,7 @@ public class Jaguar extends Mob {
                 }
             }
 
-            if (Dungeon.level.flamable[target]) {
+            if (Dungeon.level.flammable[target]) {
                 Dungeon.level.destroy( target );
                 GameScene.updateMap( target );
                 terrainAffected = true;

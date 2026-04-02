@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.RedBookSpell.BookSpell;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 
@@ -80,12 +79,4 @@ public class HeroIcon extends Image {
 		frame(film.get(abil.icon()));
 	}
 
-    public HeroIcon(BookSpell spell) {
-        super( Assets.Interfaces.HERO_ICONS );
-        if (film == null) {
-            film = new TextureFilm(texture, SIZE, SIZE);
-        }
-
-        frame(film.get(spell.icon()));
-    }
 }

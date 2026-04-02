@@ -13,7 +13,6 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.EyeSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.NemeumSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
@@ -146,7 +145,7 @@ public class Nemeum extends Mob {
 
         for (int pos : beam.subPath(1, beam.dist)) {
 
-            if (Dungeon.level.flamable[pos]) {
+            if (Dungeon.level.flammable[pos]) {
 
                 Dungeon.level.destroy( pos );
                 GameScene.updateMap( pos );

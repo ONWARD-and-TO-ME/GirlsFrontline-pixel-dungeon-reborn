@@ -20,7 +20,7 @@ public class DeadBomb extends TargetSpell{
     public static final DeadBomb INSTANCE = new DeadBomb();
 
     public int icon() {
-        return 1;
+        return 14;
     }
 
     {

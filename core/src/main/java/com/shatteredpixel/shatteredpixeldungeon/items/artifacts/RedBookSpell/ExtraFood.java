@@ -10,7 +10,7 @@ public class ExtraFood extends BookSpell{
     public static final ExtraFood INSTANCE = new ExtraFood();
 
     public int icon() {
-        return 2;
+        return 43;
     }
 
 

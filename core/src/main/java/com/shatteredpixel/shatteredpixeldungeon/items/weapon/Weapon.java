@@ -281,14 +281,15 @@ abstract public class Weapon extends KindOfWeapon {
 	//overrides as other things can equip these
 	@Override
 	public int buffedLvl() {
+        int lvl = super.buffedLvl();
+        if (BuffLevelPoint != 0)
+            return lvl;
 		if (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this )){
-            int lvl = super.buffedLvl();
             if (hero!=null&&hero.buff(EquipLevelUp.class) != null)
                 lvl += Dungeon.hero.hasTalent(Talent.Type56FourTwoTwo)?Dungeon.hero.pointsInTalent(Talent.Type56FourTwoTwo):1;
 			return lvl;
-		} else {
-			return level();
 		}
+        return level();
 	}
 	
 	@Override

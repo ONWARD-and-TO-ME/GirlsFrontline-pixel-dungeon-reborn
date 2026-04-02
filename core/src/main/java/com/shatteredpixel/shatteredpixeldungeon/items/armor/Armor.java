@@ -271,8 +271,12 @@ public class Armor extends EquipableItem {
                 if (this.tier() > hero.belongings.armor.tier() &&
                         hero.belongings.SecondArmor() == null &&
                         hero.belongings.armor.tier() <= hero.pointsInTalent(Talent.HOLD_FAST)){
-                    if (hero.belongings.secArmor!=null)
-                        hero.belongings.secArmor.collect( hero.belongings.backpack );
+                    if (hero.belongings.secArmor!=null) {
+                        boolean kept = hero.belongings.secArmor.keptThoughLostInvent;
+                        hero.belongings.secArmor.keptThoughLostInvent = true;
+                        hero.belongings.secArmor.collect(hero.belongings.backpack);
+                        hero.belongings.secArmor.keptThoughLostInvent = kept;
+                    }
                     hero.belongings.secArmor = hero.belongings.armor;
                     hero.belongings.armor = this;
                     onEquip(hero);
@@ -286,7 +290,7 @@ public class Armor extends EquipableItem {
         collect( hero.belongings.backpack );
         return false;
 	}
-    private int tier(){
+    public int tier(){
         if (this instanceof ClassArmor)
             return 6;
         else
@@ -315,7 +319,10 @@ public class Armor extends EquipableItem {
             sealBuff.setArmor(null);
         }
         if (hero.belongings.armor != null) {
+            boolean kept = hero.belongings.armor.keptThoughLostInvent;
+            hero.belongings.armor.keptThoughLostInvent = true;
             hero.belongings.armor.collect(hero.belongings.backpack);
+            hero.belongings.armor.keptThoughLostInvent = kept;
             hero.spend( time2equip() );
         }
         hero.belongings.armor = this;
@@ -328,11 +335,11 @@ public class Armor extends EquipableItem {
                 hero.belongings.armor.cursed = true;
                 hero.belongings.secArmor.cursed = false;
                 GLog.n( Messages.get(Armor.class, "cursed_moving") );
-            }
-            //破坏正面附魔
-            if (hero.belongings.armor.hasGoodGlyph()) {
-                hero.belongings.armor.glyph = null;
-                GLog.n( Messages.get(Armor.class, "broken") );
+                //破坏正面附魔
+                if (hero.belongings.armor.hasGoodGlyph()) {
+                    hero.belongings.armor.glyph = null;
+                    GLog.n( Messages.get(Armor.class, "broken") );
+                }
             }
         }
     }
@@ -385,12 +392,18 @@ public class Armor extends EquipableItem {
                                 hero.belongings.secArmor = armor;
                             }
                             else if (finalArmor1.equals(nothing)){
+                                boolean kept = hero.belongings.armor.keptThoughLostInvent;
+                                hero.belongings.armor.keptThoughLostInvent = true;
                                 hero.belongings.armor.collect(hero.belongings.backpack);
+                                hero.belongings.armor.keptThoughLostInvent = kept;
                                 hero.belongings.armor = armor;
                             }
                             else {
                                 if (hero.belongings.secArmor != null) {
+                                    boolean kept = hero.belongings.secArmor.keptThoughLostInvent;
+                                    hero.belongings.secArmor.keptThoughLostInvent = true;
                                     hero.belongings.secArmor.collect(hero.belongings.backpack);
+                                    hero.belongings.secArmor.keptThoughLostInvent = kept;
                                 }
                                 if (hero.belongings.armor.tier() < armor.tier()) {
                                     hero.belongings.secArmor = hero.belongings.armor;
@@ -436,7 +449,7 @@ public class Armor extends EquipableItem {
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
         //主护甲红底不允许解除副护甲
         if (hero.belongings.armor()!=null  && hero.belongings.armor.cursed &&
-                hero.belongings.secArmor == this && !unEquipable(hero)) {
+                hero.belongings.secArmor == this ) {
             GLog.w(Messages.get(Armor.class, "unequip_cursed_second"));
             return false;
         }
@@ -580,8 +593,10 @@ public class Armor extends EquipableItem {
 	//other things can equip these, for now we assume only the hero can be affected by levelling debuffs
 	@Override
 	public int buffedLvl() {
+        int lvl = super.buffedLvl();
+        if (BuffLevelPoint != 0)
+            return lvl;
 		if (isEquipped( hero ) || hero.belongings.contains( this )){
-            int lvl = super.buffedLvl();
             if (hero != null) {
                 if (hero.buff(EquipLevelUp.class) != null) {
                     lvl += 1 + hero.pointsInTalent(Talent.Type56FourTwoTwo);
@@ -598,7 +613,8 @@ public class Armor extends EquipableItem {
                     }
                 }
             }
-            lvl -= (int) (broken/200);
+            //down at 200, 200+300, 200+300+400, ...
+            lvl -= (int) ((Math.sqrt(200*broken + 22500) - 150)/100);
 			return lvl;
 		} else {
 			return level();

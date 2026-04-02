@@ -212,7 +212,7 @@ public class Typhoon extends Hydra {
 
         for (int pos : beam.subPath(1, beam.dist)) {
 
-            if (Dungeon.level.flamable[pos]) {
+            if (Dungeon.level.flammable[pos]) {
 
                 Dungeon.level.destroy( pos );
                 GameScene.updateMap( pos );

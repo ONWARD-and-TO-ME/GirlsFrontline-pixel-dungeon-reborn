@@ -846,7 +846,7 @@ public class Tengu extends Mob {
 								Buff.affect( ch, Burning.class ).reignite( ch );
 							}
 							
-							if (Dungeon.level.flamable[cell]){
+							if (Dungeon.level.flammable[cell]){
 								Dungeon.level.destroy( cell );
 								
 								observe = true;

@@ -10,7 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.RedBook;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 
 public class HPtoFood extends BookSpell{
@@ -18,7 +18,7 @@ public class HPtoFood extends BookSpell{
     public static final HPtoFood INSTANCE = new HPtoFood();
 
     public int icon() {
-        return 8;
+        return 26;
     }
 
     {
@@ -89,7 +89,7 @@ public class HPtoFood extends BookSpell{
             info+="另外你还将会获得 _"+buffTimeB+"_ 回合的虚弱";
         }
         GameScene.show(
-                new WndOptions(new HeroIcon(new HPtoFood()),
+                new WndOptions(new BuffIcon(new HPtoFood()),
                         Messages.titleCase("锋血转换"),
                         info,
                         "确认",

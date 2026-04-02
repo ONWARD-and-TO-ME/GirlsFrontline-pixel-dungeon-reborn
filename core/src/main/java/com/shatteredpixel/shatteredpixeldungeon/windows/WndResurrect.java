@@ -115,7 +115,9 @@ public class WndResurrect extends Window {
                         final Armor armor = Dungeon.hero.belongings.armor;
                         Dungeon.hero.belongings.armor = Dungeon.hero.belongings.secArmor;
                         Dungeon.hero.belongings.secArmor = null;
+                        armor.keptThoughLostInvent = true;
                         armor.collect(Dungeon.hero.belongings.backpack);
+                        armor.keptThoughLostInvent = false;
                     }
                 }
 				InterlevelScene.mode = InterlevelScene.Mode.RESURRECT;

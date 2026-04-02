@@ -74,7 +74,7 @@ public class Genoise extends Actor {
                     //周围爆炸粒子效果
                 }
 
-                if (Dungeon.level.flamable[c]) {
+                if (Dungeon.level.flammable[c]) {
                     Dungeon.level.destroy( c );
                     GameScene.updateMap( c );
                     terrainAffected = true;

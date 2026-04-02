@@ -107,7 +107,7 @@ abstract public class ClassArmor extends Armor {
 
 	public static ClassArmor upgrade (Hero owner, Armor armor ) {
 		
-		ClassArmor classArmor = null;
+		ClassArmor classArmor;
 		
 		switch (owner.heroClass) {
 		case WARRIOR:
@@ -213,16 +213,16 @@ abstract public class ClassArmor extends Armor {
 			}
 			
 		}else if (action.equals(AC_TRANSFER)) {
-            GameScene.show(new WndOptions(new ItemSprite(ItemSpriteSheet.CROWN), Messages.get(ClassArmor.class, "transfer_title", new Object[0]), Messages.get(ClassArmor.class, "transfer_desc", new Object[0]), new String[]{Messages.get(ClassArmor.class, "transfer_prompt", new Object[0]), Messages.get(ClassArmor.class, "transfer_cancel", new Object[0])}) {
+            GameScene.show(new WndOptions(new ItemSprite(ItemSpriteSheet.CROWN), Messages.get(ClassArmor.class, "transfer_title"), Messages.get(ClassArmor.class, "transfer_desc"), Messages.get(ClassArmor.class, "transfer_prompt"), Messages.get(ClassArmor.class, "transfer_cancel")) {
                 protected void onSelect(int index) {
                     if (index == 0) {
                         GameScene.selectItem(new WndBag.ItemSelector() {
                             public String textPrompt() {
-                                return Messages.get(ClassArmor.class, "transfer_prompt", new Object[0]);
+                                return Messages.get(ClassArmor.class, "transfer_prompt");
                             }
 
                             public boolean itemSelectable(Item item) {
-                                return (item instanceof Armor)&&(item != ClassArmor.this);
+                                return (item instanceof Armor) && (item != ClassArmor.this) && (item != hero.belongings.secArmor);
                             }
 
                             public void onSelect(Item item) {
@@ -254,14 +254,14 @@ abstract public class ClassArmor extends Armor {
 
                                         if (armor.glyph != null || !ClassArmor.this.seal.canTransferGlyph()) {
                                             ClassArmor.this.inscribe(armor.glyph);
-                                            ClassArmor.this.seal.setGlyph((Armor.Glyph)null);
+                                            ClassArmor.this.seal.setGlyph(null);
                                         }
                                     } else {
                                         ClassArmor.this.inscribe(armor.glyph);
                                     }
 
                                     ClassArmor.this.identify();
-                                    GLog.p(Messages.get(ClassArmor.class, "transfer_complete", new Object[0]), new Object[0]);
+                                    GLog.p(Messages.get(ClassArmor.class, "transfer_complete"));
                                     hero.sprite.operate(hero.pos);
                                     hero.sprite.emitter().burst(Speck.factory(104), 12);
                                     Sample.INSTANCE.play("sounds/evoke.mp3");

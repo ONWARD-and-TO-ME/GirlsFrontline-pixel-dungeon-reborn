@@ -55,7 +55,7 @@ public class WandOfScanningBeam extends WandOfDisintegration implements Scanning
         if(i == curUser.pos){
             return 0;
         }
-        if(Dungeon.level.flamable[i]){
+        if(Dungeon.level.flammable[i]){
             Dungeon.level.destroy(i);
             GameScene.updateMap( i );
         }

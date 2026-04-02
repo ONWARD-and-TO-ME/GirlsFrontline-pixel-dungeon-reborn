@@ -12,7 +12,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff.buffType;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSWAPSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
@@ -76,10 +75,6 @@ public class GnollSWAP extends Gnoll {
             }
 
             for(Item item : items) {
-                if(item instanceof Artifact){
-                    Generator.removeArtifact(((Artifact)item).getClass());
-                    //针对切割者掉落神器/遗物后仍可以刷出相同神器/遗物的bug，这里补充一次清除
-                }
                 int dropPlace;
                 int TryTimes=0;
                 int ofs = PathFinder.NEIGHBOURS9[Random.Int(9)];

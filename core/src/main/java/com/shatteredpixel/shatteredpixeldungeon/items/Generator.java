@@ -596,7 +596,7 @@ public class Generator {
 	}
 
     public static Item randomUsingDefaults() {
-        return randomUsingDefaults((Category)Random.chances(categoryProbs));
+        return randomUsingDefaults(Random.chances(categoryProbs));
     }
 
     //overrides any deck systems and always uses default probs
@@ -610,7 +610,7 @@ public class Generator {
             return randomWeapon();
         } else if (cat == Generator.Category.MISSILE) {
             return randomMissile();
-        } else if (cat.defaultProbs == null) {
+        } else if (cat.defaultProbs == null || cat == Category.ARTIFACT) {
 			return random(cat); //currently covers weapons/armor/missiles
 		} else {
             return ((Item) Reflection.newInstance(cat.classes[Random.chances(cat.defaultProbs)])).random();

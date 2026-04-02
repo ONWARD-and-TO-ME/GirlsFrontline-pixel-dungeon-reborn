@@ -81,8 +81,9 @@ public class SakuraBlade extends MeleeWeapon {
     @Override
     public int buffedLvl() {
         int lvl = super.buffedLvl();
-        if (BuffLevelPoint==0)
-            lvl+=skillBuffedLevels;
+        if (BuffLevelPoint!=0)
+            return lvl;
+        lvl+=skillBuffedLevels;
         return lvl;
     }
 
