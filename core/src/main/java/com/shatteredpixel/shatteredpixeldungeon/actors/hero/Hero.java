@@ -166,6 +166,8 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 public class Hero extends Char {
@@ -326,7 +328,18 @@ public class Hero extends Char {
 
 		belongings.storeInBundle( bundle );
 	}
-	
+
+    private static final HashSet<String> removedSubClass = new HashSet<>();
+    static{
+        //nothing atm
+    }
+
+    private static final HashMap<String, String> renamedSubClass = new HashMap<>();
+    static{
+        renamedSubClass.put("PULSETROOPER", "EMP_BOMB");
+        renamedSubClass.put("MODERN_REBORNER", "GUN_MASTER");
+        //nothing atm
+    }
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 
@@ -338,7 +351,11 @@ public class Hero extends Char {
 		super.restoreFromBundle( bundle );
 
 		heroClass = bundle.getEnum( CLASS, HeroClass.class );
-		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
+        String subClass = bundle.getString( SUBCLASS );
+        if ( renamedSubClass.containsKey(subClass) )
+            subClass = renamedSubClass.get(subClass);
+        this.subClass = HeroSubClass.valueOf(subClass);
+
 		armorAbility = (ArmorAbility)bundle.get( ABILITY );
 		Talent.restoreTalentsFromBundle( bundle, this );
 		
@@ -349,7 +366,7 @@ public class Hero extends Char {
 		belongings.restoreFromBundle( bundle );
 		
 		// 如果是未来之星职业，自动添加天狼星心脏buff
-		if (subClass == HeroSubClass.FUTURE_STAR && buff(SiriusHeart.class) == null) {
+		if (this.subClass == HeroSubClass.FUTURE_STAR && buff(SiriusHeart.class) == null) {
 			Buff.affect(this, SiriusHeart.class);
 		}
 	}
