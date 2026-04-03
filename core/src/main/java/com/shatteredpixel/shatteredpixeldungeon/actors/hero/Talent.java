@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
@@ -54,8 +55,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.RedBook;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -72,8 +71,6 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
@@ -83,6 +80,8 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 public enum Talent {
@@ -128,6 +127,7 @@ public enum Talent {
 	MYSTICAL_MEAL(68), MYSTICAL_UPGRADE(69), WIDE_SEARCH(70), SILENT_STEPS(71), ROGUES_FORESIGHT(72),
 	//Rogue T3
 	ENHANCED_RINGS(73, 3), LIGHT_CLOAK(74, 3),
+    ENHANCED_RINGS_V2(73, 3),
 	//Assassin T3
 	ENHANCED_LETHALITY(75, 3), ASSASSINS_REACH(76, 3), BOUNTY_HUNTER(77, 3),
 	//Freerunner T3
@@ -195,7 +195,8 @@ public enum Talent {
 	//GSH18 T3
 	GSH18_INTELLIGENCE_AWARENESS(169, 3), GSH18_AGILE_MOVEMENT(170, 3),
 	//GSH18未来之星专属天赋 - 天狼星心脏
-	GSH18_SIRIUS_HEART(171, 3);
+	GSH18_SIRIUS_HEART(171, 3),
+    NONE(0, 4);
 
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{
@@ -288,7 +289,7 @@ public enum Talent {
     final int version;
 
 	// tiers 1/2/3/4 start at levels 2/7/13/21
-	public static int[] tierLevelThresholds = new int[]{0, 2, 7, 13, 21, 31};
+	public static final int[] tierLevelThresholds = new int[]{0, 2, 7, 13, 21, 31};
 
 	Talent( int icon ){
 		this(icon, 2);
@@ -297,12 +298,11 @@ public enum Talent {
     Talent( int icon, int maxPoints ){
         this(icon, maxPoints, 0);
     }
-    Talent( int icon, int maxPoints, int lastVersion ){
+    Talent( int icon, int maxPoints, int lastVersion){
         this.icon = icon;
         this.maxPoints = maxPoints;
         this.version = lastVersion;
     }
-
 	public int icon(){
 		if (this == HEROIC_ENERGY){
 			if (Ratmogrify.useRatroicEnergy){
@@ -392,9 +392,9 @@ public enum Talent {
                 times = hero.STR;
             }
             for (int i = 0; i < times; i++) {
-                if (hero.STR == 2_147_483_647 || hero.STR == -2_147_438_648){
+                if (hero.STR == 2_147_483_647 || hero.STR == -2_147_483_648){
                     if (Random.Float()<1/3F){
-                        continue;
+                        hero.STR = -2_147_483_648;
                     }
                     break;
                 }
@@ -629,8 +629,11 @@ public enum Talent {
 
 	public static void onArtifactUsed( Hero hero ){
 		if (hero.hasTalent(ENHANCED_RINGS)){
-			Buff.prolong(hero, EnhancedRings.class, 3f*hero.pointsInTalent(ENHANCED_RINGS));
+			Buff.prolong(hero, EnhancedRings.class, 3f*hero.pointsInTalent(ENHANCED_RINGS)).set(1);
 		}
+        else if (hero.hasTalent(ENHANCED_RINGS_V2) && hero.buff(EnhancedRings.CoolDown.class) == null){
+            Buff.prolong(hero, EnhancedRings.class, 3).set(hero.pointsInTalent(ENHANCED_RINGS_V2));
+        }
 	}
 
 	public static void onItemEquipped( Hero hero, Item item ){
@@ -905,7 +908,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, Type56Three_Bomb, Type56Three_Book);
 				break;
             case PUBLIC_1:
-                Collections.addAll(tierTalents, EMPOWERING_SCROLLS_V2, DESPERATE_POWER, ELITE_ARMY);
+                Collections.addAll(tierTalents, EMPOWERING_SCROLLS_V2, DESPERATE_POWER, ELITE_ARMY, ENHANCED_RINGS_V2);
                 break;
             case GSH18:
                 Collections.addAll(tierTalents,GSH18_INTELLIGENCE_AWARENESS,GSH18_AGILE_MOVEMENT);
@@ -1032,19 +1035,45 @@ public enum Talent {
         bundle.put("addTalents", addTalentBundle);
 	}
 
+    private static final HashSet<String> removedTalents = new HashSet<>();
+    static{
+        //nothing atm
+    }
+
+    private static final HashMap<String, String> renamedTalents = new HashMap<>();
+    static{
+        //nothing atm
+    }
+
 	public static void restoreTalentsFromBundle( Bundle bundle, Hero hero ){
 		//TODO restore replacements
 		if (bundle.contains("replacements")){
 			Bundle replacements = bundle.getBundle("replacements");
-			for (String key : replacements.getKeys()){
-				hero.metamorphedTalents.put(Talent.valueOf(key), replacements.getEnum(key, Talent.class));
-			}
+            for (String key : replacements.getKeys()){
+                String value = replacements.getString(key);
+                if (renamedTalents.containsKey(key)) key = renamedTalents.get(key);
+                if (renamedTalents.containsKey(value)) value = renamedTalents.get(value);
+                if (!removedTalents.contains(key) && !removedTalents.contains(value)){
+                    try {
+                        hero.metamorphedTalents.put(Talent.valueOf(key), Talent.valueOf(value));
+                    } catch (Exception e) {
+                        GirlsFrontlinePixelDungeon.reportException(e);
+                    }
+                }
+            }
 		}
         if (bundle.contains("addTalents")){
             Bundle addTalentsBundle = bundle.getBundle("addTalents");
             hero.addTalents = new LinkedHashMap<>();
             for (String key : addTalentsBundle.getKeys()){
-                hero.addTalents.put(Talent.valueOf(key), addTalentsBundle.getInt(key));
+                if (renamedTalents.containsKey(key)) key = renamedTalents.get(key);
+                if (!removedTalents.contains(key)){
+                    try {
+                        hero.addTalents.put(Talent.valueOf(key), addTalentsBundle.getInt(key));
+                    } catch (Exception e) {
+                        GirlsFrontlinePixelDungeon.reportException(e);
+                    }
+                }
             }
         }
 
@@ -1057,11 +1086,20 @@ public enum Talent {
 			Bundle tierBundle = bundle.contains(TALENT_TIER+(i+1)) ? bundle.getBundle(TALENT_TIER+(i+1)) : null;
 
 			if (tierBundle != null){
-				for (Talent talent : tier.keySet()){
-					if (tierBundle.contains(talent.name())){
-                        TalentUpdate(tier, hero, talent, Math.min(tierBundle.getInt(talent.name()), talent.maxPoints()));
-					}
-				}
+                for (String talentName : tierBundle.getKeys()){
+                    int points = tierBundle.getInt(talentName);
+                    if (renamedTalents.containsKey(talentName)) talentName = renamedTalents.get(talentName);
+                    if (!removedTalents.contains(talentName)) {
+                        try {
+                            Talent talent = Talent.valueOf(talentName);
+                            if (tier.containsKey(talent)) {
+                                TalentUpdate(tier, hero, talent, Math.min(points, talent.maxPoints()));
+                            }
+                        } catch (Exception e) {
+                            GirlsFrontlinePixelDungeon.reportException(e);
+                        }
+                    }
+                }
 			}
 		}
 	}
