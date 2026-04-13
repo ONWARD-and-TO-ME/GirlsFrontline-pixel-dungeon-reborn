@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -33,7 +34,7 @@ public class Light extends FlavourBuff {
 		type = buffType.POSITIVE;
 	}
 
-	public static final float DURATION	= 250f;
+	public static final float DURATION	= Dungeon.isChallenged(Challenges.DARKNESS) ? 250 : 450;
 	public static final int DISTANCE	= 6;
 	
 	@Override

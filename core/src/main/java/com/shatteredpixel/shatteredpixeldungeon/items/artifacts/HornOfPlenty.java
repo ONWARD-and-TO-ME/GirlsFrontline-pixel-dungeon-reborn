@@ -34,6 +34,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.FairyItems;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Letter;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Peach;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Blandfruit;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
@@ -96,6 +99,8 @@ public class HornOfPlenty extends Artifact {
 				if (Dungeon.isChallenged(Challenges.NO_FOOD)){
 					satietyPerCharge /= 3f;
 				}
+                if (FairyItems.inFairyRoom(hero))
+                    satietyPerCharge *= 1.1F;
 
 				Hunger hunger = Buff.affect(Dungeon.hero, Hunger.class);
 				int chargesToUse = Math.max( 1, (int)(hunger.hunger()/satietyPerCharge));
@@ -199,25 +204,27 @@ public class HornOfPlenty extends Artifact {
 		chargeCap = 5 + level()/2;
 		return this;
 	}
-	
-	public void gainFoodValue( Food food ){
-		if (level() >= 10) return;
+	public void gainValue(int value){
+        if (level() >= 10) return;
 
-		storedFoodEnergy += food.energy();
-		if (storedFoodEnergy >= Hunger.HUNGRY){
-			int upgrades = storedFoodEnergy / (int)Hunger.HUNGRY;
-			upgrades = Math.min(upgrades, 10 - level());
-			upgrade(upgrades);
-			storedFoodEnergy -= upgrades * Hunger.HUNGRY;
-			if (level() == 10){
-				storedFoodEnergy = 0;
-				GLog.p( Messages.get(this, "maxlevel") );
-			} else {
-				GLog.p( Messages.get(this, "levelup") );
-			}
-		} else {
-			GLog.i( Messages.get(this, "feed") );
-		}
+        storedFoodEnergy += value;
+        if (storedFoodEnergy >= Hunger.HUNGRY){
+            int upgrades = storedFoodEnergy / (int)Hunger.HUNGRY;
+            upgrades = Math.min(upgrades, 10 - level());
+            upgrade(upgrades);
+            storedFoodEnergy -= upgrades * Hunger.HUNGRY;
+            if (level() == 10){
+                storedFoodEnergy = 0;
+                GLog.p( Messages.get(this, "maxlevel") );
+            } else {
+                GLog.p( Messages.get(this, "levelup") );
+            }
+        } else {
+            GLog.i( Messages.get(this, "feed") );
+        }
+    }
+	public void gainFoodValue( Food food ){
+        gainValue((int) food.energy());
 	}
 	
 	private static final String STORED = "stored";
@@ -290,25 +297,35 @@ public class HornOfPlenty extends Artifact {
 
 		@Override
 		public boolean itemSelectable(Item item) {
-			return item instanceof Food;
+			return item instanceof Food || item instanceof Letter || item instanceof Peach;
 		}
 
 		@Override
 		public void onSelect( Item item ) {
-			if (item != null && item instanceof Food) {
+            if (item == null)
+                return;
+            if (item instanceof Letter){
+                ((HornOfPlenty)curItem).gainValue((int) (Hunger.HUNGRY*3.5F));
+                GLog.n("请输入文本。3.5级。");
+            }
+            else if (item instanceof Peach){
+                ((HornOfPlenty)curItem).gainValue((int) (Hunger.HUNGRY));
+                GLog.n("请输入文本。1级。");
+            }
+			else if (item instanceof Food) {
 				if (item instanceof Blandfruit && ((Blandfruit) item).potionAttrib == null){
 					GLog.w( Messages.get(HornOfPlenty.class, "reject") );
-				} else {
-					Hero hero = Dungeon.hero;
-					hero.sprite.operate( hero.pos );
-					hero.busy();
-					hero.spend( Food.TIME_TO_EAT );
-
-					((HornOfPlenty)curItem).gainFoodValue(((Food)item));
-					item.detach(hero.belongings.backpack);
+                    return;
 				}
-
+                else {
+					((HornOfPlenty)curItem).gainFoodValue(((Food)item));
+				}
 			}
+            Hero hero = Dungeon.hero;
+            hero.sprite.operate( hero.pos );
+            hero.busy();
+            hero.spend( Food.TIME_TO_EAT );
+            item.detach(hero.belongings.backpack);
 		}
 	};
 }

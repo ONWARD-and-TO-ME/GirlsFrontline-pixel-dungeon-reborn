@@ -62,9 +62,12 @@ public class ItemSlot extends Button {
 	private static final String TXT_LEVEL	= "%+d";
 
 	// Special "virtual items"
-	public static final Item CHEST = new Item() {
-		public int image() { return ItemSpriteSheet.CHEST; }
-	};
+    public static final Item CHEST = new Item() {
+        public int image() { return ItemSpriteSheet.CHEST; }
+    };
+    public static final Item MISSION_CHEST = new Item() {
+        public int image() { return ItemSpriteSheet.MISSION_CHEST; }
+    };
 	public static final Item LOCKED_CHEST = new Item() {
 		public int image() { return ItemSpriteSheet.LOCKED_CHEST; }
 	};

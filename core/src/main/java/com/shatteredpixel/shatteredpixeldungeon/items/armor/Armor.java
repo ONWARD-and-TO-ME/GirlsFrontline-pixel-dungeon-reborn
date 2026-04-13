@@ -26,6 +26,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -34,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
@@ -60,12 +62,14 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Stone;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Swiftness;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Thorns;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.particles.Emitter;
@@ -114,8 +118,7 @@ public class Armor extends EquipableItem {
 	
 	public int tier;
     public float broken;
-    public float FixTime;
-	
+    public float duration;
 	private static final int USES_TO_ID = 10;
 	private float usesLeftToID = USES_TO_ID;
 	private float availableUsesToID = USES_TO_ID/2f;
@@ -132,7 +135,7 @@ public class Armor extends EquipableItem {
 	private static final String SEAL            = "seal";
 	private static final String AUGMENT			= "augment";
     private static final String BROKEN          = "broken";
-    private static final String FIX_TIME = "fixTime";
+    private static final String DURATION        = "duration";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -145,7 +148,7 @@ public class Armor extends EquipableItem {
 		bundle.put( SEAL, seal);
 		bundle.put( AUGMENT, augment);
         bundle.put( BROKEN, broken);
-        bundle.put(FIX_TIME, FixTime);
+        bundle.put( DURATION, duration);
 	}
 
 	@Override
@@ -160,7 +163,7 @@ public class Armor extends EquipableItem {
 		
 		augment = bundle.getEnum(AUGMENT, Augment.class);
         broken = bundle.getFloat(BROKEN);
-        FixTime = bundle.getFloat(FIX_TIME);
+        duration = bundle.getFloat(DURATION);
 	}
 
 	@Override
@@ -216,6 +219,23 @@ public class Armor extends EquipableItem {
 		}
 	}
 
+    protected mixArmor mixArmorTracker;
+    @Override
+    public void Tracker(Char owner){
+        super.Tracker(owner);
+        if (mixArmorTracker == null) {
+            mixArmorTracker = new mixArmor();
+            mixArmorTracker.attachTo(owner);
+        }
+    }
+    @Override
+    public void stopTrack(){
+        super.stopTrack();
+        if (mixArmorTracker != null) {
+            mixArmorTracker.detach();
+            mixArmorTracker = null;
+        }
+    }
 	@Override
 	public boolean doEquip( Hero hero ) {
 		detach(hero.belongings.backpack);
@@ -309,7 +329,7 @@ public class Armor extends EquipableItem {
         hero.spendAndNext( time2equip() );
     }
     @Override
-    protected boolean unEquipable(Hero hero){
+    public boolean unEquipable(Hero hero){
         // +1级允许取下被诅咒的防具
         return  super.unEquipable(hero) || hero.pointsInTalent(Talent.GSH18_DOCTOR_INTUITION) >= 1;
     }
@@ -422,7 +442,9 @@ public class Armor extends EquipableItem {
     }
 	@Override
 	public void activate(Char ch) {
-		if (seal != null) Buff.affect(ch, BrokenSeal.WarriorShield.class).setArmor(this);
+		if (seal != null)
+            Buff.affect(ch, BrokenSeal.WarriorShield.class).setArmor(this);
+        Tracker(ch);
 	}
 
 	public void affixSeal(BrokenSeal seal){
@@ -636,8 +658,17 @@ public class Armor extends EquipableItem {
 		} else {
 			if (hasCurseGlyph()){
 				if (Random.Int(3) == 0) inscribe(null);
-			} else if (level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)){
-				inscribe(null);
+			} else{
+
+                //the chance from +4/5, and then +6 can be set to 0% with metamorphed runic transference
+                int lossChanceStart = 4;
+                if (Dungeon.hero != null && Dungeon.hero.heroClass != HeroClass.WARRIOR && Dungeon.hero.hasTalentA(Talent.RUNIC_TRANSFERENCE)){
+                    lossChanceStart += 1+Dungeon.hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE);
+                }
+
+                if (level() >= lossChanceStart && Random.Float(10) < Math.pow(2, level()-4)) {
+                    inscribe(null);
+                }
 			}
 		}
 		
@@ -726,18 +757,11 @@ public class Armor extends EquipableItem {
 			info += "\n\n" + Messages.get(Armor.class, "not_cursed");
 		}
         if (broken>0) {
-            float num = FixTime;
-            if (hero!=null &&
-                    hero.buff(CooldownTracker.class)!=null &&
-                    !isEquipped(hero))
-                num = hero.buff(CooldownTracker.class).num;
-            broken-= 2*(num - FixTime);
-            FixTime = num;
-            broken = Math.max(0, broken);
-            if (broken>0)
-                info += "\n\n" + Messages.get(Armor.class, "broken_times", broken);
+            info += "\n\n" + Messages.get(Armor.class, "broken_times", broken);
         }
-		
+
+        if (overLoadLeft > 0)
+            info += overLoad.name() + overLoadLeft;
 		return info;
 	}
 
@@ -966,4 +990,53 @@ public class Armor extends EquipableItem {
 		}
 		
 	}
+    public class mixArmor extends Buff {
+
+        private static final float recover  = 1F;
+        private static final float unEquip  = 2F;
+        private static final float broking   = 1F;
+        private static final float inside   = 0.5F;
+
+        @Override
+        public boolean attachTo( Char target ) {
+            super.attachTo( target );
+
+            if (broken > 0 && duration > 0){
+                float num = Statistics.duration;
+                broken-= 2*(num - duration);
+                broken = Math.max(0, broken);
+                duration = Statistics.duration;
+            }
+            return true;
+        }
+
+        @Override
+        public boolean act() {
+            spend(TICK);
+            duration = Statistics.duration;
+            if (!isEquipped(hero)){
+                broken -= unEquip;
+                return true;
+            }
+            boolean mixArmor = hero.belongings.armor() != null && hero.belongings.SecondArmor() != null;
+            if (!mixArmor && isEquipped(hero)){
+                broken -= recover;
+                return true;
+            }
+            if (mixArmor){
+                if (hero.belongings.armor() == Armor.this){
+                    broken += broking;
+                }else {
+                    broken += inside;
+                }
+            }
+            if (broken < 0 && hero.belongings.armor == null && hero.belongings.secArmor == null)
+                broken = 0;
+            return true;
+        }
+
+        public Armor armor(){
+            return Armor.this;
+        }
+    }
 }

@@ -79,6 +79,7 @@ public abstract class EquipableItem extends Item {
 			//This is a special case as the item is being removed from inventory, but is staying with the hero.
 			int slot = Dungeon.quickslot.getSlot( this );
 			doEquip(hero);
+            Tracker(hero);
 			if (slot != -1) {
 				Dungeon.quickslot.setSlot( slot, this );
 				updateQuickslot();
@@ -117,7 +118,7 @@ public abstract class EquipableItem extends Item {
 	}
 
 	public abstract boolean doEquip( Hero hero );
-    protected boolean unEquipable(Hero hero){
+    public boolean unEquipable(Hero hero){
         // 魔免buff下、复活未选中，允许被脱下
         return !cursed || hero.buff(MagicImmune.class) != null ||
                 hero.buff(LostInventory.class)!=null && !keptThoughLostInvent;

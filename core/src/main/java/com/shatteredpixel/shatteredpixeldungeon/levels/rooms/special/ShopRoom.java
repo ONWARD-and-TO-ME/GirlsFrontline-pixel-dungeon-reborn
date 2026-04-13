@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
@@ -46,6 +47,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Commander;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Gemini;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Letter;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Peach;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Succor;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SugarZongzi;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Maccol;
@@ -344,7 +350,17 @@ public class ShopRoom extends SpecialRoom {
 				break;
 		}
 
-		itemsToSpawn.add( new Ankh() );
+        if (Challenges.isItemBlocked(new Ankh())) {
+            switch(Random.Int(5)){
+                case 0: itemsToSpawn.add(new Commander());
+                case 1: itemsToSpawn.add(new Gemini());
+                case 2: itemsToSpawn.add(new Letter());
+                case 3: itemsToSpawn.add(new Peach());
+                case 4: itemsToSpawn.add(new Succor());
+            }
+        }
+        else
+		    itemsToSpawn.add( new Ankh() );
 		itemsToSpawn.add( new StoneOfAugmentation() );
 
 		TimekeepersHourglass hourglass = Dungeon.hero.belongings.getItem(TimekeepersHourglass.class);

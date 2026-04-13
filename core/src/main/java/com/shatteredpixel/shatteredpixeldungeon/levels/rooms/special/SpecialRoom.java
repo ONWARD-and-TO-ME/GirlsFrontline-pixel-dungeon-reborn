@@ -23,7 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.custom.seedfinder.SeedFinder;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretLaboratoryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -132,12 +136,21 @@ public abstract class SpecialRoom extends Room {
 	}
 	
 	public static void initForFloor(){
-		floorSpecials = (ArrayList<Class<?extends Room>>) runSpecials.clone();
+		floorSpecials = new ArrayList<>(runSpecials);
 		
 		//laboratory rooms spawn at set intervals every chapter
-		if (Dungeon.depth%5 == (Dungeon.seed%3 + 2)){
+        int region  = 1+Dungeon.depth/5;
+        int depth   = Dungeon.depth%5;
+        int labRoom = Random.Int(5-depth);
+		if (depth > 1 && region > Dungeon.LimitedDrops.LaboratoryRoom.count && labRoom == 0){
 			floorSpecials.add(0, LaboratoryRoom.class);
+            Dungeon.LimitedDrops.LaboratoryRoom.used();
 		}
+        int fairy   =  Random.Int(5-depth);
+        if (depth>=3 && region > Dungeon.LimitedDrops.FairyRoom.count && fairy == 0){
+            floorSpecials.add(0, FairyRoom.class);
+            Dungeon.LimitedDrops.FairyRoom.used();
+        }
 	}
 	
 	private static void useType( Class<?extends Room> type ) {
@@ -158,16 +171,37 @@ public abstract class SpecialRoom extends Room {
 	}
 	
 	public static SpecialRoom createRoom(){
-		if (Dungeon.depth == pitNeededDepth){
-			pitNeededDepth = -1;
-			
-			useType( PitRoom.class );
-			return new PitRoom();
-			
-		} else if (floorSpecials.contains(LaboratoryRoom.class)) {
-		
-			useType(LaboratoryRoom.class);
-			return new LaboratoryRoom();
+        if (Dungeon.depth == pitNeededDepth){
+            pitNeededDepth = -1;
+
+            useType( PitRoom.class );
+            return new PitRoom();
+
+        } else if (floorSpecials.contains(FairyRoom.class)){
+
+            useType( FairyRoom.class );
+            return new FairyRoom();
+
+        } else if (floorSpecials.contains(LaboratoryRoom.class)) {
+
+            int random = Random.Int(3);
+            boolean secret;
+            if (SeedFinder.SeedFinding)
+                secret = SeedFinder.toolkit == 0;
+            else {
+                AlchemistsToolkit toolkit = Dungeon.hero.belongings.getItem(AlchemistsToolkit.class);
+                secret = toolkit != null && toolkit.isIdentified() && !toolkit.cursed;
+            }
+            if (secret && random != 0) {
+                floorSpecials.remove( LaboratoryRoom.class );
+                if (random == 1)
+                    return SecretRoom.createRoom();
+                else
+                    return new SecretLaboratoryRoom();
+            }
+            else {useType(LaboratoryRoom.class);
+                return new LaboratoryRoom();
+            }
 		
 		} else {
 			

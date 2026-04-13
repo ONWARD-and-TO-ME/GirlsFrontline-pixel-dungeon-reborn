@@ -122,6 +122,7 @@ public abstract class Level implements Bundlable {
 	public int levelDepth;
     public boolean FirstSight = true;
     public boolean SecondSight = true;
+    public boolean prevent  = false;
 
     public int levelId;
 	public int version;
@@ -148,6 +149,7 @@ public abstract class Level implements Bundlable {
     public boolean[] flammableB;
 
 	public boolean[] openSpace;
+    public boolean[] sharedVision;
 	
 	public Feeling feeling = Feeling.NONE;
 	
@@ -197,6 +199,8 @@ public abstract class Level implements Bundlable {
     private static final String FIRSTSAVE   = "firstsave";
     private static final String FIRSTSIGHT   = "FIRSTSIGHT";
     private static final String SECONDSIGHT   = "SECONDSIGHT";
+    private static final String SHARED_VISION = "SHARED_VISION";
+    private static final String PREVENT         = "prevent";
 
 	public void create(int levelDepth,int levelId){
 		this.levelDepth=levelDepth;
@@ -205,13 +209,6 @@ public abstract class Level implements Bundlable {
 		
 		if (!(Dungeon.bossLevel())) {
 
-//			if (Dungeon.isChallenged(Challenges.NO_FOOD)){
-//				//addItemToSpawn( new SmallRation() );  // 在NO_FOOD挑战模式下添加小份口粮
-//				addItemToSpawn(Generator.random(Generator.Category.FOOD));  // 在NO_FOOD挑战模式下生成正常食物
-//			} else {
-//				addItemToSpawn(Generator.random(Generator.Category.FOOD));  // 正常模式下随机生成食物
-//			}
-//饥荒挑战下的食物生成差分，现在无用，所以注释掉
             addItemToSpawn(Generator.random(Generator.Category.FOOD));
 
 			if (Dungeon.isChallenged(Challenges.DARKNESS)){
@@ -322,6 +319,7 @@ public abstract class Level implements Bundlable {
         breakable	= new boolean[length];
         special     = new boolean[length];
         flammableB  = new boolean[length];
+        sharedVision= new boolean[length];
 
 		openSpace   = new boolean[length];
 		
@@ -348,6 +346,7 @@ public abstract class Level implements Bundlable {
         FirstSave =bundle.getBoolean(FIRSTSAVE);
         FirstSight=bundle.getBoolean(FIRSTSAVE);
         SecondSight=bundle.getBoolean(SECONDSIGHT);
+        prevent = bundle.getBoolean(PREVENT);
 		levelDepth=bundle.getInt(LEVEL_DEPTH);
         levelId   =bundle.getInt(LEVEL_ID);
 		version   =bundle.getInt(VERSION);
@@ -450,6 +449,11 @@ public abstract class Level implements Bundlable {
         }else {
             flammableB = new boolean[length()];
         }
+        if (bundle.contains(SHARED_VISION)){
+            sharedVision = bundle.getBooleanArray(SHARED_VISION);
+        }else {
+            sharedVision = new boolean[length()];
+        }
 		cleanWalls();
 	}
 	
@@ -481,6 +485,8 @@ public abstract class Level implements Bundlable {
         bundle.put(FIRSTSIGHT,FirstSight);
         bundle.put(SECONDSIGHT,SecondSight);
         bundle.put(FLAME, flammableB);
+        bundle.put(SHARED_VISION, sharedVision);
+        bundle.put(PREVENT, prevent);
 	}
 	
 	public int tunnelTile() {
@@ -535,6 +541,7 @@ public abstract class Level implements Bundlable {
 
 	public void unseal(){
 		if (locked) {
+            prevent = false;
 			locked = false;
 			if (Dungeon.hero.buff(LockedFloor.class) != null){
 				Dungeon.hero.buff(LockedFloor.class).detach();
@@ -1342,7 +1349,8 @@ public abstract class Level implements Bundlable {
 				}
 			}
 
-			BArray.or(heroMindFov, fieldOfView, fieldOfView);
+            BArray.or(heroMindFov, fieldOfView, fieldOfView);
+            BArray.or(sharedVision, fieldOfView, fieldOfView);
 
 		}
 

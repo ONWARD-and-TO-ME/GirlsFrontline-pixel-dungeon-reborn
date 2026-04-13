@@ -71,7 +71,8 @@ public class Notes {
 		GARDEN,
 		STATUE,
 		SHOP,
-		
+
+        DEL,
 		GHOST,
 		WANDMAKER,
 		TROLL,

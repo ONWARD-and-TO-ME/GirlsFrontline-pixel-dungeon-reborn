@@ -117,7 +117,7 @@ public class ItemSpriteSheet {
 	public static final int CHEST           = CONTAINERS+4;
 	public static final int LOCKED_CHEST    = CONTAINERS+5;
 	public static final int CRYSTAL_CHEST   = CONTAINERS+6;
-	public static final int EBONY_CHEST     = CONTAINERS+7;
+	public static final int MISSION_CHEST     = CONTAINERS+7;
 	static{
 		assignItemRect(BONES,           14, 11);
 		assignItemRect(REMAINS,         14, 11);
@@ -126,7 +126,7 @@ public class ItemSpriteSheet {
 		assignItemRect(CHEST,           16, 14);
 		assignItemRect(LOCKED_CHEST,    16, 14);
 		assignItemRect(CRYSTAL_CHEST,   16, 14);
-		assignItemRect(EBONY_CHEST,     16, 14);
+		assignItemRect(MISSION_CHEST,   16, 14);
 	}
 		
 	//快修行

@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AnkhInvulnerability;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barkskin;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BasicBuffs;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -54,7 +55,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SiriusHeart;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.StarShield;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TalentGrass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TalentSecondSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WellFed;
@@ -97,6 +97,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.RedBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Commander;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.Guidebook;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
@@ -164,6 +165,7 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -523,10 +525,14 @@ public class Hero extends Char {
 	@Override
 	public int attackSkill( Char target ) {
 		KindOfWeapon wep = belongings.weapon();
-		
+
 		float accuracy = 1;
 		accuracy *= RingOfAccuracy.accuracyMultiplier( this );
-		
+
+        BasicBuffs.Accuracy acc = Dungeon.hero.buff(BasicBuffs.Accuracy.class);
+        if (acc != null)
+            accuracy*=acc.percent();
+
 		// GSH18天赋：短线作战
 		if (hasTalent(Talent.GSH18_CLOSE_COMBAT) && Dungeon.level.adjacent(pos, target.pos)) {
 			switch(pointsInTalent(Talent.GSH18_CLOSE_COMBAT)){
@@ -552,7 +558,7 @@ public class Hero extends Char {
 		
 		if (wep instanceof MissileWeapon){
 			if (Dungeon.level.adjacent( pos, target.pos )) {
-				accuracy *= (0.5f + 0.2f*pointsInTalent(Talent.POINT_BLANK));
+				accuracy *= (0.5f + 0.25f*pointsInTalent(Talent.POINT_BLANK));
 			} else {
 				accuracy *= 1.5f;
 			}
@@ -589,7 +595,11 @@ public class Hero extends Char {
 		}
 		
 		float evasion = defenseSkill;
-		
+
+        BasicBuffs.Evasion eva = Dungeon.hero.buff(BasicBuffs.Evasion.class);
+        if (eva != null)
+            evasion *= eva.percent();
+
 		evasion *= RingOfEvasion.evasionMultiplier( this );
 		
 		if (paralysed > 0) {
@@ -854,14 +864,28 @@ public class Hero extends Char {
 		
 		super.spend(time);
 	}
-	
-	public void spendAndNext( float time ) {
-		busy();
-		spend( time );
-		next();
-	}
-	
-	@Override
+
+    public void spendAndNext( float time ) {
+        spendAndNext(time, false);
+    }
+    public void spendAndNext( float time, boolean strict ) {
+        busy();
+        if (strict)
+            spendStrict( time );
+        else
+            spend( time );
+        next();
+    }
+
+    @Override
+    public CharSprite sprite() {
+        int tier = 0;
+        if (belongings != null && belongings.armor() != null)
+            tier = belongings.armor().tier();
+        return new HeroSprite(heroClass, tier);
+    }
+
+    @Override
 	public boolean act() {
         Dungeon.GetSight();
 		//calls to dungeon.observe will also update hero's local FOV.
@@ -1413,12 +1437,6 @@ public class Hero extends Char {
 			if (sprite != null) {
 				sprite.showStatus(CharSprite.DEFAULT, Messages.get(this, "wait"));
 			}
-            if (hasTalent(Talent.Type56_23V3)){
-                if (Dungeon.hero.buff(TalentGrass.class)==null&&Dungeon.hero.buff(TalentGrass.GrassCD.class)==null
-                        &&Dungeon.hero.buff(TalentGrass.GrassWait.class)==null){
-                    Buff.affect(this, TalentGrass.GrassWait.class);
-                }
-            }
 		}
 		resting = fullRest;
 	}
@@ -1467,13 +1485,18 @@ public class Hero extends Char {
 			break;
 		default:
 		}
-		
+        BasicBuffs.Increase increase = Dungeon.hero.buff(BasicBuffs.Increase.class);
+        if (increase != null)
+            damage *= increase.percent();
 		return damage;
 	}
 	
 	@Override
 	public int defenseProc( Char enemy, int damage ) {
-		
+        BasicBuffs.Reduce reduce = Dungeon.hero.buff(BasicBuffs.Reduce.class);
+		if (reduce != null)
+            damage *= reduce.percent();
+
 		if (damage > 0 && subClass == HeroSubClass.BERSERKER){
 			Berserk berserk = Buff.affect(this, Berserk.class);
 			berserk.damage(damage);
@@ -1797,6 +1820,9 @@ public class Hero extends Char {
 	}
 	
 	public void earnExp( int exp, Class source ) {
+        Commander.Command command = buff(Commander.Command.class);
+        if (command != null && command.count()>0)
+            exp *= 2;
 		this.exp += (int) (exp * (1+pointsInTalent(Talent.ELITE_ARMY)*2/3F));
 
 		float percent = exp/(float)maxExp();
@@ -1834,6 +1860,8 @@ public class Hero extends Char {
 		boolean levelUp = false;
 		while (this.exp >= maxExp()) {
 			this.exp -= maxExp();
+            if (command != null && command.count()>0)
+                command.countDown(1);
 			if (lvl < MAX_LEVEL) {
 				lvl++;
 				levelUp = true;
@@ -1854,7 +1882,11 @@ public class Hero extends Char {
 				GLog.p( Messages.get(this, "level_cap"));
 				Sample.INSTANCE.play( Assets.Sounds.LEVELUP );
 			}
-
+            if (pointsInTalent(Talent.WAND_PRESERVATION) == 2){
+                Talent.WandPreservationCounter counter = Buff.affect(this, Talent.WandPreservationCounter.class);
+                if (counter.count()>0)
+                    counter.countDown(1);
+            }
 		}
 
 		if (levelUp) {

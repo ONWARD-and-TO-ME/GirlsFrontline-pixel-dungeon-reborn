@@ -676,7 +676,8 @@ public abstract class Wand extends Item {
 						});
 					}
 					curWand.cursedKnown = true;
-					
+					if (curWand.overLoadLeft > 0)
+                        curWand.overLoadLeft -= 10;
 				}
 				
 			}

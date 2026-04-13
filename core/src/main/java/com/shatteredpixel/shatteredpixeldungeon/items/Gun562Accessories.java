@@ -56,6 +56,9 @@ public class Gun562Accessories extends Item{
             gun562.enchant(gun561.enchantment);
             //保留附魔
 
+            gun562.overLoad = OverLoad.OVERLOADING;
+            gun562.overLoadLeft = gun561.coolDownLeft;
+
 			hero.spendAndNext(3f);
 			detach(hero.belongings.backpack);
 

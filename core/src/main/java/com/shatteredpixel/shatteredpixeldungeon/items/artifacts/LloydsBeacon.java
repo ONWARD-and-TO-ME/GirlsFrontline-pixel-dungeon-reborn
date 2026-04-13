@@ -25,14 +25,19 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.FairyItems;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -54,28 +59,16 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 public class LloydsBeacon extends Artifact {
-    //考虑将大传功能改成向本区域维修站传送，本区域未解锁维修站则向上一区域的维修站传送，加入CD
-    //考虑加入定点传送功能，向视野内的一个格子，无视距离、障碍，传送至该位置，有cd，
-    // 如果传送格子是封锁区域（抄锁链代码，锁链有分封锁区域和墙体内），cd加倍
-    //预输入倍率3x，传送维修站、定点传送cd为500，cd共用，保留小传功能但是cd期间无法小传
-    // 传送后将会获得一定负面，预输入5回合致盲+5回合眩惑
-    //考虑给诅咒触发效果处给cd增加，诅咒期间cd不衰减，预输入100
-
-    //维修站：准备加入的房间，每个区域固定刷新一个，刷新在3-4层，有使用次数限制，使用道具获得一定补给或者维护，加入一些用处不大的功能，例如减毒，同样会消耗次数
-    // 道具是指救援妖精、桃子妖精等在开了禁止十字架挑战的时候，补充刷新的道具，后面可再加入更多想法
-    // 考虑给21点的安慰奖加入1%且仅可获得一次的“券”，也视为可用于维修站的补给道具
-    //将红底装备交给维修站一定时间后，于下一次抵达的维修站返还减毒装备（无论是进入更深层的维修站还是返回浅层的维修站）
-    // 考虑加入一定代价+一定回合，预输入1000回合无代价，预输入500回合+1张祛邪
-    // 维修站考虑使用嬗变泉模型，做一个工作台？但是怎么跟补给、维修、减毒等功能扯上关系呢，怎么跟空降传送挂上关系呢？
-    // 考虑让波波沙挂名？但这可能重复出现次数过多，且与任务NPC重合
 	public static final float TIME_TO_USE = 1;
 
-	public static final String AC_ZAP       = "ZAP";
-	public static final String AC_SET		= "SET";
-	public static final String AC_RETURN	= "RETURN";
+	private static final String AC_ZAP       = "ZAP";
+	private static final String AC_SET		= "SET";
+	private static final String AC_RETURN	= "RETURN";
+    private static final String AC_TP       = "TP";
 	
 	public int returnLevelId	= -1;
 	public int returnPos;
+    private int cd;
 	
 	{
 		image = ItemSpriteSheet.ARTIFACT_BEACON;
@@ -91,6 +84,7 @@ public class LloydsBeacon extends Artifact {
 	
 	private static final String DEPTH	= "depth";
 	private static final String POS		= "pos";
+    private static final String CD      = "cd";
 	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -99,6 +93,7 @@ public class LloydsBeacon extends Artifact {
 		if (returnLevelId != -1) {
 			bundle.put( POS, returnPos );
 		}
+        bundle.put(CD, cd);
 	}
 	
 	@Override
@@ -106,6 +101,7 @@ public class LloydsBeacon extends Artifact {
 		super.restoreFromBundle(bundle);
         returnLevelId	= bundle.getInt( DEPTH );
 		returnPos	= bundle.getInt( POS );
+        cd              = bundle.getInt(CD);
 	}
 	
 	@Override
@@ -116,6 +112,8 @@ public class LloydsBeacon extends Artifact {
 		if (returnLevelId != -1) {
 			actions.add( AC_RETURN );
 		}
+        if (FairyItems.inFairyRoom(hero))
+            actions.add(AC_TP);
 		return actions;
 	}
 	
@@ -124,9 +122,9 @@ public class LloydsBeacon extends Artifact {
 
 		super.execute( hero, action );
 
-		if (action == AC_SET || action == AC_RETURN) {
+		if (action.equals(AC_SET) || action.equals(AC_RETURN)) {
 			
-			if (Dungeon.bossLevel()) {
+			if (Dungeon.level.prevent) {
 				hero.spend( LloydsBeacon.TIME_TO_USE );
 				GLog.w( Messages.get(this, "preventing") );
 				return;
@@ -141,10 +139,10 @@ public class LloydsBeacon extends Artifact {
 			}
 		}
 
-		if (action == AC_ZAP ){
+		if (action.equals(AC_ZAP) ){
 
 			curUser = hero;
-			int chargesToUse = Dungeon.depth > 20 ? 2 : 1;
+			int chargesToUse = Dungeon.depth / 20 + 1;
 
 			if (!isEquipped( hero )) {
 				GLog.i( Messages.get(Artifact.class, "need_to_equip") );
@@ -158,7 +156,7 @@ public class LloydsBeacon extends Artifact {
 				GameScene.selectCell(zapper);
 			}
 
-		} else if (action == AC_SET) {
+		} else if (action.equals(AC_SET)) {
 
             returnLevelId = Dungeon.levelId;
 			returnPos   = hero.pos;
@@ -170,8 +168,15 @@ public class LloydsBeacon extends Artifact {
 			
 			GLog.i( Messages.get(this, "return") );
 			
-		} else if (action == AC_RETURN) {
-			
+		} else if (action.equals(AC_RETURN)) {
+
+            if ( cd > 0 ){
+                GLog.n( Messages.get(this, "cd") );
+                return;
+            }
+            cd = 50;
+            float blind = 10;
+            float weak  = 50;
 			if (returnLevelId == Dungeon.levelId) {
 				ScrollOfTeleportation.appear( hero, returnPos );
 				for(Mob m : Dungeon.level.mobs){
@@ -189,7 +194,8 @@ public class LloydsBeacon extends Artifact {
 				Dungeon.level.occupyCell(hero );
 				Dungeon.observe();
 				GameScene.updateFog();
-			} else {
+			}
+            else {
 
 				TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
 				if (timeFreeze != null) timeFreeze.disarmPressedTraps();
@@ -200,10 +206,18 @@ public class LloydsBeacon extends Artifact {
 				InterlevelScene.returnLevel = returnLevelId;
 				InterlevelScene.returnPos = returnPos;
 				Game.switchScene( InterlevelScene.class );
+                cd      *= 1.5F;
+                blind   *= 1.5F;
+                weak    *= 1.5F;
 			}
-			
-			
+//            if (!FairyItems.inFairyRoom(hero)) {
+//                Buff.prolong(hero, Blindness.class, blind);
+//                Buff.prolong(hero, Weakness.class, weak);
+//            }
 		}
+        else if (action.equals( AC_TP )){
+
+        }
         lockchB();
 	}
 
@@ -215,7 +229,7 @@ public class LloydsBeacon extends Artifact {
 			if (target == null) return;
 
 			Invisibility.dispel();
-			charge -= Dungeon.depth > 20 ? 2 : 1;
+			charge -= Dungeon.depth / 20 + 1;
 			updateQuickslot();
 
 			if (Actor.findChar(target) == curUser){
@@ -268,6 +282,8 @@ public class LloydsBeacon extends Artifact {
 											ch.sprite.place(ch.pos);
 											ch.sprite.visible = Dungeon.level.heroFOV[pos];
 
+                                            if (FairyItems.inFairyRoom(curUser))
+                                                Buff.prolong(ch, Paralysis.class, 5F);
 										}
 									}
 									curUser.spendAndNext(1f);

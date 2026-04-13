@@ -27,10 +27,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
@@ -71,7 +69,7 @@ public class TestBomb extends Bomb {
             }else if(Dungeon.level.map[i] == Terrain.LOCKED_EXIT)
                 set(i, Terrain.UNLOCKED_EXIT);
             else {
-                set(i, Terrain.GRASS);
+                set(i, Terrain.EMPTY);
             }
             Heap heap = Dungeon.level.heaps.get(i);
             if (heap != null) {
@@ -107,9 +105,10 @@ public class TestBomb extends Bomb {
         for (int k = 0; k < length; k++) {
             if (outMap(k))
                 continue;
+            Dungeon.level.flammable[k] = true;
             Heap h = Dungeon.level.heaps.get(k);
             if (h != null) {
-                Buff.append(Dungeon.hero, TalismanOfForesight.HeapAwareness.class, 100000).pos = h.pos;
+                Dungeon.level.sharedVision[h.pos] = true;
             }
         }
         Scroll map = new ScrollOfMagicMapping();

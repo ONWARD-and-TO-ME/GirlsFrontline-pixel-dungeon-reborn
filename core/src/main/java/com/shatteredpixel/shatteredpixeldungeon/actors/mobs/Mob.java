@@ -166,8 +166,8 @@ public abstract class Mob extends Char {
 
 		if (bundle.contains(MAX_LVL)) maxLvl = bundle.getInt(MAX_LVL);
 	}
-	
-	public CharSprite sprite() {
+	@Override
+    public CharSprite sprite() {
 		return Reflection.newInstance(spriteClass);
 	}
 	
@@ -761,7 +761,7 @@ public abstract class Mob extends Char {
 	}
 	
 	public void rollToDropLoot(){
-		if (Dungeon.hero.lvl > maxLvl + 2) return;
+		if (Dungeon.hero.lvl > maxLvl + 2 + Dungeon.LimitedDrops.DropLevel.count) return;
 
 		MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
 		if (stolen == null || !stolen.itemWasStolen()) {

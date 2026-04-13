@@ -66,6 +66,7 @@ public class Heap implements Bundlable {
         CHEST,
         LOCKED_CHEST,
         CRYSTAL_CHEST,
+        MISSION_CHEST,
         MIMIC,
         GOLDEN_MIMIC,
         CRYSTAL_MIMIC,
@@ -302,7 +303,7 @@ public class Heap implements Bundlable {
 	public void explode() {
 
 		//breaks open most standard containers, mimics die.
-		if (type == Type.CHEST || type == Type.SKELETON) {
+		if (type == Type.CHEST || type == Type.SKELETON || type == Type.MISSION_CHEST) {
 			type = Type.HEAP;
 			sprite.link();
 			sprite.drop();
@@ -428,6 +429,8 @@ public class Heap implements Bundlable {
 				title = Messages.get(this, "crystal_chest");break;
             case CRYSTAL_MIMIC:
                 title = Messages.get( CrystalMimic.class, "name");break;
+            case MISSION_CHEST:
+                title = Messages.get(this, "mission");break;
 			case TOMB:
 				title = Messages.get(this, "tomb");break;
 			case SKELETON:
@@ -486,6 +489,8 @@ public class Heap implements Bundlable {
 					return Messages.get(this, "crystal_chest_desc", Messages.get(this, "wand") );
 				else
 					return Messages.get(this, "crystal_chest_desc", Messages.get(this, "ring") );
+            case MISSION_CHEST:
+                return Messages.get(this, "mission_desc");
 			case TOMB:
 				return Messages.get(this, "tomb_desc");
 			case SKELETON:

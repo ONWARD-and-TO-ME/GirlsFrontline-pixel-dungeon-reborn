@@ -28,17 +28,16 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -56,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
@@ -81,6 +81,8 @@ public class Item implements Bundlable {
 	public static final String AC_DROP		= "DROP";
 	public static final String AC_THROW		= "THROW";
     public static final String AC_CHOOSE    = "CHOOSE";
+    public static final String AC_UNDO      = "UNDO";
+    public static final String AC_DoOverLoad= "DoOverLoad";
 	
 	public String defaultAction;
 	public boolean usesTargeting;
@@ -115,6 +117,9 @@ public class Item implements Bundlable {
 
 	// whether an item can be included in heroes remains
 	public boolean bones = false;
+    public OverLoad overLoad = OverLoad.NONE;
+    public float overLoadLeft;
+    public float updateTime;
 
 	protected String name = Messages.get(this, "name");
 
@@ -148,10 +153,6 @@ public class Item implements Bundlable {
 		return name;
 	}
 
-    public void update() {
-
-    }
-
     public final String trueName() {
 		return name;
 	}
@@ -167,6 +168,10 @@ public class Item implements Bundlable {
 		ArrayList<String> actions = new ArrayList<>();
 		actions.add( AC_DROP );
 		actions.add( AC_THROW );
+        if (overLoad == OverLoad.OVERLOADING)
+            actions.add( AC_UNDO );
+        if (Game.isDebug && isUpgradable() && level > 0)
+            actions.add( AC_DoOverLoad );
 		return actions;
 	}
 
@@ -180,7 +185,11 @@ public class Item implements Bundlable {
 
 	public boolean doPickUp(Hero hero, int pos) {
 		if (collect( hero.belongings.backpack )) {
-			
+
+            if (overLoad == OverLoad.OVER_LOAD) {
+                overLoadLeft = 100*level();
+                overLoad = OverLoad.OVERLOADING;
+            }
 			GameScene.pickUp( this, pos );
 			Sample.INSTANCE.play( Assets.Sounds.ITEM );
 			hero.spendAndNext( TIME_TO_PICK_UP );
@@ -229,6 +238,12 @@ public class Item implements Bundlable {
                 Buff.affect(Dungeon.hero, CooldownTracker.class);
         } else if (action.equals( AC_CHOOSE )){
             GameScene.show(new WndUseItem(null, this) );
+        } else if (action.equals( AC_UNDO )){
+            overLoad = OverLoad.RECOVER;
+            overLoadLeft = (level()*100 - overLoadLeft)*2;
+        } else if (action.equals( AC_DoOverLoad )){
+            overLoad = OverLoad.OVER_LOAD;
+            overLoadLeft = 0;
         }
     }
     public void notedSet(String text) {
@@ -311,22 +326,31 @@ public class Item implements Bundlable {
 		}
 		return this;
 	}
-	
+	public void update(){}
 	public boolean collect( Bag container ) {
 
 		if (quantity <= 0){
+            if (container.owner != null) {
+                Tracker(container.owner);
+            }
 			return true;
 		}
 
 		ArrayList<Item> items = container.items;
 
 		if (items.contains( this )) {
+            if (container.owner != null) {
+                Tracker(container.owner);
+            }
 			return true;
 		}
 
 		for (Item item:items) {
 			if (item instanceof Bag && ((Bag)item).canHold( this )) {
 				if (collect( (Bag)item )){
+                    if (container.owner != null) {
+                        Tracker(container.owner);
+                    }
 					return true;
 				}
 			}
@@ -346,6 +370,9 @@ public class Item implements Bundlable {
 						Talent.onItemCollected(hero, item);
 						if (isIdentified()) Catalog.setSeen(getClass());
 					}
+                    if (container.owner != null) {
+                        Tracker(container.owner);
+                    }
 					return true;
 				}
 			}
@@ -361,10 +388,13 @@ public class Item implements Bundlable {
 		Dungeon.quickslot.replacePlaceholder(this);
 		Collections.sort( items, itemComparator );
 		updateQuickslot();
+        if (container.owner != null) {
+            Tracker(container.owner);
+        }
 		return true;
 
 	}
-	
+
 	public boolean collect() {
 		return collect( hero.belongings.backpack );
 	}
@@ -392,40 +422,42 @@ public class Item implements Bundlable {
 	}
 	
 	public final Item detach( Bag container ) {
-		
-		if (quantity <= 0) {
-			
-			return null;
-			
-		} else
-		if (quantity == 1) {
-
-			if (stackable){
-				Dungeon.quickslot.convertToPlaceholder(this);
-			}
-
-			return detachAll( container );
-			
-		} else {
-			
-			
-			Item detached = split(1);
-            detached.noted=this.noted;
-			updateQuickslot();
-			if (detached != null) detached.onDetach( );
-			return detached;
-			
-		}
+        return detach(container, 1);
 	}
-    protected final Item detach( Bag container, int rem ){
-        if (this.quantity<=rem){
-            return this.detachAll(container);
-        }else {
-            for (int i = 0; i<rem; i++){
-                this.detach(container);
+    public final Item detach( Bag container, int quantity, int ignore){
+        Item item = hero.belongings.getItem(getClass());
+        if (item == null)
+            return null;
+        return item.detach(container, quantity);
+    }
+    public final Item detach( Bag container, int quantity ){
+
+        if (this.quantity <= 0) {
+
+            return null;
+
+        } else
+        if (this.quantity == 1) {
+
+            if (stackable){
+                Dungeon.quickslot.convertToPlaceholder(this);
             }
+
+            return detachAll( container );
+
         }
-        return this;
+        else {
+
+
+            Item detached = split(quantity);
+            updateQuickslot();
+            if (detached != null) {
+                detached.noted=this.noted;
+                detached.onDetach();
+            }
+            return detached;
+
+        }
     }
 	
 	public final Item detachAll( Bag container ) {
@@ -451,10 +483,12 @@ public class Item implements Bundlable {
 	}
 	
 	public boolean isSimilar( Item item ) {
-		return level == item.level && getClass() == item.getClass();
+		return level == item.level && getClass() == item.getClass() && overLoad == OverLoad.NONE;
 	}
 
-	protected void onDetach(){}
+	protected void onDetach(){
+        stopTrack();
+    }
 
 	//returns the true level of the item, ignoring all modifiers aside from upgrades
 	public final int trueLevel(){
@@ -463,7 +497,10 @@ public class Item implements Bundlable {
 
 	//returns the persistant level of the item, only affected by modifiers which are persistent (e.g. curse infusion)
 	public int level(){
-		return level;
+        int lvl = level;
+        if (overLoad == OverLoad.OVERLOADING)
+            lvl++;
+		return lvl;
 	}
 	
 	//returns the level of the item, after it may have been modified by temporary boosts/reductions
@@ -471,11 +508,13 @@ public class Item implements Bundlable {
 	public int buffedLvl(){
         if (BuffLevelPoint!=0)
             return level()+BuffLevelPoint;
+        int lvl = level();
+        if (overLoad == OverLoad.RECOVER && overLoadLeft != 0)
+            lvl -= (int)(Math.sqrt(8 * Math.ceil(overLoadLeft / 100F) + 1) - 1)/2;
 		if (hero.buff( Degrade.class ) != null) {
-			return Degrade.reduceLevel(level());
-		} else {
-			return level();
+			return Degrade.reduceLevel(lvl);
 		}
+        return lvl;
 	}
 
 	public void level( int value ){
@@ -641,8 +680,11 @@ public class Item implements Bundlable {
     private static final String NOTED           = "noted";
     private static final String CAN_HOLD        = "canHold";
     private static final String BUFFLEVELPOINT  = "BUFFLEVELPOINT";
-    private static final String COOLDOWN_LEFT = "cooldownLeft";
-	
+    private static final String COOLDOWN_LEFT   = "cooldownLeft";
+    private static final String OVER_LOAD       = "over_load_mode";
+    private static final String OVER_LOAD_LEFT  = "over_load_left";
+    private static final String UPDATE_TIME        = "fixTime";
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		bundle.put( QUANTITY, quantity );
@@ -660,6 +702,9 @@ public class Item implements Bundlable {
         bundle.put(NOTED,noted);
         bundle.put(COOLDOWN_LEFT, coolDownLeft);
         bundle.put(CAN_HOLD, canHold);
+        bundle.put(OVER_LOAD, overLoad);
+        bundle.put(OVER_LOAD_LEFT, overLoadLeft);
+        bundle.put(UPDATE_TIME, updateTime);
 	}
 	
 	@Override
@@ -689,6 +734,12 @@ public class Item implements Bundlable {
         noted = bundle.getString(NOTED);
         coolDownLeft = bundle.getInt(COOLDOWN_LEFT);
         canHold = bundle.getBoolean(CAN_HOLD);
+        if (bundle.contains(OVER_LOAD))
+            overLoad    = bundle.getEnum(OVER_LOAD, OverLoad.class);
+        else
+            overLoad    = OverLoad.NONE;
+        overLoadLeft= bundle.getFloat(OVER_LOAD_LEFT);
+        updateTime = bundle.getFloat(UPDATE_TIME);
 	}
 
 	public int targetingPos( Hero user, int dst ){
@@ -784,8 +835,6 @@ public class Item implements Bundlable {
             type = buffType.POSITIVE;
             revivePersists = true;
         }
-
-        public float num;
         @Override
         public boolean act() {
             if (target instanceof Hero) {
@@ -801,38 +850,66 @@ public class Item implements Bundlable {
                         updateQuickslot();
                     }
                 }
-
-                boolean mixArmor = hero.belongings.armor()!=null &&
-                        hero.belongings.SecondArmor()!=null;
-                if (mixArmor &&
-                        ( hero.buff(LockedFloor.class) == null || hero.buff(LockedFloor.class).regenOn())){
-                    hero.belongings.armor.broken+=1;
-                    hero.belongings.secArmor.broken+=0.5F;
-                }
-                for (Item i :hero.belongings){
-                    if (i instanceof Armor){
-                        if (!mixArmor && i.isEquipped(hero))
-                            ((Armor) i).broken-= num - ((Armor) i).FixTime;
-                        else if (!i.isEquipped(hero))
-                            ((Armor) i).broken-= 2*(num - ((Armor) i).FixTime);
-                        ((Armor) i).FixTime = num;
-                        ((Armor) i).broken = Math.max(0, ((Armor) i).broken);
-                    }
-                }
             }
 
-            num++;
             spend(TICK);
             return true;
         }
-        private static final String STATIC_NUM = "staticNum";
+    }
+    public enum OverLoad{
+        NONE, OVER_LOAD, OVERLOADING, RECOVER
+    }
+    protected OverLoadTrack tracker;
+    public void Tracker(Char owner){
+        if (isUpgradable() && (overLoadLeft > 0 || overLoad == OverLoad.OVER_LOAD) && tracker == null){
+            tracker = new OverLoadTrack();
+            tracker.attachTo(owner);
+        }
+    }
+    public void stopTrack(){
+        if (isUpgradable() && tracker != null){
+            tracker.detach();
+            tracker = null;
+        }
+    }
+    public class OverLoadTrack extends Buff{
+
         @Override
-        public void storeInBundle( Bundle bundle ) {
-            bundle.put(STATIC_NUM, num);
+        public boolean attachTo( Char target ) {
+            super.attachTo( target );
+            if (overLoad == OverLoad.OVERLOADING && coolDownLeft > 0 && updateTime > 0){
+                float num = Statistics.duration;
+                if (Item.this instanceof EquipableItem && !(Item.this instanceof MissileWeapon))
+                    overLoadLeft -= 0.5F*(num - updateTime);
+                else
+                    overLoadLeft -= num - updateTime;
+                overLoadLeft = Math.max(0, overLoadLeft);
+                updateTime = Statistics.duration;
+            }
+            return true;
         }
         @Override
-        public void restoreFromBundle( Bundle bundle ) {
-            num = bundle.getFloat(STATIC_NUM);
+        public boolean act() {
+            updateTime = Statistics.duration;
+
+            if (overLoad == OverLoad.OVERLOADING){
+                if (Item.this instanceof EquipableItem&& !(Item.this instanceof MissileWeapon) && ! Item.this.isEquipped((Hero) target))
+                    overLoadLeft -= 0.5F;
+                else
+                    overLoadLeft --;
+            } else if (overLoad == OverLoad.RECOVER){
+                if (isEquipped(hero))
+                    overLoadLeft--;
+            }
+            if (overLoadLeft <= 0){
+                if (overLoad == OverLoad.OVERLOADING)
+                    degrade();
+                overLoadLeft  = 0;
+                overLoad      = OverLoad.NONE;
+                detach();
+            }
+            spend(TICK);
+            return true;
         }
     }
 }

@@ -201,7 +201,8 @@ abstract public class MissileWeapon extends Weapon {
 			if (!curUser.shoot( enemy, this )) {
 				rangedMiss( cell );
 			} else {
-				
+                if (overLoad == OverLoad.OVERLOADING)
+				    overLoadLeft -= 10;
 				rangedHit( enemy, cell );
 
 			}
@@ -428,7 +429,8 @@ abstract public class MissileWeapon extends Weapon {
 			info += " " + Messages.get(this, "unlimited_uses");
 		}
 		
-		
+		if (overLoadLeft > 0)
+            info += overLoad.name() + overLoadLeft;
 		return info;
 	}
 	

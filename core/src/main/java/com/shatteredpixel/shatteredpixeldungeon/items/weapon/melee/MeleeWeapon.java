@@ -121,7 +121,9 @@ public class MeleeWeapon extends Weapon {
 		} else if (!isIdentified() && cursedKnown){
 			info += "\n\n" + Messages.get(Weapon.class, "not_cursed");
 		}
-		
+
+        if (overLoadLeft > 0)
+            info += overLoad.name() + overLoadLeft;
 		return info;
 	}
 	
