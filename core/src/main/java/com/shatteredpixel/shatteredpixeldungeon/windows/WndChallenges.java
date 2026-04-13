@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -41,14 +42,16 @@ public class WndChallenges extends Window {
 	private static final int BTN_HEIGHT = 13;
 	private static final int GAP        = 1;
 
-	private boolean editable;
-	private ArrayList<CheckBox> boxes;
+	private final boolean editable;
+    private final boolean remove_Last;
+	private final ArrayList<CheckBox> boxes;
 
-	public WndChallenges( int checked, boolean editable ) {
+    public WndChallenges( int checked, boolean editable, boolean remove_Last) {
 
 		super();
 
 		this.editable = editable;
+        this.remove_Last = remove_Last;
 
 		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 12 );
 		title.hardlight( TITLE_COLOR );
@@ -62,7 +65,10 @@ public class WndChallenges extends Window {
 		boxes = new ArrayList<>();
 
 		float pos = TTL_HEIGHT;
-		for (int i=0; i < Challenges.NAME_IDS.length; i++) {
+        int length = Challenges.NAME_IDS.length;
+        if (remove_Last)
+            length--;
+		for (int i=0; i < length; i++) {
 
 			final String challenge = Challenges.NAME_IDS[i];
 			
@@ -106,6 +112,10 @@ public class WndChallenges extends Window {
 					value |= Challenges.MASKS[i];
 				}
 			}
+            if (Dungeon.isChallenged(Challenges.TEST_MODE) && remove_Last) {
+                value += Challenges.TEST_MODE;
+                Dungeon.challenges = value;
+            }
 			SPDSettings.challenges( value );
 		}
 

@@ -43,6 +43,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PointF;
 
 public class MenuPane extends Component {
@@ -119,7 +120,7 @@ public class MenuPane extends Component {
 			challengeButton = new Button(){
 				@Override
 				protected void onClick() {
-					GameScene.show(new WndChallenges(Dungeon.challenges, false));
+					GameScene.show(new WndChallenges(Dungeon.challenges, Dungeon.isChallenged(Challenges.TEST_MODE) || DeviceCompat.isDebug(), true));
 				}
 
 				@Override
