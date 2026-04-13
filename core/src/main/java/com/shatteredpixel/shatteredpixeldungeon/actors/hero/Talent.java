@@ -50,7 +50,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.StarShield;
@@ -65,7 +64,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ShootGun;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
@@ -252,35 +250,27 @@ public enum Talent {
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
 		public float iconFadePercent() { return Math.max(0, visualcooldown() / 50); }
-		public String toString() { return Messages.get(this, "name"); }
-		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
-	};
-	public static class LethalMomentumTracker extends FlavourBuff{};
-	public static class StrikingWaveTracker extends FlavourBuff{};
-	public static class WandPreservationCounter extends CounterBuff{{revivePersists = true;}};
-	public static class EmpoweredStrikeTracker extends FlavourBuff{};
-	public static class BountyHunterTracker extends FlavourBuff{};
+	}
+	public static class LethalMomentumTracker extends FlavourBuff{}
+	public static class StrikingWaveTracker extends FlavourBuff{}
+	public static class WandPreservationCounter extends CounterBuff{{revivePersists = true;}}
+	public static class EmpoweredStrikeTracker extends FlavourBuff{}
+	public static class BountyHunterTracker extends FlavourBuff{}
 	public static class RejuvenatingStepsCooldown extends FlavourBuff{
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0f, 0.35f, 0.15f); }
 		public float iconFadePercent() { return Math.max(0, visualcooldown() / (15 - 5*Dungeon.hero.pointsInTalent(REJUVENATING_STEPS))); }
-		public String toString() { return Messages.get(this, "name"); }
-		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
-	};
-	public static class RejuvenatingStepsFurrow extends CounterBuff{{revivePersists = true;}};
+	}
+	public static class RejuvenatingStepsFurrow extends CounterBuff{{revivePersists = true;}}
 	public static class SeerShotCooldown extends FlavourBuff{
 		public int icon() { return target.buff(RevealedArea.class) != null ? BuffIndicator.NONE : BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.7f, 0.4f, 0.7f); }
 		public float iconFadePercent() { return Math.max(0, visualcooldown() / 20); }
-		public String toString() { return Messages.get(this, "name"); }
-		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
-	};
+	}
 	public static class GSH18MealTreatmentTracker extends FlavourBuff{
 		public int icon() { return BuffIndicator.HEALING; }
 		public void tintIcon(Image icon) { icon.hardlight(0.8f, 0.6f, 0.2f); }
-		public String toString() { return Messages.get(this, "name"); }
-		public String desc() { return Messages.get(this, "desc"); }
-	};
+	}
 	public static class GSH18EnergizingMealTracker extends CounterBuff{}
     
     //天狼星心脏 buff
@@ -318,20 +308,16 @@ public enum Talent {
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.0f, 0.5f); }
 		public float iconFadePercent() { return Math.max(0, visualcooldown() / 50); }
-		public String toString() { return Messages.get(this, "name"); }
-		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
-	};
-	public static class AgileMovement extends FlavourBuff{};
+	}
+	public static class AgileMovement extends FlavourBuff{}
 	public static class AgileMovementCooldown extends FlavourBuff{
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.7f); }
 		public float iconFadePercent() { return Math.max(0, visualcooldown() / 50); }
-		public String toString() { return Messages.get(this, "name"); }
-		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
-	};
-	public static class SpiritBladesTracker extends FlavourBuff{};
-	public static class SuckerPunchTracker extends Buff{};
-	public static class FollowupStrikeTracker extends Buff{};
+	}
+	public static class SpiritBladesTracker extends FlavourBuff{}
+	public static class SuckerPunchTracker extends Buff{}
+	public static class FollowupStrikeTracker extends Buff{}
 
 	final int icon;
 	final int maxPoints;
@@ -510,9 +496,9 @@ public enum Talent {
         }
 	}
 
-	public static class CachedRationsDropped extends CounterBuff{{revivePersists = true;}};
-    public static class ZongziDropped extends CounterBuff{{revivePersists = true;}};
-	public static class NatureBerriesAvailable extends CounterBuff{{revivePersists = true;}};
+	public static class CachedRationsDropped extends CounterBuff{{revivePersists = true;}}
+    public static class ZongziDropped extends CounterBuff{{revivePersists = true;}}
+	public static class NatureBerriesAvailable extends CounterBuff{{revivePersists = true;}}
 
 	public static void onFoodEaten(Hero hero, float foodVal, Item foodSource) {
         if (hero.hasTalent(HEARTY_MEAL)) {
@@ -729,7 +715,7 @@ public enum Talent {
         if(hero.pointsInTalent(Type56One_Identify)==2){
             if(item instanceof MeleeWeapon||item instanceof Armor){
                 item.cursedKnown=true;
-                item.updateQuickslot();
+                Item.updateQuickslot();
             }
         }
 	}

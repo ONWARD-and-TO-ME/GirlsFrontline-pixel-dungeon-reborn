@@ -156,8 +156,8 @@ public class LastLevel extends Level {
 
 	@Override
 	protected void createItems() {
-        drop( new ItemHolder(), exit);
         drop( new Amulet(), exit );
+        drop( new ItemHolder(), exit);
 	}
 
 	@Override

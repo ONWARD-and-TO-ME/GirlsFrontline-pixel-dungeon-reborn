@@ -333,7 +333,7 @@ public enum Rankings {
 			win		= bundle.getBoolean( WIN );
 			score	= bundle.getInt( SCORE );
 			isLock    = bundle.getBoolean( isLOCK );
-			heroClass	= bundle.getEnum( CLASS, HeroClass.class );
+			heroClass	= bundle.getEnum( CLASS, HeroClass.class, HeroClass.rename );
 			armorTier	= bundle.getInt( TIER );
 			
 			if (bundle.contains(DATA))  gameData = bundle.getBundle(DATA);

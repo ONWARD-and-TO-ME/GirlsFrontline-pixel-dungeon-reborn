@@ -1,9 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.fairyitems;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BasicBuffs;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.watabou.utils.Random;
 
 public class Peach extends FairyItems {
@@ -20,6 +23,10 @@ public class Peach extends FairyItems {
             case 3: Buff.affect(hero, BasicBuffs.Evasion.class,  50).set(1.25F);break;
             case 4: Buff.affect(hero, BasicBuffs.Reduce.class,   50).set(0.85F);break;
         }
+        Talent.onFoodEaten(hero, 0, this);
+
+        Statistics.foodEaten++;
+        Badges.validateFoodEaten();
     }
 
 }

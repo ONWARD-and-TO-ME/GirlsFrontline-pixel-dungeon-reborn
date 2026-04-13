@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 
@@ -47,11 +46,6 @@ public class Recharging extends FlavourBuff {
 	public float iconFadePercent() {
 		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
 	}
-	
-	@Override
-	public String toString() {
-		return Messages.get(this, "name");
-	}
 
 	//want to process partial turns for this buff, and not count it when it's expiring.
 	//firstly, if this buff has half a turn left, should give out half the benefit.
@@ -62,8 +56,4 @@ public class Recharging extends FlavourBuff {
 		return Math.min(1f, this.cooldown());
 	}
 
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns());
-	}
 }

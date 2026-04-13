@@ -339,7 +339,7 @@ public class Hero extends Char {
 
 		super.restoreFromBundle( bundle );
 
-		heroClass = bundle.getEnum( CLASS, HeroClass.class );
+		heroClass = bundle.getEnum( CLASS, HeroClass.class, HeroClass.rename );
 		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
 		armorAbility = (ArmorAbility)bundle.get( ABILITY );
 		Talent.restoreTalentsFromBundle( bundle, this );
@@ -364,7 +364,7 @@ public class Hero extends Char {
 		info.ht = bundle.getInt( Char.TAG_HT );
 		info.shld = bundle.getInt( Char.TAG_SHLD );
         info.hunger = bundle.getInt(HUNGER);
-		info.heroClass = bundle.getEnum( CLASS, HeroClass.class );
+		info.heroClass = bundle.getEnum( CLASS, HeroClass.class, HeroClass.rename );
 		info.subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
 		Belongings.preview( info, bundle );
 	}
@@ -531,7 +531,7 @@ public class Hero extends Char {
 
         BasicBuffs.Accuracy acc = Dungeon.hero.buff(BasicBuffs.Accuracy.class);
         if (acc != null)
-            accuracy*=acc.percent();
+            accuracy *= acc.percent();
 
 		// GSH18天赋：短线作战
 		if (hasTalent(Talent.GSH18_CLOSE_COMBAT) && Dungeon.level.adjacent(pos, target.pos)) {
@@ -1862,6 +1862,11 @@ public class Hero extends Char {
 			this.exp -= maxExp();
             if (command != null && command.count()>0)
                 command.countDown(1);
+            if (pointsInTalent(Talent.WAND_PRESERVATION) == 2){
+                Talent.WandPreservationCounter counter = Buff.affect(this, Talent.WandPreservationCounter.class);
+                if (counter.count()>0)
+                    counter.countDown(1);
+            }
 			if (lvl < MAX_LEVEL) {
 				lvl++;
 				levelUp = true;
@@ -1882,11 +1887,6 @@ public class Hero extends Char {
 				GLog.p( Messages.get(this, "level_cap"));
 				Sample.INSTANCE.play( Assets.Sounds.LEVELUP );
 			}
-            if (pointsInTalent(Talent.WAND_PRESERVATION) == 2){
-                Talent.WandPreservationCounter counter = Buff.affect(this, Talent.WandPreservationCounter.class);
-                if (counter.count()>0)
-                    counter.countDown(1);
-            }
 		}
 
 		if (levelUp) {

@@ -28,12 +28,14 @@ import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DEL;
+import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Clipper;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -148,7 +150,7 @@ public class WndDEL extends Window {
                     del.WorkLoadUsed(DEL.getMissionWorkLoad(mission));
                     Dungeon.gold -= DEL.getMissionGold(mission);
                     btnItem1.item.cursed = false;
-                    mission1.addMission(DEL.getMissionTimes(mission), btnItem1.item);
+                    ((EquipableItem) btnItem1.item).doUnequip(Dungeon.hero, true, true);
                     Dungeon.hero.spendAndNext(DEL.getMissionTimes(mission), true);
                 }
                 else if (mission == 3) {
@@ -169,6 +171,12 @@ public class WndDEL extends Window {
                                 btnItem1.item,
                                 Reflection.newInstance(btnItem1.item.getClass()).quantity(time));
                     del.WorkLoadUsed(DEL.getMissionWorkLoad(mission)*time);
+                }
+                else if (mission == 4){
+                    btnItem1.item.detach(Dungeon.hero.belongings.backpack, 15);
+                    Dungeon.gold -= DEL.getMissionGold(mission);
+                    del.WorkLoadUsed(DEL.getMissionWorkLoad(mission));
+                    mission1.addMission(DEL.getMissionTimes(4), new Clipper());
                 }
             }
         };
@@ -192,11 +200,15 @@ public class WndDEL extends Window {
         if (mission == 0)
             return (!item.isIdentified() || item.cursed) && !(item instanceof CorpseDust);
         if (mission == 1)
-            return item.isUpgradable() && item.levelKnown && item.level()>0 && item.overLoad == Item.OverLoad.NONE &&( item.isEquipped(Dungeon.hero) && ((EquipableItem) item).unEquipable(Dungeon.hero) || !item.isEquipped(Dungeon.hero));
+            return item.isUpgradable() && item.levelKnown && item.level()>0 && item.overLoad == Item.OverLoad.NONE &&
+                    ( item.isEquipped(Dungeon.hero) && ((EquipableItem) item).unEquipable(Dungeon.hero) ||
+                            !item.isEquipped(Dungeon.hero) && !(item instanceof BrokenSeal) );
         if (mission == 2)
             return item.isEquipped(Dungeon.hero) && item.isEquipped(Dungeon.hero);
         if (mission == 3)
             return item instanceof MissileWeapon && !(item instanceof Dart);
+        if (mission == 4)
+            return item instanceof LiquidMetal && item.quantity() >= 15;
         return false;
     }
 	protected WndBag.ItemSelector itemSelectorA = new WndBag.ItemSelector() {

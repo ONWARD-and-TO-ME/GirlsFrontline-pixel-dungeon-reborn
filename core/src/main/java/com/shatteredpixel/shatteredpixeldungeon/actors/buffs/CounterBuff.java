@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundle;
 
 //A buff whose only purposes is to keep track of a count of some form
@@ -41,6 +42,13 @@ public class CounterBuff extends Buff {
 	}
 
 	private static final String COUNT = "count";
+    @Override
+    public String toString() {
+        return Messages.get(this, "name");
+    }
+    public String desc() {
+        return Messages.get(this, "desc", (int) count());
+    }
 
 	@Override
 	public void storeInBundle(Bundle bundle) {

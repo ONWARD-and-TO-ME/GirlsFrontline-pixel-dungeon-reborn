@@ -119,14 +119,5 @@ public class Shadows extends Invisibility {
 	public float iconFadePercent() {
 		return 0;
 	}
-	
-	@Override
-	public String toString() {
-		return Messages.get(this, "name");
-	}
 
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc");
-	}
 }

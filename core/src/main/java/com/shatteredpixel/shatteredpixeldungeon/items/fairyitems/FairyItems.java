@@ -7,10 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.FairyRoom;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 
@@ -19,7 +16,7 @@ import java.util.ArrayList;
 public abstract class FairyItems extends Item {
     {
         stackable = true;
-        image = ItemSpriteSheet.TORCH;
+        image = ItemSpriteSheet.SOMETHING;
         unique = true;
         defaultAction = AC_CHOOSE;
     }
@@ -29,13 +26,9 @@ public abstract class FairyItems extends Item {
             return true;
         if (!(Dungeon.level instanceof RegularLevel))
             return false;
-        for (Room room : ((RegularLevel) Dungeon.level).rooms()) {
-            if (room instanceof FairyRoom) {
-                for (int cell : ((FairyRoom) room).inside) {
-                    if (hero.pos == cell)
-                        return true;
-                }
-            }
+        for (int i :((RegularLevel) Dungeon.level).fairyRoom){
+            if (i == hero.pos)
+                return true;
         }
         return false;
     }

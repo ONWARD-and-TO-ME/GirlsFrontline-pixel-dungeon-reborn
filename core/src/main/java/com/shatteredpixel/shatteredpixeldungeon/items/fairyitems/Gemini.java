@@ -8,7 +8,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.GeminiMissile;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.GeminiShield;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Geminis;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -149,17 +148,16 @@ public class Gemini extends FairyItems {
 
         @Override
         public String desc() {
-            String desc = "你与双生妖精签订了协议，她们会协助你作战：\n";
-
+            String info = "";
             for (int i = 0; i < shield.size(); i++){
                 if (i > missile.size())
                     break;
-                desc+="\n";
-                desc += Messages.get(GeminiShield.class, "name") + Messages.format("：%d", shield.get(i));
-                desc+="\n";
-                desc += Messages.get(GeminiMissile.class, "name") + Messages.format("：%d", missile.get(i));
+                info +="\n";
+                info += Messages.get(GeminiShield.class, "name") + Messages.format("：%d", shield.get(i));
+                info +="\n";
+                info += Messages.get(GeminiMissile.class, "name") + Messages.format("：%d", missile.get(i));
             }
-            return desc;
+            return Messages.get(this, "desc", info);
         }
 
     }

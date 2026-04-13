@@ -78,6 +78,7 @@ public abstract class RegularLevel extends Level {
 	
 	protected Room roomEntrance;
 	protected Room roomExit;
+    public int[] fairyRoom = new int[0];
 	
 	@Override
 	protected boolean build() {
@@ -592,11 +593,16 @@ public abstract class RegularLevel extends Level {
 		
 		return super.fallCell( false );
 	}
-	
+
+    private static final String FAIRY_ROOM = "FAIRY_ROOM";
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( "rooms", rooms );
+        if (fairyRoom != null)
+            bundle.put(FAIRY_ROOM, fairyRoom);
+        else
+            bundle.put(FAIRY_ROOM, new int[0]);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -613,6 +619,10 @@ public abstract class RegularLevel extends Level {
 				roomExit = r;
 			}
 		}
+        if (bundle.contains(FAIRY_ROOM))
+            fairyRoom = bundle.getIntArray(FAIRY_ROOM);
+        else
+            fairyRoom = new int[0];
 	}
 	
 }

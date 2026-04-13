@@ -109,9 +109,5 @@ public class EnhancedRings extends FlavourBuff{
             icon.hardlight(0, 1, 1);
         }
 
-        @Override
-        public String desc() {
-            return Messages.get(this, "desc", (int)visualcooldown());
-        }
     }
 }

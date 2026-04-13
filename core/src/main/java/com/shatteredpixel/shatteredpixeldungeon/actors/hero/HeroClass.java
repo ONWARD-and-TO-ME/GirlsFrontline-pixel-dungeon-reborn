@@ -107,6 +107,7 @@ import com.watabou.noosa.Game;
 import com.watabou.utils.DeviceCompat;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 public enum HeroClass {
 
@@ -117,8 +118,12 @@ public enum HeroClass {
 	TYPE561(HeroSubClass.EMP_BOMB, HeroSubClass.GUN_MASTER),
 	GSH18(HeroSubClass.FUTURE_STAR, HeroSubClass.MOBILE_MEDICALTABLE),
     PUBLIC_1(  HeroSubClass.NONE ),
-	NONE(  HeroSubClass.NONE );
-	private HeroSubClass[] subClasses;
+    NONE(  HeroSubClass.NONE );
+	private final HeroSubClass[] subClasses;
+    public static final HashMap<String, String> rename = new HashMap<>();
+    static {
+
+    }
 
 	HeroClass( HeroSubClass...subClasses ) {
 		this.subClasses = subClasses;

@@ -428,9 +428,9 @@ abstract public class MissileWeapon extends Weapon {
 		} else {
 			info += " " + Messages.get(this, "unlimited_uses");
 		}
-		
-		if (overLoadLeft > 0)
-            info += overLoad.name() + overLoadLeft;
+
+        if (overLoad != OverLoad.NONE)
+            info += "\n\n" + Messages.get(Item.class, overLoad.name(), overLoadLeft);
 		return info;
 	}
 	

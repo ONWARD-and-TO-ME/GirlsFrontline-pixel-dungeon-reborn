@@ -21,13 +21,17 @@ public class BasicBuffs extends FlavourBuff {
         icon.hardlight(R, G, B);
     }
     protected float percent;
+    protected boolean down = false;
     public float percent(){
         return percent;
     }
     private static final String PERCENT      = "PERCENT";
     @Override
     public String desc(){
-        return Messages.format("%.1f", percent()*100);
+        int percent = (int) Math.ceil((percent()-1)*100);
+        if (down)
+            percent *= -1;
+        return Messages.get(this, "desc", percent, (int) (visualcooldown()));
     }
 
     @Override
@@ -48,7 +52,8 @@ public class BasicBuffs extends FlavourBuff {
             B = 0.6F;
         }
         public Increase set(float percent){
-            this.percent = percent;
+            if (this.percent < percent)
+                this.percent = percent;
             return this;
         }
     }
@@ -59,7 +64,8 @@ public class BasicBuffs extends FlavourBuff {
             B = 0.6F;
         }
         public Velocity set(float percent){
-            this.percent = percent;
+            if (this.percent < percent)
+                this.percent = percent;
             return this;
         }
     }
@@ -70,7 +76,8 @@ public class BasicBuffs extends FlavourBuff {
             B = 0.6F;
         }
         public Accuracy set(float percent){
-            this.percent = percent;
+            if (this.percent < percent)
+                this.percent = percent;
             return this;
         }
     }
@@ -81,7 +88,8 @@ public class BasicBuffs extends FlavourBuff {
             B = 0;
         }
         public Evasion set(float percent){
-            this.percent = percent;
+            if (this.percent < percent)
+                this.percent = percent;
             return this;
         }
     }
@@ -90,9 +98,11 @@ public class BasicBuffs extends FlavourBuff {
             R = 1F;
             G = 0.2F;
             B = 0.3F;
+            down = true;
         }
         public Reduce set(float percent){
-            this.percent = percent;
+            if (this.percent > percent)
+                this.percent = percent;
             return this;
         }
     }

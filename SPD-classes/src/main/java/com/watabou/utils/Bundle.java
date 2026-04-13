@@ -163,13 +163,18 @@ public class Bundle {
 		return getBundle( key ).get();
 	}
 
-	public <E extends Enum<E>> E getEnum( String key, Class<E> enumClass ) {
+    public <E extends Enum<E>> E getEnum( String key, Class<E> enumClass ) {
+        return getEnum(key, enumClass, null);
+    }
+	public <E extends Enum<E>> E getEnum( String key, Class<E> enumClass, HashMap<String, String> rename ) {
 		try {
-			return Enum.valueOf( enumClass, data.getString( key ) );
-		} catch (JSONException e) {
-			Game.reportException(e);
-			return enumClass.getEnumConstants()[0];
-		} catch (IllegalArgumentException e) {
+            if (rename == null)
+			    return Enum.valueOf( enumClass, data.getString( key ) );
+            String name = data.getString(key);
+            if (rename.containsKey(name))
+                name = rename.get(name);
+            return Enum.valueOf(enumClass, name);
+		} catch (JSONException | IllegalArgumentException e) {
 			Game.reportException(e);
 			return enumClass.getEnumConstants()[0];
 		}

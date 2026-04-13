@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
@@ -33,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Gemini;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GhostSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.PrismaticSprite;
 import com.watabou.utils.Bundle;
 
 public abstract class Geminis extends NPC {
@@ -153,8 +151,12 @@ public abstract class Geminis extends NPC {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (!enemyInFOV && enemy == null){
+                if (twin == null && (twin = (Geminis) Actor.findById(twinID)) == null )
+                    die(Geminis.this);
                 if (twin.enemy != null && twin.enemy.isAlive()) {
                     enemy = twin.enemy;
+                    target = twin.target;
+                    Geminis.this.spend(0.5F);
                     return true;
                 }
                 int shield;

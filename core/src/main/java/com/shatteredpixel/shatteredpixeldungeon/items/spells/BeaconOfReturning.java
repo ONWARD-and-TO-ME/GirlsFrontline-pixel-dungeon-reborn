@@ -169,15 +169,10 @@ public class BeaconOfReturning extends Spell {
 	public String desc() {
 		String desc = super.desc();
 		if (returnLevelId != -1){
-            int sub=0;
             int levelId = returnLevelId;
+            int sub = levelId/1000 ;
+            levelId %= 1000;
             String level;
-            while (levelId != returnLevelId % 1000) {
-                sub++;
-                levelId -= 1000;
-                if (levelId<0)
-                    break;
-            }
             level = String.valueOf(levelId);
             if (sub!=0)
                 level+="/"+sub;

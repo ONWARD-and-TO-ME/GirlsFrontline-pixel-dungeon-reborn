@@ -186,6 +186,8 @@ public class Ring extends KindofMisc {
 		if (isKnown()) {
 			desc += "\n\n" + statsInfo();
 		}
+        if (overLoad != OverLoad.NONE)
+            desc += "\n\n" + Messages.get(Item.class, overLoad.name(), overLoadLeft);
 		
 		return desc;
 	}

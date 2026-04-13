@@ -1,10 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.fairyitems;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.InventoryScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 
@@ -17,6 +20,10 @@ public class Letter extends FairyItems {
             hunger.satisfy(300F);
         Buff.affect(hero, Recharging.class, 15F);
         Buff.affect(hero, ArtifactRecharge.class).prolong(10F).ignoreHornOfPlenty = false;
+        Talent.onFoodEaten(hero, 0, this);
+
+        Statistics.foodEaten++;
+        Badges.validateFoodEaten();
     }
 
 }

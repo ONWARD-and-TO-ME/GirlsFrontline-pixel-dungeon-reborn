@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 
@@ -46,11 +45,6 @@ public class MindVision extends FlavourBuff {
 	public float iconFadePercent() {
 		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
 	}
-	
-	@Override
-	public String toString() {
-		return Messages.get(this, "name");
-	}
 
 	@Override
 	public void detach() {
@@ -59,8 +53,4 @@ public class MindVision extends FlavourBuff {
 		GameScene.updateFog();
 	}
 
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns());
-	}
 }

@@ -25,6 +25,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -36,13 +38,11 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndDEL;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
-import com.watabou.utils.Point;
 
 import java.util.ArrayList;
 
@@ -83,6 +83,7 @@ public class DEL extends NPC {
                 if (Dungeon.level instanceof RegularLevel){
                     for (Room room : ((RegularLevel) Dungeon.level).rooms()){
                         if (room instanceof FairyRoom) {
+                            ((RegularLevel) Dungeon.level).fairyRoom = ((FairyRoom) room).inside;
                             for (int i : ((FairyRoom) room).inside)
                                 Dungeon.level.sharedVision[i] = true;
                         }
@@ -128,13 +129,20 @@ public class DEL extends NPC {
 	}
     private void selectMission(){
 
-        String[] options = new String[]{
-                getMissionName(0),
-                getMissionName(1),
-                getMissionName(2),
-                getMissionName(3)
-        };
-        boolean[] enable = new boolean[4];
+        String[] options;
+        if (Dungeon.hero.hasTalent(Talent.Type56_23V4) && Dungeon.hero.heroClass != HeroClass.TYPE561)
+            options = new String[5];
+        else
+            options = new String[4];
+        int num = 0;
+        options[num++] = getMissionName(num);
+        options[num++] = getMissionName(num);
+        options[num++] = getMissionName(num);
+        options[num++] = getMissionName(num);
+        if (Dungeon.hero.hasTalent(Talent.Type56_23V4) && Dungeon.hero.heroClass != HeroClass.TYPE561)
+            options[num++] = getMissionName(num);
+
+        boolean[] enable = new boolean[5];
         for (Item i : Dungeon.hero.belongings){
             if ((!i.isIdentified() || i.cursedKnown && i.cursed) && !(i instanceof CorpseDust))
                 enable[0] = true;
@@ -145,6 +153,7 @@ public class DEL extends NPC {
             if (i instanceof MissileWeapon)
                 enable[3] = true;
         }
+        enable[4] = true;
         GameScene.show(new WndOptions(DEL.this.sprite(),
                 Messages.titleCase(DEL.this.name()),
                 Messages.get(DEL.class, "body", DEL.this.WorkLoad),
@@ -170,7 +179,9 @@ public class DEL extends NPC {
             new Object[]{"脱下红底装备", 12, 100*(Statistics.deepestFloor - Dungeon.depth + 1), 150,
                     Messages.get(DEL.class, "notice_unEquip")},
             new Object[]{"仿制投掷武器", 1, 20, 20,
-                    Messages.get(DEL.class, "notice_newInstance")}
+                    Messages.get(DEL.class, "notice_newInstance")},
+            new Object[]{"制作剪刀", 1, 100, 20,
+                    Messages.get(DEL.class, "notice_clipper")}
     };
     public static String getMissionName(int mission){
         return (String) ((Object[]) list[mission])[0];
@@ -191,6 +202,8 @@ public class DEL extends NPC {
                 getMissionTimes(mission));
         if (mission == 0)
             info = Messages.format(info, 1, 200, 50);
+        else if (mission == 4)
+            info = Messages.format(info, 15);
         return info;
     }
 

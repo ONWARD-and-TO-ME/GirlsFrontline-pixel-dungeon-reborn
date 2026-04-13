@@ -83,7 +83,7 @@ public class ItemHolder extends Bag {
 
         @Override
         public boolean itemSelectable(Item item) {
-            return true;
+            return !(item instanceof Bag);
         }
 
         @Override

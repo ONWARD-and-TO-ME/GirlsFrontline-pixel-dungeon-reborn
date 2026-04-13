@@ -371,10 +371,6 @@ public class Grass extends Item {
         public void tintIcon(Image icon) {
             icon.hardlight(1.0F, 1.0F, 0.0F);
         }
-        @Override
-        public String toString() {
-            return Messages.get(this, "name");
-        }
 
         @Override
         public String desc() {

@@ -760,8 +760,8 @@ public class Armor extends EquipableItem {
             info += "\n\n" + Messages.get(Armor.class, "broken_times", broken);
         }
 
-        if (overLoadLeft > 0)
-            info += overLoad.name() + overLoadLeft;
+        if (overLoad != OverLoad.NONE)
+            info += "\n\n" + Messages.get(Item.class, overLoad.name(), overLoadLeft);
 		return info;
 	}
 

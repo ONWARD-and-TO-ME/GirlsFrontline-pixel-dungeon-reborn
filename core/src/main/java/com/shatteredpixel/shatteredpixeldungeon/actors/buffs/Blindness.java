@@ -51,17 +51,8 @@ public class Blindness extends FlavourBuff {
 	}
 
 	@Override
-	public String toString() {
-		return Messages.get(this, "name");
-	}
-
-	@Override
 	public String heroMessage() {
-		return Messages.get(this, "heromsg");
+		return Messages.get(this, "heroMsg");
 	}
 
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns());
-	}
 }

@@ -77,12 +77,7 @@ public class Blocking extends Weapon.Enchantment {
 		public float iconFadePercent() {
 			return Math.max(0, (5f - visualcooldown()) / 5f);
 		}
-		
-		@Override
-		public String toString() {
-			return Messages.get(this, "name");
-		}
-		
+
 		@Override
 		public String desc() {
 			return Messages.get(this, "desc", blocking, dispTurns());

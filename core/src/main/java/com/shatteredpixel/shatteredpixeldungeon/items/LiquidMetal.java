@@ -129,7 +129,7 @@ public class LiquidMetal extends Item {
 
 		@Override
 		public void onSelect( Item item ) {
-			if (item != null && item instanceof MissileWeapon) {
+			if (item instanceof MissileWeapon) {
 				MissileWeapon m = (MissileWeapon)item;
 
 				int maxToUse = 5*(m.tier+1);
@@ -142,7 +142,7 @@ public class LiquidMetal extends Item {
 				maxToUse = (int)Math.ceil(maxToUse*percentDurabilityLost);
 				float durPerUse = m.durabilityPerUse()/100f;
 				if (maxToUse == 0 ||
-						Math.ceil(m.durabilityLeft()/ m.durabilityPerUse()) >= Math.ceil(m.MAX_DURABILITY/ m.durabilityPerUse()) ){
+						Math.ceil(m.durabilityLeft()/ m.durabilityPerUse()) >= Math.ceil(MissileWeapon.MAX_DURABILITY / m.durabilityPerUse()) ){
 					GLog.w(Messages.get(LiquidMetal.class, "already_fixed"));
 					return;
 				} else if (maxToUse < quantity()) {

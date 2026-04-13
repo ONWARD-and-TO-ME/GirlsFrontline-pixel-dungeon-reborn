@@ -39,6 +39,8 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.FairyItems;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.FairyRoom;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
@@ -48,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite.Glowing;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
@@ -65,6 +68,7 @@ public class LloydsBeacon extends Artifact {
 	private static final String AC_SET		= "SET";
 	private static final String AC_RETURN	= "RETURN";
     private static final String AC_TP       = "TP";
+    private static final String AC_FAIRY    = "FAIRY";
 	
 	public int returnLevelId	= -1;
 	public int returnPos;
@@ -100,7 +104,7 @@ public class LloydsBeacon extends Artifact {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
         returnLevelId	= bundle.getInt( DEPTH );
-		returnPos	= bundle.getInt( POS );
+		returnPos   	= bundle.getInt( POS );
         cd              = bundle.getInt(CD);
 	}
 	
@@ -112,8 +116,12 @@ public class LloydsBeacon extends Artifact {
 		if (returnLevelId != -1) {
 			actions.add( AC_RETURN );
 		}
-        if (FairyItems.inFairyRoom(hero))
-            actions.add(AC_TP);
+        if (Dungeon.level instanceof RegularLevel && ((RegularLevel) Dungeon.level).fairyRoom.length > 0){
+            if (FairyItems.inFairyRoom(hero))
+                actions.add(AC_TP);
+            else
+                actions.add(AC_FAIRY);
+        }
 		return actions;
 	}
 	
@@ -156,7 +164,8 @@ public class LloydsBeacon extends Artifact {
 				GameScene.selectCell(zapper);
 			}
 
-		} else if (action.equals(AC_SET)) {
+		}
+        else if (action.equals(AC_SET)) {
 
             returnLevelId = Dungeon.levelId;
 			returnPos   = hero.pos;
@@ -167,13 +176,14 @@ public class LloydsBeacon extends Artifact {
 			Sample.INSTANCE.play( Assets.Sounds.BEACON );
 			
 			GLog.i( Messages.get(this, "return") );
-			
-		} else if (action.equals(AC_RETURN)) {
 
-            if ( cd > 0 ){
-                GLog.n( Messages.get(this, "cd") );
-                return;
-            }
+		}
+        else if ( cd > 0 ){
+            GLog.n( Messages.get(this, "cd") );
+            return;
+        }
+        else if (action.equals(AC_RETURN)) {
+
             cd = 50;
             float blind = 10;
             float weak  = 50;
@@ -210,17 +220,84 @@ public class LloydsBeacon extends Artifact {
                 blind   *= 1.5F;
                 weak    *= 1.5F;
 			}
-//            if (!FairyItems.inFairyRoom(hero)) {
-//                Buff.prolong(hero, Blindness.class, blind);
-//                Buff.prolong(hero, Weakness.class, weak);
-//            }
+            if (!FairyItems.inFairyRoom(hero)) {
+                Buff.prolong(hero, Blindness.class, blind);
+                Buff.prolong(hero, Weakness.class, weak);
+            }
 		}
         else if (action.equals( AC_TP )){
-
+            GameScene.selectCell(caster);
+        }
+        else if (action.equals( AC_FAIRY )){
+            int cd = 50;
+            PathFinder.buildDistanceMap(((RegularLevel) Dungeon.level).fairyRoom[FairyRoom.front], BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+            if (PathFinder.distance[curUser.pos] == Integer.MAX_VALUE){
+                cd *= 4;
+            }
+            ScrollOfTeleportation.appear( hero, ((RegularLevel) Dungeon.level).fairyRoom[FairyRoom.front] );
+            for(Mob m : Dungeon.level.mobs){
+                if (m.pos == hero.pos){
+                    //displace mob
+                    for(int i : PathFinder.NEIGHBOURS8){
+                        if (Actor.findChar(m.pos+i) == null && Dungeon.level.passable[m.pos + i]){
+                            m.pos += i;
+                            m.sprite.point(m.sprite.worldToCamera(m.pos));
+                            break;
+                        }
+                    }
+                }
+            }
+            this.cd = cd;
+            Dungeon.level.occupyCell(hero );
+            Dungeon.observe();
+            GameScene.updateFog();
         }
         lockchB();
 	}
 
+    private final CellSelector.Listener caster = new CellSelector.Listener(){
+
+        @Override
+        public void onSelect(Integer target) {
+            if (target != null && (Dungeon.level.visited[target] || Dungeon.level.mapped[target])){
+
+                int cd = 50;
+                PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+                if (PathFinder.distance[curUser.pos] == Integer.MAX_VALUE){
+                    cd *= 4;
+                }
+                ScrollOfTeleportation.appear( Dungeon.hero, target );
+                for(Mob m : Dungeon.level.mobs){
+                    if (m.pos == Dungeon.hero.pos){
+                        //displace mob
+                        for(int i : PathFinder.NEIGHBOURS8){
+                            if (Actor.findChar(m.pos+i) == null && Dungeon.level.passable[m.pos + i]){
+                                m.pos += i;
+                                m.sprite.point(m.sprite.worldToCamera(m.pos));
+                                break;
+                            }
+                        }
+                    }
+                }
+                Dungeon.level.occupyCell( Dungeon.hero );
+                Dungeon.observe();
+                GameScene.updateFog();
+                LloydsBeacon.this.cd = cd;
+                float blind = 10;
+                float weak  = 50;
+                if (!FairyItems.inFairyRoom(Dungeon.hero)) {
+                    Buff.prolong(Dungeon.hero, Blindness.class, blind);
+                    Buff.prolong(Dungeon.hero, Weakness.class, weak);
+                }
+            }
+
+        }
+
+        @Override
+        public String prompt() {
+            return Messages.get(EtherealChains.class, "prompt");
+        }
+    };
 	protected CellSelector.Listener zapper = new  CellSelector.Listener() {
 
 		@Override
@@ -331,20 +408,18 @@ public class LloydsBeacon extends Artifact {
 	public String desc() {
 		String desc = super.desc();
 		if (returnLevelId != -1){
-            int sub=0;
             int levelId = returnLevelId;
+            int sub = levelId/1000 ;
+            levelId %= 1000;
             String level;
-            while (levelId != returnLevelId % 1000) {
-                sub++;
-                levelId -= 1000;
-                if (levelId<0)
-                    break;
-            }
             level = String.valueOf(levelId);
             if (sub!=0)
                 level+="/"+sub;
 			desc += "\n\n" + Messages.get(this, "desc_set", level);
 		}
+        if (cd > 0){
+            desc += "\n\n" + Messages.get(this, "CDing", cd);
+        }
 		return desc;
 	}
 	
@@ -373,6 +448,8 @@ public class LloydsBeacon extends Artifact {
 				}
 			}
 
+            if (cd > 0 && !cursed)
+                cd--;
 			updateQuickslot();
 			spend( TICK );
 			return true;

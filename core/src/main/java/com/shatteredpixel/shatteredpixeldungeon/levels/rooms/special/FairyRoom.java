@@ -36,6 +36,7 @@ import com.watabou.utils.Random;
 
 public class FairyRoom extends SpecialRoom {
     private static final int rate = 4;
+    public static final int front = (rate*2+1)*rate+rate-1;
     @Override
     public int minWidth() { return rate*2+1; }
     @Override
