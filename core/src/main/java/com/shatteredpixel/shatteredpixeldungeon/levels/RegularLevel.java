@@ -599,10 +599,7 @@ public abstract class RegularLevel extends Level {
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( "rooms", rooms );
-        if (fairyRoom != null)
-            bundle.put(FAIRY_ROOM, fairyRoom);
-        else
-            bundle.put(FAIRY_ROOM, new int[0]);
+        bundle.put(FAIRY_ROOM, fairyRoom);
 	}
 	
 	@SuppressWarnings("unchecked")
