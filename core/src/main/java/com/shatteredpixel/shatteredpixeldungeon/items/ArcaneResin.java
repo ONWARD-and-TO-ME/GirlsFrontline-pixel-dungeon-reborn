@@ -24,7 +24,10 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
@@ -169,11 +172,34 @@ public class ArcaneResin extends Item {
 			return result;
 		}
 
-		@Override
+        @Override
+        public void onComplete() {
+            if (Dungeon.hero != null &&
+                    Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION) &&
+                    Dungeon.hero.heroClass == HeroClass.MAGE ){
+                Talent.WandPreservationCounter counter = Buff.affect(Dungeon.hero, Talent.WandPreservationCounter.class);
+                if (counter.count() < Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION))
+                    counter.countUp(1);
+            }
+        }
+
+        @Override
 		public Item sampleOutput(ArrayList<Item> ingredients) {
 			Wand w = (Wand)ingredients.get(0);
 			int level = w.level() - w.resinBonus;
-			return new ArcaneResin().quantity(2*(level+1));
+            int quantity = 2*(level+1);
+            if (Dungeon.hero != null){
+                if (Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION)){
+                    if (Dungeon.hero.heroClass != HeroClass.MAGE)
+                        quantity += Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION);
+                    else{
+                        Talent.WandPreservationCounter counter = Buff.affect(Dungeon.hero, Talent.WandPreservationCounter.class);
+                        if (counter.count() < Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION))
+                            quantity += 2;
+                    }
+                }
+            }
+			return new ArcaneResin().quantity(quantity);
 		}
 	}
 

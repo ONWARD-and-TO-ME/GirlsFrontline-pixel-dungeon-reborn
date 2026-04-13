@@ -149,7 +149,7 @@ public class UnstableSpellbook extends Artifact {
 							if (index == 1){
 								Scroll scroll = Reflection.newInstance(ExoticScroll.regToExo.get(fScroll.getClass()));
 								charge--;
-								scroll.doRead();
+								scroll.BookRead();
 								Talent.onArtifactUsed(Dungeon.hero);
 							} else {
 								fScroll.doRead();
@@ -190,7 +190,7 @@ public class UnstableSpellbook extends Artifact {
 			Game.runOnRenderThread(new Callback() {
 				@Override
 				public void call() {
-					scroll.doRead();
+					scroll.BookRead();
 					Item.updateQuickslot();
 				}
 			});

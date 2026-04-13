@@ -49,7 +49,7 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 			PotionOfHealing.pharmacophobiaProc(hero);
 		} else {
 			Buff.affect(hero, AquaHealing.class).set(Math.round(hero.HT * 1.5f));
-			Talent.onHealingPotionUsed( hero );
+			Talent.onPotionUsed( hero, 1.25F );
 		}
 	}
 	

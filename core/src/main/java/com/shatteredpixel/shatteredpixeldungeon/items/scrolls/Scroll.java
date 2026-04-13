@@ -66,6 +66,7 @@ import java.util.HashSet;
 public abstract class Scroll extends Item {
 
 	public static final String AC_READ	= "READ";
+    protected float mulOnTalentUsed = 1F;
 
     public boolean isCost(){
         return false;
@@ -186,20 +187,19 @@ public abstract class Scroll extends Item {
 	}
 
 	public abstract void doRead();
+    public void BookRead(){
+        float mul = mulOnTalentUsed;
+        mulOnTalentUsed /= 2;
+        doRead();
+        mulOnTalentUsed = mul;
+    }
 
 	protected void readAnimation() {
-		Invisibility.dispel();
+        Invisibility.dispel();
+        Talent.onScrollUsed(hero, mulOnTalentUsed);
 		curUser.spend( TIME_TO_READ );
 		curUser.busy();
 		((HeroSprite)curUser.sprite).read();
-
-        if (curUser.hasTalent(Talent.EMPOWERING_SCROLLS)){
-            Buff.affect(curUser, ScrollEmpower.class).reset( 1, curUser.pointsInTalent(Talent.EMPOWERING_SCROLLS)*2);
-            updateQuickslot();
-        }else if (curUser.hasTalent(Talent.EMPOWERING_SCROLLS_V2)){
-            Buff.affect(curUser, ScrollEmpower.class).reset( curUser.pointsInTalent(Talent.EMPOWERING_SCROLLS_V2), 3);
-            updateQuickslot();
-        }
 
 	}
 

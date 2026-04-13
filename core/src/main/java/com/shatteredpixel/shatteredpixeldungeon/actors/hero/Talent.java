@@ -29,15 +29,19 @@ import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ScrollEmpower;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TalentSecondSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
@@ -87,9 +91,9 @@ import java.util.LinkedHashMap;
 public enum Talent {
 
 	//Warrior T1
-	HEARTY_MEAL(0), ARMSMASTERS_INTUITION(1), TEST_SUBJECT(2), IRON_WILL(3),
+	HEARTY_MEAL(0), ARMSMASTERS_INTUITION(1), TEST_SUBJECT(2), IRON_WILL(HeroClass.WARRIOR, 3),
 	//Warrior T2
-	IRON_STOMACH(4), RESTORED_WILLPOWER(5), RUNIC_TRANSFERENCE(6), LETHAL_MOMENTUM(7), IMPROVISED_PROJECTILES(8),
+	IRON_STOMACH(4), RESTORED_WILLPOWER(HeroClass.WARRIOR, 5), RUNIC_TRANSFERENCE(HeroClass.WARRIOR, 6), LETHAL_MOMENTUM(7), IMPROVISED_PROJECTILES(8),
 	//Warrior T3
 	HOLD_FAST(9, 3), STRONGMAN(10, 3, 655),
 	//Berserker T3
@@ -104,9 +108,9 @@ public enum Talent {
 	SUSTAINED_RETRIBUTION(23, 4), SHRUG_IT_OFF(24, 4), EVEN_THE_ODDS(25, 4),
 
 	//Mage T1
-	EMPOWERING_MEAL(32), SCHOLARS_INTUITION(33), TESTED_HYPOTHESIS(34), BACKUP_BARRIER(35),
+	EMPOWERING_MEAL(32), SCHOLARS_INTUITION(33), TESTED_HYPOTHESIS(34), BACKUP_BARRIER(HeroClass.MAGE, 35),
 	//Mage T2
-	ENERGIZING_MEAL(36), ENERGIZING_UPGRADE(37), WAND_PRESERVATION(38), ARCANE_VISION(39), SHIELD_BATTERY(40),
+	ENERGIZING_MEAL(36), ENERGIZING_UPGRADE(37), WAND_PRESERVATION(HeroClass.MAGE, 38), ARCANE_VISION(39), SHIELD_BATTERY(40),
 	//Mage T3
 	EMPOWERING_SCROLLS(41, 3), ALLY_WARP(42, 3),
     EMPOWERING_SCROLLS_V2(41, 3),DESPERATE_POWER(41, 3),
@@ -124,9 +128,9 @@ public enum Talent {
 	//Rogue T1
 	CACHED_RATIONS(64, 2, 655), THIEFS_INTUITION(65), SUCKER_PUNCH(66), PROTECTIVE_SHADOWS(67),
 	//Rogue T2
-	MYSTICAL_MEAL(68), MYSTICAL_UPGRADE(69), WIDE_SEARCH(70), SILENT_STEPS(71), ROGUES_FORESIGHT(72),
+	MYSTICAL_MEAL(68), MYSTICAL_UPGRADE(69), WIDE_SEARCH(HeroClass.ROGUE, 70), SILENT_STEPS(71), ROGUES_FORESIGHT(72),
 	//Rogue T3
-	ENHANCED_RINGS(73, 3), LIGHT_CLOAK(74, 3),
+	ENHANCED_RINGS(73, 3), LIGHT_CLOAK(HeroClass.ROGUE, 74, 3),
     ENHANCED_RINGS_V2(73, 3),
 	//Assassin T3
 	ENHANCED_LETHALITY(75, 3), ASSASSINS_REACH(76, 3), BOUNTY_HUNTER(77, 3),
@@ -144,7 +148,7 @@ public enum Talent {
 	//Huntress T2
 	INVIGORATING_MEAL(100), RESTORED_NATURE(101), REJUVENATING_STEPS(102), HEIGHTENED_SENSES(103), DURABLE_PROJECTILES(104),
 	//Huntress T3
-	POINT_BLANK(105, 3), SEER_SHOT(106, 3),
+	POINT_BLANK(105, 3), SEER_SHOT(HeroClass.HUNTRESS, 106, 3),
 	//Sniper T3
 	FARSIGHT(107, 3), SHARED_ENCHANTMENT(108, 3), SHARED_UPGRADES(109, 3),
 	//Warden T3
@@ -163,17 +167,17 @@ public enum Talent {
 	//Ratmogrify T4
 	RATSISTANCE(124, 4), RATLOMACY(125, 4), RATFORCEMENTS(126, 4),
     //type561 T1
-    Type56One_FOOD(128, 2 ,655), Type56One_Identify(129), Type56One_Damage(130), Type56_14(131),
+    Type56One_FOOD(128, 2 ,655), Type56One_Identify(129), Type56One_Damage(130), Type56_14(HeroClass.TYPE561, 131),
     //type561 T2
     Type56Two_FOOD(132),Type56Two_Armor(133),Type56Two_Grass(134),Type56Two_Sight(135),Type56Two_Damage(136),
 
     //争议内容
     Type56_14V2(131),
-    Type56_21V2(132),Type56_21V3(132),Type56_22V2(133),Type56_23V2(134),Type56_23V3(134),Type56_23V4(134),
+    Type56_21V2(132),Type56_21V3(132),Type56_22V2(133),Type56_23V2(134),Type56_23V3(134),Type56_23V4(HeroClass.TYPE561, 134),
     GUN_1V2(142, 3), GUN_1V3(142, 3), GUN_2V2(143, 3),
 
     //type561 T3
-    Type56Three_Bomb(137, 3), Type56Three_Book(138, 3),
+    Type56Three_Bomb(HeroClass.TYPE561, 137, 3), Type56Three_Book(HeroClass.TYPE561, 138, 3),
 	//type561 T3-1 EMP
 	EMP_One(139, 3), EMP_Two(140, 3), EMP_Three(141, 3),
 	//type561 T3-2 GUN
@@ -186,7 +190,7 @@ public enum Talent {
     Type56_431(137, 4), Type56_432(137, 4),Type56_433(137, 4),
 
     //留作旧版本561天赋的接口
-    NICE_FOOD(128), OLD_SOLDIER(129), FAST_RELOAD(130), BETTER_FOOD(131), BARGAIN_SKILLS(132),TRAP_EXPERT(133),HOW_DARE_YOU(134),JIEFANGCI(135),NIGHT_EXPERT(136), SEARCH_ARMY(137, 3), ELITE_ARMY(138, 3),
+    NICE_FOOD(128), OLD_SOLDIER(129),  BETTER_FOOD(131), BARGAIN_SKILLS(132),TRAP_EXPERT(133),HOW_DARE_YOU(134),JIEFANGCI(135),NIGHT_EXPERT(136), SEARCH_ARMY(137, 3), ELITE_ARMY(138, 3),
 
     //GSH18 T1
 	GSH18_MEAL_TREATMENT(160), GSH18_DOCTOR_INTUITION(161), GSH18_CLOSE_COMBAT(162), GSH18_STAR_SHIELD(163),
@@ -196,9 +200,54 @@ public enum Talent {
 	GSH18_INTELLIGENCE_AWARENESS(169, 3), GSH18_AGILE_MOVEMENT(170, 3),
 	//GSH18未来之星专属天赋 - 天狼星心脏
 	GSH18_SIRIUS_HEART(171, 3),
+
+    //初始通用
+    //t1
+    FAST_RELOAD(HeroClass.TYPE561, 130),
+    //t2
+
+    //t3
+
     NONE(0, 4);
 
 
+    public static class ProtectiveShadowsTracker extends Buff {
+        float barrierInc = 0.5f;
+
+        @Override
+        public boolean act() {
+            //barrier every 2/1 turns, to a max of 3/5
+            if (((Hero)target).hasTalent(Talent.PROTECTIVE_SHADOWS) && target.invisible > 0){
+                Barrier barrier = Buff.affect(target, Barrier.class);
+                if (barrier.shielding() < 1 + 2*((Hero)target).pointsInTalent(Talent.PROTECTIVE_SHADOWS)) {
+                    barrierInc += 0.5f * ((Hero) target).pointsInTalent(Talent.PROTECTIVE_SHADOWS);
+                }
+                if (barrierInc >= 1){
+                    barrierInc = 0;
+                    barrier.incShield(1);
+                } else {
+                    barrier.incShield(0); //resets barrier decay
+                }
+            } else {
+                detach();
+            }
+            spend( TICK );
+            return true;
+        }
+
+        private static final String BARRIER_INC = "barrier_inc";
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put( BARRIER_INC, barrierInc);
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            barrierInc = bundle.getFloat( BARRIER_INC );
+        }
+    }
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
@@ -287,6 +336,7 @@ public enum Talent {
 	final int icon;
 	final int maxPoints;
     final int version;
+    final HeroClass heroClass;
 
 	// tiers 1/2/3/4 start at levels 2/7/13/21
 	public static final int[] tierLevelThresholds = new int[]{0, 2, 7, 13, 21, 31};
@@ -299,9 +349,25 @@ public enum Talent {
         this(icon, maxPoints, 0);
     }
     Talent( int icon, int maxPoints, int lastVersion){
-        this.icon = icon;
-        this.maxPoints = maxPoints;
-        this.version = lastVersion;
+        this(HeroClass.NONE, icon, maxPoints, lastVersion);
+    }
+    Talent(HeroClass heroClass, int... list){
+        this.heroClass = heroClass;
+        if (list.length == 1) {
+            icon = list[0];
+            maxPoints = 2;
+            version = 0;
+        }
+        else if (list.length == 2) {
+            icon = list[0];
+            maxPoints = list[1];
+            version = 0;
+        }
+        else {
+            icon = list[0];
+            maxPoints = list[1];
+            version = list[2];
+        }
     }
 	public int icon(){
 		if (this == HEROIC_ENERGY){
@@ -335,8 +401,12 @@ public enum Talent {
 		return Messages.get(this, name() + ".title");
 	}
 
-	public String desc(){
-		return Messages.get(this, name() + ".desc");
+	public String desc(HeroClass heroClass){
+        if (this.heroClass == HeroClass.NONE)
+		    return Messages.get(this, name() + ".desc");
+        if (this.heroClass == heroClass)
+            return Messages.get(this, name() + ".desc");
+        return Messages.get(this, name() + ".meta_desc");
 	}
 
 	public static void onTalentUpgraded( Hero hero, Talent talent){
@@ -352,7 +422,6 @@ public enum Talent {
             if ( hero.pointsInTalent(Type56One_FOOD) == 1) Buff.count(hero, ZongziDropped.class, 4);
             else                                           Buff.count(hero, ZongziDropped.class, 2);
         }
-
 		else if (talent == ARMSMASTERS_INTUITION && hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2){
 			if (hero.belongings.weapon() != null) hero.belongings.weapon().identify();
             if (hero.belongings.armor() != null)  hero.belongings.armor.identify();
@@ -381,13 +450,13 @@ public enum Talent {
 		}
         else if (talent == STRONGMAN){
             int times ;
-            if (hero.STR>=1_789_569_706){
+            if (hero.STR>=2_035_529_520){
                 times = 1;
                 hero.STR = 2_147_483_647;
             }
             else if (hero.STR>=100_000){
                 times = 1000;
-                hero.STR = hero.STR/1000 * (int) ( 1000 * Random.Float(1.155F, 1.17F) );
+                hero.STR *= (double) Random.Float(1.045F, 1.054F);
             }else {
                 times = hero.STR;
             }
@@ -405,7 +474,7 @@ public enum Talent {
             }
             Badges.validateStrengthAttained();
         }
-		if (talent == LIGHT_CLOAK && hero.pointsInTalent(LIGHT_CLOAK) == 1){
+		else if (talent == LIGHT_CLOAK && hero.pointsInTalent(LIGHT_CLOAK) == 1){
 			for (Item item : Dungeon.hero.belongings.backpack){
 				if (item instanceof CloakOfShadows){
 					if (hero.buff(LostInventory.class) == null || item.keptThoughLostInvent) {
@@ -414,7 +483,7 @@ public enum Talent {
 				}
 			}
 		}
-        if (talent == Type56Three_Book && hero.pointsInTalent(Type56Three_Book) == 1){
+        else if (talent == Type56Three_Book && hero.pointsInTalent(Type56Three_Book) == 1){
             for (Item item : Dungeon.hero.belongings.backpack){
                 if (item instanceof RedBook){
                     if (hero.buff(LostInventory.class) == null || item.keptThoughLostInvent) {
@@ -423,11 +492,10 @@ public enum Talent {
                 }
             }
         }
-
-		if (talent == HEIGHTENED_SENSES || talent == FARSIGHT){
+		else if (talent == HEIGHTENED_SENSES || talent == FARSIGHT){
 			Dungeon.observe();
 		}
-        if (talent == Type56Two_Sight){
+        else if (talent == Type56Two_Sight){
             Buff.affect( Dungeon.hero, TalentSecondSight.class).Set(Dungeon.levelId, 0);
             if (Dungeon.hero.pointsInTalent(Talent.Type56Two_Sight) == 1){
                 Dungeon.level.FirstSight = false;
@@ -436,6 +504,9 @@ public enum Talent {
                 Dungeon.level.SecondSight = false;
                 Buff.affect(Dungeon.hero, MindVision.class, 3);
             }
+        }
+        else if (talent == PROTECTIVE_SHADOWS && hero.invisible > 0){
+            Buff.affect(hero, Talent.ProtectiveShadowsTracker.class);
         }
 	}
 
@@ -548,20 +619,21 @@ public enum Talent {
 		return factor;
 	}
 
-	public static void onHealingPotionUsed( Hero hero ){
+	public static void onPotionUsed( Hero hero, float mul ){
 		if (hero.hasTalent(RESTORED_WILLPOWER)){
-			BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
+			ShieldBuff shield = hero.buff(BrokenSeal.WarriorShield.class);
+            int shieldToGive = Math.round( hero.HT/100F*hero.pointsInTalent(RESTORED_WILLPOWER)*3.5F*mul );
 			if (shield != null){
-				int shieldToGive = Math.round(shield.maxShield() * 0.33f*(1+hero.pointsInTalent(RESTORED_WILLPOWER)));
-				shield.supercharge(shieldToGive);
+                ((BrokenSeal.WarriorShield) shield).supercharge(shieldToGive);
 			}
+            else {
+                shield = Buff.affect(hero, Barrier.class);
+                shield.setShield(shieldToGive);
+            }
 		}
 		// GSH18天赋：医护兼容
-		if (hero.hasTalent(GSH18_MEDICAL_COMPATIBILITY)){
-			StarShield starShield = hero.buff(StarShield.class);
-			if (starShield == null) {
-				starShield = Buff.affect(hero, StarShield.class);
-			}
+		if (mul == 1.25F && hero.hasTalent(GSH18_MEDICAL_COMPATIBILITY)){
+			StarShield starShield = Buff.affect(hero, StarShield.class);
 			// 计算应回复的护盾层数：治疗药水恢复量的20%/50%
 			int healAmount = PotionOfHealing.getHealAmount(hero.HT);
 			float shieldPercent = -0.1f + 0.3f * hero.pointsInTalent(GSH18_MEDICAL_COMPATIBILITY);
@@ -580,7 +652,7 @@ public enum Talent {
 			for (int cell : grassCells){
 				Char ch = Actor.findChar(cell);
 				if (ch != null && ch.alignment == Char.Alignment.ENEMY){
-					Buff.affect(ch, Roots.class, 1f + hero.pointsInTalent(RESTORED_NATURE));
+					Buff.affect(ch, Roots.class, (1f + hero.pointsInTalent(RESTORED_NATURE))*mul );
 				}
 				if (Dungeon.level.map[cell] == Terrain.EMPTY ||
 						Dungeon.level.map[cell] == Terrain.EMBERS ||
@@ -590,10 +662,11 @@ public enum Talent {
 				}
 				CellEmitter.get(cell).burst(LeafParticle.LEVEL_SPECIFIC, 4);
 			}
-			if (hero.pointsInTalent(RESTORED_NATURE) == 1){
+			if (hero.pointsInTalent(RESTORED_NATURE) == 1 && mul != 2){
 				grassCells.remove(0);
 				grassCells.remove(0);
-				grassCells.remove(0);
+                if (mul != 1.25F)
+				    grassCells.remove(0);
 			}
 			for (int cell : grassCells){
 				int t = Dungeon.level.map[cell];
@@ -608,23 +681,23 @@ public enum Talent {
 		}
 	}
 
-	public static void onUpgradeScrollUsed( Hero hero ){
+	public static void onScrollUsed( Hero hero, float mul ){
 		if (hero.hasTalent(ENERGIZING_UPGRADE)){
-			MagesStaff staff=hero.belongings.getItem(MagesStaff.class);
-			if(staff!=null){
-				staff.overCharge(2+2*hero.pointsInTalent(ENERGIZING_UPGRADE));
-				ScrollOfRecharging.chargeParticle( Dungeon.hero );
-				SpellSprite.show( hero, SpellSprite.CHARGE );
-			}
+            Buff.prolong(hero, Recharging.class, 4*mul);
 		}
 		if (hero.hasTalent(MYSTICAL_UPGRADE)){
-			CloakOfShadows cloak = hero.belongings.getItem(CloakOfShadows.class);
-			if (cloak != null){
-				cloak.overCharge(1 + hero.pointsInTalent(MYSTICAL_UPGRADE));
-				ScrollOfRecharging.chargeParticle( Dungeon.hero );
-				SpellSprite.show( hero, SpellSprite.CHARGE );
-			}
+            Buff.prolong(hero, Invisibility.class, 4*mul);
 		}
+        float wandMul = Math.min(1, mul) ;
+        if (hero.hasTalent(Talent.EMPOWERING_SCROLLS)){
+            Buff.affect(hero, ScrollEmpower.class).reset( 1, (int) (hero.pointsInTalent(Talent.EMPOWERING_SCROLLS)*2*wandMul));
+            Item.updateQuickslot();
+        }else if (hero.hasTalent(Talent.EMPOWERING_SCROLLS_V2)){
+            if (wandMul < 1 && hero.pointsInTalent(EMPOWERING_SCROLLS_V2) < 2)
+                return;
+            Buff.affect(hero, ScrollEmpower.class).reset((int) Math.ceil(hero.pointsInTalent(Talent.EMPOWERING_SCROLLS_V2) * wandMul), 3);
+            Item.updateQuickslot();
+        }
 	}
 
 	public static void onArtifactUsed( Hero hero ){
@@ -793,7 +866,7 @@ public enum Talent {
 				float cooldownTurns = 125.0f-25.0f*hero.pointsInTalent(GSH18_INTELLIGENCE_AWARENESS);
 				Buff.affect(hero, IntelligenceAwarenessCooldown.class, cooldownTurns);
 				int distance = -1+3*hero.pointsInTalent(GSH18_INTELLIGENCE_AWARENESS);
-				((MindVision)(Buff.affect(hero, MindVision.class, 1.0f))).distance = distance;
+				Buff.affect(hero, MindVision.class, 1.0f).distance = distance;
 			}
 		}
 
@@ -846,7 +919,10 @@ public enum Talent {
 			case GSH18:
 				Collections.addAll(tierTalents, GSH18_MEAL_TREATMENT, GSH18_DOCTOR_INTUITION, GSH18_CLOSE_COMBAT, GSH18_STAR_SHIELD);
 				break;
-		}
+            case PUBLIC_1:
+                Collections.addAll(tierTalents, FAST_RELOAD);
+                break;
+        }
         //用一个临时ArrayList记录下t1的原始天赋，Collections.addAll的用法，首个参数是表，后面的是要加入的元素
 		for (Talent talent : tierTalents){
             //将上面ArrayList记录的天赋逐个加入到天赋表的Map中

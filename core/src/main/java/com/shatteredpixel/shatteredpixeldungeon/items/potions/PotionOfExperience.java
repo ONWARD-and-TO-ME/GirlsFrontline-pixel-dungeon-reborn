@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.potions;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class PotionOfExperience extends Potion {
@@ -29,12 +30,14 @@ public class PotionOfExperience extends Potion {
 	{
 		icon = ItemSpriteSheet.Icons.POTION_EXP;
 
+        mulOnTalentUsed = 2F;
 		bones = true;
 	}
 	
 	@Override
 	public void apply( Hero hero ) {
 		identify();
+        Talent.onPotionUsed(hero, mulOnTalentUsed);
 		hero.earnExp( hero.maxExp(), getClass() );
 	}
 	

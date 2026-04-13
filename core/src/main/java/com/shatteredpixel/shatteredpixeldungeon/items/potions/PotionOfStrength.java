@@ -35,12 +35,14 @@ public class PotionOfStrength extends Potion {
 	{
 		icon = ItemSpriteSheet.Icons.POTION_STRENGTH;
 
+        mulOnTalentUsed = 2F;
 		unique = true;
 	}
 	
 	@Override
 	public void apply( Hero hero ) {
 		identify();
+        Talent.onPotionUsed(hero, mulOnTalentUsed);
 		
 		hero.STR++;
 		hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(this, "msg_1") );

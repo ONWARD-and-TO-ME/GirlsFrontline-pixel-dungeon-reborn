@@ -54,7 +54,7 @@ public class PotionOfHealing extends Potion {
 		identify();
 		cure( hero );
 		heal( hero );
-		Talent.onHealingPotionUsed( hero );
+		Talent.onPotionUsed( hero, 1.25F );
 	}
 
 	public static int getHealAmount(int ht){

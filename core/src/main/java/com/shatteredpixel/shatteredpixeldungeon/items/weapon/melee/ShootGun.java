@@ -157,22 +157,12 @@ public class ShootGun extends MeleeWeapon {
         }
         hasCharge=false;
         int down = 0;
-        if(Dungeon.hero.hasTalent(Talent.Type56Three_Bomb)){
-            switch (Dungeon.hero.pointsInTalent(Talent.Type56Three_Bomb)){
-                case 1:
-                    down=15;
-                    break;
-                case 2:
-                    down=35;
-                    break;
-                case 3:
-                    down=50;
-                    break;
-                default:
-                    down=0;
-                    break;
-            }
+        switch (Dungeon.hero.pointsInTalent(Talent.Type56Three_Bomb)){
+            case 1: down=15;break;
+            case 2: down=35;break;
+            case 3: down=50;break;
         }
+        down += Dungeon.hero.pointsInTalent(Talent.FAST_RELOAD)*20;
         if (Dungeon.hero.hasTalent(Talent.Type56_14V2)){
             Buff.prolong(Dungeon.hero, ShootTracker.class, 6f);
         }
@@ -413,7 +403,8 @@ public class ShootGun extends MeleeWeapon {
     }
 
     @Override
-    public void onDetach( ) {
+    public void onDetach() {
+        super.onDetach();
         if(charger != null){
             charger.detach();
             charger = null;

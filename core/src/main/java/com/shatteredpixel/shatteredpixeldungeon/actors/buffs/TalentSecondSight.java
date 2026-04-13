@@ -22,13 +22,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.GameMath;
 
 import java.util.ArrayList;
 
@@ -38,10 +38,14 @@ public class TalentSecondSight extends Buff {
         revivePersists = true;
     }
 
-    public ArrayList<Integer> LevelID = new ArrayList<>() ;
-    public ArrayList<Integer> CoolDown = new ArrayList<>() ;
-    private static final String ID = "ID";
-    private static final String CD = "CD";
+    private ArrayList<curLevelSight> sights = new ArrayList<>();
+
+    @Override
+    public boolean attachTo( Char target ){
+        if (sights == null)
+            sights = new ArrayList<>();
+        return super.attachTo(target);
+    }
     @Override
     public String toString() {
         return Messages.get(this, "name");
@@ -51,15 +55,11 @@ public class TalentSecondSight extends Buff {
     }
     public int icon() {
         boolean on = false;
-        int num = 0;
-        for (int i : CoolDown){
-            if (i>0
-                    &&LevelID.get(num)%1000<=Dungeon.depth+2
-                    &&LevelID.get(num)%1000>=Dungeon.depth-2) {
+        for (curLevelSight sight : sights){
+            if (nearbyLevel(sight.level)){
                 on = true;
                 break;
             }
-            num++;
         }
         if (on){
             return BuffIndicator.MIND_VISION;
@@ -67,135 +67,117 @@ public class TalentSecondSight extends Buff {
             return super.icon();
     }
 
+    private static boolean nearbyLevel(int level){
+        if (level == 0)
+            return false;
+        int depth = level % 1000;
+        return GameMath.gate(Dungeon.depth-2,
+                depth,
+                Dungeon.depth+2) == depth;
+    }
     public void tintIcon(Image icon) {
         icon.hardlight(1F, 2F, 3F);
     }
     private String descA(){
-        String desc = "";
-        int j = 0;
-        for (int i : CoolDown){
-            if (i>0) {
-                if (desc!=""){
-                    desc+="\n";
-                }
-                if (LevelID.get(j)%1000<=Dungeon.depth+2
-                        &&LevelID.get(j)%1000>=Dungeon.depth-2){
-                    int sub = 0;
-                    int levelId = LevelID.get(j);
-                    String level;
-                    while (levelId != LevelID.get(j) % 1000) {
-                        sub++;
-                        levelId -= 1000;
-                        if (levelId <= 0)
-                            break;
-                    }
-                    level = String.valueOf(levelId);
-                    if (sub != 0)
-                        level += "/" + sub;
-                    desc += "楼层" + level + "仍需：" + CoolDown.get(j) + " 回合";
-                }
+        StringBuilder desc = new StringBuilder();
+        for (curLevelSight sight : sights){
+            if (!nearbyLevel(sight.level))
+                continue;
+            if (sight.time <= 0)
+                continue;
+            if (desc.length() > 0){
+                desc.append("\n");
             }
-            j++;
+            int sub = sight.level/1000;
+            String level = String.valueOf(sight.level%1000);
+            if (sub != 0)
+                level += "/" + sub;
+            desc.append("楼层").append(level).append("仍需：").append(sight.time).append(" 回合");
         }
-        return desc;
+        return desc.toString();
     }
     public void Set(int id, int cd){
-        if (LevelID.contains(id)){
-            int j = 0;
-            for (int i :LevelID){
-                if (i==id){
-                    break;
-                }else {
-                    j++;
-                }
+        for (curLevelSight sight : sights){
+            if (sight.level == id) {
+                sight.time = cd;
+                return;
             }
-            CoolDown.set(j, cd);
-        }else {
-            LevelID.add(id);
-            CoolDown.add(cd);
         }
+        sights.add(new curLevelSight(id, cd));
     }
     public boolean EndCD(int id){
-        if (LevelID.contains(id)){
-            int j = 0;
-            for (int i :LevelID){
-                if (i==id){
-                    break;
-                }else {
-                    j++;
-                }
+        for (curLevelSight sight : sights){
+            if (sight.level == id) {
+                return sight.time <= 0;
             }
-            return CoolDown.get(j)==0;
-        }else {
-            Set(id, 0);
-            return true;
         }
+        sights.add(new curLevelSight(id, 0));
+        return true;
     }
     @Override
     public boolean act() {
-        int j = 0;
-        for (int i : LevelID){
-            if (i==Dungeon.levelId) {
-                int cd = CoolDown.get(j);
-                if (cd>0) {
-                    CoolDown.set(j,cd-1);
-                }
+        for (curLevelSight sight: sights){
+            if (sight.level == Dungeon.levelId){
+                if (sight.time > 0)
+                    sight.time--;
                 break;
             }
-            j++;
         }
 
         spend(1);
         return true;
     }
 
+    private static final String SIGHT   =   "sight_new";
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
-        int countA = 0;
-        if (!LevelID.isEmpty()) {
-            int[] IDToSave = new int[LevelID.size()];
-            for (int i : LevelID) {
-                IDToSave[countA++] = i;
-            }
-            bundle.put(ID, IDToSave);
-            //楼层编号
-        }
-        if (!CoolDown.isEmpty()){
-            int countB = 0;
-            int[] CDToSave = new int[CoolDown.size()];
-            for (int j : CoolDown) {
-                CDToSave[countB++] = j;
-            }
-            bundle.put(CD, CDToSave);
-            //对应楼层CD
-        }
+        if (sights != null)
+            bundle.put(SIGHT, sights);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 
-        LevelID = new ArrayList<>();
-        CoolDown = new ArrayList<>();
-        int[] IDToLoad;
-        int[] CDToLoad;
-        if (bundle.contains(ID)){
-            IDToLoad = bundle.getIntArray(ID);
-            CDToLoad = bundle.getIntArray(CD);
+        if (bundle.contains(SIGHT)){
+            sights = (ArrayList<curLevelSight>) bundle.get(SIGHT);
+        }
+        else if (bundle.contains("ID")){
+            int[] IDToLoad = bundle.getIntArray("ID");
+            int[] CDToLoad = bundle.getIntArray("CD");
             if (IDToLoad != null) {
                 for (int i = 0; i < IDToLoad.length; i++) {
-                    if (i>=CDToLoad.length)
+                    if (i >= CDToLoad.length)
                         break;
-                    try {
-                        LevelID.add(IDToLoad[i]);
-                        CoolDown.add(CDToLoad[i]);
-                    } catch (Exception e) {
-                        GirlsFrontlinePixelDungeon.reportException(e);
-                    }
+                    sights.add(new curLevelSight(IDToLoad[i], CDToLoad[i]));
                 }
             }
         }
+        else
+            sights = new ArrayList<>();
 
 	}
+    public static class curLevelSight implements Bundlable{
+
+        private int level;
+        private int time;
+        public curLevelSight(int level, int time){
+            this.level  = level;
+            this.time   = time;
+        }
+        private static final String ID = "sight_level";
+        private static final String CD = "sight_time";
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            bundle.put(ID, level);
+            bundle.put(CD, time);
+        }
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            level = bundle.getInt(ID);
+            time = bundle.getInt(CD);
+        }
+    }
 }

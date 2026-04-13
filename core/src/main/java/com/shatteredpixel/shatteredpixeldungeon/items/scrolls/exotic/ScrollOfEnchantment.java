@@ -52,6 +52,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 	{
 		icon = ItemSpriteSheet.Icons.SCROLL_ENCHANT;
 
+        mulOnTalentUsed = 2F;
 		unique = true;
 	}
 
@@ -151,7 +152,6 @@ public class ScrollOfEnchantment extends ExoticScroll {
 							
 							Sample.INSTANCE.play( Assets.Sounds.READ );
 							Enchanting.show(curUser, item);
-							Talent.onUpgradeScrollUsed( Dungeon.hero );
 						}
 					}
 					
@@ -201,7 +201,6 @@ public class ScrollOfEnchantment extends ExoticScroll {
 							
 							Sample.INSTANCE.play( Assets.Sounds.READ );
 							Enchanting.show(curUser, item);
-							Talent.onUpgradeScrollUsed( Dungeon.hero );
 						}
 					}
 

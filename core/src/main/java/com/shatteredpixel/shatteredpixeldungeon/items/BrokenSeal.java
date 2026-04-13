@@ -26,10 +26,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ExtractUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -268,6 +268,11 @@ public class BrokenSeal extends Item {
 		}
 
 		public synchronized int maxShield() {
+            //metamorphed iron will logic
+            if (((Hero)target).heroClass != HeroClass.WARRIOR && ((Hero) target).hasTalent(Talent.IRON_WILL)){
+                return ((Hero) target).pointsInTalent(Talent.IRON_WILL);
+            }
+
 			if (armor != null && armor.isEquipped((Hero)target) && armor.checkSeal() != null) {
 				return armor.checkSeal().maxShield(armor.tier, armor.level());
 			} else {
@@ -277,6 +282,7 @@ public class BrokenSeal extends Item {
 		
 		@Override
 		//logic edited slightly as buff should not detach
+
 		public int absorbDamage(int dmg) {
 			if (shielding() <= 0) return dmg;
 
@@ -289,5 +295,18 @@ public class BrokenSeal extends Item {
 			}
 			return dmg;
 		}
+        private static final String PARTIAL_SHIELD = "PARTIAL_SHIELD";
+
+        @Override
+        public void storeInBundle( Bundle bundle ) {
+            super.storeInBundle( bundle );
+            bundle.put(PARTIAL_SHIELD, partialShield);
+        }
+
+        @Override
+        public void restoreFromBundle( Bundle bundle ) {
+            super.restoreFromBundle( bundle );
+            partialShield = bundle.getInt(PARTIAL_SHIELD);
+        }
 	}
 }

@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.potions;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -37,7 +38,8 @@ public class PotionOfHaste extends Potion {
 	@Override
 	public void apply(Hero hero) {
 		identify();
-		
+
+        Talent.onPotionUsed(hero, mulOnTalentUsed);
 		GLog.w( Messages.get(this, "energetic") );
 		Buff.prolong( hero, Haste.class, Haste.DURATION);
 	}

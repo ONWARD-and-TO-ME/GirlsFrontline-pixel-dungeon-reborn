@@ -45,6 +45,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		icon = ItemSpriteSheet.Icons.SCROLL_UPGRADE;
 		preferredBag = Belongings.Backpack.class;
 
+        mulOnTalentUsed = 2F;
 		unique = true;
 	}
 
@@ -113,8 +114,6 @@ public class ScrollOfUpgrade extends InventoryScroll {
             item.UpgradeUSED++;
 		}
 
-		Talent.onUpgradeScrollUsed( Dungeon.hero );
-		
 		Badges.validateItemLevelAquired( item );
 		Statistics.upgradesUsed++;
 		Badges.validateMageUnlock();

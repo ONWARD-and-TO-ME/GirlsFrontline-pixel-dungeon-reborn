@@ -428,6 +428,7 @@ public class AlchemyScene extends PixelScene {
 			align(energyAdd);
 			
 			result = recipe.brew(ingredients);
+            recipe.onComplete();
 		}
 		
 		if (result != null){

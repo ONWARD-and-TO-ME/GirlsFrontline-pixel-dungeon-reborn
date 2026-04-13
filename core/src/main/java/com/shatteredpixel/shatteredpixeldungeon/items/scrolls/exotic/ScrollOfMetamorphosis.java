@@ -178,22 +178,6 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 		private static final HashMap<Talent, HeroClass> restrictedTalents = new HashMap<>();
 		static {
             // 从蜕变池子移除以下天赋
-			restrictedTalents.put(Talent.IRON_WILL, HeroClass.WARRIOR);
-			restrictedTalents.put(Talent.RESTORED_WILLPOWER, HeroClass.WARRIOR);
-			restrictedTalents.put(Talent.RUNIC_TRANSFERENCE, HeroClass.WARRIOR);
-
-			restrictedTalents.put(Talent.BACKUP_BARRIER, HeroClass.MAGE);
-			restrictedTalents.put(Talent.ENERGIZING_UPGRADE, HeroClass.MAGE);
-			restrictedTalents.put(Talent.WAND_PRESERVATION, HeroClass.MAGE);
-
-			restrictedTalents.put(Talent.PROTECTIVE_SHADOWS, HeroClass.ROGUE);
-			restrictedTalents.put(Talent.MYSTICAL_UPGRADE, HeroClass.ROGUE);
-			restrictedTalents.put(Talent.LIGHT_CLOAK, HeroClass.ROGUE);
-
-			restrictedTalents.put(Talent.SEER_SHOT, HeroClass.HUNTRESS);
-			
-            restrictedTalents.put(Talent.Type56Three_Bomb, HeroClass.TYPE561);
-            restrictedTalents.put(Talent.Type56Three_Book, HeroClass.TYPE561);
 		}
 
         private static final ArrayList<ArrayList<Talent>> against = new ArrayList<>();
@@ -202,6 +186,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
             against.add(new ArrayList<>(Arrays.asList(Talent.EMPOWERING_SCROLLS, Talent.EMPOWERING_SCROLLS_V2, Talent.DESPERATE_POWER)));
             //旧戒指强化、新戒指强化
             against.add(new ArrayList<>(Arrays.asList(Talent.ENHANCED_RINGS, Talent.ENHANCED_RINGS_V2)));
+            against.add(new ArrayList<>(Arrays.asList(Talent.FAST_RELOAD, Talent.Type56Three_Bomb)));
         }
 		public static WndMetamorphReplace INSTANCE;
 

@@ -287,6 +287,9 @@ public class CloakOfShadows extends Artifact {
 				if (target instanceof Hero && ((Hero) target).subClass == HeroSubClass.ASSASSIN){
 					Buff.affect(target, Preparation.class);
 				}
+                if (target instanceof Hero && ((Hero) target).hasTalent(Talent.PROTECTIVE_SHADOWS)){
+                    Buff.affect(target, Talent.ProtectiveShadowsTracker.class);
+                }
 				return true;
 			} else {
 				return false;
@@ -300,18 +303,6 @@ public class CloakOfShadows extends Artifact {
             lockcha();
 			turnsToCost--;
 
-			//barrier every 2/1 turns, to a max of 3/5
-			if (((Hero)target).hasTalent(Talent.PROTECTIVE_SHADOWS)){
-				Barrier barrier = Buff.affect(target, Barrier.class);
-				if (barrier.shielding() < 1 + 2*((Hero)target).pointsInTalent(Talent.PROTECTIVE_SHADOWS)) {
-					barrierInc += 0.5f * ((Hero) target).pointsInTalent(Talent.PROTECTIVE_SHADOWS);
-				}
-				if (barrierInc >= 1 ){
-					barrierInc = 0;
-					barrier.incShield(1);
-				}
-			}
-			
 			if (turnsToCost <= 0){
 				charge--;
 				if (charge < 0) {

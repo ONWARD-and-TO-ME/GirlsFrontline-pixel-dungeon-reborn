@@ -50,6 +50,10 @@ public class RabbitWeaponGenoise extends Wand {
         maxCharges = 1;
         curCharges = 1;
     }
+    @Override
+    public int minCharges(){
+        return 0;
+    }
 
     @Override
     protected int initialCharges() {

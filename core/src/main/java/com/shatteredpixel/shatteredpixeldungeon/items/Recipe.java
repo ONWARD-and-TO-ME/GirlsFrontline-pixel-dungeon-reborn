@@ -69,6 +69,7 @@ public abstract class Recipe {
 	public abstract int cost(ArrayList<Item> ingredients);
 	
 	public abstract Item brew(ArrayList<Item> ingredients);
+    public void onComplete(){}
 	
 	public abstract Item sampleOutput(ArrayList<Item> ingredients);
 	
