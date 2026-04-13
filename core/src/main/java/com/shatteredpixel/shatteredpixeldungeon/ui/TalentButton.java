@@ -24,6 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
@@ -120,7 +122,7 @@ public class TalentButton extends Button {
 				&& Dungeon.hero.isAlive()
 				&& Dungeon.hero.talentPointsAvailable(tier) > 0
 				&& Dungeon.hero.pointsInTalent(talent) < talent.maxPoints()){
-			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
+			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback(mode) {
 
 				@Override
 				public String prompt() {
@@ -132,8 +134,11 @@ public class TalentButton extends Button {
 					upgradeTalent();
 				}
 			});
-		} else if (mode == Mode.METAMORPH_CHOOSE && Dungeon.hero != null && Dungeon.hero.isAlive()) {
-			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
+		}
+        else if (mode == Mode.METAMORPH_CHOOSE &&
+                Dungeon.hero != null &&
+                Dungeon.hero.isAlive()) {
+			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback(mode) {
 
 				@Override
 				public String prompt() {
@@ -148,8 +153,9 @@ public class TalentButton extends Button {
 					GameScene.show(new ScrollOfMetamorphosis.WndMetamorphReplace(talent, tier));
 				}
 			});
-		} else if (mode == Mode.METAMORPH_REPLACE && Dungeon.hero != null && Dungeon.hero.isAlive()) {
-			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
+		}
+        else if (mode == Mode.METAMORPH_REPLACE && Dungeon.hero != null && Dungeon.hero.isAlive()) {
+			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback(mode) {
 
 				@Override
 				public String prompt() {
@@ -214,20 +220,7 @@ public class TalentButton extends Button {
 							}
                             //将新天赋Map替换掉旧的Map
 							Dungeon.hero.talents.set(ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.tier-1, newTier);
-                            if (replacing == Talent.HOLD_FAST){
-                                if (Dungeon.hero.belongings.secArmor != null){
-                                    final Armor armor = Dungeon.hero.belongings.secArmor;
-                                    Dungeon.hero.belongings.secArmor = null;
-                                    boolean kept = armor.keptThoughLostInvent;
-                                    armor.keptThoughLostInvent = true;
-                                    armor.collect(Dungeon.hero.belongings.backpack);
-                                    armor.keptThoughLostInvent = kept;
-                                    BrokenSeal.WarriorShield sealBuff = Dungeon.hero.buff(BrokenSeal.WarriorShield.class);
-                                    if (sealBuff != null && armor == sealBuff.armor) {
-                                        sealBuff.setArmor(null);
-                                    }
-                                }
-                            }
+                            onReplace(replacing, Dungeon.hero);
                             //对已在玩家天赋表中的新天赋逐次加点并获得各级收益
                             for(int i = 1; i<=point; i++){
                                 Dungeon.hero.talents.get(ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.tier-1).put(talent, i);
@@ -248,8 +241,9 @@ public class TalentButton extends Button {
 
 				}
 			});
-		} else if (mode == Mode.debug_replace && Dungeon.hero != null && Dungeon.hero.isAlive()) {
-            toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
+		}
+        else if (mode == Mode.debug_replace && Dungeon.hero != null && Dungeon.hero.isAlive()) {
+            toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback(mode) {
 
                 @Override
                 public String prompt() {
@@ -302,7 +296,16 @@ public class TalentButton extends Button {
                 }
             });
         } else {
-			toAdd = new WndInfoTalent(talent, pointsInTalent, null);
+			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback(Mode.INFO) {
+                @Override
+                public void call() {
+                }
+
+                @Override
+                public String prompt() {
+                    return "";
+                }
+            });
 		}
 
 		if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene){
@@ -312,6 +315,25 @@ public class TalentButton extends Button {
 		}
 	}
 
+    private static void onReplace(Talent replacing, Hero hero){
+        if (replacing == Talent.HOLD_FAST){
+            if (hero.belongings.secArmor != null){
+                final Armor armor = hero.belongings.secArmor;
+                hero.belongings.secArmor = null;
+                boolean kept = armor.keptThoughLostInvent;
+                armor.keptThoughLostInvent = true;
+                armor.collect(Dungeon.hero.belongings.backpack);
+                armor.keptThoughLostInvent = kept;
+                BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
+                if (sealBuff != null && armor == sealBuff.armor) {
+                    sealBuff.setArmor(null);
+                }
+            }
+        }
+        else if (replacing == Talent.IRON_WILL){
+            Buff.affect(hero, BrokenSeal.WarriorShield.class);
+        }
+    }
 	@Override
 	protected void onPointerDown() {
 		icon.brightness( 1.5f );

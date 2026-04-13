@@ -20,6 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap.Type;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
@@ -31,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
@@ -55,6 +57,8 @@ public class SeedFinder {
     List<Class<? extends Item>> blacklist;
     ArrayList<String> itemList;
     public static boolean SeedFinding = false;
+    public static boolean strict = true;
+    public static int toolkit = 0;
     private static boolean Mimic = false;
 
     // 新增：接收Scene引用，用于无间隔刷新
@@ -132,9 +136,10 @@ public class SeedFinder {
             long currentSeed = seedDigits + i;
 
             // 无间隔刷新UI（直接回调，无延迟）
-            if (sceneRef != null) {
-                sceneRef.updateCurrentSeed(currentSeed);
-            }
+            if ((currentSeed & (floor * 2L)) == 0)
+                if (sceneRef != null) {
+                    sceneRef.updateCurrentSeed(currentSeed);
+                }
 
             if (testSeedALL(currentSeed, floor, heroclass)
                     &&testSeedALL(currentSeed, floor, heroclass)
@@ -199,14 +204,14 @@ public class SeedFinder {
         Dungeon.hero = null;
         GamesInProgress.selectedClass = heroclass;
         String seedCode = DungeonSeed.convertToCode(seed);
-        if (Game.lockXMAS) {
-            Dungeon.init(seedCode);
-            Game.lockXMAS = true;
-        }else
-            Dungeon.init(seedCode);
+        boolean lockXMAS = Game.lockXMAS;
+        Dungeon.init(seedCode);
+        Game.lockXMAS = lockXMAS;
         boolean[] itemsFound = new boolean[itemList.size()];
         Arrays.fill(itemsFound, false);
         int LevelSub = 0;
+        toolkit = 0;
+        boolean haveRemoveCurse = false;
         for(int i = 1; i <= floors;) {
             Level l;
             if (i==25&&LevelSub==0){
@@ -297,6 +302,15 @@ public class SeedFinder {
             for(Heap h : heaps) {
                 for(Item item : h.items) {
                     item.identify();
+                    if (!strict){
+                        if (!haveRemoveCurse && item instanceof ScrollOfRemoveCurse)
+                            haveRemoveCurse = true;
+                        if (toolkit == 0 && item instanceof AlchemistsToolkit){
+                            toolkit = item.cursed ? 1 : 2;
+                        }
+                        if (toolkit == 1 && haveRemoveCurse)
+                            toolkit = 2;
+                    }
                     String itemName = item.toString().toLowerCase();
                     for(int j = 0; j < itemList.size(); ++j) {
                         String wantingItem = itemList.get(j);

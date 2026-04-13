@@ -49,8 +49,7 @@ public class CrystalPathRoom extends SpecialRoom {
     public int minWidth() { return 7; }
     public int minHeight() { return 7; }
 
-    boolean old = ( Random.Int(100)<50 );
-    //old的作用为随机取代，后面的random的写法是为了方便转换成百分比来理解，此时的(100)<50的概率是50/100=50%
+    boolean old = ( Random.Int(2)==0 );
     //此处的命名规则为，A是旧的三水晶房，B是六选三
     @Override
     public void paint(Level level){
@@ -299,15 +298,15 @@ public class CrystalPathRoom extends SpecialRoom {
             }
         }
         if ((p.isKnown() && s.isKnown()) || (!p.isKnown() && !s.isKnown())) {
-            Painter.set(level, prize1, 11);
-            Painter.set(level, prize2, 11);
+            Painter.set(level, prize1, Terrain.PEDESTAL);
+            Painter.set(level, prize2, Terrain.PEDESTAL);
         }else {
             if(isEXP){
-                Painter.set(level, prize1, 11);
-                Painter.set(level, prize2, 9);
+                Painter.set(level, prize1, Terrain.PEDESTAL);
+                Painter.set(level, prize2, Terrain.EMBERS);
             }else {
-                Painter.set(level, prize1, 9);
-                Painter.set(level, prize2, 11);
+                Painter.set(level, prize1, Terrain.EMBERS);
+                Painter.set(level, prize2, Terrain.PEDESTAL);
             }
         }
         /*以下为物品生成并掉落，读取对应链表的第0位，将其生成并移除（移除后后续物品填充上来）

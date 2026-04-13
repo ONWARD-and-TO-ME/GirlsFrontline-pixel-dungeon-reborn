@@ -110,6 +110,10 @@ public class Dungeon {
 		UPGRADE_SCROLLS,
 		ARCANE_STYLI,
 
+        LaboratoryRoom,
+        FairyRoom,
+        DropLevel,
+
 		//Health potion sources
 		//enemies
         CYCLOPS_HP,
@@ -153,6 +157,9 @@ public class Dungeon {
         public void lost(){
             count = 0;
         }
+        public void used(){
+            count++;
+        }
 
 		public static void reset(){
 			for (LimitedDrops lim : values()){
@@ -175,6 +182,13 @@ public class Dungeon {
 				}
 				
 			}
+            if (version < 656){
+                LaboratoryRoom.count = Statistics.deepestFloor / 5;
+                if (Statistics.deepestFloor%5 != 0 &&
+                        Statistics.deepestFloor%5 >= (Dungeon.seed%3 + 2))
+                    LaboratoryRoom.count++;
+                FairyRoom.count = (Statistics.deepestFloor + 1) / 5;
+            }
 		}
 
 	}
@@ -386,55 +400,37 @@ public class Dungeon {
             level = newSubLevel(id);
         else {
             switch (id) {
-                case 1:
-                case 2:
-                case 3:
-                case 4:
+                case 1: case 2: case 3: case 4:
                     level = new SewerLevel();
                     break;
                 case 5:
                     level = new SewerBossLevel();
                     break;
-                case 6:
-                case 7:
-                case 8:
-                case 9:
+                case 6: case 7: case 8: case 9:
                     level = new PrisonLevel();
                     break;
                 case 10:
                     level = new PrisonBossLevel();
                     break;
-                case 11:
-                case 12:
-                case 13:
-                case 14:
+                case 11: case 12: case 13: case 14:
                     level = new CavesLevel();
                     break;
                 case 15:
                     level = new CavesBossLevel();
                     break;
-                case 16:
-                case 17:
-                case 18:
-                case 19:
+                case 16: case 17: case 18: case 19:
                     level = new CityLevel();
                     break;
                 case 20:
                     level = new CityBossLevel();
                     break;
-                case 21:
-                case 22:
-                case 23:
-                case 24:
+                case 21: case 22: case 23: case 24:
                     level = new DeepCaveLevel();
                     break;
                 case 25:
                     level = new DeepCaveBossLevel();
                     break;
-                case 26:
-                case 27:
-                case 28:
-                case 29:
+                case 26: case 27: case 28: case 29:
                     level = new HallsLevel();
                     break;
                 case 30:
@@ -769,7 +765,8 @@ public class Dungeon {
 		Ring.restore( bundle );
 
 		quickslot.restorePlaceholders( bundle );
-		
+
+        Statistics.restoreFromBundle( bundle );
 		if (fullLoad) {
 			
 			LimitedDrops.restore( bundle.getBundle(LIMDROPS) );
@@ -816,7 +813,6 @@ public class Dungeon {
 		energy = bundle.getInt( ENERGY );
         //ExtractSummoned = bundle.getBoolean( Summoned );读取计数
 
-		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
 
 		droppedItems = new SparseArray<>();
@@ -826,9 +822,7 @@ public class Dungeon {
 			//dropped items
 			ArrayList<Item> items = new ArrayList<>();
 			if (bundle.contains(Messages.format( DROPPED, i )))
-				for (Bundlable b : bundle.getCollection( Messages.format( DROPPED, i ) ) ) {
-					items.add( (Item)b );
-				}
+                items = bundle.getBundlableArrayList( Messages.format( DROPPED, i ) , Item.class);
 			if (!items.isEmpty()) {
 				droppedItems.put( i, items );
 			}
@@ -836,9 +830,7 @@ public class Dungeon {
 			//ported items
 			items = new ArrayList<>();
 			if (bundle.contains(Messages.format( PORTED, i )))
-				for (Bundlable b : bundle.getCollection( Messages.format( PORTED, i ) ) ) {
-					items.add( (Item)b );
-				}
+                items = bundle.getBundlableArrayList( Messages.format( PORTED, i ) , Item.class);
 			if (!items.isEmpty()) {
 				portedItems.put( i, items );
 			}

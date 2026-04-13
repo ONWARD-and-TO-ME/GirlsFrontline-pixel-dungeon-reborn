@@ -49,16 +49,16 @@ import java.util.ArrayList;
 public class debugBook extends TestItem {
     {
         image = ItemSpriteSheet.SCROLL_HOLDER;
-        defaultAction =AC_SETMODE;
+        defaultAction =AC_SetMode;
     }
-    private static final String AC_SETMODE = "setmode";
+    private static final String AC_SetMode = "setMode";
     private static final String AC_APPLY = "apply";
     private static int modeA = 0;
-    private static String AC_EXP = "EXP";
-    private static String AC_STR = "STR";
-    private static String AC_LVL = "LVL";
-    private static String AC_MOB = "MOB";
-    private static String AC_CHA = "CHA";
+    private static final String AC_EXP = "EXP";
+    private static final String AC_STR = "STR";
+    private static final String AC_LVL = "LVL";
+    private static final String AC_MOB = "MOB";
+    private static final String AC_CHA = "CHA";
     @Override
     public String name(){
         return Messages.get(this, "name") + modeName();
@@ -86,7 +86,7 @@ public class debugBook extends TestItem {
                 return "";
         }
     }
-    private String modedesc(){
+    private String modeDesc(){
         switch(modeA)
         {
             case 1:
@@ -100,7 +100,7 @@ public class debugBook extends TestItem {
             case 5:
                 return Messages.get(this, "mob");
             case 6:
-                return Messages.get(this, "cha",chadesc());
+                return Messages.get(this, "cha", chaDesc());
             case 7:
                 return Messages.get(this, "reset");
             case 8:
@@ -109,8 +109,8 @@ public class debugBook extends TestItem {
                 return "";
         }
     }
-    private String chadesc(){
-        switch (chargemode){
+    private String chaDesc(){
+        switch (chargeMode){
             case 1:
                 return Messages.get(this,"cha_rem");
             case 2:
@@ -122,19 +122,19 @@ public class debugBook extends TestItem {
     @Override
     public String desc(){
         String desc =super.desc();
-        desc+=modedesc();
+        desc+= modeDesc();
         return desc;
     }
 
     @Override
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
-        actions.add(AC_SETMODE);
+        actions.add(AC_SetMode);
         if(modeA!=0)
             actions.add(AC_APPLY);
         switch (modeA){
             case 0: default:
-                defaultAction=AC_SETMODE;
+                defaultAction=AC_SetMode;
                 break;
             case 1:
                 actions.add(AC_EXP);
@@ -171,7 +171,7 @@ public class debugBook extends TestItem {
     @Override
     public void execute(Hero hero, String action) {
         super.execute(hero, action);
-        if (action.equals(AC_SETMODE)) {
+        if (action.equals(AC_SetMode)) {
             setMode();
         } else if (action.equals(AC_EXP)) {
             setEXP();
@@ -230,65 +230,65 @@ public class debugBook extends TestItem {
                     @Override
                     public void onSelect(boolean check, String text) {
                         if (check && text.matches("\\d+")){
-                            modechange(Integer.parseInt(text));
+                            modeChange(Integer.parseInt(text));
                         }
                     }
                 }
         );
     }
-    private void modechange(int mode){
+    private void modeChange(int mode){
         if(mode == 1) {
             modeA = 1;
             defaultAction = AC_EXP;
-            GLog.p(Messages.get(this,"modetext",Messages.get(this,"ac_exp")));
+            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_exp")));
             updateQuickslot();
         }
         else if(mode==2){
             modeA = 2;
             defaultAction = AC_STR;
-            GLog.p(Messages.get(this,"modetext",Messages.get(this,"ac_str")));
+            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_str")));
             updateQuickslot();
         }
         else if(mode==3){
             modeA = 3;
             defaultAction = AC_LVL;
-            GLog.p(Messages.get(this,"modetext",Messages.get(this,"ac_lvl")));
+            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_lvl")));
             updateQuickslot();
         }
         else if(mode==4){
             modeA = 4;
             defaultAction = AC_APPLY;
-            GLog.p(Messages.get(this,"modetext",Messages.get(this,"ac_ign")));
+            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_ign")));
             updateQuickslot();
         }
         else if(mode==5){
             modeA = 5;
             defaultAction = AC_MOB;
-            GLog.p(Messages.get(this,"modetext",Messages.get(this,"ac_mob")));
+            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_mob")));
             updateQuickslot();
         }
         else if(mode==6){
             modeA = 6;
             defaultAction = AC_CHA;
-            GLog.p(Messages.get(this,"modetext",Messages.get(this,"ac_cha")));
+            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_cha")));
             updateQuickslot();
         }
         else if(mode == 7){
             modeA = 7;
             defaultAction = AC_APPLY;
-            GLog.p(Messages.get(this,"modetext",Messages.get(this,"ac_reset")));
+            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_reset")));
             updateQuickslot();
         }
         else if(mode == 8){
             modeA = 8;
             defaultAction = AC_APPLY;
-            GLog.p(Messages.get(this,"modetext",Messages.get(this,"ac_complete")));
+            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_complete")));
             updateQuickslot();
         }
         else {
             modeA = 0;
-            defaultAction = AC_SETMODE;
-            GLog.p(Messages.get(this,"modetext",Messages.get(this,"ac_setmode")));
+            defaultAction = AC_SetMode;
+            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_setMode")));
             updateQuickslot();
         }
     }
@@ -399,9 +399,6 @@ public class debugBook extends TestItem {
                 }
                 if (item instanceof Artifact){
                     lvl = Math.min(lvl, ((Artifact) item).levelCap);
-                }
-
-                if (item instanceof Artifact){
                     int lvlB = lvl-item.level();
                     if (lvlB>=0) {
                         item.upgrade(lvlB);
@@ -409,7 +406,7 @@ public class debugBook extends TestItem {
                         item.degrade(-lvlB);
                     }
                 }else {
-                    if (item.level()==6666){
+                    if (item.level()==lvl){
                         item.level(-lvl);
                     }else {
                         item.level(lvl);
@@ -478,7 +475,7 @@ public class debugBook extends TestItem {
     private void mobAPPLY(){
         Dungeon.mobRan=mobA;
     }
-    private int chargemode = 0;
+    private int chargeMode = 0;
     private void setCHA(){
         Game.runOnRenderThread(()->GameScene.show(
                 new WndTextNumberInput(
@@ -492,9 +489,9 @@ public class debugBook extends TestItem {
                         false){
                     public void onSelect(boolean check, String text){
                         if (check && text.matches("\\d+")){
-                            chargemode = Math.min(Integer.parseInt(text), 2);
-                            chargemode = Math.max(chargemode, 0);
-                            GLog.p(Messages.get(this, "changecha"),chadesc());
+                            chargeMode = Math.min(Integer.parseInt(text), 2);
+                            chargeMode = Math.max(chargeMode, 0);
+                            GLog.p(Messages.get(this, "changeCha"), chaDesc());
                             defaultAction = AC_APPLY;
                             updateQuickslot();
                         }
@@ -522,22 +519,22 @@ public class debugBook extends TestItem {
         @Override
         public void onSelect( Item item ) {
             if(item != null){
-                switch (chargemode){
+                switch (chargeMode){
                     case 1:
-                        lockcharge(item);
+                        lockCharge(item);
                         break;
                     case 2:
                         lockClass(item);
                         break;
                     case 0: default:
-                        fullcharge(item);
+                        fullCharge(item);
                         break;
                 }
                 Sample.INSTANCE.play( Assets.Sounds.READ );
             }
         }
     };
-    private void fullcharge(Item item){
+    private void fullCharge(Item item){
         Item itemB;
         if (item instanceof MagesStaff){
             itemB = ((MagesStaff) item).wand;
@@ -561,7 +558,7 @@ public class debugBook extends TestItem {
         }
         updateQuickslot();
     }
-    private void lockcharge(Item item){
+    private void lockCharge(Item item){
         Item itemB;
         if (item instanceof MagesStaff){
             itemB = ((MagesStaff) item).wand;
@@ -576,13 +573,13 @@ public class debugBook extends TestItem {
             if(((ClassArmor) itemB).lockcharge){
                 ((ClassArmor) itemB).lockcharge = false;
                 ((ClassArmor) itemB).chargeRem = 0;
-                GLog.n(Messages.get(this,"cha_singleunlock"));
+                GLog.n(Messages.get(this,"cha_singleUnlock"));
                 //先解除后清除登记，以免改变当前充能
             }
             else {
                 ((ClassArmor) itemB).chargeRem = ((ClassArmor) itemB).charge;
                 ((ClassArmor) itemB).lockcharge = true;
-                GLog.p(Messages.get(this,"cha_singlelock"));
+                GLog.p(Messages.get(this,"cha_singleLock"));
                 //先等级后启动，以免丢失当前充能
             }
         }
@@ -590,22 +587,22 @@ public class debugBook extends TestItem {
             if(((Wand) itemB).lockcharge){
                 ((Wand) itemB).lockcharge = false;
                 ((Wand) itemB).chargeRem = 0;
-                GLog.n(Messages.get(this,"cha_singleunlock"));
+                GLog.n(Messages.get(this,"cha_singleUnlock"));
             }else {
                 ((Wand) itemB).chargeRem = ((Wand) itemB).curCharges;
                 ((Wand) itemB).lockcharge = true;
-                GLog.p(Messages.get(this,"cha_singlelock"));
+                GLog.p(Messages.get(this,"cha_singleLock"));
             }
         }
         else if (itemB instanceof Artifact){
             if(((Artifact) itemB).lockcharge){
                 ((Artifact) itemB).lockcharge=false;
                 ((Artifact) itemB).chargeRem= 0;
-                GLog.n(Messages.get(this,"cha_singleunlock"));
+                GLog.n(Messages.get(this,"cha_singleUnlock"));
             }else {
                 ((Artifact) itemB).chargeRem= ((Artifact) itemB).charge;
                 ((Artifact) itemB).lockcharge=true;
-                GLog.p(Messages.get(this,"cha_singlelock"));
+                GLog.p(Messages.get(this,"cha_singleLock"));
             }
         }
         updateQuickslot();
@@ -625,28 +622,28 @@ public class debugBook extends TestItem {
         if (itemB instanceof ClassArmor){
             if(Dungeon.ArmorLock){
                 Dungeon.ArmorLock = false;
-                GLog.n(Messages.get(this, "cha_armorunlock"));
+                GLog.n(Messages.get(this, "cha_armorUnlock"));
             }else {
                 Dungeon.ArmorLock = true;
-                GLog.p(Messages.get(this, "cha_armorlock"));
+                GLog.p(Messages.get(this, "cha_armorLock"));
             }
         }
         else if (itemB instanceof Wand){
             if(Dungeon.WandLock){
                 Dungeon.WandLock = false;
-                GLog.n(Messages.get(this, "cha_wandunlock"));
+                GLog.n(Messages.get(this, "cha_wandUnlock"));
             }else {
                 Dungeon.WandLock = true;
-                GLog.p(Messages.get(this, "cha_wandlock"));
+                GLog.p(Messages.get(this, "cha_wandLock"));
             }
         }
         else if (itemB instanceof Artifact){
             if(Dungeon.ArtifactLock){
                 Dungeon.ArtifactLock = false;
-                GLog.n(Messages.get(this, "cha_artifactunlock"));
+                GLog.n(Messages.get(this, "cha_artifactUnlock"));
             }else {
                 Dungeon.ArtifactLock = true;
-                GLog.p(Messages.get(this, "cha_artifactlock"));
+                GLog.p(Messages.get(this, "cha_artifactLock"));
             }
         }
         updateQuickslot();

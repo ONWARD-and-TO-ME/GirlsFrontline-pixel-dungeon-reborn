@@ -21,12 +21,14 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.TalentButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.utils.Callback;
@@ -51,14 +53,14 @@ public class WndInfoTalent extends Window {
 		titlebar.setRect( 0, 0, WIDTH, 0 );
 		add( titlebar );
 
-		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(talent.desc(), 6);
+		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(talent.desc(Dungeon.hero.heroClass), 6);
 		txtInfo.maxWidth(WIDTH);
 		txtInfo.setPos(titlebar.left(), titlebar.bottom() + 2*GAP);
 		add( txtInfo );
 
 		resize( WIDTH, (int)(txtInfo.bottom() + GAP) );
 
-		if (buttonCallback != null) {
+		if (buttonCallback.mode != TalentButton.Mode.INFO) {
 			RedButton button = new RedButton( buttonCallback.prompt() ) {
 				@Override
 				protected void onClick() {
@@ -78,6 +80,12 @@ public class WndInfoTalent extends Window {
 	public static abstract class TalentButtonCallback implements Callback {
 
 		public abstract String prompt();
+        private final TalentButton.Mode mode;
+
+        protected TalentButtonCallback(TalentButton.Mode mode) {
+            this.mode = mode;
+        }
+
 
 	}
 

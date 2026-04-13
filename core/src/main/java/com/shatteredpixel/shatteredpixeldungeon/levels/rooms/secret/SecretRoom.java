@@ -21,9 +21,10 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
-import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -34,6 +35,11 @@ import java.util.Arrays;
 
 public abstract class SecretRoom extends SpecialRoom {
 
+    public boolean Found(){
+        if (Dungeon.level == null || Dungeon.level.map.length == 0)
+            return false;
+        return Dungeon.level.map[Dungeon.level.pointToCell(entrance())] == Terrain.SECRET_DOOR;
+    }
 
 	private static final ArrayList<Class<? extends SecretRoom>> ALL_SECRETS = new ArrayList<>( Arrays.asList(
 			SecretGardenRoom.class, SecretLaboratoryRoom.class, SecretLibraryRoom.class,
@@ -45,24 +51,17 @@ public abstract class SecretRoom extends SpecialRoom {
 
 	//this is the number of secret rooms per region (whole value),
 	// plus the chance for an extra secret room (fractional value)
-	private static float[] baseRegionSecrets = new float[]{1.4f, 1.8f, 2.2f, 2.6f, 2.8f, 3.0f};
-	private static int[] regionSecretsThisRun = new int[6];
+	private static final float[] baseRegionSecrets = new float[]{2f, 2.25f, 2.5f, 2.75f, 3.0f, 3.25f};
+	private static int[] regionSecretsThisRun = new int[baseRegionSecrets.length];
+    public static float[] regionSecretsThisRandom = new float[baseRegionSecrets.length];
 
 	public static void initForRun(){
 
 		float[] regionChances = baseRegionSecrets.clone();
 
-		if (GamesInProgress.selectedClass == HeroClass.ROGUE){
-			for (int i = 0; i < regionChances.length; i++){
-				regionChances[i] += 0.6f;
-			}
-		}
-
 		for (int i = 0; i < regionSecretsThisRun.length; i++){
 			regionSecretsThisRun[i] = (int)regionChances[i];
-			if (Random.Float() < regionChances[i] % 1f){
-				regionSecretsThisRun[i]++;
-			}
+            regionSecretsThisRandom[i] = Random.Float();
 		}
 
 		runSecrets = new ArrayList<>(ALL_SECRETS);
@@ -71,26 +70,36 @@ public abstract class SecretRoom extends SpecialRoom {
 	}
 
 	public static int secretsForFloor(int depth){
-		if (depth == 1 || depth > 25 && depth< 45 ) return 0;
+		if (depth == 1 || depth > baseRegionSecrets.length*5 ) return 0;
 
 		int region = depth/5;
 		int floor = depth%5;
 
 		int floorsLeft = 5 - floor;
 
-		float secrets;
-		if (floorsLeft == 0) {
-			secrets = regionSecretsThisRun[region];
-		} else {
-			secrets = regionSecretsThisRun[region] / floorsLeft;
-			if (Random.Float() < secrets % 1f){
-				secrets = (float)Math.ceil(secrets);
-			} else {
-				secrets = (float)Math.floor(secrets);
-			}
-		}
+		float secrets= regionSecretsThisRun[region];
 
-		regionSecretsThisRun[region] -= (int)secrets;
+        // so that it will not change old files
+        if (!(regionSecretsThisRandom.length > baseRegionSecrets.length)) {
+            float regionRandom = regionSecretsThisRandom[region];
+            float choice = baseRegionSecrets[region] % 1F;
+            if (Dungeon.hero.hasTalentB(Talent.ROGUES_FORESIGHT))
+                choice += 0.6F;
+            if (regionRandom < choice % 1F) {
+                secrets += (float) Math.ceil(choice);
+            } else {
+                secrets += (float) Math.floor(choice);
+            }
+        }
+
+        secrets /= floorsLeft;
+        if (Random.Float() < secrets % 1f){
+            secrets = (float)Math.ceil(secrets);
+        } else {
+            secrets = (float)Math.floor(secrets);
+        }
+
+        regionSecretsThisRun[region] -= (int)secrets;
 		return (int)secrets;
 	}
 
@@ -103,7 +112,7 @@ public abstract class SecretRoom extends SpecialRoom {
 			if (newidx < index) index = newidx;
 		}
 		try {
-			r = runSecrets.get( index ).newInstance();
+			r = runSecrets.get( index ).getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			GirlsFrontlinePixelDungeon.reportException(e);
 		}
@@ -115,6 +124,7 @@ public abstract class SecretRoom extends SpecialRoom {
 
 	private static final String ROOMS	= "secret_rooms";
 	private static final String REGIONS	= "region_secrets";
+    private static final String RANDOM  = "region_random";
 
 	public static void restoreRoomsFromBundle( Bundle bundle ) {
 		runSecrets.clear();
@@ -123,6 +133,10 @@ public abstract class SecretRoom extends SpecialRoom {
 				if (type != null) runSecrets.add(type);
 			}
 			regionSecretsThisRun = bundle.getIntArray(REGIONS);
+            if (bundle.contains(RANDOM))
+                regionSecretsThisRandom = bundle.getFloatArray(RANDOM);
+            else
+                regionSecretsThisRandom = new float[baseRegionSecrets.length+1];
 		} else {
 			initForRun();
 			GirlsFrontlinePixelDungeon.reportException(new Exception("secrets array didn't exist!"));
@@ -132,6 +146,7 @@ public abstract class SecretRoom extends SpecialRoom {
 	public static void storeRoomsInBundle( Bundle bundle ) {
 		bundle.put( ROOMS, runSecrets.toArray(new Class[0]) );
 		bundle.put( REGIONS, regionSecretsThisRun );
+        bundle.put( RANDOM, regionSecretsThisRandom);
 	}
 
 }

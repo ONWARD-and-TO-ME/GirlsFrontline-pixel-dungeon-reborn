@@ -1,17 +1,24 @@
 package com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
-
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Education;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
 import com.shatteredpixel.shatteredpixeldungeon.items.KingsCrown;
+import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
 import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Commander;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Gemini;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Letter;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Peach;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Succor;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Pasty;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
@@ -53,7 +60,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlast;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlink;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfFlock;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.Cannon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Clipper;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
@@ -70,7 +77,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class LazyTest extends TestGenerator {
     {
-        image = ItemSpriteSheet.EBONY_CHEST;
+        image = ItemSpriteSheet.MISSION_CHEST;
     }
 
     @Override
@@ -151,13 +158,22 @@ public class LazyTest extends TestGenerator {
             new Sungrass.Seed().quantity(100).identify().collect();
             new Swiftthistle.Seed().quantity(100).identify().collect();
 
+            new LiquidMetal().quantity(200).collect();
+            new Commander().quantity(100).collect();
+            new Gemini().quantity(100).collect();
+            new Letter().quantity(100).collect();
+            new Peach().quantity(100).collect();
+            new Succor().quantity(100).collect();
+            new Clipper().quantity(100).collect();
             new PotionOfStrength().apply(hero);
             hero.STR=16;
             new PotionOfExperience().apply(hero);
-            hero.lvl=40;
-            hero.attackSkill = 10+40-1;
-            hero.defenseSkill = 5+40-1;
+            hero.earnExp(4095, LazyTest.class);
             hero.updateHT( true );
+            hero.subClass = HeroSubClass.BERSERKER;
+            hero.armorAbility = new Education();
+            Talent.initSubclassTalents(hero);
+            Talent.initArmorTalents(hero);
 
             RingOfAccuracy roa = new RingOfAccuracy();
             roa.level(22);

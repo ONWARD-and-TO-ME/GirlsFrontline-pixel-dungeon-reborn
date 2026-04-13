@@ -189,6 +189,19 @@ public class Bundle {
 			return null;
 		}
 	}
+    public ArrayList<Integer> getIntArrayList( String key ){
+        try {
+            JSONArray array = data.getJSONArray( key );
+            ArrayList<Integer> result = new ArrayList<>();
+            for (int i=0; i < array.length(); i++) {
+                result.add( array.getInt( i ) );
+            }
+            return result;
+        } catch (JSONException e) {
+            Game.reportException(e);
+            return null;
+        }
+    }
 	public float[] getFloatArray( String key ) {
 		try {
 			JSONArray array = data.getJSONArray( key );
@@ -287,6 +300,15 @@ public class Bundle {
 
 		return list;
 	}
+
+    public <T extends Bundlable> ArrayList<T> getBundlableArrayList( String key, Class<T> ignore){
+        ArrayList<T> list = new ArrayList<>();
+        Collection<Bundlable> collection = getCollection(key);
+        for (Bundlable i : collection){
+            list.add((T) i);
+        }
+        return list;
+    }
 
 	public void put( String key, boolean value ) {
 		try {

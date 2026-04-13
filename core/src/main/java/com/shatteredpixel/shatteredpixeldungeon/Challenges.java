@@ -31,6 +31,21 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 
 public class Challenges {
 
+    public static final String[] NAME_IDS = {
+            "champion_enemies",
+            "stronger_bosses",
+            "no_food",
+            "no_armor",
+            "no_healing",
+            "no_herbalism",
+            "swarm_intelligence",
+            "darkness",
+            "no_scrolls",
+            "inflation",
+            //TEST_MODE should always be placed at the last
+            "test_mode"
+    };
+
 	//Some of these internal IDs are outdated and don't represent what these challenges do
 	public static final int NO_FOOD				= 1;
 	public static final int NO_ARMOR			= 2;
@@ -42,23 +57,13 @@ public class Challenges {
 	public static final int CHAMPION_ENEMIES	= 128;
 	public static final int STRONGER_BOSSES 	= 256;
 	public static final int INFLATION			= 512;
-	public static final int TEST_MODE           = 1024;
-
-	public static final int MAX_VALUE           = 2048;
-
-	public static final String[] NAME_IDS = {
-			"champion_enemies",
-			"stronger_bosses",
-			"no_food",
-			"no_armor",
-			"no_healing",
-			"no_herbalism",
-			"swarm_intelligence",
-			"darkness",
-			"no_scrolls",
-			"inflation",
-			"test_mode"
-	};
+    //I allow changing challenges within the game while TEST_MODE,
+    //but I do not allow changing this.
+    //Therefore, I removed the last challenge within the game,
+    //which means that TEST_MODE should always be placed at the end
+	public static final int TEST_MODE           = (int) Math.pow(2, Challenges.NAME_IDS.length-1);
+    //All challenges combined are exactly 1 less than the maximum value
+	public static final int MAX_VALUE           = (int) Math.pow(2, Challenges.NAME_IDS.length);
 
 	public static final int[] MASKS = {
 			CHAMPION_ENEMIES, STRONGER_BOSSES, NO_FOOD, NO_ARMOR, NO_HEALING, NO_HERBALISM, SWARM_INTELLIGENCE, DARKNESS, NO_SCROLLS,INFLATION,TEST_MODE
@@ -78,8 +83,8 @@ public class Challenges {
 			return true;
 		}
 
-		if (Dungeon.isChallenged(INFLATION)){
-            return item instanceof Ankh;
+		if (Dungeon.isChallenged(INFLATION) && item instanceof Ankh){
+            return true;
 		}
 
 		return false;

@@ -48,7 +48,7 @@ public class EnhancedRings extends FlavourBuff{
     public int level;
     public EnhancedRings set(int level){
         this.level = level;
-        if (level>=2) Buff.prolong(target, CoolDown.class, 6);
+        if (level>=2) Buff.prolong(target, CoolDown.class, 2+level*2);
         return this;
     }
 

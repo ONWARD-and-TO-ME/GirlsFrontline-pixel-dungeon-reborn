@@ -409,7 +409,8 @@ public class GameScene extends PixelScene {
 				break;
 			case DESCEND:
 			case FALL:
-				switch (Dungeon.depth) {
+                if (!Dungeon.isChallenged(Challenges.TEST_MODE))
+				    switch (Dungeon.depth) {
 					case 1:
 						if(Script.checkChapter(Script.ID_SEWERS)) {
 							GameScene.scene.add(new WndDialog(new LevelPlot_P1()));
@@ -557,19 +558,19 @@ public class GameScene extends PixelScene {
 
 			if (Dungeon.hero.hasTalent(Talent.ROGUES_FORESIGHT)
 					&& Dungeon.level instanceof RegularLevel){
-				int reqSecrets = 0;
+				boolean reqSecrets = false;
 				for (Room r : ((RegularLevel) Dungeon.level).rooms()){
 					if (r instanceof SecretRoom) {
-                        int doorPos = Dungeon.level.pointToCell(((SecretRoom) r).entrance());
-                        if (Dungeon.level.map[doorPos] == Terrain.SECRET_DOOR) {
-                            reqSecrets++;
+                        if (!((SecretRoom) r).Found()) {
+                            reqSecrets = true;
+                            break;
                         }
                     }
 				}
 
 				//50%/100% chance, use level's seed so that we get the same result for the same level
 				Random.pushGenerator(Dungeon.seedCurLevel());
-					if (reqSecrets > 0 && Random.Int(2)+1 <= Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT)){
+					if (reqSecrets && Random.Int(2)+1 <= Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT)){
 						GLog.p(Messages.get(this, "secret_hint"));
 					}
 				Random.popGenerator();
