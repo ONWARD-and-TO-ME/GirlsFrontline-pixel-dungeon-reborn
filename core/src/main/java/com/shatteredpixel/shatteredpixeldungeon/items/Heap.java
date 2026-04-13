@@ -341,6 +341,14 @@ public class Heap implements Bundlable {
 
 				//upgraded items can endure the blast
 				} else if (item.level() <= 0) {
+                    if (item instanceof Artifact){
+                        int i = 0;
+                        for (Class<?> cl : Generator.Category.ARTIFACT.classes){
+                            if (cl == item.getClass())
+                                Generator.Category.ARTIFACT.probs[i] = Generator.Category.ARTIFACT.defaultProbs[i];
+                            i++;
+                        }
+                    }
 					items.remove( item );
 				}
 

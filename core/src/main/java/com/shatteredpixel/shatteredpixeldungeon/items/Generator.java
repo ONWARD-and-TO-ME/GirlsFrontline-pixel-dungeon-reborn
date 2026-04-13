@@ -581,7 +581,7 @@ public class Generator {
 			case MISSILE:
 				return randomMissile();
 			case ARTIFACT:
-				Item item = randomArtifact(false);
+				Item item = randomArtifact();
 				//if we're out of artifacts, return a ring instead.
 				return item != null ? item : random(Category.RING);
 			default:
@@ -680,10 +680,13 @@ public class Generator {
 	}
 
 	//enforces uniqueness of artifacts throughout a run.
-	public static Artifact randomArtifact(boolean trans) {
+    public static Artifact randomArtifact() {
+        return randomArtifact(2);
+    }
+	public static Artifact randomArtifact(int time) {
 
 		Category cat = Category.ARTIFACT;
-        Random.pushGenerator(Dungeon.seed);
+        Random.pushGenerator(Dungeon.seed + time);
 		int i = Random.chances( cat.probs );
         Random.popGenerator();
 
@@ -692,24 +695,27 @@ public class Generator {
 			return null;
 		}
         Artifact item = Reflection.newInstance((Class<? extends Artifact>) cat.classes[i]);
+        if (item == null)
+            return null;
 
-		cat.probs[i]=0;
-        if(item.getClass()== LloydsBeacon.class&&!trans){
+        if(item.getClass()== LloydsBeacon.class&&time > 0){
+            cat.probs[i]=1F/time;
             //并非嬗变的情况下随机到了空降，重新随机一次并归还空降的权重
-            item = randomArtifact(false);
-            if (item == null)
-                return (Artifact) new LloydsBeacon().random();
+            item = randomArtifact(time-1);
                 //常规生成时，所有其他遗物都被生成过了，那就允许空降生成吧，以免恶心到喜欢收集的玩家
-            for (int j = 0; j < Category.ARTIFACT.classes.length; j++){
-                if (Category.ARTIFACT.classes[j] == LloydsBeacon.class){
-                    Category.ARTIFACT.probs[j] = 1;
+            if (item == null)
+                return null;
+            if (item.getClass()!= LloydsBeacon.class) {
+                for (int j = 0; j < Category.ARTIFACT.classes.length; j++) {
+                    if (Category.ARTIFACT.classes[j] == LloydsBeacon.class) {
+                        Category.ARTIFACT.probs[j] = 1;
+                    }
                 }
             }
+        }else {
+            cat.probs[i]=0;
         }
-        if (item != null) {
-            return (Artifact) item.random();
-        }else
-            return null;
+        return (Artifact) item.random();
 
     }
 
