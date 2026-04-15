@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
@@ -131,6 +132,12 @@ public class BeaconOfReturning extends Spell {
 		
 		
 		if (returnLevelId == Dungeon.levelId) {
+
+            PathFinder.buildDistanceMap(returnPos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+            if (PathFinder.distance[hero.pos] == Integer.MAX_VALUE){
+                GLog.w( Messages.get(this, "preventing") );
+                return;
+            }
 			if (!Dungeon.level.passable[returnPos] && !Dungeon.level.avoid[returnPos]){
 				returnPos = Dungeon.level.entrance;
 			}
@@ -152,6 +159,11 @@ public class BeaconOfReturning extends Spell {
 			GameScene.updateFog();
 		} else {
 
+            PathFinder.buildDistanceMap(Dungeon.level.entrance, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+            if (PathFinder.distance[hero.pos] == Integer.MAX_VALUE){
+                GLog.w( Messages.get(this, "preventing") );
+                return;
+            }
 			TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
 			if (timeFreeze != null) timeFreeze.disarmPressedTraps();
 			Swiftthistle.TimeBubble timeBubble = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);

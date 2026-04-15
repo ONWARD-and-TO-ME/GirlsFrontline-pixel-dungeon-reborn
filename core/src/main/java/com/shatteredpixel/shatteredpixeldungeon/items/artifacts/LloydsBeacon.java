@@ -188,6 +188,10 @@ public class LloydsBeacon extends Artifact {
             float blind = 10;
             float weak  = 50;
 			if (returnLevelId == Dungeon.levelId) {
+                PathFinder.buildDistanceMap(returnPos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+                if (PathFinder.distance[hero.pos] == Integer.MAX_VALUE){
+                    cd *= 4;
+                }
 				ScrollOfTeleportation.appear( hero, returnPos );
 				for(Mob m : Dungeon.level.mobs){
 					if (m.pos == hero.pos){
@@ -207,9 +211,13 @@ public class LloydsBeacon extends Artifact {
 			}
             else {
 
-				TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+                PathFinder.buildDistanceMap(Dungeon.level.entrance, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+                if (PathFinder.distance[hero.pos] == Integer.MAX_VALUE){
+                    cd *= 4;
+                }
+				TimekeepersHourglass.timeFreeze timeFreeze = hero.buff(TimekeepersHourglass.timeFreeze.class);
 				if (timeFreeze != null) timeFreeze.disarmPressedTraps();
-				Swiftthistle.TimeBubble timeBubble = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+				Swiftthistle.TimeBubble timeBubble = hero.buff(Swiftthistle.TimeBubble.class);
 				if (timeBubble != null) timeBubble.disarmPressedTraps();
 
 				InterlevelScene.mode = InterlevelScene.Mode.RETURN;
@@ -305,74 +313,69 @@ public class LloydsBeacon extends Artifact {
 
 			if (target == null) return;
 
-			Invisibility.dispel();
-			charge -= Dungeon.depth / 20 + 1;
-			updateQuickslot();
+            final Ballistica bolt = new Ballistica( curUser.pos, target, Ballistica.MAGIC_BOLT );
+            final Char ch = Actor.findChar(bolt.collisionPos);
 
-			if (Actor.findChar(target) == curUser){
-				ScrollOfTeleportation.teleportChar(curUser);
-				curUser.spendAndNext(1f);
-			} else {
-				final Ballistica bolt = new Ballistica( curUser.pos, target, Ballistica.MAGIC_BOLT );
-				final Char ch = Actor.findChar(bolt.collisionPos);
+            if (ch == null) return;
+            Sample.INSTANCE.play(Assets.Sounds.ZAP);
+            Invisibility.dispel();
+            charge -= Dungeon.depth / 20 + 1;
+            updateQuickslot();
+            
+            PathFinder.buildDistanceMap(Dungeon.level.entrance, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+            if (PathFinder.distance[ch.pos] == Integer.MAX_VALUE){
+                GLog.w( Messages.get(this, "preventing") );
+                return;
+            }
+            if (ch == curUser) {
+                ScrollOfTeleportation.teleportChar(curUser);
+                curUser.spendAndNext(1f);
+            } else {
+                curUser.sprite.zap(bolt.collisionPos);
+                curUser.busy();
 
-				if (ch == curUser){
-					ScrollOfTeleportation.teleportChar(curUser);
-					curUser.spendAndNext( 1f );
-				} else {
-					Sample.INSTANCE.play( Assets.Sounds.ZAP );
-					curUser.sprite.zap(bolt.collisionPos);
-					curUser.busy();
+                MagicMissile.boltFromChar(curUser.sprite.parent,
+                        MagicMissile.BEACON,
+                        curUser.sprite,
+                        bolt.collisionPos,
+                        new Callback() {
+                            @Override
+                            public void call() {
+                                int count = 10;
+                                int pos;
+                                do {
+                                    pos = Dungeon.level.randomRespawnCell(ch);
+                                    if (count-- <= 0) {
+                                        break;
+                                    }
+                                } while (pos == -1);
 
-					MagicMissile.boltFromChar(curUser.sprite.parent,
-							MagicMissile.BEACON,
-							curUser.sprite,
-							bolt.collisionPos,
-							new Callback() {
-								@Override
-								public void call() {
-									if (ch != null) {
+                                if (pos == -1 || Dungeon.bossLevel()) {
 
-										int count = 10;
-										int pos;
-										do {
-											pos = Dungeon.level.randomRespawnCell( ch );
-											if (count-- <= 0) {
-												break;
-											}
-										} while (pos == -1);
+                                    GLog.w(Messages.get(ScrollOfTeleportation.class, "no_tele"));
 
-										if (pos == -1 || Dungeon.bossLevel()) {
+                                } else if (ch.properties().contains(Char.Property.IMMOVABLE)) {
 
-											GLog.w( Messages.get(ScrollOfTeleportation.class, "no_tele") );
+                                    GLog.w(Messages.get(LloydsBeacon.class, "tele_fail"));
 
-										} else if (ch.properties().contains(Char.Property.IMMOVABLE)) {
+                                } else {
 
-											GLog.w( Messages.get(LloydsBeacon.class, "tele_fail") );
+                                    ch.pos = pos;
+                                    if (ch instanceof Mob && ((Mob) ch).state == ((Mob) ch).HUNTING) {
+                                        ((Mob) ch).state = ((Mob) ch).WANDERING;
+                                    }
+                                    ch.sprite.place(ch.pos);
+                                    ch.sprite.visible = Dungeon.level.heroFOV[pos];
 
-										} else  {
-
-											ch.pos = pos;
-											if (ch instanceof Mob && ((Mob) ch).state == ((Mob) ch).HUNTING){
-												((Mob) ch).state = ((Mob) ch).WANDERING;
-											}
-											ch.sprite.place(ch.pos);
-											ch.sprite.visible = Dungeon.level.heroFOV[pos];
-
-                                            if (FairyItems.inFairyRoom(curUser))
-                                                Buff.prolong(ch, Paralysis.class, 5F);
-										}
-									}
-									curUser.spendAndNext(1f);
-								}
-							});
-
-				}
-
-
-			}
-
-		}
+                                    if (ch.alignment != curUser.alignment && FairyItems.inFairyRoom(curUser))
+                                        Buff.prolong(ch, Paralysis.class, 5F);
+                                }
+                                curUser.spendAndNext(1f);
+                            }
+                        }
+                );
+            }
+        }
 
 		@Override
 		public String prompt() {

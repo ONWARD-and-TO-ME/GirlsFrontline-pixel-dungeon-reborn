@@ -32,7 +32,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.utils.PathFinder;
 
 public class PhaseShift extends TargetedSpell {
 	
@@ -47,6 +49,11 @@ public class PhaseShift extends TargetedSpell {
 		final Char ch = Actor.findChar(bolt.collisionPos);
 		
 		if (ch != null) {
+            PathFinder.buildDistanceMap(Dungeon.level.entrance, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+            if (PathFinder.distance[ch.pos] == Integer.MAX_VALUE){
+                GLog.w( Messages.get(this, "preventing") );
+                return;
+            }
 			if (ScrollOfTeleportation.teleportChar(ch)){
 
 				if (ch instanceof Mob) {
