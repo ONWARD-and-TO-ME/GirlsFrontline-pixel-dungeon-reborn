@@ -134,17 +134,13 @@ public class DEL extends NPC {
             options = new String[5];
         else
             options = new String[4];
-        int num = 0;
-        options[num++] = getMissionName(num);
-        options[num++] = getMissionName(num);
-        options[num++] = getMissionName(num);
-        options[num++] = getMissionName(num);
-        if (Dungeon.hero.hasTalent(Talent.Type56_23V4) && Dungeon.hero.heroClass != HeroClass.TYPE561)
-            options[num++] = getMissionName(num);
+        for (int i = 0; i < options.length; i++){
+            options[i] = getMissionName(i);
+        }
 
         boolean[] enable = new boolean[5];
         for (Item i : Dungeon.hero.belongings){
-            if ((!i.isIdentified() || i.cursedKnown && i.cursed) && !(i instanceof CorpseDust))
+            if (!i.isEquipped(Dungeon.hero) && (!i.isIdentified() || i.cursedKnown && i.cursed) && !(i instanceof CorpseDust))
                 enable[0] = true;
             if (i.isUpgradable() && i.level() > 0 && i.levelKnown )
                 enable[1] = true;
@@ -171,40 +167,50 @@ public class DEL extends NPC {
         });
     }
 
-    public static final Object[] list      = new Object[]{
-            new Object[]{"减毒", 4, 100*(Statistics.deepestFloor + Dungeon.depth)/2, 600,
-                    Messages.get(DEL.class, "notice_removeCurse")},
-            new Object[]{"过载", 6, 80*(Statistics.deepestFloor + Dungeon.depth)/2, 20,
-                    Messages.get(DEL.class, "notice_overLoad")},
-            new Object[]{"脱下红底装备", 12, 100*(Statistics.deepestFloor - Dungeon.depth + 1), 150,
-                    Messages.get(DEL.class, "notice_unEquip")},
-            new Object[]{"仿制投掷武器", 1, 20, 20,
-                    Messages.get(DEL.class, "notice_newInstance")},
-            new Object[]{"制作剪刀", 1, 100, 20,
-                    Messages.get(DEL.class, "notice_clipper")}
-    };
     public static String getMissionName(int mission){
-        return (String) ((Object[]) list[mission])[0];
+        switch (mission){
+            case 0: default:return "减毒";
+            case 1:return "过载";
+            case 2:return "脱下红底装备";
+            case 3:return "仿制投掷武器";
+            case 4:return "制作剪刀";
+        }
     }
     public static int getMissionWorkLoad(int mission){
-        return (int) ((Object[]) list[mission])[1];
+        switch (mission){
+            case 0: default:return 4;
+            case 1:return 6;
+            case 2:return 12;
+            case 3: case 4:return 1;
+        }
     }
     public static int getMissionGold(int mission){
-        return (int) ((Object[]) list[mission])[2];
+        switch (mission){
+            case 0: default: return  (int) (100 * (Statistics.deepestFloor + Dungeon.depth*2)/3F);
+            case 1: return  (int) (80 * (Statistics.deepestFloor + Dungeon.depth*2)/3F);
+            case 2: return  100*(Statistics.deepestFloor - Dungeon.depth + 1);
+            case 3: return 20;
+            case 4: return 100;
+
+        }
     }
     public static int getMissionTimes(int mission){
-        return (int) ((Object[]) list[mission])[3];
+        switch (mission){
+            case 0:return 600;
+            case 2:return 150;
+            case 1:case 3: case 4:return 20;
+            default:return 100;
+        }
     }
     public static String getMissionBody(int mission){
-        String info = Messages.format((String) ((Object[]) list[mission])[4],
-                getMissionWorkLoad(mission),
-                getMissionGold(mission),
-                getMissionTimes(mission));
-        if (mission == 0)
-            info = Messages.format(info, 1, 200, 50);
-        else if (mission == 4)
-            info = Messages.format(info, 15);
-        return info;
+        switch (mission){
+            case 0:return Messages.get(DEL.class, "notice_removeCurse", getMissionWorkLoad(mission), getMissionGold(mission), getMissionTimes(mission), 1, 200, 50);
+            case 1:return Messages.get(DEL.class, "notice_overLoad", getMissionWorkLoad(mission), getMissionGold(mission), getMissionTimes(mission));
+            case 2:return Messages.get(DEL.class, "notice_unEquip", getMissionWorkLoad(mission), getMissionGold(mission), getMissionTimes(mission));
+            case 3:return Messages.get(DEL.class, "notice_newInstance", getMissionWorkLoad(mission), getMissionGold(mission), getMissionTimes(mission));
+            case 4:return Messages.get(DEL.class, "notice_clipper", getMissionWorkLoad(mission), getMissionGold(mission), getMissionTimes(mission), 15);
+            default:return "404 NOT FOUND!!!";
+        }
     }
 
 	@Override

@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -1014,6 +1015,9 @@ public class Armor extends EquipableItem {
         public boolean act() {
             spend(TICK);
             duration = Statistics.duration;
+            LockedFloor lock = target.buff(LockedFloor.class);
+            if (lock != null && !lock.regenOn())
+                return true;
             if (!isEquipped(hero)){
                 broken -= unEquip;
                 return true;

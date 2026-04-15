@@ -340,7 +340,7 @@ public class Hero extends Char {
 		super.restoreFromBundle( bundle );
 
 		heroClass = bundle.getEnum( CLASS, HeroClass.class, HeroClass.rename );
-		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
+		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class, HeroSubClass.rename );
 		armorAbility = (ArmorAbility)bundle.get( ABILITY );
 		Talent.restoreTalentsFromBundle( bundle, this );
 		
@@ -454,7 +454,11 @@ public class Hero extends Char {
 	}
 	
 	public String className() {
-		return subClass == null || subClass == HeroSubClass.NONE ? heroClass.title() : subClass.title();
+        if (subClass != null && subClass != HeroSubClass.NONE)
+            return subClass.title();
+        if (heroClass != null && heroClass != HeroClass.NONE)
+		    return heroClass.title();
+        return "404 NOT FOUND";
 	}
 
 	@Override

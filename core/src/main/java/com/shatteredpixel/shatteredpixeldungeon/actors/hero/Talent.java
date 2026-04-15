@@ -1031,10 +1031,10 @@ public enum Talent {
 			case WARDEN:
 				Collections.addAll(tierTalents, DURABLE_TIPS, BARKSKIN, SHIELDING_DEW);
 				break;
-			case EMP_BOMB: case PULSETROOPER:
+			case EMP_BOMB:
 				Collections.addAll(tierTalents, EMP_One, EMP_Two, EMP_Three);
 				break;
-			case GUN_MASTER: case MODERN_REBORNER:
+			case GUN_MASTER:
 				Collections.addAll(tierTalents, GUN_1V2, GUN_2V2, GUN_3);
 				break;
 			case FUTURE_STAR:
@@ -1151,10 +1151,11 @@ public enum Talent {
                 for (String talentName : tierBundle.getKeys()){
                     int points = tierBundle.getInt(talentName);
                     if (renamedTalents.containsKey(talentName)) talentName = renamedTalents.get(talentName);
-                    if (!removedTalents.contains(talentName)) {
+                    //下面三行标记的代码存在令重制前的561排行榜存档闪退
+                    if (!removedTalents.contains(talentName)) {//mark
                         try {
-                            Talent talent = Talent.valueOf(talentName);
-                            if (tier.containsKey(talent)) {
+                            Talent talent = Talent.valueOf(talentName);//mark
+                            if (tier.containsKey(talent)) {//mark
                                 TalentUpdate(tier, hero, talent, Math.min(points, talent.maxPoints()));
                             }
                         } catch (Exception e) {

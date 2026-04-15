@@ -198,7 +198,7 @@ public class WndDEL extends Window {
 	}
 	private boolean isMissionItem(Item item){
         if (mission == 0)
-            return (!item.isIdentified() || item.cursed) && !(item instanceof CorpseDust);
+            return !item.isEquipped(Dungeon.hero) && (!item.isIdentified() || item.cursedKnown && item.cursed) && !(item instanceof CorpseDust);
         if (mission == 1)
             return item.isUpgradable() && item.levelKnown && item.level()>0 && item.overLoad == Item.OverLoad.NONE &&
                     ( item.isEquipped(Dungeon.hero) && ((EquipableItem) item).unEquipable(Dungeon.hero) ||
