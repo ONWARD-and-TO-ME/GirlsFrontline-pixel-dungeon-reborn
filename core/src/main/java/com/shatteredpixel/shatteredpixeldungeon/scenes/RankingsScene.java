@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -212,16 +213,14 @@ public class RankingsScene extends PixelScene {
 			@Override
 			protected void onClick() {
 				//如果上一个场景是游戏场景且角色还活着
-				if (GirlsFrontlinePixelDungeon.previousSceneClass == GameScene.class 
-					&& Dungeon.hero != null && Dungeon.hero.isAlive()) {
+				if (inGame) {
 					//尝试使用 InterlevelScene.restore() 来恢复游戏状态，因为它会加载 level
 					try {
-						//保存当前的槽位
-						int currentSlot = GamesInProgress.curSlot;
 						//尝试恢复游戏状态
 						InterlevelScene.restore();
 					} catch (Exception e) {
-						//如果加载失败，忽略错误
+                        GirlsFrontlinePixelDungeon.reportException(e);
+                        GirlsFrontlinePixelDungeon.switchNoFade(TitleScene.class);
 					}
 					//返回到游戏场景
 					GirlsFrontlinePixelDungeon.switchNoFade(GameScene.class);
@@ -241,16 +240,15 @@ public class RankingsScene extends PixelScene {
 	@Override
 	protected void onBackPressed() {
 		//如果上一个场景是游戏场景且角色还活着
-		if (GirlsFrontlinePixelDungeon.previousSceneClass == GameScene.class 
-			&& Dungeon.hero != null && Dungeon.hero.isAlive()) {
+		if (inGame) {
 			//尝试使用 InterlevelScene.restore() 来恢复游戏状态，因为它会加载 level
 			try {
-				//保存当前的槽位
-				int currentSlot = GamesInProgress.curSlot;
 				//尝试恢复游戏状态
 				InterlevelScene.restore();
 			} catch (Exception e) {
-				//如果加载失败，忽略错误
+                //如果加载失败，忽略错误
+                GirlsFrontlinePixelDungeon.reportException(e);
+                GirlsFrontlinePixelDungeon.switchNoFade(TitleScene.class);
 			}
 			//返回到游戏场景
 			GirlsFrontlinePixelDungeon.switchNoFade(GameScene.class);

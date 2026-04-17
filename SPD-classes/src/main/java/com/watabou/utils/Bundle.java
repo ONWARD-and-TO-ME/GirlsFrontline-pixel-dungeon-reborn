@@ -166,13 +166,11 @@ public class Bundle {
     public <E extends Enum<E>> E getEnum( String key, Class<E> enumClass ) {
         return getEnum(key, enumClass, null);
     }
-	public <E extends Enum<E>> E getEnum( String key, Class<E> enumClass, HashMap<String, String> rename ) {
+	public <E extends Enum<E>> E getEnum( String key, Class<E> enumClass, HashMap<String, String> renamed ) {
 		try {
-            if (rename == null)
-			    return Enum.valueOf( enumClass, data.getString( key ) );
             String name = data.getString(key);
-            if (rename.containsKey(name))
-                name = rename.get(name);
+            if (renamed != null && renamed.containsKey(name))
+                name = renamed.get(name);
             return Enum.valueOf(enumClass, name);
 		} catch (JSONException | IllegalArgumentException e) {
 			Game.reportException(e);
@@ -180,7 +178,7 @@ public class Bundle {
 		}
 	}
 
-	public int[] getIntArray( String key ) {
+    public int[] getIntArray( String key ) {
 		try {
 			JSONArray array = data.getJSONArray( key );
 			int length = array.length();

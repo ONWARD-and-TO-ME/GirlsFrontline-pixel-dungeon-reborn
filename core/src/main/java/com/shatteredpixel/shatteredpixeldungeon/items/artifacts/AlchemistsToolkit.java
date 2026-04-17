@@ -52,8 +52,10 @@ public class AlchemistsToolkit extends Artifact {
 		partialCharge = 0;
 	}
 
+    public boolean Secret = false;
 	public static final String AC_BREW = "BREW";
 	public static final String AC_ENERGIZE = "ENERGIZE";
+    private static final String AC_CHANGE   = "CHANGE";
 
 	private float warmUpDelay;
 
@@ -66,6 +68,8 @@ public class AlchemistsToolkit extends Artifact {
 				actions.add(AC_ENERGIZE);
 			}
 		}
+        if (!cursed && isIdentified())
+            actions.add(AC_CHANGE);
 		return actions;
 	}
 
@@ -133,7 +137,9 @@ public class AlchemistsToolkit extends Artifact {
 					}
 				});
 			}
-		}
+		} else if (action.equals(AC_CHANGE)) {
+            Secret = !Secret;
+        }
         lockchB();
 
 		updateQuickslot();
@@ -183,7 +189,8 @@ public class AlchemistsToolkit extends Artifact {
 			else if (warmUpDelay > 0)   result += "\n\n" + Messages.get(this, "desc_warming");
 			else                        result += "\n\n" + Messages.get(this, "desc_hint");
 		}
-		
+		if (Secret)
+            result  += "\n\n" + "接下来生成上锁炼金房的时候，有40%概率转变成隐藏炼金房，有40%概率转变成随机隐藏房，有20%概率不变。";
 		return result;
 	}
 	

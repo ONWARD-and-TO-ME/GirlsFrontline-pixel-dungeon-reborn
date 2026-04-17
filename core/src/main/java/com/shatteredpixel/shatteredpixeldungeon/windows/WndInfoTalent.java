@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -53,7 +54,12 @@ public class WndInfoTalent extends Window {
 		titlebar.setRect( 0, 0, WIDTH, 0 );
 		add( titlebar );
 
-		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(talent.desc(Dungeon.hero.heroClass), 6);
+        HeroClass heroClass;
+        if (Dungeon.hero != null && Dungeon.hero.heroClass != null)
+            heroClass = Dungeon.hero.heroClass;
+        else
+            heroClass = HeroClass.NONE;
+		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(talent.desc(heroClass), 6);
 		txtInfo.maxWidth(WIDTH);
 		txtInfo.setPos(titlebar.left(), titlebar.bottom() + 2*GAP);
 		add( txtInfo );

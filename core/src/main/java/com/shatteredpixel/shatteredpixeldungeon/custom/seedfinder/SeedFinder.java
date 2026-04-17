@@ -130,13 +130,18 @@ public class SeedFinder {
             seedDigits-=100000;
         findingStatus = SeedFinder.FINDING.CONTINUE;
         SeedFinder.Options.condition = SeedFinder.Condition.ALL;
+        int v = 1;
+        while ((floor / v) >= 1){
+            v *= 2;
+        }
+        final long step = 128L/v;
 
         // 无间隔遍历种子（移除所有sleep）
         for(int i = Random.Int(99999); (long)i < DungeonSeed.TOTAL_SEEDS && findingStatus == SeedFinder.FINDING.CONTINUE; ++i) {
             long currentSeed = seedDigits + i;
 
             // 无间隔刷新UI（直接回调，无延迟）
-            if ((currentSeed & (floor * 2L)) == 0)
+            if ((currentSeed & step) == 0)
                 if (sceneRef != null) {
                     sceneRef.updateCurrentSeed(currentSeed);
                 }

@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.RankingsScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.SecondTitleScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
@@ -81,6 +82,8 @@ public class WndGame extends Window {
 				@Override
 				protected void onClick() {
 					InterlevelScene.mode = InterlevelScene.Mode.DESCEND;//what fuck is this, why? isnt this useless?
+                    //Maybe for playing again while fail in game?
+                    PixelScene.inGame = false;
 					Game.switchScene( RankingsScene.class );
 				}
 			} );

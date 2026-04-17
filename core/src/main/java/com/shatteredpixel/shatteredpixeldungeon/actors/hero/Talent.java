@@ -1097,12 +1097,17 @@ public enum Talent {
         bundle.put("addTalents", addTalentBundle);
 	}
 
-    private static final HashSet<String> removedTalents = new HashSet<>();
+    private static final HashSet<String> removed = new HashSet<>();
     static{
-        //nothing atm
+        removed.add("enhance_grenade".toUpperCase());
+        removed.add("more_accurate".toUpperCase());
+        removed.add("simple_reload".toUpperCase());
+        removed.add("more_power".toUpperCase());
+        removed.add("endure_emp".toUpperCase());
+        removed.add("newlife".toUpperCase());
     }
 
-    private static final HashMap<String, String> renamedTalents = new HashMap<>();
+    private static final HashMap<String, String> renamed = new HashMap<>();
     static{
         //nothing atm
     }
@@ -1113,9 +1118,9 @@ public enum Talent {
 			Bundle replacements = bundle.getBundle("replacements");
             for (String key : replacements.getKeys()){
                 String value = replacements.getString(key);
-                if (renamedTalents.containsKey(key)) key = renamedTalents.get(key);
-                if (renamedTalents.containsKey(value)) value = renamedTalents.get(value);
-                if (!removedTalents.contains(key) && !removedTalents.contains(value)){
+                while (renamed.containsKey(key)) key = renamed.get(key);
+                while (renamed.containsKey(value)) value = renamed.get(value);
+                if (!removed.contains(key) && !removed.contains(value)){
                     try {
                         hero.metamorphedTalents.put(Talent.valueOf(key), Talent.valueOf(value));
                     } catch (Exception e) {
@@ -1128,8 +1133,8 @@ public enum Talent {
             Bundle addTalentsBundle = bundle.getBundle("addTalents");
             hero.addTalents = new LinkedHashMap<>();
             for (String key : addTalentsBundle.getKeys()){
-                if (renamedTalents.containsKey(key)) key = renamedTalents.get(key);
-                if (!removedTalents.contains(key)){
+                while (renamed.containsKey(key)) key = renamed.get(key);
+                if (!removed.contains(key)){
                     try {
                         hero.addTalents.put(Talent.valueOf(key), addTalentsBundle.getInt(key));
                     } catch (Exception e) {
@@ -1150,12 +1155,11 @@ public enum Talent {
 			if (tierBundle != null){
                 for (String talentName : tierBundle.getKeys()){
                     int points = tierBundle.getInt(talentName);
-                    if (renamedTalents.containsKey(talentName)) talentName = renamedTalents.get(talentName);
-                    //下面三行标记的代码存在令重制前的561排行榜存档闪退
-                    if (!removedTalents.contains(talentName)) {//mark
+                    if (renamed.containsKey(talentName)) talentName = renamed.get(talentName);
+                    if (!removed.contains(talentName)) {
                         try {
                             Talent talent = Talent.valueOf(talentName);//mark
-                            if (tier.containsKey(talent)) {//mark
+                            if (tier.containsKey(talent)) {
                                 TalentUpdate(tier, hero, talent, Math.min(points, talent.maxPoints()));
                             }
                         } catch (Exception e) {

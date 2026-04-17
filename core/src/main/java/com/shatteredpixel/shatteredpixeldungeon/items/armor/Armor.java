@@ -26,13 +26,11 @@ import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -63,7 +61,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Stone;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Swiftness;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Thorns;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -119,7 +116,7 @@ public class Armor extends EquipableItem {
 	
 	public int tier;
     public float broken;
-    public float duration;
+    public int duration;
 	private static final int USES_TO_ID = 10;
 	private float usesLeftToID = USES_TO_ID;
 	private float availableUsesToID = USES_TO_ID/2f;
@@ -164,7 +161,7 @@ public class Armor extends EquipableItem {
 		
 		augment = bundle.getEnum(AUGMENT, Augment.class);
         broken = bundle.getFloat(BROKEN);
-        duration = bundle.getFloat(DURATION);
+        duration = bundle.getInt(DURATION);
 	}
 
 	@Override
@@ -224,6 +221,16 @@ public class Armor extends EquipableItem {
     @Override
     public void Tracker(Char owner){
         super.Tracker(owner);
+        if (owner instanceof Hero){
+            Hero hero = (Hero) owner;
+            singleTracker(hero);
+            if (hero.belongings.armor != null)
+                hero.belongings.armor.singleTracker(hero);
+            if (hero.belongings.secArmor != null)
+                hero.belongings.secArmor.singleTracker(hero);
+        }
+    }
+    private void singleTracker(Char owner){
         if (mixArmorTracker == null) {
             mixArmorTracker = new mixArmor();
             mixArmorTracker.attachTo(owner);
@@ -239,6 +246,7 @@ public class Armor extends EquipableItem {
     }
 	@Override
 	public boolean doEquip( Hero hero ) {
+        Tracker(hero);
 		detach(hero.belongings.backpack);
         //主护甲为空，此时全空或复活未选
 		if (hero.belongings.armor() == null) {
@@ -273,7 +281,7 @@ public class Armor extends EquipableItem {
                     BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
                     if (sealBuff !=null && hero.belongings.secArmor == sealBuff.armor)
                         sealBuff.setArmor(null);
-                    hero.belongings.secArmor.collect(hero.belongings.backpack);
+                    hero.belongings.secArmor.doDrop(hero);
                     hero.belongings.secArmor = this;
                     onEquip(hero);
                     curseMoving(hero);
@@ -293,10 +301,7 @@ public class Armor extends EquipableItem {
                         hero.belongings.SecondArmor() == null &&
                         hero.belongings.armor.tier() <= hero.pointsInTalent(Talent.HOLD_FAST)){
                     if (hero.belongings.secArmor!=null) {
-                        boolean kept = hero.belongings.secArmor.keptThoughLostInvent;
-                        hero.belongings.secArmor.keptThoughLostInvent = true;
-                        hero.belongings.secArmor.collect(hero.belongings.backpack);
-                        hero.belongings.secArmor.keptThoughLostInvent = kept;
+                        hero.belongings.secArmor.doDrop(hero);
                     }
                     hero.belongings.secArmor = hero.belongings.armor;
                     hero.belongings.armor = this;
@@ -328,6 +333,7 @@ public class Armor extends EquipableItem {
         activate(hero);
         Talent.onItemEquipped(hero, this);
         hero.spendAndNext( time2equip() );
+        Tracker(hero);
     }
     @Override
     public boolean unEquipable(Hero hero){
@@ -421,10 +427,7 @@ public class Armor extends EquipableItem {
                             }
                             else {
                                 if (hero.belongings.secArmor != null) {
-                                    boolean kept = hero.belongings.secArmor.keptThoughLostInvent;
-                                    hero.belongings.secArmor.keptThoughLostInvent = true;
-                                    hero.belongings.secArmor.collect(hero.belongings.backpack);
-                                    hero.belongings.secArmor.keptThoughLostInvent = kept;
+                                    hero.belongings.secArmor.doDrop(hero);
                                 }
                                 if (hero.belongings.armor.tier() < armor.tier()) {
                                     hero.belongings.secArmor = hero.belongings.armor;
@@ -443,8 +446,9 @@ public class Armor extends EquipableItem {
     }
 	@Override
 	public void activate(Char ch) {
-		if (seal != null)
+		if (seal != null) {
             Buff.affect(ch, BrokenSeal.WarriorShield.class).setArmor(this);
+        }
         Tracker(ch);
 	}
 
@@ -1002,40 +1006,51 @@ public class Armor extends EquipableItem {
         public boolean attachTo( Char target ) {
             super.attachTo( target );
 
-            if (broken > 0 && duration > 0){
-                float num = Statistics.duration;
+            if (broken > 0 && duration > 0 && CooldownTracker.updateTime > duration){
+                int num = CooldownTracker.updateTime;
                 broken-= 2*(num - duration);
                 broken = Math.max(0, broken);
-                duration = Statistics.duration;
+                duration = CooldownTracker.updateTime;
             }
             return true;
         }
 
+//        public int icon() {
+//            return BuffIndicator.INVISIBLE;
+//        }
+        @Override
+        public String toString() {
+            return armor().toString();
+        }
+        @Override
+        public String desc(){
+             return armor().broken + "\n" + armor().duration + "\n" + CooldownTracker.updateTime;
+        }
         @Override
         public boolean act() {
             spend(TICK);
-            duration = Statistics.duration;
-            LockedFloor lock = target.buff(LockedFloor.class);
-            if (lock != null && !lock.regenOn())
-                return true;
-            if (!isEquipped(hero)){
-                broken -= unEquip;
-                return true;
-            }
-            boolean mixArmor = hero.belongings.armor() != null && hero.belongings.SecondArmor() != null;
-            if (!mixArmor && isEquipped(hero)){
-                broken -= recover;
-                return true;
-            }
-            if (mixArmor){
-                if (hero.belongings.armor() == Armor.this){
-                    broken += broking;
-                }else {
-                    broken += inside;
+            duration = CooldownTracker.updateTime;
+            Hero hero = (Hero) target;
+            boolean isEquip = isEquipped(hero);
+            if (isEquip && (hero.belongings.armor() != null && hero.belongings.SecondArmor() != null)){
+                if (hero.belongings.armor == armor())
+                    armor().broken += broking;
+                else if (hero.belongings.secArmor == armor()) {
+                    armor().broken += inside;
                 }
             }
-            if (broken < 0 && hero.belongings.armor == null && hero.belongings.secArmor == null)
+            else if (isEquip) {
+                armor().broken -= recover;
+            }
+            else {
+                armor().broken -= unEquip;
+            }
+            if (broken <= 0){
                 broken = 0;
+                if (hero.belongings.armor() != armor() && hero.belongings.SecondArmor() != armor()) {
+                    detach();
+                }
+            }
             return true;
         }
 

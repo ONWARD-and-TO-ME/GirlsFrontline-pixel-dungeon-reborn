@@ -65,6 +65,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elphelt;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DEL;
 import com.shatteredpixel.shatteredpixeldungeon.custom.utils.Constants;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CheckedCell;
@@ -1409,6 +1410,9 @@ public class Hero extends Char {
 	
 	private boolean actAttack( HeroAction.Attack action ) {
 
+        DEL.RemovingCurse removing = buff(DEL.RemovingCurse.class);
+        if (removing != null)
+            removing.detach();
 		enemy = action.target;
 
 		if (enemy.isAlive() && canAttack( enemy ) && !isCharmedBy( enemy )) {

@@ -39,6 +39,7 @@ public abstract class KindofMisc extends EquipableItem {
 
 	@Override
 	public boolean doEquip(final Hero hero) {
+        Tracker(hero);
 
 		boolean equipFull = false;
 		if ( this instanceof Artifact

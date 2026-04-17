@@ -402,6 +402,7 @@ public class CrashReportScene extends PixelScene {
             // 格式化崩溃信息
             String formattedMessage = formatCrashMessage(es.message, es.stackTrace);
             RenderedTextBlock text = PixelScene.renderTextBlock(formattedMessage, 6);
+            text.setHightlighting(false, -1);
             text.maxWidth(width - GAP * 3);
             content.add(text);
             text.setPos(GAP, 0);

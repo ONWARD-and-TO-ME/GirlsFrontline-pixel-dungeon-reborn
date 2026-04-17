@@ -147,11 +147,24 @@ public class WndDEL extends Window {
                     mission1.addMission(DEL.getMissionTimes(mission), btnItem1.item);
                 }
                 else if (mission == 2) {
+                    int equip;
+                    if (btnItem1.item == Dungeon.hero.belongings.weapon)
+                        equip = 0;
+                    else if (btnItem1.item == Dungeon.hero.belongings.armor)
+                        equip = 1;
+                    else if (btnItem1.item == Dungeon.hero.belongings.artifact)
+                        equip = 2;
+                    else if (btnItem1.item == Dungeon.hero.belongings.misc)
+                        equip = 3;
+                    else if (btnItem1.item == Dungeon.hero.belongings.ring)
+                        equip = 4;
+                    else if (btnItem1.item == Dungeon.hero.belongings.secArmor)
+                        equip = 5;
+                    else
+                        return;
                     del.WorkLoadUsed(DEL.getMissionWorkLoad(mission));
                     Dungeon.gold -= DEL.getMissionGold(mission);
-                    btnItem1.item.cursed = false;
-                    ((EquipableItem) btnItem1.item).doUnequip(Dungeon.hero, true, true);
-                    Dungeon.hero.spendAndNext(DEL.getMissionTimes(mission), true);
+                    Buff.affect(Dungeon.hero, DEL.RemovingCurse.class, DEL.getMissionTimes(mission)).Remember(equip, Dungeon.hero.pos);
                 }
                 else if (mission == 3) {
                     btnItem2.item = btnItem2.item.detach(Dungeon.hero.belongings.backpack, btnItem2.item.quantity(), 0);
@@ -204,7 +217,7 @@ public class WndDEL extends Window {
                     ( item.isEquipped(Dungeon.hero) && ((EquipableItem) item).unEquipable(Dungeon.hero) ||
                             !item.isEquipped(Dungeon.hero) && !(item instanceof BrokenSeal) );
         if (mission == 2)
-            return item.isEquipped(Dungeon.hero) && item.isEquipped(Dungeon.hero);
+            return item.isEquipped(Dungeon.hero) && item.cursed;
         if (mission == 3)
             return item instanceof MissileWeapon && !(item instanceof Dart);
         if (mission == 4)

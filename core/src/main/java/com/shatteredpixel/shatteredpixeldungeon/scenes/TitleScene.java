@@ -118,6 +118,7 @@ public class TitleScene extends PixelScene {
 		StyledButton btnRankings = new StyledButton(GREY_BUTTON,"排行榜"){
 			@Override
 			protected void onClick() {
+                inGame = false;
 				GirlsFrontlinePixelDungeon.switchNoFade( RankingsScene.class );
 			}
 		};
@@ -127,6 +128,7 @@ public class TitleScene extends PixelScene {
 		StyledButton btnBadges = new StyledButton(GREY_BUTTON,"徽章"){
 			@Override
 			protected void onClick() {
+                inGame = false;
 				GirlsFrontlinePixelDungeon.switchNoFade( BadgesScene.class );
 			}
 		};

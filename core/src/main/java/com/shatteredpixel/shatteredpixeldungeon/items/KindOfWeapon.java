@@ -53,6 +53,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 	@Override
 	public boolean doEquip( Hero hero ) {
 
+        Tracker(hero);
 		detachAll( hero.belongings.backpack );
 		
 		if (hero.belongings.weapon == null || hero.belongings.weapon.doUnequip( hero, true )) {

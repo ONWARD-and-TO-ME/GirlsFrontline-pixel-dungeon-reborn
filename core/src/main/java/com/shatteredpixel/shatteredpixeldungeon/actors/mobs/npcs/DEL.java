@@ -25,8 +25,12 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -38,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndDEL;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
@@ -140,16 +145,18 @@ public class DEL extends NPC {
 
         boolean[] enable = new boolean[5];
         for (Item i : Dungeon.hero.belongings){
-            if (!i.isEquipped(Dungeon.hero) && (!i.isIdentified() || i.cursedKnown && i.cursed) && !(i instanceof CorpseDust))
+            if (!i.isEquipped(Dungeon.hero) && (!i.isIdentified() || i.cursedKnown && i.cursed) && !(i instanceof CorpseDust) && WorkLoad >= 1)
                 enable[0] = true;
-            if (i.isUpgradable() && i.level() > 0 && i.levelKnown )
+            if (i.isUpgradable() && i.level() > 0 && i.levelKnown  && i.overLoad == Item.OverLoad.NONE &&
+                    ( i.isEquipped(Dungeon.hero) && ((EquipableItem) i).unEquipable(Dungeon.hero) ||
+                            !i.isEquipped(Dungeon.hero) && !(i instanceof BrokenSeal) ) && WorkLoad >= getMissionWorkLoad(1))
                 enable[1] = true;
-            if (i.isEquipped(Dungeon.hero) && i.cursed)
+            if (i.isEquipped(Dungeon.hero) && i.cursed && WorkLoad >= getMissionWorkLoad(2))
                 enable[2] = true;
-            if (i instanceof MissileWeapon)
+            if (i instanceof MissileWeapon && WorkLoad >= getMissionWorkLoad(3))
                 enable[3] = true;
         }
-        enable[4] = true;
+        enable[4] = WorkLoad >= getMissionWorkLoad(4);
         GameScene.show(new WndOptions(DEL.this.sprite(),
                 Messages.titleCase(DEL.this.name()),
                 Messages.get(DEL.class, "body", DEL.this.WorkLoad),
@@ -293,9 +300,9 @@ public class DEL extends NPC {
             }
             return false;
         }
-        public int icon() {
-            return BuffIndicator.INVISIBLE;
-        }
+//        public int icon() {
+//            return BuffIndicator.INVISIBLE;
+//        }
         public String desc(){
             String desc = "";
             int i = 0;
@@ -330,6 +337,60 @@ public class DEL extends NPC {
             items = bundle.getBundlableArrayList(ITEM, Item.class);
             times = bundle.getIntArrayList(TIME);
             drops = bundle.getBundlableArrayList(DROP, Item.class);
+        }
+    }
+    public static class RemovingCurse extends FlavourBuff {
+        {
+            revivePersists = true;
+            type = buffType.NEUTRAL;
+        }
+        private int equip;
+        private int pos = -1;
+        public void Remember(int equip, int pos){
+            this.equip = equip;
+            this.pos = pos;
+        }
+        @Override
+        public boolean act(){
+            if (pos == -1)
+                pos = target.pos;
+            else if (target.pos != pos)
+                detach();
+            spend(TICK);
+            return true;
+        }
+        public void detach() {
+            if (visualcooldown() > 5)
+                GLog.w("fail");
+            else {
+                Item item;
+                switch (equip){
+                    case 0: default:item = Dungeon.hero.belongings.weapon;break;
+                    case 1:item = Dungeon.hero.belongings.armor;break;
+                    case 2:item = Dungeon.hero.belongings.artifact;break;
+                    case 3:item = Dungeon.hero.belongings.misc;break;
+                    case 4:item = Dungeon.hero.belongings.ring;break;
+                    case 5:item = Dungeon.hero.belongings.secArmor;break;
+                }
+                item.keptThoughLostInvent = true;
+                item.doDrop((Hero) target);
+                item.keptThoughLostInvent = false;
+            }
+            super.detach();
+        }
+        private static final String Equip = "EQUIP";
+        private static final String Hero_Pos = "Hero_Pos";
+        @Override
+        public void storeInBundle( Bundle bundle ) {
+            super.storeInBundle( bundle );
+            bundle.put(Equip, equip);
+            bundle.put(Hero_Pos, pos);
+        }
+        @Override
+        public void restoreFromBundle( Bundle bundle ) {
+            super.restoreFromBundle( bundle );
+            equip = bundle.getInt(Equip);
+            pos = bundle.getInt(Hero_Pos);
         }
     }
 }

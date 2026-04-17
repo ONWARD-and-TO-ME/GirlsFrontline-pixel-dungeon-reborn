@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
@@ -69,5 +70,12 @@ public abstract class FairyItems extends Item {
     @Override
     public int value() {
         return 50 * quantity;
+    }
+    @Override
+    public String desc(){
+        String desc = super.desc();
+        if (inFairyRoom(Dungeon.hero))
+            desc += "\n\n" + Messages.get(this, "effect");
+        return desc;
     }
 }

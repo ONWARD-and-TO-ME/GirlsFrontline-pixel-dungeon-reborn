@@ -184,22 +184,23 @@ public abstract class SpecialRoom extends Room {
 
         } else if (floorSpecials.contains(LaboratoryRoom.class)) {
 
-            int random = Random.Int(3);
+            int random = Random.Int(5);
             boolean secret;
             if (SeedFinder.SeedFinding)
-                secret = SeedFinder.toolkit == 0;
+                secret = SeedFinder.toolkit == 2;
             else {
                 AlchemistsToolkit toolkit = Dungeon.hero.belongings.getItem(AlchemistsToolkit.class);
-                secret = toolkit != null && toolkit.isIdentified() && !toolkit.cursed;
+                secret = toolkit != null && toolkit.Secret;
             }
             if (secret && random != 0) {
                 floorSpecials.remove( LaboratoryRoom.class );
-                if (random == 1)
+                if (random == 1 || random == 2)
                     return SecretRoom.createRoom();
                 else
                     return new SecretLaboratoryRoom();
             }
-            else {useType(LaboratoryRoom.class);
+            else {
+                useType(LaboratoryRoom.class);
                 return new LaboratoryRoom();
             }
 		

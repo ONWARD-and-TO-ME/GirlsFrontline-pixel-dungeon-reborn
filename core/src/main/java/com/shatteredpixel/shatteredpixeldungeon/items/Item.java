@@ -28,7 +28,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
@@ -119,7 +118,7 @@ public class Item implements Bundlable {
 	public boolean bones = false;
     public OverLoad overLoad = OverLoad.NONE;
     public float overLoadLeft;
-    public float updateTime;
+    public int updateTime;
 
 	protected String name = Messages.get(this, "name");
 
@@ -739,7 +738,7 @@ public class Item implements Bundlable {
         else
             overLoad    = OverLoad.NONE;
         overLoadLeft= bundle.getFloat(OVER_LOAD_LEFT);
-        updateTime = bundle.getFloat(UPDATE_TIME);
+        updateTime = bundle.getInt(UPDATE_TIME);
 	}
 
 	public int targetingPos( Hero user, int dst ){
@@ -835,9 +834,11 @@ public class Item implements Bundlable {
             type = buffType.POSITIVE;
             revivePersists = true;
         }
+        public static int updateTime = 0;
         @Override
         public boolean act() {
             if (target instanceof Hero) {
+                updateTime++;
                 Hero hero = (Hero) target;
                 Item weapon = hero.belongings.weapon;
                 if (weapon!=null){
@@ -854,6 +855,19 @@ public class Item implements Bundlable {
 
             spend(TICK);
             return true;
+        }
+
+        private static final String ItemUpdateTime = "ItemUpdateTime";
+        @Override
+        public void storeInBundle( Bundle bundle ){
+            super.storeInBundle(bundle);
+            bundle.put(ItemUpdateTime, updateTime);
+        }
+
+        @Override
+        public void restoreFromBundle( Bundle bundle ) {
+            super.restoreFromBundle(bundle);
+            updateTime = bundle.getInt(ItemUpdateTime);
         }
     }
     public enum OverLoad{
@@ -877,21 +891,21 @@ public class Item implements Bundlable {
         @Override
         public boolean attachTo( Char target ) {
             super.attachTo( target );
-            if (overLoad == OverLoad.OVERLOADING && coolDownLeft > 0 && updateTime > 0){
-                float num = Statistics.duration;
+            if (overLoad == OverLoad.OVERLOADING && coolDownLeft > 0 && CooldownTracker.updateTime > updateTime){
+                float num = CooldownTracker.updateTime;
                 if (Item.this instanceof EquipableItem && !(Item.this instanceof MissileWeapon))
                     overLoadLeft -= 0.5F*(num - updateTime);
                 else
                     overLoadLeft -= num - updateTime;
                 overLoadLeft = Math.max(0, overLoadLeft);
-                updateTime = Statistics.duration;
+                updateTime = CooldownTracker.updateTime;
             }
             return true;
         }
         @Override
         public boolean act() {
-            updateTime = Statistics.duration;
-
+            spend(TICK);
+            updateTime = CooldownTracker.updateTime;
             if (overLoad == OverLoad.OVERLOADING){
                 if (Item.this instanceof EquipableItem&& !(Item.this instanceof MissileWeapon) && ! Item.this.isEquipped((Hero) target))
                     overLoadLeft -= 0.5F;
@@ -908,7 +922,6 @@ public class Item implements Bundlable {
                 overLoad      = OverLoad.NONE;
                 detach();
             }
-            spend(TICK);
             return true;
         }
     }

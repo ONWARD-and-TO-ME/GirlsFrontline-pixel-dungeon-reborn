@@ -74,7 +74,7 @@ public class BadgesScene extends PixelScene {
 			@Override
 			protected void onClick() {
 				//如果上一个场景是游戏场景，返回到游戏场景，否则返回到标题场景
-				if (GirlsFrontlinePixelDungeon.previousSceneClass == GameScene.class) {
+				if (inGame) {
 					GirlsFrontlinePixelDungeon.switchNoFade(GameScene.class);
 				} else {
 					GirlsFrontlinePixelDungeon.switchNoFade(TitleScene.class);
@@ -98,7 +98,7 @@ public class BadgesScene extends PixelScene {
 	@Override
 	protected void onBackPressed() {
 		//如果上一个场景是游戏场景，返回到游戏场景，否则返回到标题场景
-		if (GirlsFrontlinePixelDungeon.previousSceneClass == GameScene.class) {
+		if (inGame) {
 			GirlsFrontlinePixelDungeon.switchNoFade(GameScene.class);
 		} else {
 			GirlsFrontlinePixelDungeon.switchNoFade(TitleScene.class);

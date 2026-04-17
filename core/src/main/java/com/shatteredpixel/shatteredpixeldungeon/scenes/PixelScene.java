@@ -83,6 +83,7 @@ public class PixelScene extends Scene {
 	public static BitmapText.Font pixelFont;
 
 	protected boolean inGameScene = false;
+    public static boolean inGame  = false;
 
 
 	public static RenderedText renderText( int size ) {

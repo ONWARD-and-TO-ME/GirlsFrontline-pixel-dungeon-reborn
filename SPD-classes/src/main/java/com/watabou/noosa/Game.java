@@ -25,6 +25,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.GLVersion;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.watabou.glscripts.Script;
@@ -43,6 +44,8 @@ import com.watabou.utils.Reflection;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Game implements ApplicationListener {
 
@@ -304,9 +307,23 @@ public class Game implements ApplicationListener {
 		tr.printStackTrace(pw);
 		pw.flush();
 		Gdx.app.error("GAME", sw.toString());
-		Gdx.app.exit();
+        saveCrash(sw);
+        Gdx.app.exit();
 	}
-	
+	private static void saveCrash(StringWriter sw){
+        try {
+            String crashContent = sw.toString();
+            FileHandle crashDir = Gdx.files.local("crash_logs");
+            if (!crashDir.exists()) {
+                crashDir.mkdirs();
+            }
+            String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", java.util.Locale.getDefault()).format(new Date());
+            FileHandle crashFile = crashDir.child("crash_" + timestamp + ".log");
+            crashFile.writeString(crashContent, false);
+        } catch (Exception e) {
+            System.err.println("Failed to save crash report: " + e.getMessage());
+        }
+    }
 	public static void runOnRenderThread(Callback c){
 		Gdx.app.postRunnable(new Runnable() {
 			@Override

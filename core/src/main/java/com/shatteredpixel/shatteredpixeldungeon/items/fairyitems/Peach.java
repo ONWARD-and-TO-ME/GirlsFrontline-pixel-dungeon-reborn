@@ -17,11 +17,11 @@ public class Peach extends FairyItems {
         if (hunger != null)
             hunger.satisfy(100F);
         switch (Random.Int(5)){
-            case 0: Buff.affect(hero, BasicBuffs.Increase.class, 50).set(1.15F);break;
-            case 1: Buff.affect(hero, BasicBuffs.Velocity.class, 50).set(1.20F);break;
-            case 2: Buff.affect(hero, BasicBuffs.Accuracy.class, 50).set(1.50F);break;
-            case 3: Buff.affect(hero, BasicBuffs.Evasion.class,  50).set(1.25F);break;
-            case 4: Buff.affect(hero, BasicBuffs.Reduce.class,   50).set(0.85F);break;
+            case 0: Buff.affect(hero, BasicBuffs.Increase.class, 50).set(1.20F);break;
+            case 1: Buff.affect(hero, BasicBuffs.Velocity.class, 50).set(1.50F);break;
+            case 2: Buff.affect(hero, BasicBuffs.Accuracy.class, 50).set(2.00F);break;
+            case 3: Buff.affect(hero, BasicBuffs.Evasion.class,  50).set(1.50F);break;
+            case 4: Buff.affect(hero, BasicBuffs.Reduce.class,   50).set(0.75F);break;
         }
         Talent.onFoodEaten(hero, 0, this);
 
