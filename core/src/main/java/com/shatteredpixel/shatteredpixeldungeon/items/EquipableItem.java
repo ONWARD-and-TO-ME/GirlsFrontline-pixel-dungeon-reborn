@@ -118,7 +118,13 @@ public abstract class EquipableItem extends Item {
 	}
 
 	public abstract boolean doEquip( Hero hero );
+    public void setUnEquipable(){
+        DELUnEquipable = true;
+    }
+    protected boolean DELUnEquipable = false;
     public boolean unEquipable(Hero hero){
+        if (DELUnEquipable)
+            return true;
         // 魔免buff下、复活未选中，允许被脱下
         return !cursed || hero.buff(MagicImmune.class) != null ||
                 hero.buff(LostInventory.class)!=null && !keptThoughLostInvent;
@@ -131,6 +137,7 @@ public abstract class EquipableItem extends Item {
             return false;
 		}
 
+        DELUnEquipable = false;
 		if (single) {
 			hero.spendAndNext( time2equip() );
 		} else {

@@ -116,7 +116,7 @@ public class WndDEL extends Window {
                 hide();
                 if (!isMissionItem(btnItem1.item))
                     return;
-                if (btnItem1.item.isEquipped(Dungeon.hero)){
+                if (mission != 2 && btnItem1.item.isEquipped(Dungeon.hero)){
                     boolean kept = btnItem1.item.keptThoughLostInvent;
                     btnItem1.item.keptThoughLostInvent = true;
                     ((EquipableItem) btnItem1.item).doUnequip(Dungeon.hero, false);

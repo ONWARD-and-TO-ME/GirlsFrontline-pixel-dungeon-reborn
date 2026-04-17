@@ -346,6 +346,17 @@ public class DEL extends NPC {
         }
         private int equip;
         private int pos = -1;
+        public int icon() {
+            return BuffIndicator.INVISIBLE;
+        }
+        @Override
+        public String toString() {
+            return "强行解除剩余时间";
+        }
+        @Override
+        public String desc(){
+            return String.valueOf(visualcooldown());
+        }
         public void Remember(int equip, int pos){
             this.equip = equip;
             this.pos = pos;
@@ -354,7 +365,7 @@ public class DEL extends NPC {
         public boolean act(){
             if (pos == -1)
                 pos = target.pos;
-            else if (target.pos != pos)
+            else if (target.pos != pos || visualcooldown() < 4)
                 detach();
             spend(TICK);
             return true;
@@ -363,7 +374,7 @@ public class DEL extends NPC {
             if (visualcooldown() > 5)
                 GLog.w("fail");
             else {
-                Item item;
+                EquipableItem item;
                 switch (equip){
                     case 0: default:item = Dungeon.hero.belongings.weapon;break;
                     case 1:item = Dungeon.hero.belongings.armor;break;
@@ -372,9 +383,8 @@ public class DEL extends NPC {
                     case 4:item = Dungeon.hero.belongings.ring;break;
                     case 5:item = Dungeon.hero.belongings.secArmor;break;
                 }
-                item.keptThoughLostInvent = true;
+                item.setUnEquipable();
                 item.doDrop((Hero) target);
-                item.keptThoughLostInvent = false;
             }
             super.detach();
         }
