@@ -133,7 +133,7 @@ public class LloydsBeacon extends Artifact {
 
 		if (action.equals(AC_SET) || action.equals(AC_RETURN)) {
 			
-			if (Dungeon.level.prevent) {
+			if (Dungeon.level.prevent || Dungeon.level.levelId % 1000 == 0) {
 				hero.spend( LloydsBeacon.TIME_TO_USE );
 				GLog.w( Messages.get(this, "preventing") );
 				return;
