@@ -271,7 +271,7 @@ public class Goo extends Mob {
 		}
 		
 		// 添加12.5%概率掉落LloydsBeacon
-		if (Random.Float() < 0.125f) {
+		if (Random.Float() < 0.25F) {
 
             if (Generator.removeArtifact(LloydsBeacon.class)){
                 //能成功在神器池子中将空降妖精去除后再允许生成

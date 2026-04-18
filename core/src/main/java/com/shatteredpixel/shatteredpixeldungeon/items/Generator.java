@@ -681,13 +681,14 @@ public class Generator {
 
 	//enforces uniqueness of artifacts throughout a run.
     public static Artifact randomArtifact() {
-        return randomArtifact(2);
+        return randomArtifact(false);
     }
-	public static Artifact randomArtifact(int time) {
+	public static Artifact randomArtifact(boolean Transmutation) {
 
 		Category cat = Category.ARTIFACT;
-        Random.pushGenerator(Dungeon.seed + time);
+        Random.pushGenerator(Dungeon.seed);
 		int i = Random.chances( cat.probs );
+        int j = Random.chances( cat.probs );
         Random.popGenerator();
 
 		//if no artifacts are left, return null
@@ -698,20 +699,9 @@ public class Generator {
         if (item == null)
             return null;
 
-        if(item.getClass()== LloydsBeacon.class&&time > 0){
-            cat.probs[i]=1F/time;
-            //并非嬗变的情况下随机到了空降，重新随机一次并归还空降的权重
-            item = randomArtifact(time-1);
-                //常规生成时，所有其他遗物都被生成过了，那就允许空降生成吧，以免恶心到喜欢收集的玩家
-            if (item == null)
-                return null;
-            if (item.getClass()!= LloydsBeacon.class) {
-                for (int j = 0; j < Category.ARTIFACT.classes.length; j++) {
-                    if (Category.ARTIFACT.classes[j] == LloydsBeacon.class) {
-                        Category.ARTIFACT.probs[j] = 1;
-                    }
-                }
-            }
+        if(item.getClass()== LloydsBeacon.class && !Transmutation){
+            item = Reflection.newInstance((Class<? extends Artifact>) cat.classes[j]);
+            cat.probs[j]=0;
         }else {
             cat.probs[i]=0;
         }

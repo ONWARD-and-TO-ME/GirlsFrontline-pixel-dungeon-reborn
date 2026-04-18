@@ -392,6 +392,8 @@ public enum Talent {
 		    return Messages.get(this, name() + ".desc");
         if (this.heroClass == heroClass)
             return Messages.get(this, name() + ".desc");
+        if (heroClass == HeroClass.NONE)
+            return Messages.get(this, name() + ".desc");
         return Messages.get(this, name() + ".meta_desc");
 	}
 
