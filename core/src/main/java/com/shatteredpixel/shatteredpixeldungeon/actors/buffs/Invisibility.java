@@ -92,9 +92,12 @@ public class Invisibility extends FlavourBuff {
         detach();
     }
 	public static void dispel() {
+		dispel(false);
+	}
+	public static void dispel(boolean Scroll) {
 		if (Dungeon.hero == null) return;
 
-        if (Dungeon.hero.pointsInTalent(Talent.MYSTICAL_UPGRADE) < 2) {
+        if (!Scroll || Dungeon.hero.pointsInTalent(Talent.MYSTICAL_UPGRADE) < 2) {
             for (Invisibility invis : Dungeon.hero.buffs(Invisibility.class)) {
                 invis.dispelA();
             }

@@ -104,6 +104,8 @@ public class Clipper extends MissileWeapon {
             set(cell, Terrain.GRASS);
             if (Random.Int(3)>Dungeon.hero.pointsInTalentA(Talent.Type56_23V4)) {
                 GLog.n("收割失败");
+                GameScene.updateMap(cell);
+                Dungeon.observe();
                 return;
             }
             durability -= 20F;

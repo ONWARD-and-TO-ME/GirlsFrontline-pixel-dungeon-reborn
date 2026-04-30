@@ -111,7 +111,6 @@ public enum Talent {
 	ENERGIZING_MEAL(36), ENERGIZING_UPGRADE(37), WAND_PRESERVATION(HeroClass.MAGE, 38), ARCANE_VISION(39), SHIELD_BATTERY(40),
 	//Mage T3
 	EMPOWERING_SCROLLS(41, 3), ALLY_WARP(42, 3),
-    EMPOWERING_SCROLLS_V2(41, 3),DESPERATE_POWER(41, 3),
 	//Battlemage T3
 	EMPOWERED_STRIKE(43, 3), MYSTICAL_CHARGE(44, 3), EXCESS_CHARGE(45, 3),
 	//Warlock T3
@@ -129,7 +128,6 @@ public enum Talent {
 	MYSTICAL_MEAL(68), MYSTICAL_UPGRADE(69), WIDE_SEARCH(HeroClass.ROGUE, 70), SILENT_STEPS(71), ROGUES_FORESIGHT(72),
 	//Rogue T3
 	ENHANCED_RINGS(73, 3), LIGHT_CLOAK(HeroClass.ROGUE, 74, 3),
-    ENHANCED_RINGS_V2(73, 3),
 	//Assassin T3
 	ENHANCED_LETHALITY(75, 3), ASSASSINS_REACH(76, 3), BOUNTY_HUNTER(77, 3),
 	//Freerunner T3
@@ -188,7 +186,7 @@ public enum Talent {
     Type56_431(137, 4), Type56_432(137, 4),Type56_433(137, 4),
 
     //留作旧版本561天赋的接口
-    NICE_FOOD(128), OLD_SOLDIER(129),  BETTER_FOOD(131), BARGAIN_SKILLS(132),TRAP_EXPERT(133),HOW_DARE_YOU(134),JIEFANGCI(135),NIGHT_EXPERT(136), SEARCH_ARMY(137, 3), ELITE_ARMY(138, 3),
+    NICE_FOOD(128), OLD_SOLDIER(129),  BETTER_FOOD(131), BARGAIN_SKILLS(132),TRAP_EXPERT(133),HOW_DARE_YOU(134),JIEFANGCI(135),NIGHT_EXPERT(136), SEARCH_ARMY(137, 3),
 
     //GSH18 T1
 	GSH18_MEAL_TREATMENT(160), GSH18_DOCTOR_INTUITION(161), GSH18_CLOSE_COMBAT(162), GSH18_STAR_SHIELD(163),
@@ -202,9 +200,17 @@ public enum Talent {
     //初始通用
     //t1
     FAST_RELOAD(HeroClass.TYPE561, 130),
+
     //t2
+    //旧磁盘回流(1/2/3次+3)、绝境迫能(最后一充能+1/+2/+3)
+    EMPOWERING_SCROLLS_V2(41, 3),DESPERATE_POWER(41, 3),
+    //行窃预知变种：加数量(+0.6/+1/+1.5)、不隐藏(+0.6/25%/50%)
+    ROGUES_FORESIGHT_V2(72), ROGUES_FORESIGHT_V3(72),
 
     //t3
+    //瞄准镜强化变种-超频校准
+    ENHANCED_RINGS_V2(73, 3),
+    ELITE_ARMY(138, 3),
 
     NONE(0, 4);
 
@@ -388,8 +394,10 @@ public enum Talent {
 	}
 
 	public String desc(HeroClass heroClass){
+        if (heroClass == HeroClass.PUBLIC_1)
+            return Messages.get(this, name() + ".meta_desc");
         if (this.heroClass == HeroClass.NONE)
-		    return Messages.get(this, name() + ".desc");
+            return Messages.get(this, name() + ".desc");
         if (this.heroClass == heroClass)
             return Messages.get(this, name() + ".desc");
         if (heroClass == HeroClass.NONE)
@@ -941,10 +949,12 @@ public enum Talent {
 			case TYPE561:
 				Collections.addAll(tierTalents, Type56Two_FOOD, Type56Two_Armor, Type56_23V4, Type56Two_Sight, Type56Two_Damage);
 				break;
-			case GSH18:
-				Collections.addAll(tierTalents, GSH18_ENERGIZING_MEAL, GSH18_CHAIN_SHOCK, GSH18_LOGISTICS_SUPPORT, GSH18_COMIC_HEART, GSH18_MEDICAL_COMPATIBILITY
-				);
-				break;
+            case PUBLIC_1:
+                Collections.addAll(tierTalents, ROGUES_FORESIGHT_V2, ROGUES_FORESIGHT_V3);
+                break;
+            case GSH18:
+                Collections.addAll(tierTalents, GSH18_ENERGIZING_MEAL, GSH18_CHAIN_SHOCK, GSH18_LOGISTICS_SUPPORT, GSH18_COMIC_HEART, GSH18_MEDICAL_COMPATIBILITY);
+                break;
 		}
 		for (Talent talent : tierTalents){
 			if (replacements.containsKey(talent)){
@@ -1114,7 +1124,7 @@ public enum Talent {
         //nothing atm
     }
 
-	public static void restoreTalentsFromBundle( Bundle bundle, Hero hero ){
+	public static void restoreTalentsFromBundle( Bundle bundle, Hero hero, boolean restoreInRanking ){
 		//TODO restore replacements
 		if (bundle.contains("replacements")){
 			Bundle replacements = bundle.getBundle("replacements");
@@ -1162,7 +1172,11 @@ public enum Talent {
                         try {
                             Talent talent = Talent.valueOf(talentName);//mark
                             if (tier.containsKey(talent)) {
-                                TalentUpdate(tier, hero, talent, Math.min(points, talent.maxPoints()));
+                                int point = Math.min(points, talent.maxPoints());
+                                if (restoreInRanking)
+                                    tier.put(talent, point);
+                                else
+                                    TalentUpdate(tier, hero, talent, point);
                             }
                         } catch (Exception e) {
                             GirlsFrontlinePixelDungeon.reportException(e);

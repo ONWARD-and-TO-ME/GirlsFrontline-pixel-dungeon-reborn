@@ -277,7 +277,7 @@ public class Item implements Bundlable {
         if(item.showSelf){
             note = item.noted;
         }
-        else if (Dungeon.itemAOfSave.contains(item.getClass())) {
+        else if (Dungeon.itemAOfSave!= null && Dungeon.NOTEAOfSave != null && Dungeon.itemAOfSave.contains(item.getClass())) {
             int j = 0;
             for (Class<?> i : Dungeon.itemAOfSave) {
                 if (item.getClass() == i) {

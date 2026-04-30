@@ -42,6 +42,8 @@ public class GetGrass extends TargetSpell{
             set(cell, Terrain.GRASS);
             if (Random.Int(3)>Dungeon.hero.pointsInTalentA(Talent.Type56_23V4)) {
                 GLog.n("收割失败");
+                GameScene.updateMap(cell);
+                Dungeon.observe();
                 Stop = false;
                 return;
             }

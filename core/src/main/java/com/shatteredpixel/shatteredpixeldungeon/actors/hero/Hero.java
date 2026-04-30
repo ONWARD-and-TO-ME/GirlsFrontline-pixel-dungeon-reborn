@@ -197,6 +197,7 @@ public class Hero extends Char {
 	public int attackSkill = 10;
 	public int defenseSkill = 5;
 
+	public static boolean restoreInRanking = false;
 	public boolean ready = false;
 	private boolean damageInterrupt = true;
 	public HeroAction curAction = null;
@@ -223,6 +224,10 @@ public class Hero extends Char {
 	// for enemies we know we aren't seeing normally, resultign in better performance
 	public ArrayList<Mob> mindVisionEnemies = new ArrayList<>();
 
+	public Hero(HeroClass heroClass){
+		this();
+		this.heroClass = heroClass;
+	}
 	public Hero() {
 		super();
 
@@ -233,7 +238,10 @@ public class Hero extends Char {
 		
 		visibleEnemies = new ArrayList<>();
 	}
-	
+	@Override
+	public String info(){
+		return heroClass.desc();
+	}
 	public void updateHT( boolean boostHP ){
 		int curHT = HT;
 		int baseHT;
@@ -343,7 +351,7 @@ public class Hero extends Char {
 		heroClass = bundle.getEnum( CLASS, HeroClass.class, HeroClass.rename );
 		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class, HeroSubClass.rename );
 		armorAbility = (ArmorAbility)bundle.get( ABILITY );
-		Talent.restoreTalentsFromBundle( bundle, this );
+		Talent.restoreTalentsFromBundle( bundle, this, restoreInRanking );
 		
 		attackSkill = bundle.getInt( ATTACK );
 		defenseSkill = bundle.getInt( DEFENSE );

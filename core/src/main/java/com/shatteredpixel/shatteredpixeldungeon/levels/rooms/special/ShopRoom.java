@@ -350,13 +350,13 @@ public class ShopRoom extends SpecialRoom {
 				break;
 		}
 
-        if (Challenges.isItemBlocked(new Ankh())) {
+        if (Challenges.isItemBlocked(new Ankh()) && Random.Int(4 - Challenges.activeChallenges()/3) == 0) {
             switch(Random.Int(5)){
-                case 0: itemsToSpawn.add(new Commander());
-                case 1: itemsToSpawn.add(new Gemini());
-                case 2: itemsToSpawn.add(new Letter());
-                case 3: itemsToSpawn.add(new Peach());
-                case 4: itemsToSpawn.add(new Succor());
+                case 0: itemsToSpawn.add(new Commander());break;
+                case 1: itemsToSpawn.add(new Gemini());break;
+                case 2: itemsToSpawn.add(new Letter());break;
+                case 3: itemsToSpawn.add(new Peach());break;
+                case 4: itemsToSpawn.add(new Succor());break;
             }
         }
         else

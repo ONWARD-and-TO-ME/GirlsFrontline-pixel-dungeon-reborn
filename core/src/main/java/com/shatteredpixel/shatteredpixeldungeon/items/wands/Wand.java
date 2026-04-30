@@ -75,7 +75,7 @@ public abstract class Wand extends Item {
 	public int maxCharges = initialCharges();
 	public int curCharges = maxCharges;
     public int minCharges(){
-        if (Dungeon.hero.hasTalent(Talent.ENERGIZING_UPGRADE))
+        if (Dungeon.hero.pointsInTalent(Talent.ENERGIZING_UPGRADE) == 2)
             return -2;
         return 0;
     }

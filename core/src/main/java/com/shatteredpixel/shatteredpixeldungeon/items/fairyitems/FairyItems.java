@@ -14,7 +14,7 @@ import com.watabou.noosa.audio.Sample;
 
 import java.util.ArrayList;
 
-public abstract class FairyItems extends Item {
+public class FairyItems extends Item {
     {
         stackable = true;
         image = ItemSpriteSheet.SOMETHING;
@@ -66,7 +66,7 @@ public abstract class FairyItems extends Item {
     public boolean isIdentified() {
         return true;
     }
-    public abstract void effect(Hero hero);
+    public void effect(Hero hero){}
     @Override
     public int value() {
         return 50 * quantity;
@@ -74,7 +74,7 @@ public abstract class FairyItems extends Item {
     @Override
     public String desc(){
         String desc = super.desc();
-        if (inFairyRoom(Dungeon.hero))
+        if (Dungeon.hero != null && inFairyRoom(Dungeon.hero))
             desc += "\n\n" + Messages.get(this, "effect");
         return desc;
     }
