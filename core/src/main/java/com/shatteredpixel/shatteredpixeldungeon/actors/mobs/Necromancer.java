@@ -343,7 +343,7 @@ public class Necromancer extends Mob {
 			spriteClass = NecroSkeletonSprite.class;
 			
 			//no loot or exp
-			maxLvl = -5;
+			maxLvl = -40;
 			
 			//20/25 health to start
 			HP = 20;

@@ -622,7 +622,7 @@ public class DwarfKing extends Mob {
 				if (Actor.findChar(pos) == null) {
 					Mob m = Reflection.newInstance(summon);
 					m.pos = pos;
-					m.maxLvl = -2;
+					m.maxLvl = -40;
 					GameScene.add(m);
 					Dungeon.level.occupyCell(m);
 					m.state = m.HUNTING;

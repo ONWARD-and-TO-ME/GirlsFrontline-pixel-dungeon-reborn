@@ -173,8 +173,6 @@ public class LazyTest extends TestGenerator {
             hero.updateHT( true );
             hero.subClass = HeroSubClass.BERSERKER;
             hero.armorAbility = new Education();
-            Talent.initSubclassTalents(hero);
-            Talent.initArmorTalents(hero);
 
             RingOfAccuracy roa = new RingOfAccuracy();
             roa.level(22);

@@ -186,7 +186,10 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
             against.add(new ArrayList<>(Arrays.asList(Talent.EMPOWERING_SCROLLS, Talent.EMPOWERING_SCROLLS_V2, Talent.DESPERATE_POWER)));
             //旧戒指强化、新戒指强化
             against.add(new ArrayList<>(Arrays.asList(Talent.ENHANCED_RINGS, Talent.ENHANCED_RINGS_V2)));
+			//56-1的一层榴弹减cd与三层榴弹减cd
             against.add(new ArrayList<>(Arrays.asList(Talent.FAST_RELOAD, Talent.Type56Three_Bomb)));
+			//行窃预知及其变种
+			against.add(new ArrayList<>(Arrays.asList(Talent.ROGUES_FORESIGHT, Talent.ROGUES_FORESIGHT_V2, Talent.ROGUES_FORESIGHT_V3)));
         }
 		public static WndMetamorphReplace INSTANCE;
 
@@ -227,8 +230,8 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
             for (HeroClass cls : HeroClass.values()){
 				ArrayList<LinkedHashMap<Talent, Integer>> clsTalents = new ArrayList<>();
-                if (cls == HeroClass.NONE || cls == HeroClass.PUBLIC_1 && (tier<=2))
-                    cls = HeroClass.values()[Random.Int(6)];
+                if (cls == HeroClass.NONE)
+                    cls = HeroClass.values()[Random.Int(7)];
 				Talent.initClassTalents(cls, clsTalents);
 
 				Set<Talent> clsTalentsAtTier = clsTalents.get(tier-1).keySet();

@@ -182,6 +182,7 @@ public abstract class Char extends Actor {
 		return Messages.get(this, "name");
 	}
 
+	public abstract String info();
 	public boolean canInteract(Char c){
 		if (Dungeon.level.adjacent( pos, c.pos )){
 			return true;

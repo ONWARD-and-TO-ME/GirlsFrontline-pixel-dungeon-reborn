@@ -44,7 +44,7 @@ public class Wraith extends Mob {
 		HP = HT = 1;
 		EXP = 0;
 
-		maxLvl = -2;
+		maxLvl = -40;
 		
 		flying = true;
 

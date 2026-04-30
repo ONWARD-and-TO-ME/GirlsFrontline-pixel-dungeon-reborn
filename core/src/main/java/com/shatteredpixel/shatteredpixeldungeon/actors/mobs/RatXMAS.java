@@ -21,7 +21,6 @@ public class RatXMAS extends Rat{
         state=PASSIVE;
         lootChance = 0f;
         EXP = 2;
-        maxLvl = Hero.MAX_LEVEL;
     }
 
     @Override

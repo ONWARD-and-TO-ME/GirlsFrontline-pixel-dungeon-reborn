@@ -103,7 +103,7 @@ public class DEL extends NPC {
                     yellGood(Messages.get(this, "greetingsB", Dungeon.hero.name()));
             }
             else if (mission.finish()) {
-                yellGood( Messages.get(this, "finish") );
+                yellGood( Messages.get(this, "finish", Dungeon.hero.name()) );
             }
             else
                 yellNormal( Messages.get(this, "working", Dungeon.hero.name() ) );
@@ -300,15 +300,17 @@ public class DEL extends NPC {
             }
             return false;
         }
-//        public int icon() {
-//            return BuffIndicator.INVISIBLE;
-//        }
+        public int icon() {
+            return BuffIndicator.INVISIBLE;
+        }
         public String desc(){
             String desc = "";
             int i = 0;
             for (Item item : items){
                 desc += "\n" + item.name();
-                desc += times.get(i);
+                int time = times.get(i);
+                if (time != 0)
+                    desc += time;
                 i++;
             }
             for (Item item : drops){

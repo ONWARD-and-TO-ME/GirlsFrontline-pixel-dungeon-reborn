@@ -57,7 +57,7 @@ public class Pylon extends Mob {
 
 		HP = HT = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 80 : 50;
 
-		maxLvl = -2;
+		maxLvl = -40;
 
 		properties.add(Property.MINIBOSS);
 		properties.add(Property.INORGANIC);

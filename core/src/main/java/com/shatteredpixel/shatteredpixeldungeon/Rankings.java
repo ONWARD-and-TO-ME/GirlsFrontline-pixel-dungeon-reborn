@@ -149,18 +149,7 @@ public enum Rankings {
 		Belongings belongings = Dungeon.hero.belongings;
 
 		//save the hero and belongings
-		ArrayList<Item> allItems = (ArrayList<Item>) belongings.backpack.items.clone();
-		//remove items that won't show up in the rankings screen
-		for (Item item : belongings.backpack.items.toArray( new Item[0])) {
-			if (item instanceof Bag){
-				for (Item bagItem : ((Bag) item).items.toArray( new Item[0])){
-					if (Dungeon.quickslot.contains(bagItem)) belongings.backpack.items.add(bagItem);
-				}
-			}
-			if (!Dungeon.quickslot.contains(item)) {
-				belongings.backpack.items.remove(item);
-			}
-		}
+		ArrayList<Item> allItems = new ArrayList<>(belongings.backpack.items);
 
 		//remove all buffs (ones tied to equipment will be re-applied)
 		for(Buff b : Dungeon.hero.buffs()){
@@ -215,7 +204,9 @@ public enum Rankings {
 
 		Badges.loadLocal(data.getBundle(BADGES));
 
+        Hero.restoreInRanking = true;
 		Dungeon.hero = (Hero)data.get(HERO);
+        Hero.restoreInRanking = false;
 
 		Statistics.restoreFromBundle(data.getBundle(STATS));
 		

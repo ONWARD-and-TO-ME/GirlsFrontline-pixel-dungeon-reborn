@@ -849,11 +849,12 @@ public abstract class Mob extends Char {
 		}
 		target = cell;
 	}
-	
+
 	public String description() {
 		return Messages.get(this, "desc");
 	}
 
+	@Override
 	public String info(){
 		String desc = description();
 
