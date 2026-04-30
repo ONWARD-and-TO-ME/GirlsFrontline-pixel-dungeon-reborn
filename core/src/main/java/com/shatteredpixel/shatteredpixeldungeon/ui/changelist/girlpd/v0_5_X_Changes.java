@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.ui.changelist.girlpd;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
@@ -12,23 +11,27 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Cyclops;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elphelt;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GolyatFactory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Succubus;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Swarm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DEL;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.FieldPot;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
-import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
-import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
-import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
-import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.ItemHolder;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Commander;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.FairyItems;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Gemini;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Letter;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Peach;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Succor;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Recycle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cypros;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.Ump45;
@@ -74,6 +77,7 @@ import java.util.Arrays;
 
 public class v0_5_X_Changes {
     public static void addAllChanges(ArrayList<ChangeInfo> changeInfos) {
+        add_0_5_7_3_To_0_5_8_1_Changes(changeInfos);
         add_0_5_7_2_Changes(changeInfos);
         add_0_5_7_1_Changes(changeInfos);
         add_0_5_7_Changes(changeInfos);
@@ -92,6 +96,65 @@ public class v0_5_X_Changes {
 		add_0_5_0_Changes(changeInfos);
     }
 
+    public static void add_0_5_7_3_To_0_5_8_1_Changes( ArrayList<ChangeInfo> changeInfos ) {
+        ChangeInfo changes = new ChangeInfo("v0.5.7v3 ~ 0.5.8v1", true, "");
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+        changes.hardlight( Window.TITLE_COLOR );
+        changeInfos.add(changes);
+
+        changes.addButton(new ChangeButton(new ItemHolder(), "结算前快捷栏放入背包后，可以在排行榜界面点击该背包以显示背包内的物品。" +
+                "\n\n新增一个背包，于31层生成，将其带回1层可使用其主动将物品装入其中以在排行榜上展示。仅允许在1层收纳物品。"));
+        changes.addButton(new ChangeButton(new DEL(), 0.8F, "新增NPC德尔(暂时使用波波沙皮肤)与其房间 维修补给站 （其实是废弃的妖精小屋），于每区3~4层必定刷出一个。可以使用钻石向德尔下达任务订单，具体玩法可在游戏内体验。" +
+                "\n\n目前订单列表的内容较少，主要介绍一下超载，可以令一件有正数等级的装备在有限时间内增加1级，这1级可参与装备所需力量、诅咒棱晶等级、子弹配件充能上限的计算。过载自然结束时，此装备永久降低1级。又或者在过载期间内手动结束，则会受到代价比较大的临时降级，此降级不参与装备所需力量、诅咒棱晶等级、子弹配件充能上限的计算。临时降级的消除方法因物品的类型不同而产生差异。"));
+        changes.addButton(new ChangeButton(new FairyItems[]{new FairyItems(), new Commander(), new Gemini(), new Letter(), new Peach(), new Succor()}, "妖精道具", new String[]{"新增了一系列妖精道具，目前这些道具仅在开启了“地狱贵客”挑战时才有概率在商店中取代快修生成，并且开启挑战越多生成概率越高。" +
+                "\n\n新增的妖精道具强制在废弃的妖精小屋（即维修补给站）内使用，原有的妖精道具在使用上不增加限制，但在妖精小屋内获得一些聊胜于无的加强。"}));
+        changes.addButton(new ChangeButton(new Blacksmith().sprite(), 0.8F, "新增", "局内的右上角日志，未解锁的枪械也可显示物品名称以用于查种器。达成完美结局后，查看已解锁的枪械时会增加一个按钮以显示武器基本属性。" +
+                "\n\n加入了几个1阶武器进入1阶生成池（或者说嬗变池）" +
+                "\n\n测试模式现在可以在局内点击右上角挑战按钮以在局内修改生效挑战。"));
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+        changes.hardlight( CharSprite.POSITIVE );
+        changeInfos.add(changes);
+
+        changes.addButton(new ChangeButton(new Object[]{new ItemSprite(ItemSpriteSheet.ARTIFACT_HOLDER, null), new LloydsBeacon(), new HornOfPlenty(), new AlchemistsToolkit()},
+                "遗物调整",
+                new String[]{"遗物在被破坏后将重新加入生成池子。\n\n钟表和刺刀虽然会因此额外生成道具，但是在拾取处已做处理，最高10级。",
+                        "我对空降妖精进行了一点削弱，现在使用其“返回位置”功能将会进入CD，传送点位不在妖精小屋内则自身会获得一些debuff，此CD仅会在已装备且非诅咒的情况下衰减。对于单位释放传送不会受CD影响，也不会产生CD，并且玩家在妖精小屋内时，传送敌方单位会令其麻痹一段时间。\n\n在拥有妖精小屋的楼层时，在妖精小屋外可以传送至妖精小屋的固定位置，在妖精小屋内则可在本层选择任意点位传送，这两项功能也需要cd并会产生debuff。\n\n现在提升了刽子手掉落空降妖精的概率，并且空降妖精加入正常遗物生成。",
+                        "在妖精小屋内，炊事妖精找到了一些食材，现在炊事妖精做饭的分量稍微多了一点，饱腹感更强了。",
+                        "炼金工具箱现在加入了一个功能，默认关闭。在打开后，在进入即将要生成上锁炼金房的新楼层时，有概率将其转化为隐藏炼金房或者普通隐藏房。\n\n上锁炼金房中的药水本质上是在生成时从本层的物品列表中取出一部分加入自身房间，移除上锁炼金房不会丢失本层的药水，这些药水依旧会在本层中生成，只会丢失符石(如果有)和炼金能量。"}));
+        changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561).sprite(), 0.8F, "平衡性调整", "现在割草的数值以及草料的机制有所削弱，但是割草允许在尚未解锁二层天赋时就使用这个功能。" +
+                "\n\n现在袖珍本的*****技能，总是会尝试秒杀敌人，尽管在这过程中可能导致充能透支……请留意当前充能，以免透支充能，负数的充能恢复起来非常漫长。"));
+        changes.addButton(new ChangeButton(new Blacksmith().sprite(), 0.8F, "杂项改动", "献祭房奖励固定化，现在同一个种子总是产生相同的武器。" +
+                "\n\n查种器现在会额外显示物品的来源房间，但常规房间不会显示。" +
+                "\n\n加入了2*3快捷栏以便使用6格的快捷栏，似乎有部分玩家群体更为习惯4格，但这个也有一定的工作量，在0.5.8v2或者v3再加回来吧" +
+                "\n\n现在钢狮、木星、提丰这三种会显示弹道的发射激光的怪物，在显示弹道时将会打断玩家当前动作。" +
+                "\n\n重置了一部分天赋、修改了一部分天赋、为一部分在蜕变后无法生效的天赋做出蜕变后效果，具体展示见下一个按钮。UMP9的额外隐藏房间数量转移给+0行窃预知，加入天赋蜕变通用池概念，初始不生成这些天赋，必须由蜕变获得"));
+        Talent[] talents = {Talent.IRON_WILL, Talent.RESTORED_WILLPOWER, Talent.RUNIC_TRANSFERENCE,
+                Talent.HOLD_FAST, Talent.STRONGMAN, Talent.BACKUP_BARRIER, Talent.ENERGIZING_UPGRADE, Talent.WAND_PRESERVATION,
+                Talent.EMPOWERING_SCROLLS, Talent.MYSTICAL_UPGRADE, Talent.ROGUES_FORESIGHT, Talent.LIGHT_CLOAK,
+                Talent.PROJECTILE_MOMENTUM, Talent.RESTORED_NATURE, Talent.POINT_BLANK, Talent.SEER_SHOT,
+                Talent.Type56_23V4, Talent.Type56Three_Bomb, Talent.Type56Three_Book, Talent.FAST_RELOAD,
+                Talent.EMPOWERING_SCROLLS_V2, Talent.DESPERATE_POWER, Talent.ROGUES_FORESIGHT_V2, Talent.ROGUES_FORESIGHT_V3,
+                Talent.ENHANCED_RINGS_V2, Talent.ELITE_ARMY};
+        float[] TalentSize = new float[talents.length];
+        Arrays.fill(TalentSize, 0.8F);
+        changes.addButton(new ChangeButton(TalentSize, talents));
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+        changes.hardlight( CharSprite.POSITIVE );
+        changeInfos.add(changes);
+
+        changes.addButton(new ChangeButton(new HeroIcon(new Education()), "狂战士", 0.8F, "现在狂战士的怒气在低于1.5倍力量的时候不会衰减。"));
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+        changes.hardlight( CharSprite.NEGATIVE );
+        changeInfos.add(changes);
+
+        changes.addButton(new ChangeButton(new RingOfFuror(), "战术瞄准镜对于慢速武器的额外收益这个机制是为了狙击类枪械而加入的，我并不希望常态武器从这个机制中得到收益。因此战术瞄准镜对于慢速武器的额外收益临界点由一回合削弱至二回合。"));
+    }
     public static void add_0_5_7_2_Changes( ArrayList<ChangeInfo> changeInfos ){
         ChangeInfo changes = new ChangeInfo("v0.5.7v2", true, "");
         changes.hardlight( Window.TITLE_COLOR );
@@ -164,7 +227,7 @@ public class v0_5_X_Changes {
         "_-_ 更多角色能力详情请前往游戏内阅读。"
          ));
 
-        changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.RING_DIAMOND, null),
+        changes.addButton( new ChangeButton(new RingOfFuror(),
                 "战术瞄准镜",
         "_-_ 增强了_战术瞄准镜_对攻击_速度极慢_的武器的增幅效果。\n" +
         "_-_ 这意味着，那些需要极长回合才能攻击一次的_狙击枪类武器_会从中获取更高的_攻击速度_收益。"

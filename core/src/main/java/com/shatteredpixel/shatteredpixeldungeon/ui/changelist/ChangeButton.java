@@ -21,19 +21,26 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.ui.changelist;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.TalentIcon;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.ui.Component;
@@ -457,8 +464,16 @@ public class ChangeButton extends Component {
             return ((Mob) A).sprite();
         else if(A instanceof Hero)
             return new HeroSprite(((Hero) A).heroClass, 1);
+        else if(A instanceof Ring) {
+            Image itemIcon = new Image(Assets.Sprites.ITEM_ICONS);
+            itemIcon.scale.set(1.6F);
+            itemIcon.frame(ItemSpriteSheet.Icons.film.get(((Item) A).icon));
+            return itemIcon;
+        }
         else if(A instanceof Item)
             return new ItemSprite((Item) A);
+        else if(A instanceof Talent)
+            return new TalentIcon((Talent) A);
         else
             return null;
     }
@@ -565,8 +580,12 @@ public class ChangeButton extends Component {
     private static String getSignalName(Object A){
         if (A instanceof Char)
             return ((Char) A).name();
+        else if ((A instanceof Ring) || (A instanceof Scroll) || (A instanceof Potion))
+            return ((Item) A).trueName();
         else if (A instanceof Item)
             return A.toString();
+        else if (A instanceof Talent)
+            return ((Talent) A).title();
         else
             return null;
     }
@@ -591,12 +610,17 @@ public class ChangeButton extends Component {
             return getSignalInfo(A);
     }
     private static String getSignalInfo(Object A){
-        if (A instanceof Mob)
-            return ((Mob) A).info();
-        else if (A instanceof Hero)
-            return "有憨憨！不仅没写主体内容，还塞了个没有描述的单位（玩家）进来";
+        if (A instanceof Char)
+            return ((Char) A).info();
         else if (A instanceof Item)
             return ((Item) A).info();
+        else if (A instanceof Talent) {
+            String meta = ((Talent) A).desc(HeroClass.PUBLIC_1);
+            if (!meta.contains("Ms:"))
+                return ((Talent) A).desc(HeroClass.NONE) + "\n\n蜕变后：\n" + meta;
+            else
+                return ((Talent) A).desc(HeroClass.NONE);
+        }
         else
             return null;
     }
@@ -836,7 +860,7 @@ public class ChangeButton extends Component {
             return false;
         for (Object i: A)
             if (i != null)
-                return i instanceof Image || i instanceof Char || i instanceof Item;
+                return i instanceof Image || i instanceof Char || i instanceof Item || i instanceof Talent;
         return false;
     }
     private static ArrayList<Image> getImage(ArrayList<?> A){
