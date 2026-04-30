@@ -72,8 +72,8 @@ public class SecretHoardRoom extends SecretRoom {
 				Painter.set(level, p, Terrain.TRAP);
 			}
 		}
-		
-		entrance().set(Door.Type.HIDDEN);
+
+		entrance().setHidden(Dungeon.hero);
 	}
 	
 	@Override

@@ -83,14 +83,21 @@ public abstract class SecretRoom extends SpecialRoom {
         if (!(regionSecretsThisRandom.length > baseRegionSecrets.length)) {
             float regionRandom = regionSecretsThisRandom[region];
             float choice = baseRegionSecrets[region] % 1F;
-            if (Dungeon.hero.hasTalentB(Talent.ROGUES_FORESIGHT))
+            if (Dungeon.hero.hasTalentB(Talent.ROGUES_FORESIGHT) ||
+					Dungeon.hero.pointsInTalentA(Talent.ROGUES_FORESIGHT_V2) == 0 ||
+					Dungeon.hero.hasTalentB(Talent.ROGUES_FORESIGHT_V3))
                 choice += 0.6F;
+			else if (Dungeon.hero.hasTalentB(Talent.ROGUES_FORESIGHT_V2))
+				choice += 0.5F + 0.5F*Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT_V2);
             if (regionRandom < choice % 1F) {
                 secrets += (float) Math.ceil(choice);
             } else {
                 secrets += (float) Math.floor(choice);
             }
         }
+
+		if (secrets <= 0)
+			return 0;
 
         secrets /= floorsLeft;
         if (Random.Float() < secrets % 1f){

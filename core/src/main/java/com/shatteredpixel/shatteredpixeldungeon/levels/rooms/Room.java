@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -412,7 +414,7 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable {
 		
 		public Door(){
 		}
-		
+
 		public Door( Point p ){
 			super(p);
 		}
@@ -426,7 +428,16 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable {
 				this.type = type;
 			}
 		}
-		
+
+		public void setHidden(Hero hero){
+			if (hero == null || !hero.hasTalent(Talent.ROGUES_FORESIGHT_V3))
+				set(Type.HIDDEN);
+			else if (Random.Int(4) < hero.pointsInTalent(Talent.ROGUES_FORESIGHT_V3))
+				set(Type.UNLOCKED);
+			else
+				set(Type.HIDDEN);
+		}
+
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			bundle.put("x", x);

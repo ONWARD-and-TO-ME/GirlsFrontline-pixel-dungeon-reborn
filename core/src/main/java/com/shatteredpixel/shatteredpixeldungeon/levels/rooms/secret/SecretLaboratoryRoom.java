@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
@@ -67,8 +68,8 @@ public class SecretLaboratoryRoom extends SecretRoom {
 		
 		Painter.fill( level, this, Terrain.WALL );
 		Painter.fill( level, this, 1, Terrain.EMPTY_SP );
-		
-		entrance().set( Door.Type.HIDDEN );
+
+		entrance().setHidden(Dungeon.hero);
 		
 		Point pot = center();
 		Painter.set( level, pot, Terrain.ALCHEMY );

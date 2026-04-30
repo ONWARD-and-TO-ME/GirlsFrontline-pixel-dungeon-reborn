@@ -111,7 +111,7 @@ public class SecretChestChasmRoom extends SecretRoom {
 		}
 		
 		level.addItemToSpawn(new PotionOfLevitation());
-		
-		entrance().set(Door.Type.HIDDEN);
+
+		entrance().setHidden(Dungeon.hero);
 	}
 }

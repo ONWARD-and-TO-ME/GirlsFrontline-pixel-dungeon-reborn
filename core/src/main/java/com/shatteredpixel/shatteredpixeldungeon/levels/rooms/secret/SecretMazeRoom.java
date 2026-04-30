@@ -112,7 +112,7 @@ public class SecretMazeRoom extends SecretRoom {
 		level.drop(prize, level.pointToCell(bestDistP)).setType(Heap.Type.CHEST).setRoom(Heap.Room.Secret_Maze);
 		
 		PathFinder.setMapSize(level.width(), level.height());
-		
-		entrance().set(Door.Type.HIDDEN);
+
+		entrance().setHidden(Dungeon.hero);
 	}
 }

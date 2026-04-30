@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -52,7 +53,7 @@ public class RatKingRoom extends SecretRoom {
 		Painter.fill( level, this, 1, Terrain.EMPTY_SP );
 		
 		Door entrance = entrance();
-		entrance.set( Door.Type.HIDDEN );
+		entrance.setHidden(Dungeon.hero);
 		int door = entrance.x + entrance.y * level.width();
 		
 		for (int i=left + 1; i < right; i++) {

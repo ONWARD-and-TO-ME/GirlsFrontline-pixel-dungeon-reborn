@@ -57,8 +57,8 @@ public class SecretHoneypotRoom extends SecretRoom {
 		placeItem(new Honeypot(), level);
 		
 		placeItem( new Bomb().random(), level);
-		
-		entrance().set(Door.Type.HIDDEN);
+
+		entrance().setHidden(Dungeon.hero);
 	}
 	
 	private void placeItem(Item item, Level level){
