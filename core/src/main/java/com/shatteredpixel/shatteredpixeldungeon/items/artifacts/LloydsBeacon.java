@@ -469,6 +469,33 @@ public class LloydsBeacon extends Artifact {
 		}
 	}
 
+    protected CoolDownTracker coolDownTracker;
+    @Override
+    public void Tracker(Char owner){
+        super.Tracker(owner);
+        if (coolDownTracker == null) {
+            coolDownTracker = new CoolDownTracker();
+            coolDownTracker.attachTo(owner);
+        }
+	}
+	
+    @Override
+    public void stopTrack(){
+        super.stopTrack();
+        if (coolDownTracker != null) {
+            coolDownTracker.detach();
+            coolDownTracker = null;
+        }
+    }
+	public class CoolDownTracker extends Buff{
+		@Override
+		public boolean act() {
+            if (cd > 0 && !cursed)
+                cd--;
+			spend( 2 * TICK );
+			return true;
+		}
+	}
     public static void proc(Char defender) {
         //复制的转移
         float procChance = 1/20f;
