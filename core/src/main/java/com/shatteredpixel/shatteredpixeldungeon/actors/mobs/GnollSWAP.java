@@ -68,11 +68,14 @@ public class GnollSWAP extends Gnoll {
         super.rollToDropLoot();
         if (Dungeon.hero.lvl <= this.maxLvl + 2) {
             ArrayList<Item> items = new ArrayList<>();
-            items.add(Generator.randomUsingDefaults());
-            items.add(Generator.randomUsingDefaults());
-            if (Random.Int(2) == 0) {
-                items.add(Generator.randomUsingDefaults());
-            }
+            ArrayList<Class<?>> itemsClass = new ArrayList<>();
+            Item i = Generator.randomUsingDefaults();
+            items.add(i);
+            itemsClass.add(i.getClass());
+
+            do{
+                i = Generator.randomUsingDefaults();
+            }while(i instanceof Gold && itemsClass.contain(Gold.class));
 
             for(Item item : items) {
                 int dropPlace;
