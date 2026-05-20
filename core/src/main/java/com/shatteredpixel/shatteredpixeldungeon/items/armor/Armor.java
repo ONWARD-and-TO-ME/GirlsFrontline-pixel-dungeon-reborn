@@ -1030,6 +1030,11 @@ public class Armor extends EquipableItem {
         public boolean act() {
             spend(TICK);
             duration = CooldownTracker.updateTime;
+			
+			LockedFloor lock = target.buff(LockedFloor.class);
+			if(lock != null && !lock.regenOn())
+				return true;
+			
             Hero hero = (Hero) target;
             boolean isEquip = isEquipped(hero);
             if (isEquip && (hero.belongings.armor() != null && hero.belongings.SecondArmor() != null)){
