@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Rect;
@@ -250,7 +251,7 @@ public class ItemSlot extends Button {
 
 		if (trueLvl != 0 || buffedLvl != 0) {
 			String text =  Messages.format( TXT_LEVEL, buffedLvl );
-			if (!item.levelKnown)
+			if (!item.levelKnown && !Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
 				text += "?";
 			level.text( text );
 			level.measure();

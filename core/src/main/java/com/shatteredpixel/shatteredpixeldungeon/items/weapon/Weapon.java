@@ -58,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocki
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Unstable;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampiric;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SakuraBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -94,8 +95,9 @@ abstract public class Weapon extends KindOfWeapon {
 					workingTier--;
 				}
 				while (workingTier > 0){
-					workingTier -= Random.Int(2) + 1;
-					upgrade(hasEnchant);
+					if (workingTier >= Random.Int(3)+1 )
+						upgrade(hasEnchant);
+					workingTier -= 3;
 				}
 				cursed = curse;
 				if (this instanceof MissileWeapon && Random.Int(4) == 0)
@@ -103,6 +105,8 @@ abstract public class Weapon extends KindOfWeapon {
 			}
 			int str = (hero.STR() - 10) / 2;
 			tier = Math.min(10, str + 1);
+			if (this instanceof SakuraBlade)
+				tier--;
 		}
 	}
 

@@ -632,6 +632,7 @@ public class Item implements Bundlable {
 	public Emitter emitter() { return null; }
 	
 	public String info() {
+		update();
         String info = NoteGet(this);
         info+=desc();
 		return info;

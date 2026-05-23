@@ -142,8 +142,9 @@ public class Armor extends EquipableItem {
                     workingTier--;
                 }
                 while (workingTier > 0){
-                    workingTier -= Random.Int(2) + 1;
-                    upgrade(hasGlyph);
+                    if (workingTier >= Random.Int(3)+1 )
+                        upgrade(hasGlyph);
+                    workingTier -= 3;
                 }
                 cursed = curse;
             }
