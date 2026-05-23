@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -45,10 +46,12 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndDEL;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class DEL extends NPC {
@@ -81,6 +84,16 @@ public class DEL extends NPC {
 	@Override
 	protected boolean act() {
 		if (!seenBefore && Dungeon.level.heroFOV[pos]){
+            seenBefore = true;
+            if (Dungeon.depth == 0){
+                RatKing.HintTracker count = Buff.affect(this, RatKing.HintTracker.class);
+                count.countDown(count.count());
+                if (GamesInProgress.firstEmpty() != -1)
+                    yellNormal(Messages.get(this, "challenge"));
+                else
+                    yellNormal(Messages.get(this, "introduction"));
+                return super.act();
+            }
             if (!add) {
                 add = true;
                 WorkLoad += 20;
@@ -107,7 +120,6 @@ public class DEL extends NPC {
             }
             else
                 yellNormal( Messages.get(this, "working", Dungeon.hero.name() ) );
-            seenBefore = true;
 		}
 		return super.act();
 	}
@@ -121,6 +133,29 @@ public class DEL extends NPC {
 			return true;
 		}
 
+        if (Dungeon.depth == 0){
+            RatKing.HintTracker count = Buff.affect(this, RatKing.HintTracker.class);
+            if (count.count() >= 3){
+                if (GamesInProgress.firstEmpty() == -1)
+                    yellNormal(Messages.get(WndStartGame.class, "clear"));
+                else {
+                    try {
+                        Dungeon.saveAll();
+                    } catch (IOException ignored) {}
+                    Game.runOnRenderThread(new Callback() {
+                        @Override
+                        public void call() {
+                            GameScene.show(new WndStartGame(GamesInProgress.firstEmpty(), true, WndStartGame.GameMode.IDENTIFY));
+                        }
+                    });
+                }
+            }
+            else {
+                yellNormal(Messages.get(this, "zero_"+count.count()));
+                count.countUp(1);
+            }
+            return true;
+        }
         if (WorkLoad > 0)
             Game.runOnRenderThread(new Callback() {
                 @Override
@@ -231,6 +266,8 @@ public class DEL extends NPC {
 
 	@Override
 	public void add( Buff buff ) {
+        if (buff instanceof RatKing.HintTracker)
+            super.add(buff);
 	}
 
 	@Override

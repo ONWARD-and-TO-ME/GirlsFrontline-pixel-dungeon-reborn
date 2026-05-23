@@ -49,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -416,35 +417,61 @@ public class Heap implements Bundlable {
 	@Override
 	public String toString(){
         String title;
-		switch(type){
-            default:
-                title = peek().toString();break;
-            case FOR_SALE:
-                Item i = this.peek();
-                if (this.size() == 1)
-                    title = Messages.get(this, "for_sale", Shopkeeper.sellPrice(i), i.name());
-                else
-                    title = i.name();break;
-			case CHEST:
-				title = Messages.get(this, "chest");break;
-            case MIMIC:
-                title = Messages.get( Mimic.class, "name");break;
-			case LOCKED_CHEST:
-				title = Messages.get(this, "locked_chest");break;
-            case GOLDEN_MIMIC:
-                title = Messages.get( GoldenMimic.class, "name");break;
-			case CRYSTAL_CHEST:
-				title = Messages.get(this, "crystal_chest");break;
-            case CRYSTAL_MIMIC:
-                title = Messages.get( CrystalMimic.class, "name");break;
-            case MISSION_CHEST:
-                title = Messages.get(this, "mission");break;
-			case TOMB:
-				title = Messages.get(this, "tomb");break;
-			case SKELETON:
-				title = Messages.get(this, "skeleton");break;
-			case REMAINS:
-				title = Messages.get(this, "remains");break;
+		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)){
+			if (type == Type.FOR_SALE) {
+				Item i = this.peek();
+				if (this.size() == 1)
+					title = Messages.get(this, "for_sale", Shopkeeper.sellPrice(i), i.name());
+				else
+					title = i.name();
+			}
+			else {
+				title = peek().toString();
+			}
+		}
+		else {
+			switch (type) {
+				default:
+					title = peek().toString();
+					break;
+				case FOR_SALE:
+					Item i = this.peek();
+					if (this.size() == 1)
+						title = Messages.get(this, "for_sale", Shopkeeper.sellPrice(i), i.name());
+					else
+						title = i.name();
+					break;
+				case CHEST:
+					title = Messages.get(this, "chest");
+					break;
+				case MIMIC:
+					title = Messages.get(Mimic.class, "name");
+					break;
+				case LOCKED_CHEST:
+					title = Messages.get(this, "locked_chest");
+					break;
+				case GOLDEN_MIMIC:
+					title = Messages.get(GoldenMimic.class, "name");
+					break;
+				case CRYSTAL_CHEST:
+					title = Messages.get(this, "crystal_chest");
+					break;
+				case CRYSTAL_MIMIC:
+					title = Messages.get(CrystalMimic.class, "name");
+					break;
+				case MISSION_CHEST:
+					title = Messages.get(this, "mission");
+					break;
+				case TOMB:
+					title = Messages.get(this, "tomb");
+					break;
+				case SKELETON:
+					title = Messages.get(this, "skeleton");
+					break;
+				case REMAINS:
+					title = Messages.get(this, "remains");
+					break;
+			}
 		}
         title += RoomName(type, room);
         return title;

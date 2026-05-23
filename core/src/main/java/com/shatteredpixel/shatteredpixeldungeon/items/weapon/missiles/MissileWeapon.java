@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
@@ -70,8 +71,6 @@ abstract public class MissileWeapon extends Weapon {
 	
 	//used to reduce durability from the source weapon stack, rather than the one being thrown.
 	protected MissileWeapon parent;
-	
-	public int tier;
 	
 	@Override
 	public int min() {
@@ -344,7 +343,11 @@ abstract public class MissileWeapon extends Weapon {
 		super.reset();
 		durability = MAX_DURABILITY;
 	}
-	
+	@Override
+	public boolean isSimilar( Item item ) {
+		return super.isSimilar(item) && hasSameEnchant((MissileWeapon) item);
+	}
+
 	@Override
 	public Item merge(Item other) {
 		super.merge(other);
@@ -391,7 +394,9 @@ abstract public class MissileWeapon extends Weapon {
 	public String info() {
 
 		String info = super.info();
-		
+
+		Ring.guessSignalRing(Dungeon.hero, RingOfSharpshooting.class, false);
+
 		info += "\n\n" + Messages.get( MissileWeapon.class, "stats",
 				tier,
 				Math.round(augment.damageFactor(min())),

@@ -58,9 +58,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocki
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Unstable;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampiric;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -76,7 +78,45 @@ abstract public class Weapon extends KindOfWeapon {
 	public int      RCH = 1;    // Reach modifier (only applies to melee hits)
     public int DEF = 0;
     public int DEFUPGRADE = 0;
+	public int tier;
+	public boolean UpdatedTierToLevel = false;
 
+	@Override
+	public void update(){
+		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)){
+			if (!UpdatedTierToLevel){
+				boolean hasEnchant = enchantment != null;
+				boolean curse = cursed;
+				UpdatedTierToLevel = true;
+				int workingTier = tier - 1;
+				if (workingTier > 0) {
+					upgrade(hasEnchant);
+					workingTier--;
+				}
+				while (workingTier > 0){
+					workingTier -= Random.Int(2) + 1;
+					upgrade(hasEnchant);
+				}
+				cursed = curse;
+				if (this instanceof MissileWeapon && Random.Int(4) == 0)
+					enchant();
+			}
+			int str = (hero.STR() - 10) / 2;
+			tier = Math.min(10, str + 1);
+		}
+	}
+
+	protected boolean hasSameEnchant(Weapon item){
+		if (enchantment != null && item.enchantment == null)
+			return false;
+		if (enchantment == null && item.enchantment != null)
+			return false;
+		if (enchantment == null && item.enchantment == null)
+			return true;
+		if (enchantment.getClass() == item.enchantment.getClass())
+			return true;
+		return false;
+	}
 	public enum Augment {
 		SPEED   (0.7f, 0.6667f),
 		DAMAGE  (1.5f, 1.6667f),
@@ -144,6 +184,8 @@ abstract public class Weapon extends KindOfWeapon {
 	private static final String CURSE_INFUSION_BONUS = "curse_infusion_bonus";
 	private static final String MASTERY_POTION_BONUS = "mastery_potion_bonus";
 	private static final String AUGMENT	        = "augment";
+	private static final String TierThisRun		= "TierThisRun";
+	private static final String FirstUpdateTier	= "FirstUpdateTier";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -154,6 +196,8 @@ abstract public class Weapon extends KindOfWeapon {
 		bundle.put( CURSE_INFUSION_BONUS, curseInfusionBonus );
 		bundle.put( MASTERY_POTION_BONUS, masteryPotionBonus );
 		bundle.put( AUGMENT, augment );
+		bundle.put( FirstUpdateTier, UpdatedTierToLevel);
+		bundle.put( TierThisRun, tier);
 	}
 	
 	@Override
@@ -166,6 +210,9 @@ abstract public class Weapon extends KindOfWeapon {
 		masteryPotionBonus = bundle.getBoolean( MASTERY_POTION_BONUS );
 
 		augment = bundle.getEnum(AUGMENT, Augment.class);
+		UpdatedTierToLevel = bundle.getBoolean( FirstUpdateTier );
+		if (bundle.contains( TierThisRun ))
+			tier = bundle.getInt( TierThisRun );
 	}
 	
 	@Override
@@ -216,6 +263,9 @@ abstract public class Weapon extends KindOfWeapon {
 			if (encumbrance > 0){
 				delay *= Math.pow( 1.2, encumbrance );
 			}
+			int str = Math.max(0, baseSTRReq() - ((Hero) owner).STR());
+			if ((owner.wholeTime() || encumbrance <=0) && guessingLevel < guessLevel(str - Math.max(0, encumbrance)))
+				guessingLevel = guessLevel(str - Math.max(0, encumbrance));
 		}
 
 		return delay;
@@ -255,7 +305,23 @@ abstract public class Weapon extends KindOfWeapon {
     }
 
 	public int STRReq(){
-		int req = STRReq(level());
+		return STRReq(true);
+	}
+
+	private int baseSTRReq(){
+		int req = STRReq(0);
+		if (masteryPotionBonus){
+			req -= 2;
+		}
+		return req;
+	}
+	public int STRReq(boolean onUse){
+		int lvl ;
+		if (isIdentified() || onUse)
+			lvl = level();
+		else
+			lvl = guessingLevel();
+		int req = STRReq(lvl);
 		if (masteryPotionBonus){
 			req -= 2;
 		}
@@ -315,10 +381,14 @@ abstract public class Weapon extends KindOfWeapon {
 		
 		return super.upgrade();
 	}
-	
+
 	@Override
 	public String name() {
-		return enchantment != null && (cursedKnown || !enchantment.curse()) ? enchantment.name( super.name() ) : super.name();
+		if (enchantment == null)
+			return super.name();
+		if (cursedKnown || !enchantment.curse() || Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
+			return enchantment.name( super.name() );
+		return super.name();
 	}
 	
 	@Override
@@ -454,9 +524,9 @@ abstract public class Weapon extends KindOfWeapon {
 		}
 		
 		public abstract ItemSprite.Glowing glowing();
-		
-		@SuppressWarnings("unchecked")
-		public static Enchantment random( Class<? extends Enchantment> ... toIgnore ) {
+
+		@SafeVarargs
+        public static Enchantment random(Class<? extends Enchantment> ... toIgnore ) {
 			switch(Random.chances(typeChances)){
 				case 0: default:
 					return randomCommon( toIgnore );
@@ -466,9 +536,9 @@ abstract public class Weapon extends KindOfWeapon {
 					return randomRare( toIgnore );
 			}
 		}
-		
-		@SuppressWarnings("unchecked")
-		public static Enchantment randomCommon( Class<? extends Enchantment> ... toIgnore ) {
+
+        @SafeVarargs
+        public static Enchantment randomCommon(Class<? extends Enchantment> ... toIgnore ) {
 			ArrayList<Class<?>> enchants = new ArrayList<>(Arrays.asList(common));
 			enchants.removeAll(Arrays.asList(toIgnore));
 			if (enchants.isEmpty()) {
@@ -477,9 +547,9 @@ abstract public class Weapon extends KindOfWeapon {
 				return (Enchantment) Reflection.newInstance(Random.element(enchants));
 			}
 		}
-		
-		@SuppressWarnings("unchecked")
-		public static Enchantment randomUncommon( Class<? extends Enchantment> ... toIgnore ) {
+
+        @SafeVarargs
+        public static Enchantment randomUncommon(Class<? extends Enchantment> ... toIgnore ) {
 			ArrayList<Class<?>> enchants = new ArrayList<>(Arrays.asList(uncommon));
 			enchants.removeAll(Arrays.asList(toIgnore));
 			if (enchants.isEmpty()) {
@@ -488,9 +558,9 @@ abstract public class Weapon extends KindOfWeapon {
 				return (Enchantment) Reflection.newInstance(Random.element(enchants));
 			}
 		}
-		
-		@SuppressWarnings("unchecked")
-		public static Enchantment randomRare( Class<? extends Enchantment> ... toIgnore ) {
+
+		@SafeVarargs
+        public static Enchantment randomRare(Class<? extends Enchantment> ... toIgnore ) {
 			ArrayList<Class<?>> enchants = new ArrayList<>(Arrays.asList(rare));
 			enchants.removeAll(Arrays.asList(toIgnore));
 			if (enchants.isEmpty()) {
@@ -500,8 +570,8 @@ abstract public class Weapon extends KindOfWeapon {
 			}
 		}
 
-		@SuppressWarnings("unchecked")
-		public static Enchantment randomCurse( Class<? extends Enchantment> ... toIgnore ){
+		@SafeVarargs
+        public static Enchantment randomCurse(Class<? extends Enchantment> ... toIgnore ){
 			ArrayList<Class<?>> enchants = new ArrayList<>(Arrays.asList(curses));
 			enchants.removeAll(Arrays.asList(toIgnore));
 			if (enchants.isEmpty()) {

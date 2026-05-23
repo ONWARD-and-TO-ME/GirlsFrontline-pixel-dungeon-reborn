@@ -70,8 +70,19 @@ public class WndStartGame extends Window {
 	private ArrayList<HeroClass> visibleClasses;
 	private RedButton prevButton;
 	private RedButton nextButton;
-
-	public WndStartGame(final int slot){
+	public enum GameMode{
+		NONE(0),
+		CHRISTMAS(1),
+		IDENTIFY(2);
+		final int code;
+        GameMode(int code) {
+            this.code = code;
+        }
+		public int code() {
+			return code;
+		}
+	}
+	public WndStartGame(final int slot, boolean HiddenSeed, GameMode mode){
 		super();
 
 		heroButtons = new ArrayList<>();
@@ -157,6 +168,7 @@ public class WndStartGame extends Window {
 				ActionIndicator.action = null;
 				GamesInProgress.curSlot = slot;
 				InterlevelScene.seedCode=SPDSettings.seedCode();
+				Dungeon.GameMode = (long) Math.pow(2, mode.code());
 				InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
                 InterlevelScene.isStart=DeviceCompat.isDebug()|| SPDSettings.isChallenged(Challenges.TEST_MODE);
 				if (SPDSettings.intro()) {
@@ -184,7 +196,7 @@ public class WndStartGame extends Window {
 					Icons.get( SPDSettings.challenges() > 0 ? Icons.CHALLENGE_ON :Icons.CHALLENGE_OFF)){
 				@Override
 				protected void onClick() {
-					GirlsFrontlinePixelDungeon.scene().addToFront(new WndChallenges(SPDSettings.challenges(), true, false) {
+					GirlsFrontlinePixelDungeon.scene().addToFront(new WndChallenges(SPDSettings.challenges(), true, mode != GameMode.NONE) {
 						public void onBackPressed() {
 							super.onBackPressed();
 							icon( Icons.get( SPDSettings.challenges() > 0 ?
@@ -208,8 +220,10 @@ public class WndStartGame extends Window {
 			Dungeon.challenges = 0;
 			SPDSettings.challenges(0);
 		}
-
-		if (Badges.isUnlocked(Badges.Badge.KILL_CALC)||DeviceCompat.isDebug()){
+		if (HiddenSeed || !Badges.isUnlocked(Badges.Badge.KILL_CALC) && !DeviceCompat.isDebug()){
+			SPDSettings.seedCode(null);
+		}
+		else{
 			IconButton seedButton = new IconButton(new ItemSprite(ItemSpriteSheet.SEED_SUNGRASS)){
 				@Override
 				protected void onClick() {
@@ -251,8 +265,6 @@ public class WndStartGame extends Window {
 			seedButton.setRect(0,HEIGHT-20,20,20);
 			seedButton.visible = false;
 			add(seedButton);
-		} else {
-			SPDSettings.seedCode(null);
 		}
 
 		resize(WIDTH, HEIGHT);

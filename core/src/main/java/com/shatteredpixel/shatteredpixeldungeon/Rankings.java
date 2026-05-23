@@ -28,14 +28,13 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
@@ -73,6 +72,14 @@ public enum Rankings {
 			return;
 		}
 
+		if (win) {
+			SPDSettings.addSpecialDay_PlayTimes(10);
+			if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
+				Badges.Test_Identify();
+		}
+		else
+			SPDSettings.addSpecialDay_PlayTimes(1);
+
 		load();
 		
 		Record rec = new Record();
@@ -86,6 +93,7 @@ public enum Rankings {
 		// 检查是否使用了自定义种子
 		rec.customSeed = !Dungeon.customSeedText.isEmpty();
 		rec.depth     = Dungeon.curDepth();
+		rec.version	  = Dungeon.version;
 		rec.score     = score( win );
 		rec.isLock    = false;
         //默认不锁定
@@ -134,7 +142,7 @@ public enum Rankings {
 	}
 
 	private int score( boolean win ) {
-		return (Statistics.goldCollected + Dungeon.hero.lvl * (win ? 26 : Dungeon.curDepth() ) * 100) * (win ? 2 : 1);
+		return (Statistics.goldCollected + Dungeon.hero.lvl * (win ? 31 : Statistics.deepestFloor ) * 100) * (win ? 2 : 1);
 	}
 
 	public static final String HERO = "hero";
@@ -142,6 +150,7 @@ public enum Rankings {
 	public static final String BADGES = "badges";
 	public static final String HANDLERS = "handlers";
 	public static final String CHALLENGES = "challenges";
+	public static final String GAME_MODE	= "Game_Mode";
 
 	public void saveGameData(Record rec){
 		rec.gameData = new Bundle();
@@ -183,6 +192,7 @@ public enum Rankings {
 		
 		//save challenges
 		rec.gameData.put( CHALLENGES, Dungeon.challenges );
+		rec.gameData.put( GAME_MODE, Dungeon.GameMode);
 	}
 
 	public void loadGameData(Record rec){
@@ -211,6 +221,7 @@ public enum Rankings {
 		Statistics.restoreFromBundle(data.getBundle(STATS));
 		
 		Dungeon.challenges = data.getInt(CHALLENGES);
+		Dungeon.GameMode = data.getLong( GAME_MODE );
 
 	}
 	
@@ -279,10 +290,11 @@ public enum Rankings {
 		private static final String LEVEL	= "level";
 		private static final String SEED	= "seed";
 		private static final String CUSTOM_SEED = "custom_seed";
-		private static final String DEPTH	= "depth";
-		private static final String DATA	= "gameData";
-		private static final String ID      = "gameID";
+		private static final String DEPTH		= "depth";
+		private static final String DATA		= "gameData";
+		private static final String ID      	= "gameID";
         private static final String isLOCK      = "gameLOCK";
+		private static final String VERSION		= "version";
 
 		public Class cause;
 		public boolean win;
@@ -298,6 +310,7 @@ public enum Rankings {
 
 		public int score;
         public boolean isLock;
+		public int version;
 
 		public String desc(){
 			if (cause == null) {
@@ -314,6 +327,7 @@ public enum Rankings {
 		
 		@Override
 		public void restoreFromBundle( Bundle bundle ) {
+			version = bundle.getInt( VERSION );
 			
 			if (bundle.contains( CAUSE )) {
 				cause   = bundle.getClass( CAUSE );
@@ -353,6 +367,7 @@ public enum Rankings {
 			bundle.put( SEED, seed );
 			bundle.put( CUSTOM_SEED, customSeed );
 			bundle.put( DEPTH, depth );
+			bundle.put( VERSION, version );
 			
 			if (gameData != null) bundle.put( DATA, gameData );
 			bundle.put( ID, gameID );

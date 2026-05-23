@@ -174,15 +174,17 @@ public class WndDEL extends Window {
                     for (int i = 0; i < time; i++){
                         left -= signalRandomCost();
                     }
+                    MissileWeapon m = (MissileWeapon) Reflection.newInstance(btnItem1.item.getClass()).quantity(time);
+                    m.UpdatedTierToLevel = true;
                     if (left > 0)
                         mission1.addMission(DEL.getMissionTimes(3)*time,
                                 btnItem1.item,
-                                Reflection.newInstance(btnItem1.item.getClass()).quantity(time),
+                                m,
                                 new LiquidMetal().quantity(left));
                     else
                         mission1.addMission(DEL.getMissionTimes(3)*time,
                                 btnItem1.item,
-                                Reflection.newInstance(btnItem1.item.getClass()).quantity(time));
+                                m);
                     del.WorkLoadUsed(DEL.getMissionWorkLoad(mission)*time);
                 }
                 else if (mission == 4){
@@ -291,7 +293,7 @@ public class WndDEL extends Window {
         @Override
         public boolean itemSelectable(Item item) {
             if (mission == 0)
-                return item instanceof ScrollOfRemoveCurse;
+                return item instanceof ScrollOfRemoveCurse && item.isIdentified();
             if (mission != 3 || !(item instanceof LiquidMetal))
                 return false;
             if (btnItem2.item == null)

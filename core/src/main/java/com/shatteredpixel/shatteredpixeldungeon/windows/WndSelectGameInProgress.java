@@ -79,7 +79,7 @@ public class WndSelectGameInProgress extends Window {
 			SaveSlot newSlot = new SaveSlot( new GamesInProgress.Info() ) {
 				@Override
 				public void onClick() {
-					GirlsFrontlinePixelDungeon.scene().add( new WndStartGame( newSlotIndex ) );
+					GirlsFrontlinePixelDungeon.scene().add( new WndStartGame( newSlotIndex, false, WndStartGame.GameMode.NONE ) );
 				}
 			};
 			Slots.add( newSlot );

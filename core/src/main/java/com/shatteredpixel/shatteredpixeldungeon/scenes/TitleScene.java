@@ -106,7 +106,7 @@ public class TitleScene extends PixelScene {
 			@Override
 			protected void onClick() {
 				if (GamesInProgress.checkAll().isEmpty()){
-					TitleScene.this.add( new WndStartGame(1) );
+					TitleScene.this.add( new WndStartGame(1, false, WndStartGame.GameMode.NONE) );
 				} else {
 					TitleScene.this.add( new WndSelectGameInProgress() );
 				}
@@ -174,11 +174,11 @@ public class TitleScene extends PixelScene {
 		if (landscape()) {
 			btnPlay.setRect(title.x - 50, topRegion + GAP, title.width() + 100 - 1, BTN_HEIGHT);
 			align(btnPlay);
-			NextTitle.setRect(btnPlay.left(),btnPlay.bottom()+GAP,btnPlay.width()  ,BTN_HEIGHT);
-			btnRankings.setRect(NextTitle.left()     ,NextTitle.bottom()+GAP     ,NextTitle.width()/2f    ,BTN_HEIGHT);
-			btnBadges  .setRect(btnRankings.left() ,btnRankings.bottom()+GAP ,NextTitle.width()/2f    ,BTN_HEIGHT);
-			btnSettings.setRect(btnBadges.right()+2,btnRankings.top()        ,NextTitle.width()/2f-GAP,BTN_HEIGHT);
-			btnAbout   .setRect(btnSettings.left() ,btnSettings.bottom()+GAP ,NextTitle.width()/2f-GAP,BTN_HEIGHT);
+			NextTitle.setRect(btnPlay.left()				,btnPlay.bottom()+GAP		,btnPlay.width()  ,BTN_HEIGHT);
+			btnRankings.setRect(NextTitle.left()     		,NextTitle.bottom()+GAP     	,btnPlay.width()/2f    ,BTN_HEIGHT);
+			btnSettings.setRect(btnRankings.right()+GAP	,btnRankings.top()        		,btnPlay.width()/2f-GAP,BTN_HEIGHT);
+			btnBadges  .setRect(btnRankings.left() 			,btnRankings.bottom()+GAP 	,btnPlay.width()/2f    ,BTN_HEIGHT);
+			btnAbout   .setRect(btnSettings.left() 			,btnSettings.bottom()+GAP 	,btnPlay.width()/2f-GAP,BTN_HEIGHT);
 		} else {
 			btnPlay.setRect(title.x, topRegion+GAP, title.width(), BTN_HEIGHT);
 			align(btnPlay);
@@ -308,7 +308,7 @@ public class TitleScene extends PixelScene {
 				SaveSlot newSlot = new SaveSlot( new GamesInProgress.Info() ) {
 					@Override
 					public void onClick() {
-						GirlsFrontlinePixelDungeon.scene().add( new WndStartGame( newSlotIndex ) );
+						GirlsFrontlinePixelDungeon.scene().add( new WndStartGame( newSlotIndex, false, WndStartGame.GameMode.NONE ) );
 					}
 				};
 				Slots.add( newSlot );

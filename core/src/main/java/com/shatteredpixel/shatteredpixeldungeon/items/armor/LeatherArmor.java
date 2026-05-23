@@ -33,4 +33,8 @@ public class LeatherArmor extends Armor {
 		super( 2 );
 	}
 
+	@Override
+	public int tier() {
+		return 2;
+	}
 }

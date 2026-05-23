@@ -21,9 +21,11 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Graph;
@@ -428,11 +430,22 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable {
 				this.type = type;
 			}
 		}
+		public static int Unlock(){
+			return Random.Int(4);
+		}
 
 		public void setHidden(Hero hero){
-			if (hero == null || !hero.hasTalent(Talent.ROGUES_FORESIGHT_V3))
+			int num = Unlock();
+			//保证无论是否拥有天赋都使用相同数量的随机数
+			setHidden(hero, num);
+		}
+
+		public void setHidden(Hero hero, int num){
+			if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
+				set(Type.UNLOCKED);
+			else if (hero == null || !hero.hasTalent(Talent.ROGUES_FORESIGHT_V3))
 				set(Type.HIDDEN);
-			else if (Random.Int(4) < hero.pointsInTalent(Talent.ROGUES_FORESIGHT_V3))
+			else if (num < hero.pointsInTalent(Talent.ROGUES_FORESIGHT_V3))
 				set(Type.UNLOCKED);
 			else
 				set(Type.HIDDEN);

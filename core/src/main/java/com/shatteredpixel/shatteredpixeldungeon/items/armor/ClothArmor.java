@@ -35,4 +35,8 @@ public class ClothArmor extends Armor {
 		super( 1 );
 	}
 
+	@Override
+	public int tier() {
+		return 1;
+	}
 }

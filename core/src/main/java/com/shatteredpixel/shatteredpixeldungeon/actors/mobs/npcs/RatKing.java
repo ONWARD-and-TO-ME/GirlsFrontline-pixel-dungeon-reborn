@@ -24,6 +24,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
@@ -38,12 +39,15 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.FncSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
 
 // 在导入部分添加CounterBuff类的导入
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Holidays;
+
+import java.io.IOException;
 
 public class RatKing extends NPC {
 
@@ -246,11 +250,20 @@ public class RatKing extends NPC {
                 Buff.count(hero, HintTracker.class, 1);
         }
         else if (Dungeon.depth == 0){
-            Game.lockXMAS = !Game.lockXMAS;
-            if(Game.lockXMAS)
-                GLog.p("下一个存档将开启圣诞节彩蛋。");
-            else
-                GLog.n("取消开启。");
+
+            if(GamesInProgress.firstEmpty() == -1)
+                yellNormal(Messages.get(WndStartGame.class, "clear"));
+            else {
+                try {
+                    Dungeon.saveAll();
+                } catch (IOException ignored) {}
+                Game.runOnRenderThread(new Callback() {
+                    @Override
+                    public void call() {
+                        GameScene.show(new WndStartGame(GamesInProgress.firstEmpty(), true, WndStartGame.GameMode.CHRISTMAS));
+                    }
+                });
+            }
         }
         else if (hero.armorAbility instanceof Ratmogrify) {
             yellGood( Messages.get(this, "crown_after") );

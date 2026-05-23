@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -70,9 +71,11 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -115,6 +118,7 @@ public class Armor extends EquipableItem {
 	protected BrokenSeal seal;
 	
 	public int tier;
+    public boolean UpdatedTierToLevel = false;
     public float broken;
     public int duration;
 	private static final int USES_TO_ID = 10;
@@ -124,7 +128,29 @@ public class Armor extends EquipableItem {
 	public Armor( int tier ) {
 		this.tier = tier;
 	}
-	
+
+    @Override
+    public void update(){
+        if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)){
+            if (!UpdatedTierToLevel){
+                boolean hasGlyph = glyph != null;
+                boolean curse = cursed;
+                UpdatedTierToLevel = true;
+                int workingTier = tier - 1;
+                if (workingTier > 0) {
+                    upgrade(hasGlyph);
+                    workingTier--;
+                }
+                while (workingTier > 0){
+                    workingTier -= Random.Int(2) + 1;
+                    upgrade(hasGlyph);
+                }
+                cursed = curse;
+            }
+            int str = (hero.STR() - 10) / 2;
+            tier = Math.min(10, str + 1);
+        }
+    }
 	private static final String USES_LEFT_TO_ID = "uses_left_to_id";
 	private static final String AVAILABLE_USES  = "available_uses";
 	private static final String GLYPH			= "glyph";
@@ -134,6 +160,8 @@ public class Armor extends EquipableItem {
 	private static final String AUGMENT			= "augment";
     private static final String BROKEN          = "broken";
     private static final String DURATION        = "duration";
+    private static final String TierThisRun		= "TierThisRun";
+    private static final String FirstUpdateTier	= "FirstUpdateTier";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -147,6 +175,8 @@ public class Armor extends EquipableItem {
 		bundle.put( AUGMENT, augment);
         bundle.put( BROKEN, broken);
         bundle.put( DURATION, duration);
+        bundle.put( FirstUpdateTier, UpdatedTierToLevel);
+        bundle.put( TierThisRun, tier);
 	}
 
 	@Override
@@ -162,6 +192,9 @@ public class Armor extends EquipableItem {
 		augment = bundle.getEnum(AUGMENT, Augment.class);
         broken = bundle.getFloat(BROKEN);
         duration = bundle.getInt(DURATION);
+        UpdatedTierToLevel = bundle.getBoolean( FirstUpdateTier );
+        if (bundle.contains( TierThisRun ))
+            tier = bundle.getInt( TierThisRun );
 	}
 
 	@Override
@@ -316,12 +349,11 @@ public class Armor extends EquipableItem {
         collect( hero.belongings.backpack );
         return false;
 	}
-    public int tier(){
-        if (this instanceof ClassArmor)
-            return 6;
-        else
-            return tier;
+
+    public int tier() {
+        return 0;
     }
+
     private void onEquip( Hero hero ) {
         cursedKnown = true;
         if (cursed) {
@@ -567,28 +599,35 @@ public class Armor extends EquipableItem {
 		
 		if (owner instanceof Hero) {
 			int aEnc = STRReq() - ((Hero) owner).STR();
-			if (aEnc > 0) speed /= Math.pow(1.2, aEnc);
-		}
-		
-		if (hasGlyph(Swiftness.class, owner)) {
-			boolean enemyNear = false;
-			PathFinder.buildDistanceMap(owner.pos, Dungeon.level.passable, 2);
-			for (Char ch : Actor.chars()){
-				if ( PathFinder.distance[ch.pos] != Integer.MAX_VALUE && owner.alignment != ch.alignment){
-					enemyNear = true;
-					break;
-				}
-			}
-			if (!enemyNear) speed *= (1.2f + 0.04f * buffedLvl());
-		} else if (hasGlyph(Flow.class, owner) && Dungeon.level.water[owner.pos]){
-			speed *= (2f + 0.25f*buffedLvl());
-		}
-		
-		if (hasGlyph(Bulk.class, owner) &&
-				(Dungeon.level.map[owner.pos] == Terrain.DOOR
-						|| Dungeon.level.map[owner.pos] == Terrain.OPEN_DOOR )) {
-			speed /= 3f;
-		}
+			if (aEnc > 0) {
+                speed /= Math.pow(1.2, aEnc);
+            }
+            int str = Math.max(0, baseSTRReq() - ((Hero) owner).STR());
+            if ((owner.wholeTime() || aEnc <=0) && guessingLevel < guessLevel(str - Math.max(0, aEnc)))
+                guessingLevel = guessLevel(str - Math.max(0, aEnc));
+		}else {
+            if (hasGlyph(Swiftness.class, owner)) {
+                boolean enemyNear = false;
+                PathFinder.buildDistanceMap(owner.pos, Dungeon.level.passable, 2);
+                for (Char ch : Actor.chars()) {
+                    if (PathFinder.distance[ch.pos] != Integer.MAX_VALUE && owner.alignment != ch.alignment) {
+                        enemyNear = true;
+                        break;
+                    }
+                }
+                if (!enemyNear) {
+                    speed *= (1.2f + 0.04f * buffedLvl());
+                }
+            } else if (hasGlyph(Flow.class, owner) && Dungeon.level.water[owner.pos]) {
+                speed *= (2f + 0.25f * buffedLvl());
+            }
+
+            if (hasGlyph(Bulk.class, owner) &&
+                    (Dungeon.level.map[owner.pos] == Terrain.DOOR
+                            || Dungeon.level.map[owner.pos] == Terrain.OPEN_DOOR)) {
+                speed /= 3f;
+            }
+        }
 		
 		return speed;
 		
@@ -686,7 +725,8 @@ public class Armor extends EquipableItem {
 	}
 	
 	public int proc( Char attacker, Char defender, int damage ) {
-		
+		if (overLoad == OverLoad.OVERLOADING)
+            overLoadLeft -= 4;
 		if (glyph != null && defender.buff(MagicImmune.class) == null) {
 			damage = glyph.proc( this, attacker, defender, damage );
 		}
@@ -716,7 +756,11 @@ public class Armor extends EquipableItem {
 	
 	@Override
 	public String name() {
-		return glyph != null && (cursedKnown || !glyph.curse()) ? glyph.name( super.name() ) : super.name();
+        if (glyph == null)
+            return super.name();
+        if (cursedKnown || !glyph.curse() || Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
+            return glyph.name( super.name() );
+		return super.name();
 	}
 	
 	@Override
@@ -730,7 +774,7 @@ public class Armor extends EquipableItem {
 				info += " " + Messages.get(Armor.class, "too_heavy");
 			}
 		} else {
-			info += "\n\n" + Messages.get(Armor.class, "avg_absorb", DRMin(0), DRMax(0), STRReq(0));
+			info += "\n\n" + Messages.get(Armor.class, "avg_absorb", DRMin(guessingLevel()), DRMax(guessingLevel()), STRReq(guessingLevel()));
 
 			if (STRReq(0) > Dungeon.hero.STR()) {
 				info += " " + Messages.get(Armor.class, "probably_too_heavy");
@@ -808,12 +852,29 @@ public class Armor extends EquipableItem {
 	}
 
 	public int STRReq(){
-		int req = STRReq(level());
-		if (masteryPotionBonus){
-			req -= 2;
-		}
-		return req;
+        return STRReq(true);
 	}
+
+    private int baseSTRReq(){
+        int req = STRReq(0);
+        if (masteryPotionBonus){
+            req -= 2;
+        }
+        return req;
+    }
+
+    public int STRReq(boolean onUse){
+        int lvl ;
+        if (isIdentified() || onUse)
+            lvl = level();
+        else
+            lvl = guessingLevel();
+        int req = STRReq(lvl);
+        if (masteryPotionBonus){
+            req -= 2;
+        }
+        return req;
+    }
 
 	public int STRReq(int lvl){
 		return STRReq(tier, lvl);
@@ -825,7 +886,11 @@ public class Armor extends EquipableItem {
 		//strength req decreases at +1,+3,+6,+10,etc.
 		return (8 + tier * 2) - (int)(Math.sqrt(8 * lvl + 1) - 1)/2;
 	}
-	
+
+    public int guessLevel(int extraSTR){
+        return extraSTR * (extraSTR + 1) / 2;
+    }
+
 	@Override
 	public int value() {
 		if (seal != null) return 0;
@@ -938,8 +1003,8 @@ public class Armor extends EquipableItem {
 		
 		public abstract ItemSprite.Glowing glowing();
 
-		@SuppressWarnings("unchecked")
-		public static Glyph random( Class<? extends Glyph> ... toIgnore ) {
+		@SafeVarargs
+        public static Glyph random(Class<? extends Glyph> ... toIgnore ) {
 			switch(Random.chances(typeChances)){
 				case 0: default:
 					return randomCommon( toIgnore );
@@ -949,9 +1014,9 @@ public class Armor extends EquipableItem {
 					return randomRare( toIgnore );
 			}
 		}
-		
-		@SuppressWarnings("unchecked")
-		public static Glyph randomCommon( Class<? extends Glyph> ... toIgnore ){
+
+		@SafeVarargs
+        public static Glyph randomCommon(Class<? extends Glyph> ... toIgnore ){
 			ArrayList<Class<?>> glyphs = new ArrayList<>(Arrays.asList(common));
 			glyphs.removeAll(Arrays.asList(toIgnore));
 			if (glyphs.isEmpty()) {
@@ -960,9 +1025,9 @@ public class Armor extends EquipableItem {
 				return (Glyph) Reflection.newInstance(Random.element(glyphs));
 			}
 		}
-		
-		@SuppressWarnings("unchecked")
-		public static Glyph randomUncommon( Class<? extends Glyph> ... toIgnore ){
+
+		@SafeVarargs
+        public static Glyph randomUncommon(Class<? extends Glyph> ... toIgnore ){
 			ArrayList<Class<?>> glyphs = new ArrayList<>(Arrays.asList(uncommon));
 			glyphs.removeAll(Arrays.asList(toIgnore));
 			if (glyphs.isEmpty()) {
@@ -971,9 +1036,9 @@ public class Armor extends EquipableItem {
 				return (Glyph) Reflection.newInstance(Random.element(glyphs));
 			}
 		}
-		
-		@SuppressWarnings("unchecked")
-		public static Glyph randomRare( Class<? extends Glyph> ... toIgnore ){
+
+		@SafeVarargs
+        public static Glyph randomRare(Class<? extends Glyph> ... toIgnore ){
 			ArrayList<Class<?>> glyphs = new ArrayList<>(Arrays.asList(rare));
 			glyphs.removeAll(Arrays.asList(toIgnore));
 			if (glyphs.isEmpty()) {
@@ -982,9 +1047,9 @@ public class Armor extends EquipableItem {
 				return (Glyph) Reflection.newInstance(Random.element(glyphs));
 			}
 		}
-		
-		@SuppressWarnings("unchecked")
-		public static Glyph randomCurse( Class<? extends Glyph> ... toIgnore ){
+
+		@SafeVarargs
+        public static Glyph randomCurse(Class<? extends Glyph> ... toIgnore ){
 			ArrayList<Class<?>> glyphs = new ArrayList<>(Arrays.asList(curses));
 			glyphs.removeAll(Arrays.asList(toIgnore));
 			if (glyphs.isEmpty()) {

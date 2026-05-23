@@ -87,6 +87,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Gregorian;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -233,11 +234,12 @@ public class Dungeon {
     public static boolean isXMAS(){
         if(calendar.get(Calendar.MONTH)==Calendar.DECEMBER&&calendar.get(Calendar.DAY_OF_MONTH)>=17){
             return true;
-        }else {
+        } else if (isGameMode(WndStartGame.GameMode.CHRISTMAS)) {
+			return true;
+		} else {
             return false;
         }
     }
-    public static boolean lockXMAS;
     public static ArrayList<Class<?>> itemAOfSave ;
     public static ArrayList<String> NOTEAOfSave ;
 
@@ -259,24 +261,32 @@ public class Dungeon {
     public static int levelId;
     public static int CreateId;
 	public static long seed;
+	public static long GameMode;
     public static String customSeedText = "";
 	public static void init(String seedCode){
 		init(seedCode,SPDSettings.challenges());
 	}
 
     public static void init(String seedCode,int paramChallenges) {
-        if(Game.lockXMAS){
-            Game.lockXMAS = false;
-            lockXMAS = true;
-        }
         itemAOfSave = new ArrayList<>();
         NOTEAOfSave = new ArrayList<>();
 		version = Game.versionCode;
 		challenges = paramChallenges;
+		if (isGameMode(WndStartGame.GameMode.IDENTIFY)){
+			if (!isChallenged(Challenges.NO_FOOD))
+				challenges += Challenges.NO_FOOD;
+			if (!isChallenged(Challenges.NO_HEALING))
+				challenges += Challenges.NO_HEALING;
+			if (!isChallenged(Challenges.NO_HERBALISM))
+				challenges += Challenges.NO_HERBALISM;
+			if (!isChallenged(Challenges.CHAMPION_ENEMIES))
+				challenges += Challenges.CHAMPION_ENEMIES;
+		}
 		mobsToChampion = -1;
 
-		if (SPDSettings.SEED_CODE_RANDOM==seedCode){
+		if (seedCode == null || seedCode.isEmpty()){
 			seed = DungeonSeed.randomSeed();
+			customSeedText = "";
 		} else{
             customSeedText = seedCode;
 			seed = DungeonSeed.convertFromText(customSeedText);
@@ -330,7 +340,11 @@ public class Dungeon {
 		Badges.reset();
 		
 		GamesInProgress.selectedClass.initHero( hero );
-        Buff.affect(hero, Hunger.class).satisfy(-Hunger.minLevel);
+        Buff.affect(hero, Hunger.class).satisfy(1000);
+	}
+
+	public static boolean isGameMode(WndStartGame.GameMode mode){
+		return (GameMode & (long) Math.pow(2, mode.code())) != 0;
 	}
 
 	public static boolean isChallenged( int mask ) {
@@ -612,6 +626,7 @@ public class Dungeon {
     private static final String NOTESAVEB       = "NOTESAVEB";
     private static final String LOCKXMAS       = "LOCKXMAS";
     private static final String ROLLTIMES       = "ROLLTIMES";
+	private static final String GAME_MODE		= "Game_Mode";
 	public static void saveGame( int save ) {
 		try {
 			Bundle bundle = new Bundle();
@@ -632,6 +647,7 @@ public class Dungeon {
 			bundle.put( HERO, hero );
 			bundle.put( DEPTH, depth );
             bundle.put( ROLLTIMES, RollTimes);
+			bundle.put( GAME_MODE, GameMode);
 
             Class<?>[] ItemToSave = itemAOfSave.toArray(new Class[0]);
             bundle.put(NOTESAVEA,ItemToSave);
@@ -639,7 +655,6 @@ public class Dungeon {
             String[] NoteToSave =NOTEAOfSave.toArray(new String[0]);
             bundle.put(NOTESAVEB,NoteToSave);
             //对应物品类型的标签
-            bundle.put( LOCKXMAS, lockXMAS );
 
             bundle.put( GOLD, gold );
 			bundle.put( ENERGY, energy );
@@ -745,8 +760,9 @@ public class Dungeon {
         }else {
             NOTEAOfSave = new ArrayList<>();
         }
-
-        lockXMAS = bundle.getBoolean(LOCKXMAS);
+		GameMode = bundle.getLong(GAME_MODE);
+		if (bundle.getBoolean(LOCKXMAS))
+			GameMode += (long) Math.pow(2, WndStartGame.GameMode.CHRISTMAS.code());
 
 		Actor.clear();
 		Actor.restoreNextID( bundle );

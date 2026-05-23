@@ -15,7 +15,7 @@ public class SavesScene extends PixelScene {
 		super.create();
 
 		if (GamesInProgress.checkAll().isEmpty()){
-			add( new WndStartGame(1){
+			add( new WndStartGame(1, false, WndStartGame.GameMode.NONE){
 				@Override
 				public void onBackPressed() {
 					super.onBackPressed();

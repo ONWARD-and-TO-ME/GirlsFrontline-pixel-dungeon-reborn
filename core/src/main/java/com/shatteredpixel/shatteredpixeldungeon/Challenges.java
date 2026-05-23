@@ -24,10 +24,9 @@ package com.shatteredpixel.shatteredpixeldungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.Maccol;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 
 public class Challenges {
 
@@ -86,6 +85,9 @@ public class Challenges {
 		if (Dungeon.isChallenged(INFLATION) && item instanceof Ankh){
             return true;
 		}
+
+		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY) &&( item instanceof ScrollOfUpgrade || item instanceof PotionOfStrength))
+			return true;
 
 		return false;
 

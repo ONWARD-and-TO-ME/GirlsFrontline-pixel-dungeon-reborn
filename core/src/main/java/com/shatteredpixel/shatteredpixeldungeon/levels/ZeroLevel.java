@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DEL;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.levels.ZeroLevelSub;
 import com.shatteredpixel.shatteredpixeldungeon.levels.triggers.WindowTrigger;
@@ -350,6 +351,10 @@ public class ZeroLevel extends Level {
         king.pos = (TEMP_MIN + 2) * width() + TEMP_MIN + 1;
         mobs.add(king);
 
+        DEL del = new DEL();
+        del.pos = king.pos + 8;
+        mobs.add(del);
+
         // 放置电脑触发器(用于回到标题页面)
         placeTrigger(new ComputerTriger().create(computerPos0));
         placeTrigger(new ComputerTriger().create(computerPos1));
@@ -380,6 +385,16 @@ public class ZeroLevel extends Level {
         return true;
     }
 
+
+    @Override
+    public void restoreFromBundle( Bundle bundle ) {
+        super.restoreFromBundle(bundle);
+        if (Dungeon.version < 660) {
+            DEL del = new DEL();
+            del.pos = (TEMP_MIN + 2) * width() + TEMP_MIN + 9;
+            mobs.add(del);
+        }
+    }
     // 自定义底部瓦片 - 用于绘制零层的特殊底部纹理
     public static class CustomBottomTile extends CustomTilemap {
         // 初始化纹理和尺寸

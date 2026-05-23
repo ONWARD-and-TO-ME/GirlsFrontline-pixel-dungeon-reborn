@@ -33,4 +33,8 @@ public class MailArmor extends Armor {
 		super( 3 );
 	}
 
+	@Override
+	public int tier() {
+		return 3;
+	}
 }

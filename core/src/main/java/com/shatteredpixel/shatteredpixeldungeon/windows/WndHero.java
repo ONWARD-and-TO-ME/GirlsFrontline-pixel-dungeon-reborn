@@ -29,6 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ActHPtoGetFood;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfMight;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -180,6 +182,8 @@ public class WndHero extends WndTabbed {
 
 			pos = title.bottom() + 2*GAP;
 
+			Ring.guessSignalRing(hero, RingOfMight.class, false);
+
 			int strBonus = hero.STR() - hero.STR;
 			if (strBonus > 0)           statSlot( Messages.get(this, "str"), hero.STR + " + " + strBonus );
 			else if (strBonus < 0)      statSlot( Messages.get(this, "str"), hero.STR + " - " + -strBonus );
@@ -193,7 +197,8 @@ public class WndHero extends WndTabbed {
 			statSlot( Messages.get(this, "gold"), Statistics.goldCollected );
 			statSlot( Messages.get(this, "depth"), Statistics.deepestFloor );
             setButton(pos);
-			statSlot( Messages.get(this, "seed"), DungeonSeed.convertToCode(Dungeon.seed));
+			String seedText = Dungeon.GameMode > 1 ? "隐藏" : DungeonSeed.convertToCode(Dungeon.seed);
+			statSlot( Messages.get(this, "seed"), seedText);
 
 			// 添加饱食度显示
 			Hunger hunger = Dungeon.hero.buff(Hunger.class);

@@ -62,6 +62,10 @@ abstract public class ClassArmor extends Armor {
 		bones = false;
 	}
 
+	@Override
+	public int tier(){
+		return 6;
+	}
     @Override
     public String info(){
         String info =super.info();
