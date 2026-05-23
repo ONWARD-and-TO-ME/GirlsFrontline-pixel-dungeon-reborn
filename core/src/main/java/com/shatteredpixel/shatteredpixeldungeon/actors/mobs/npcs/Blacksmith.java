@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DarkGold;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
@@ -169,11 +170,15 @@ public class Blacksmith extends NPC {
 			return Messages.get(Blacksmith.class, "same_item");
 		}
 
-		if (item1.getClass() != item2.getClass()) {
+		if (item1 instanceof Armor
+				&& item2 instanceof Armor && ((Armor) item2).tier == ((Armor) item1).tier){
+			return null;
+		}
+		else if (item1.getClass() != item2.getClass()) {
 			return Messages.get(Blacksmith.class, "diff_type");
 		}
 		
-		if (!item1.isIdentified() || !item2.isIdentified()) {
+		if (!item1.cursedKnown || !item2.cursedKnown) {
 			return Messages.get(Blacksmith.class, "un_ided");
 		}
 		
@@ -199,10 +204,28 @@ public class Blacksmith extends NPC {
 	public static void upgrade( Item item1, Item item2 ) {
 		
 		Item first, second;
-		if (item2.level() > item1.level()) {
+		if (item1 instanceof ClassArmor){
+			first = item1;
+			second = item2;
+		}
+		else if (item2 instanceof ClassArmor) {
 			first = item2;
 			second = item1;
-		} else {
+		}
+		else if (item1.levelKnown && item2.levelKnown) {
+			if (item2.level() > item1.level()) {
+				first = item2;
+				second = item1;
+			} else {
+				first = item1;
+				second = item2;
+			}
+		}
+		else if (!item1.levelKnown) {
+			first = item2;
+			second = item1;
+		}
+		else {
 			first = item1;
 			second = item2;
 		}

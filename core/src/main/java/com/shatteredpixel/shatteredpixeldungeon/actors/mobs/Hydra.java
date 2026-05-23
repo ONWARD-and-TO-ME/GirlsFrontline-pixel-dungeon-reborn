@@ -55,6 +55,8 @@ public class Hydra extends Mob {
         properties.add(Property.ARMO);
     }
 
+    public static class Beam{}
+
     public int DamageReducer() { return 1; }
 
     @Override
@@ -173,7 +175,7 @@ public class Hydra extends Mob {
             }
 
             if (hit( this, ch, true )) {
-                ch.damage( Random.NormalIntRange( 22, 22 ), this );
+                ch.damage( Random.NormalIntRange( 22, 22 ), new Beam() );
 
                 if (Dungeon.level.heroFOV[pos]) {
                     ch.sprite.flash();

@@ -226,7 +226,7 @@ public class Typhoon extends Hydra {
             }
 
             if (hit( this, ch, true )) {
-                ch.damage( Random.NormalIntRange( 125, 135 ), this );
+                ch.damage( Random.NormalIntRange( 125, 135 ), new Beam() );
 
                 if (Dungeon.level.heroFOV[pos]) {
                     ch.sprite.flash();

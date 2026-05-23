@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.triggers.Trigger;
@@ -384,9 +385,14 @@ public class PrisonBossLevel extends Level {
 		
 		for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])){
 			if (mob != tengu && !(mob instanceof Noel) && (safeArea == null || !safeArea.inside(cellToPoint(mob.pos)))){
-				mob.destroy();
-				if (mob.sprite != null)
-					mob.sprite.killAndErase();
+				if (mob.alignment == Dungeon.hero.alignment){
+					ScrollOfTeleportation.appear(mob, Dungeon.hero.pos + PathFinder.NEIGHBOURS8[Random.Int(8)]);
+				}
+				else {
+					mob.destroy();
+					if (mob.sprite != null)
+						mob.sprite.killAndErase();
+				}
 			}
 		}
 		for (Plant plant : plants.valueList()){

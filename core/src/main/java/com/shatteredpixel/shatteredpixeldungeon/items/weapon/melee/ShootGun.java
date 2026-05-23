@@ -455,7 +455,11 @@ public class ShootGun extends MeleeWeapon {
         }
 
         public void proc(Char enemy){
-            if (Random.Int(5-Dungeon.hero.pointsInTalent(Talent.EMP_Two)) == 0) {
+            float delayMul = 1F;
+            if (target instanceof Hero && ((Hero) target).belongings.weapon() != null){
+                delayMul = ((Hero) target).belongings.weapon().mulByDelay(target);
+            }
+            if (Random.Float() < delayMul/(5-Dungeon.hero.pointsInTalent(Talent.EMP_Two))) {
                 Buff.affect(enemy, Empulse.class, 2);
                 enemy.sprite.emitter().burst(EnergyParticle.FACTORY, 10);
             }

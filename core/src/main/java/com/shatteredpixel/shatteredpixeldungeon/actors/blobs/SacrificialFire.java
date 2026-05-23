@@ -170,16 +170,7 @@ public class SacrificialFire extends Blob {
 					Sample.INSTANCE.play(Assets.Sounds.BURNING );
 					GLog.w( Messages.get(SacrificialFire.class, "worthy"));
 				} else {
-					fire.clear(firePos);
-
-					for (int i : PathFinder.NEIGHBOURS9){
-						CellEmitter.get(firePos+i).burst( SacrificialParticle.FACTORY, 20 );
-					}
-					Sample.INSTANCE.play(Assets.Sounds.BURNING );
-					Sample.INSTANCE.play(Assets.Sounds.BURNING );
-					Sample.INSTANCE.play(Assets.Sounds.BURNING );
-					GLog.w( Messages.get(SacrificialFire.class, "reward"));
-					Dungeon.level.drop( SacrificeRoom.prize( Dungeon.level ), firePos ).sprite.drop();
+					fire.finish(firePos);
 				}
 			} else {
 
@@ -189,6 +180,19 @@ public class SacrificialFire extends Blob {
 		}
 	}
 
+	public void finish(int firePos){
+
+		clear(firePos);
+
+		for (int i : PathFinder.NEIGHBOURS9){
+			CellEmitter.get(firePos+i).burst( SacrificialParticle.FACTORY, 20 );
+		}
+		Sample.INSTANCE.play(Assets.Sounds.BURNING );
+		Sample.INSTANCE.play(Assets.Sounds.BURNING );
+		Sample.INSTANCE.play(Assets.Sounds.BURNING );
+		GLog.w( Messages.get(SacrificialFire.class, "reward"));
+		Dungeon.level.drop( SacrificeRoom.prize( Dungeon.level ), firePos ).sprite.drop();
+	}
 	public static class Marked extends FlavourBuff {
 
 		public static final float DURATION	= 2f;

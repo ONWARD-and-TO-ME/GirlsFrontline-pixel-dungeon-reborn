@@ -22,6 +22,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -60,6 +63,14 @@ public class PotionOfMastery extends ExoticPotion {
 		}
 
 		GameScene.selectItem(itemSelector);
+	}
+
+	@Override
+	public void shatter( int cell ) {
+		super.shatter( cell );
+		SacrificialFire fire = (SacrificialFire) Dungeon.level.blobs.get( SacrificialFire.class );
+		if (fire != null && fire.cur[cell] > 0)
+			fire.finish( cell );
 	}
 
 	protected WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {

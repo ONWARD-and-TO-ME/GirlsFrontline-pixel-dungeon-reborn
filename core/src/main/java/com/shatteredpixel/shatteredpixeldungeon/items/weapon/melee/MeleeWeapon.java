@@ -32,7 +32,6 @@ import com.watabou.utils.Random;
 
 public class MeleeWeapon extends Weapon {
 
-	public int tier;
     protected float dmgBaseMul = 5;
     protected float dmgBaseDiffer;
     protected float dmgUpgradeDiffer;
@@ -65,6 +64,12 @@ public class MeleeWeapon extends Weapon {
 	}
 
 	@Override
+	public int proc( Char attacker, Char defender, int damage ) {
+		if (overLoad == OverLoad.OVERLOADING)
+			overLoadLeft -= 4;
+		return super.proc(attacker, defender, damage);
+	}
+	@Override
 	public int damageRoll(Char owner) {
         int damage = augment.damageFactor(super.damageRoll( owner ));
 
@@ -91,7 +96,7 @@ public class MeleeWeapon extends Weapon {
 				info += " " + Messages.get(Weapon.class, "excess_str", hero.STR() - STRReq());
 			}
 		} else {
-			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(0), max(0), STRReq(0));
+			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(guessingLevel()), max(guessingLevel()), STRReq(guessingLevel()));
 			if (STRReq(0) > hero.STR()) {
 				info += " " + Messages.get(MeleeWeapon.class, "probably_too_heavy");
 			}

@@ -124,7 +124,14 @@ abstract public class KindOfWeapon extends EquipableItem {
         }
 		return dmg;
 	}
-	
+	public float mulByDelay( Char owner ){
+		float delay = delayFactor( owner );
+		if (delay > 2F)
+			return delay/2F;
+		if (delay < 0.5F)
+			return delay*2F;
+		return 1F;
+	}
 	public float accuracyFactor( Char owner ) {
 		return 1f;
 	}
@@ -133,6 +140,9 @@ abstract public class KindOfWeapon extends EquipableItem {
 		return 1f;
 	}
 
+	public int guessLevel(int extraSTR){
+		return extraSTR * (extraSTR + 1) / 2;
+	}
 	public int reachFactor( Char owner ){
 		return 1;
 	}

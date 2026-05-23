@@ -28,22 +28,28 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -53,6 +59,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
@@ -97,6 +104,7 @@ public class Item implements Bundlable {
 	public boolean dropsDownHeap = false;
 	
 	private int level = 0;
+	public int guessingLevel = -1;
     public int BuffLevelPoint = 0;
     public String noted = "";
     public boolean canNote = true;
@@ -127,8 +135,11 @@ public class Item implements Bundlable {
 
 		String name = name();
 
-		if (visiblyUpgraded() != 0)
-			name = Messages.format( TXT_TO_STRING_LVL, name, visiblyUpgraded()  );
+		if (visiblyUpgraded() != 0) {
+			name = Messages.format(TXT_TO_STRING_LVL, name, visiblyUpgraded());
+			if (!levelKnown)
+				name += " ?";
+		}
 
 		if (quantity > 1)
 			name = Messages.format( TXT_TO_STRING_X, name, quantity );
@@ -185,13 +196,10 @@ public class Item implements Bundlable {
 	public boolean doPickUp(Hero hero, int pos) {
 		if (collect( hero.belongings.backpack )) {
 
-            if (overLoad == OverLoad.OVER_LOAD) {
-                overLoadLeft = 100*level();
-                overLoad = OverLoad.OVERLOADING;
-            }
 			GameScene.pickUp( this, pos );
 			Sample.INSTANCE.play( Assets.Sounds.ITEM );
 			hero.spendAndNext( TIME_TO_PICK_UP );
+			Tracker(hero);
 			return true;
 			
 		} else {
@@ -525,6 +533,7 @@ public class Item implements Bundlable {
 	public Item upgrade() {
 		
 		this.level++;
+		guessingLevel++;
 
 		updateQuickslot();
 		
@@ -553,13 +562,19 @@ public class Item implements Bundlable {
 		
 		return this;
 	}
-	
+	public int guessingLevel(){
+		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
+			return level();
+		if (SPDSettings.isAutoIdentify())
+			return Math.max(0, guessingLevel);
+		return 0;
+	}
 	public int visiblyUpgraded() {
-		return levelKnown ? level() : 0;
+		return levelKnown ? level() : guessingLevel();
 	}
 
 	public int buffedVisiblyUpgraded() {
-		return levelKnown ? buffedLvl() : 0;
+		return levelKnown ? buffedLvl() : guessingLevel();
 	}
 	
 	public boolean visiblyCursed() {
@@ -651,6 +666,14 @@ public class Item implements Bundlable {
 		
 		item.quantity = 0;
 		item.level = level;
+		if (item instanceof Armor) {
+			((Armor) item).UpdatedTierToLevel = true;
+			((Armor) item).glyph = ((Armor) this).glyph;
+		}
+		else if (item instanceof Weapon) {
+			((Weapon) item).UpdatedTierToLevel = true;
+			((Weapon) item).enchantment = ((Weapon) this).enchantment;
+		}
 		return item;
 	}
 	
@@ -670,6 +693,7 @@ public class Item implements Bundlable {
 	
 	private static final String QUANTITY		= "quantity";
 	private static final String LEVEL			= "level";
+	private static final String guessingLEVEL	= "guessing_Level";
 	private static final String LEVEL_KNOWN		= "levelKnown";
 	private static final String CURSED			= "cursed";
 	private static final String CURSED_KNOWN	= "cursedKnown";
@@ -688,6 +712,7 @@ public class Item implements Bundlable {
 	public void storeInBundle( Bundle bundle ) {
 		bundle.put( QUANTITY, quantity );
 		bundle.put( LEVEL, level );
+		bundle.put( guessingLEVEL, guessingLevel);
         bundle.put( BUFFLEVELPOINT, BuffLevelPoint );
         bundle.put( UPGRADEUSED, UpgradeUSED );
 		bundle.put( LEVEL_KNOWN, levelKnown );
@@ -718,6 +743,7 @@ public class Item implements Bundlable {
 		} else if (level < 0) {
 			degrade( -level );
 		}
+		guessingLevel = bundle.getInt(guessingLEVEL);
 		BuffLevelPoint = bundle.getInt(BUFFLEVELPOINT);
 		cursed	= bundle.getBoolean( CURSED );
 
@@ -794,7 +820,8 @@ public class Item implements Bundlable {
 							}
 						}
 					});
-		} else {
+		}
+		else {
 			((MissileSprite) user.sprite.parent.recycle(MissileSprite.class)).
 					reset(user.sprite,
 							cell,
@@ -875,7 +902,7 @@ public class Item implements Bundlable {
     }
     protected OverLoadTrack tracker;
     public void Tracker(Char owner){
-        if (isUpgradable() && (overLoadLeft > 0 || overLoad == OverLoad.OVER_LOAD) && tracker == null){
+        if (isUpgradable() && overLoad != OverLoad.NONE && tracker == null){
             tracker = new OverLoadTrack();
             tracker.attachTo(owner);
         }
@@ -906,16 +933,43 @@ public class Item implements Bundlable {
         public boolean act() {
             spend(TICK);
             updateTime = CooldownTracker.updateTime;
+			LockedFloor lock = target.buff(LockedFloor.class);
             if (overLoad == OverLoad.OVERLOADING){
-                if (Item.this instanceof EquipableItem&& !(Item.this instanceof MissileWeapon) && ! Item.this.isEquipped((Hero) target))
-                    overLoadLeft -= 0.5F;
-                else
-                    overLoadLeft --;
+                if (Item.this instanceof EquipableItem&& !(Item.this instanceof MissileWeapon)) {
+					if (isEquipped((Hero) target)) {
+						if (lock == null) {
+							if (Item.this instanceof Ring)
+								overLoadLeft -= 0.5F;
+							overLoadLeft -= 0.5F;
+						} else if (lock.regenOn()) {
+							if (Item.this instanceof Ring)
+								overLoadLeft -= 0.25F;
+							overLoadLeft -= 0.25F;
+						} else {
+							overLoadLeft -= 0.1F;
+						}
+					}
+					else {
+						if (lock == null || lock.regenOn())
+							overLoadLeft -= 0.25F;
+					}
+				}
+                else if (Item.this instanceof MissileWeapon || Item.this instanceof Wand){
+					if (lock == null || lock.regenOn()){
+						overLoadLeft -= 0.5F;
+					}
+					else {
+						overLoadLeft -= 0.25F;
+					}
+				}
             } else if (overLoad == OverLoad.RECOVER){
                 if (isEquipped(hero))
                     overLoadLeft--;
-            }
-            if (overLoadLeft <= 0){
+            } else if (overLoad == OverLoad.OVER_LOAD) {
+				overLoadLeft = 100*level();
+				overLoad = OverLoad.OVERLOADING;
+			}
+            if (overLoad != OverLoad.NONE && overLoadLeft <= 0){
                 if (overLoad == OverLoad.OVERLOADING)
                     degrade();
                 overLoadLeft  = 0;

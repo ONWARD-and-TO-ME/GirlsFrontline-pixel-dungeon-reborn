@@ -159,7 +159,7 @@ public class Nemeum extends Mob {
             }
 
             if (hit( this, ch, true )) {
-                ch.damage( Random.NormalIntRange( 40, 40 ), this );
+                ch.damage( Random.NormalIntRange( 40, 40 ), new Hydra.Beam() );
 
                 if (Dungeon.level.heroFOV[pos]) {
                     ch.sprite.flash();
