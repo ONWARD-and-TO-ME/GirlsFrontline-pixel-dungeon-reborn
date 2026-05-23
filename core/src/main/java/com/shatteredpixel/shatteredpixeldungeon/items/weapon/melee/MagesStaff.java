@@ -119,6 +119,7 @@ public class MagesStaff extends MeleeWeapon {
     @Override
     public void activate( Char ch ) {
         applyWandChargeBuff(ch);
+        Tracker(ch);
     }
 
     @Override

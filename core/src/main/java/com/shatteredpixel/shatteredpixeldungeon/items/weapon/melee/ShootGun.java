@@ -58,7 +58,7 @@ public class ShootGun extends MeleeWeapon {
     protected float EMPduration = 0;
 
     private static final String HAS_CHARGE    = "hasCharge";
-    private static final String COOLDOWN_LEFT = "cooldownLeft";
+    private static final String COOLDOWN_LEFT = "cooldownLeft_ShootGun";
     private static final String COOLDOWN = "cooldown";
 
     @Override
@@ -400,6 +400,7 @@ public class ShootGun extends MeleeWeapon {
             charger = new Charger();
         }
         charger.attachTo(owner);
+        Tracker(owner);
     }
 
     @Override

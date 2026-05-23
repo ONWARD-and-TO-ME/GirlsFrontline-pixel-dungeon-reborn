@@ -344,14 +344,12 @@ public class WndRanking extends WndTabbed {
 			super();
 			
 			Belongings stuff = Dungeon.hero.belongings;
+
 			if (stuff.weapon != null) {
 				addItem( stuff.weapon );
 			}
             if (stuff.FirstArmor() != null) {
                 addItem( stuff.FirstArmor() );
-            }
-            if (stuff.SecondArmor() != null) {
-                addItem( stuff.SecondArmor() );
             }
 			if (stuff.artifact != null) {
 				addItem( stuff.artifact );
@@ -372,23 +370,36 @@ public class WndRanking extends WndTabbed {
 				}
 			}
 
+			if (stuff.SecondArmor() != null) {
+				slotsActive++;
+			}
+
 			float slotWidth = Math.min(28, ((WIDTH - slotsActive + 1) / (float)slotsActive));
 
-			for (int i = 0; i < slotsActive; i++){
-				if (Dungeon.quickslot.isNonePlaceholder(i)){
-					Button slot = new QuickSlotButton(Dungeon.quickslot.getItem(i));
-
-					slot.setRect( pos, 120, slotWidth, 23 );
-					PixelScene.align(slot);
-
-					add(slot);
-
-					pos += slotWidth + 1;
-
+			for (int i = -1; i < QuickSlot.SIZE; i++){
+				Item item = null;
+				if (i == -1) {
+					item = stuff.secArmor;
 				}
+				else if (Dungeon.quickslot.isNonePlaceholder(i)) {
+					item = Dungeon.quickslot.getItem(i);
+				}
+				if (item != null)
+					addQuickSlot(item.identify(false), slotWidth);
 			}
 		}
-		
+		private void addQuickSlot(Item item, float slotWidth){
+
+			Button slot = new QuickSlotButton(item);
+
+			slot.setRect( pos, 120, slotWidth, 23 );
+			PixelScene.align(slot);
+
+			add(slot);
+
+			pos += slotWidth + 1;
+
+		}
 		private void addItem( Item item ) {
             item.canNote =false;
             item.showSelf = true;

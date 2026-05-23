@@ -38,6 +38,9 @@ public class WndOptions extends Window {
 	private static final int BUTTON_HEIGHT	= 18;
 
 	public WndOptions(Image icon, String title, String message, String... options) {
+		this(icon, title, message, 1, options);
+	}
+	public WndOptions(Image icon, String title, String message, int btnPerRow, String... options) {
 		super();
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
@@ -51,10 +54,12 @@ public class WndOptions extends Window {
 			pos = tfTitle.bottom() + 2*MARGIN;
 		}
 
-		layoutBody(pos, message, options);
+		layoutBody(pos, message, btnPerRow, options);
 	}
-	
 	public WndOptions( String title, String message, String... options ) {
+		this(title, message, 1, options);
+	}
+	public WndOptions( String title, String message, int btnPerRow, String... options ) {
 		super();
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
@@ -69,13 +74,13 @@ public class WndOptions extends Window {
 
 			pos = tfTitle.bottom() + 2*MARGIN;
 		}
-		
-		layoutBody(pos, message, options);
+
+		layoutBody(pos, message, btnPerRow, options);
 	}
 
-	private void layoutBody(float pos, String message, String... options){
+	private void layoutBody(float pos, String message, int btnPerRow, String... options){
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
-
+		int GAP = 2;
 		RenderedTextBlock tfMesage = PixelScene.renderTextBlock( 6 );
 		tfMesage.text(message, width);
 		tfMesage.setPos( 0, pos );
@@ -83,12 +88,15 @@ public class WndOptions extends Window {
 
 		pos = tfMesage.bottom() + 2*MARGIN;
 
+		int buttonWidth = width/btnPerRow - GAP*(btnPerRow-1);
+		int btnCurRow = 0;
 		for (int i=0; i < options.length; i++) {
+			btnCurRow++;
 			final int index = i;
 			RedButton btn = new RedButton( options[i] ) {
 				@Override
 				protected void onClick() {
-					hide();
+					onClickButton();
 					onSelect( index );
 				}
 			};
@@ -97,7 +105,7 @@ public class WndOptions extends Window {
 			add( btn );
 
 			if (!hasInfo(i)) {
-				btn.setRect(0, pos, width, BUTTON_HEIGHT);
+				btn.setRect((btnCurRow - 1)*(buttonWidth+GAP) , pos, buttonWidth, BUTTON_HEIGHT);
 			} else {
 				btn.setRect(0, pos, width - BUTTON_HEIGHT, BUTTON_HEIGHT);
 				IconButton info = new IconButton(Icons.get(Icons.INFO)){
@@ -110,12 +118,18 @@ public class WndOptions extends Window {
 				add(info);
 			}
 
-			pos += BUTTON_HEIGHT + MARGIN;
+			if (btnCurRow == btnPerRow) {
+				pos += BUTTON_HEIGHT + MARGIN;
+				btnCurRow = 0;
+			}
 		}
 
 		resize( width, (int)(pos - MARGIN) );
 	}
 
+	protected void onClickButton(){
+		hide();
+	}
 	protected boolean enabled( int index ){
 		return true;
 	}

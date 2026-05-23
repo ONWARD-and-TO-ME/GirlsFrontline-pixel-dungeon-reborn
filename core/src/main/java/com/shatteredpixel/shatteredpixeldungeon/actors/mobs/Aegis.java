@@ -117,13 +117,13 @@ public class Aegis extends Mob {
         super.rollToDropLoot();
         
         // 添加 CapeOfThorns 的掉落逻辑，掉落率为 25%
-        if (Dungeon.hero.lvl <= maxLvl + 2) {
-            MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
-            if (stolen == null || !stolen.itemWasStolen()) {
-                if (Random.Float() < 0.25f) { // 25% 掉落率
-                    CapeOfThorns cape = new CapeOfThorns();
-                    Dungeon.level.drop(cape, pos).sprite.drop();
-                }
+        if (!doDrop())
+            return;
+        MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
+        if (stolen == null || !stolen.itemWasStolen()) {
+            if (Random.Float() < 0.25f) { // 25% 掉落率
+                CapeOfThorns cape = new CapeOfThorns();
+                Dungeon.level.drop(cape, pos).sprite.drop();
             }
         }
     }

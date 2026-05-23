@@ -42,7 +42,7 @@ public class FncSprite extends MobSprite {
     public void resetAnims(){
         final Calendar calendar = Calendar.getInstance();
         //once a year the rat king feels a bit festive!
-        XMAS = Dungeon.isXMAS()||Dungeon.lockXMAS;
+        XMAS = Dungeon.isXMAS();
         int id = 0;
         if(Dungeon.hero != null){
             RatKing.LastTracker trackerA = Dungeon.hero.buff(RatKing.LastTracker.class);
@@ -67,7 +67,7 @@ public class FncSprite extends MobSprite {
             }
         }
 
-        if(Dungeon.depth==0&&XMAS){
+        if(Dungeon.depth==0 && XMAS){
             //0层圣诞节锁定皮肤
             id = 2;
         }

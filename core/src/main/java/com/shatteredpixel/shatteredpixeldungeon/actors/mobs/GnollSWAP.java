@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff.buffType;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSWAPSprite;
@@ -66,38 +67,38 @@ public class GnollSWAP extends Gnoll {
 
     public void rollToDropLoot() {
         super.rollToDropLoot();
-        if (Dungeon.hero.lvl <= this.maxLvl + 2) {
-            ArrayList<Item> items = new ArrayList<>();
-            ArrayList<Class<?>> itemsClass = new ArrayList<>();
-            Item i = Generator.randomUsingDefaults();
-            items.add(i);
-            itemsClass.add(i.getClass());
+        if (!doDrop())
+            return;
 
-            do{
-                i = Generator.randomUsingDefaults();
-            }while(i instanceof Gold && itemsClass.contain(Gold.class));
+        ArrayList<Item> items = new ArrayList<>();
+        ArrayList<Class<?>> itemsClass = new ArrayList<>();
+        Item i = Generator.randomUsingDefaults();
+        items.add(i);
+        itemsClass.add(i.getClass());
 
-            for(Item item : items) {
-                int dropPlace;
-                int TryTimes=0;
-                int ofs = PathFinder.NEIGHBOURS9[Random.Int(9)];
-                do{
-                    if(TryTimes<9){
-                        TryTimes++;
-                        dropPlace=pos+ofs;
-                        //尝试9次向NEIGHBOURS9投出
-                    }else {
-                        dropPlace=pos;
-                        //9次尝试均无法投出时，原地放下
-                    }
-                }while (
-                        !(!Dungeon.level.solid[dropPlace] || Dungeon.level.passable[dropPlace])
-                        //落点并非固体，或者是固体但是可以通过（门），或者9次尝试均无法投出时，以所得到的落点放下物品
-                );
-                    Dungeon.level.drop(item, dropPlace).sprite.drop(this.pos);
-            }
+        do {
+            i = Generator.randomUsingDefaults();
+        } while (i instanceof Gold && itemsClass.contains(Gold.class));
+        items.add(i);
+        itemsClass.add(i.getClass());
 
-        }
+        do {
+            i = Generator.randomUsingDefaults();
+        } while (i instanceof Gold && itemsClass.contains(Gold.class));
+        items.add(i);
+        itemsClass.add(i.getClass());
+
+        ArrayList<Integer> dropPlace = new ArrayList<>();
+
+        for (int c : PathFinder.NEIGHBOURS9)
+            if (Dungeon.level.passable[c + pos])
+                dropPlace.add(c + pos);
+
+        if (dropPlace.isEmpty())
+            dropPlace.add(pos);
+
+        for (Item item : items)
+            Dungeon.level.drop(item, dropPlace.get(Random.Int(dropPlace.size()))).sprite.drop(pos);
     }
 
     public void beckon(int cell) {

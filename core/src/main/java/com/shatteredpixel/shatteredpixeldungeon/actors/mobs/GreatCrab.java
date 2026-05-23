@@ -120,16 +120,16 @@ public class GreatCrab extends Crab {
 		super.rollToDropLoot();
 		
 		// 添加 CapeOfThorns 的掉落逻辑，掉落率为 25%
-		if (Dungeon.hero.lvl <= maxLvl + 2) {
-			MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
-			if (stolen == null || !stolen.itemWasStolen()) {
-				if (Random.Float() < 0.25f) { // 25% 掉落率
-                    CapeOfThorns cape = new CapeOfThorns();
-                    if (Generator.removeArtifact(((Artifact)cape).getClass())){
-                        //能成功在神器池子中将荆棘斗篷去除后再允许生成
-                        //参考对象：上一局的遗物对本局生成神器的影响
-                        Dungeon.level.drop(cape, pos).sprite.drop();
-                    }
+		if (!doDrop())
+			return;
+		MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
+		if (stolen == null || !stolen.itemWasStolen()) {
+			if (Random.Float() < 0.25f) { // 25% 掉落率
+				CapeOfThorns cape = new CapeOfThorns();
+				if (Generator.removeArtifact(((Artifact) cape).getClass())) {
+					//能成功在神器池子中将荆棘斗篷去除后再允许生成
+					//参考对象：上一局的遗物对本局生成神器的影响
+					Dungeon.level.drop(cape, pos).sprite.drop();
 				}
 			}
 		}

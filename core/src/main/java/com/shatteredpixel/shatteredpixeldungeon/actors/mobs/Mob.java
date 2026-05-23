@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SoulMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -57,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArm
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Lucky;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -663,11 +665,20 @@ public abstract class Mob extends Char {
 	@Override
 	public void damage( int dmg, Object src ) {
 
-		if (state == SLEEPING) {
-			state = WANDERING;
-		}
-		if (state != HUNTING && !(src instanceof Corruption)) {
-			alerted = true;
+		if (!isInvulnerable(src.getClass())) {
+			if (state == SLEEPING) {
+				state = WANDERING;
+			}
+			if (!(src instanceof Corruption) && state != FLEEING) {
+				if (state != HUNTING) {
+					alerted = true;
+					//assume the hero is hitting us in these common cases
+					if (src instanceof Wand || src instanceof ArmorAbility) {
+						aggro(Dungeon.hero);
+						target = Dungeon.hero.pos;
+					}
+				}
+			}
 		}
 		
 		super.damage( dmg, src );
@@ -759,9 +770,12 @@ public abstract class Mob extends Char {
 
 		return lootChance;
 	}
-	
+	public boolean doDrop(){
+		return Dungeon.hero.lvl <= maxLvl + 2 + Dungeon.LimitedDrops.DropLevel.count;
+	}
+
 	public void rollToDropLoot(){
-		if (Dungeon.hero.lvl > maxLvl + 2 + Dungeon.LimitedDrops.DropLevel.count) return;
+		if (!doDrop()) return;
 
 		MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
 		if (stolen == null || !stolen.itemWasStolen()) {

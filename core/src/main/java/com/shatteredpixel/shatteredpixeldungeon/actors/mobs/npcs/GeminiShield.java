@@ -59,6 +59,8 @@ public class GeminiShield extends Geminis {
 
     @Override
     public int defenseSkill(Char enemy) {
+        if (enemy instanceof Hero)
+            return 0;
         return HT/3;
     }
 

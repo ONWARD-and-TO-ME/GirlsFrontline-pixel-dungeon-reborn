@@ -82,7 +82,7 @@ public class BrokenSeal extends Item {
         return info;
     }
     public boolean canTransferGlyph() {
-        if(Dungeon.hero.hasTalent(Talent.RUNIC_TRANSFERENCE)){
+        if(Dungeon.hero.hasTalentA(Talent.RUNIC_TRANSFERENCE)){
             if (this.glyph == null) {
                 return false;
             } else if (Dungeon.hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE) >= 1) {

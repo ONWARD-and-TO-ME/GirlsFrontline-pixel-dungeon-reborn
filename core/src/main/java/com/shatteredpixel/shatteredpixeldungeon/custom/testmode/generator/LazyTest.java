@@ -1,10 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Education;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
@@ -171,8 +167,6 @@ public class LazyTest extends TestGenerator {
             new PotionOfExperience().apply(hero);
             hero.earnExp(4095, LazyTest.class);
             hero.updateHT( true );
-            hero.subClass = HeroSubClass.BERSERKER;
-            hero.armorAbility = new Education();
 
             RingOfAccuracy roa = new RingOfAccuracy();
             roa.level(22);

@@ -264,7 +264,7 @@ public class Cypros extends MeleeWeapon {
             case 1:
                 return  lvl* 2.5f*(tier+1);    //+8(7.5)= per level
             case 2:
-                return  lvl* 2.0f*(tier+1);    //+6 per level
+                return  lvl* 3.0f*(tier);    //+6 per level
         }
     }
 
@@ -280,6 +280,7 @@ public class Cypros extends MeleeWeapon {
     @Override
     public void activate( Char ch ) {
         if(wand != null) wand.charge( ch, STAFF_SCALE_FACTOR );
+        Tracker(ch);
     }
 
     @Override

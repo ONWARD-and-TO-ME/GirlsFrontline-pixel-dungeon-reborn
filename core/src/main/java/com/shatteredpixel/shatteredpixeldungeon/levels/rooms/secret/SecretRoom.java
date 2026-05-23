@@ -38,7 +38,7 @@ public abstract class SecretRoom extends SpecialRoom {
     public boolean Found(){
         if (Dungeon.level == null || Dungeon.level.map.length == 0)
             return false;
-        return Dungeon.level.map[Dungeon.level.pointToCell(entrance())] == Terrain.SECRET_DOOR;
+        return Dungeon.level.map[Dungeon.level.pointToCell(entrance())] != Terrain.SECRET_DOOR;
     }
 
 	private static final ArrayList<Class<? extends SecretRoom>> ALL_SECRETS = new ArrayList<>( Arrays.asList(
@@ -85,10 +85,12 @@ public abstract class SecretRoom extends SpecialRoom {
             float choice = baseRegionSecrets[region] % 1F;
             if (Dungeon.hero.hasTalentB(Talent.ROGUES_FORESIGHT) ||
 					Dungeon.hero.pointsInTalentA(Talent.ROGUES_FORESIGHT_V2) == 0 ||
-					Dungeon.hero.hasTalentB(Talent.ROGUES_FORESIGHT_V3))
-                choice += 0.6F;
-			else if (Dungeon.hero.hasTalentB(Talent.ROGUES_FORESIGHT_V2))
-				choice += 0.5F + 0.5F*Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT_V2);
+					Dungeon.hero.hasTalentB(Talent.ROGUES_FORESIGHT_V3)) {
+				choice += 0.6F;
+			}
+			else if (Dungeon.hero.hasTalentB(Talent.ROGUES_FORESIGHT_V2)) {
+				choice += 0.5F + 0.5F * Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT_V2);
+			}
             if (regionRandom < choice % 1F) {
                 secrets += (float) Math.ceil(choice);
             } else {

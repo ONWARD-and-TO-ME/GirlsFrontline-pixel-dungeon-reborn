@@ -38,13 +38,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SacrificeRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Game;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -209,9 +204,7 @@ public class SeedFinder {
         Dungeon.hero = null;
         GamesInProgress.selectedClass = heroclass;
         String seedCode = DungeonSeed.convertToCode(seed);
-        boolean lockXMAS = Game.lockXMAS;
         Dungeon.init(seedCode);
-        Game.lockXMAS = lockXMAS;
         boolean[] itemsFound = new boolean[itemList.size()];
         Arrays.fill(itemsFound, false);
         int LevelSub = 0;
@@ -349,11 +342,7 @@ public class SeedFinder {
         SeedFindScene.seedCode= seedCode;
         Dungeon.hero = null;
         GamesInProgress.selectedClass = heroclass;
-        if (Game.lockXMAS) {
-            Dungeon.init(seedCode);
-            Game.lockXMAS = true;
-        }else
-            Dungeon.init(seedCode);
+        Dungeon.init(seedCode);
         StringBuilder result = new StringBuilder(Messages.get(this, "seed") + seedCode + " (" + seed + ") " + Messages.get(this, "items") + ":\n\n");
         this.blacklist = Arrays.asList(Dewdrop.class, IronKey.class, GoldenKey.class, CrystalKey.class, EnergyCrystal.class, CorpseDust.class, Embers.class, CeremonialCandle.class, Pickaxe.class);
         int LevelSub = 0;

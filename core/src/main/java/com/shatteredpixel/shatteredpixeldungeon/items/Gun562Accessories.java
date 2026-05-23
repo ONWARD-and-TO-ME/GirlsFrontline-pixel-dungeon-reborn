@@ -49,15 +49,15 @@ public class Gun562Accessories extends Item{
 			if(id>=0){
 				Dungeon.quickslot.setSlot(id,gun562);
 			}
+			gun562.overLoad = gun561.overLoad;
+			gun562.overLoadLeft = gun561.overLoadLeft;
+
 			gun562.activate(hero);
 			gun562.level(gun561.trueLevel());
             gun562.curseInfusionBonus=gun561.curseInfusionBonus;
             //保留诅咒棱晶状态
             gun562.enchant(gun561.enchantment);
             //保留附魔
-
-            gun562.overLoad = OverLoad.OVERLOADING;
-            gun562.overLoadLeft = gun561.coolDownLeft;
 
 			hero.spendAndNext(3f);
 			detach(hero.belongings.backpack);
