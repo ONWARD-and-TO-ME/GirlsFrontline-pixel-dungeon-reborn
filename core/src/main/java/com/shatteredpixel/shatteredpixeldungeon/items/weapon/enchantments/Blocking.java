@@ -42,7 +42,7 @@ public class Blocking extends Weapon.Enchantment {
 		int level = Math.max( 0, weapon.buffedLvl() );
 		
 		Buff.prolong(attacker, BlockBuff.class, 2 + level/2).setBlocking(level + 1);
-		
+		weapon.guessingLevel = weapon.level();
 		return damage;
 	}
 	

@@ -60,6 +60,7 @@ public class RingOfWealth extends Ring {
 	private int dropsToRare = Integer.MIN_VALUE;
 	
 	public String statsInfo() {
+		super.statsInfo();
 		if (isIdentified()){
             String info = Messages.get(this, "stats", new DecimalFormat("#.##").format(100f * (Math.pow(1.20f, soloBuffedBonus()) - 1f)));
             if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)) {

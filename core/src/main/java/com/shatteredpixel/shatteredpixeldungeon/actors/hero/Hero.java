@@ -81,10 +81,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Bulk;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Flow;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Obfuscation;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Stone;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Swiftness;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CapeOfThorns;
@@ -110,6 +113,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEvasion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
@@ -166,7 +170,6 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -432,7 +435,6 @@ public class Hero extends Char {
 
 	public int talentPointsAvailable(int tier){
 		if (lvl < (Talent.tierLevelThresholds[tier] - 1)
-			|| (tier == 3 && subClass == HeroSubClass.NONE)
 			|| (tier == 4 && armorAbility == null)) {
 			return 0;
 		} else if (lvl >= Talent.tierLevelThresholds[tier+1]){
@@ -507,14 +509,10 @@ public class Hero extends Char {
 	}
 	
 	public int tier() {
-		Armor armor = belongings.armor();
-		if (armor instanceof ClassArmor){
-			return 6;
-		} else if (armor != null){
-			return armor.tier;
-		} else {
+		if (belongings.armor() == null)
 			return 0;
-		}
+		else
+			return belongings.armor().tier();
 	}
 	
 	public boolean shoot( Char enemy, MissileWeapon wep ) {
@@ -774,13 +772,42 @@ public class Hero extends Char {
 
 		speed *= RingOfHaste.speedMultiplier(this);
 
-        if (belongings.armor() != null) {
+		Ring.guessSignalRing(this, RingOfHaste.class, true);
+
+		if (belongings.armor() != null) {
             speed = belongings.armor().speedFactor(this, speed);
         }
         if (belongings.SecondArmor() != null) {
             speed = belongings.SecondArmor().speedFactor(this, speed);
         }
-		
+
+		if (belongings.hasGlyph(Swiftness.class, this)) {
+			boolean enemyNear = false;
+			PathFinder.buildDistanceMap(pos, Dungeon.level.passable, 2);
+			for (Char ch : Actor.chars()) {
+				if (PathFinder.distance[ch.pos] != Integer.MAX_VALUE && alignment != ch.alignment) {
+					enemyNear = true;
+					break;
+				}
+			}
+			if (!enemyNear) {
+				speed *= (1.2f + 0.04f * belongings.GlyphLevel(Swiftness.class));
+				if (wholeTime())
+					belongings.guessArmorByGlyph(Swiftness.class);
+			}
+		}
+		else if (belongings.hasGlyph(Flow.class, this) && Dungeon.level.water[pos]) {
+			speed *= (2f + 0.25f * belongings.GlyphLevel(Flow.class));
+			if (wholeTime())
+				belongings.guessArmorByGlyph(Flow.class);
+		}
+
+		if (belongings.hasGlyph(Bulk.class, this) &&
+				(Dungeon.level.map[pos] == Terrain.DOOR
+						|| Dungeon.level.map[pos] == Terrain.OPEN_DOOR)) {
+			speed /= 3f;
+		}
+
 		Momentum momentum = buff(Momentum.class);
 		if (momentum != null){
 			((HeroSprite)sprite).sprint( momentum.freerunning() ? 1.5f : 1f );
@@ -855,6 +882,8 @@ public class Hero extends Char {
 			//This is for that one guy, you shall get your fists of fury!
 			delay = 1f/RingOfFuror.attackSpeedMultiplier(this);
 		}
+
+		Ring.guessSignalRing(this, RingOfFuror.class, true);
 
         if ( buff(Adrenaline.class) != null) delay /= 1.5f;
         return delay;

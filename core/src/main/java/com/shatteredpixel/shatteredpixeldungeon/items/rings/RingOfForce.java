@@ -84,6 +84,7 @@ public class RingOfForce extends Ring {
 
 	@Override
 	public String statsInfo() {
+		super.statsInfo();
 		float tier = tier(Dungeon.hero.STR());
 		if (isIdentified()) {
 			int level = soloBuffedBonus();

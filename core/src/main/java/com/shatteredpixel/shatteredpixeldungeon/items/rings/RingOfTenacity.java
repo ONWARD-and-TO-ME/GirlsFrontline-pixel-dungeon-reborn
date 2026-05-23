@@ -35,6 +35,7 @@ public class RingOfTenacity extends Ring {
 	}
 
 	public String statsInfo() {
+		super.statsInfo();
 		if (isIdentified()){
 			String info = Messages.get(this, "stats", new DecimalFormat("#.##").format(100f * (1f - Math.pow(0.85f, soloBuffedBonus()))));
             if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)) {

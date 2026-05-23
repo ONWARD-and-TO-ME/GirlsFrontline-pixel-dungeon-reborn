@@ -56,6 +56,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 
@@ -245,7 +246,9 @@ public abstract class Scroll extends Item {
 
 	@Override
 	public String name() {
-		return isKnown() ? super.name() : Messages.get(this, rune);
+		if (isKnown() || Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
+			return super.name();
+		return Messages.get(this, rune);
 	}
 
 	@Override

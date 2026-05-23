@@ -148,6 +148,28 @@ public class Belongings implements Iterable<Item> {
         return lvl;
     }
 
+	public void guessArmorByGlyph(Class<?extends Armor.Glyph> type, boolean grass){
+		if (armor() == null)
+			return;
+		if (FirstArmor().glyph != null && FirstArmor().glyph.getClass() == type
+				&& FirstArmor().buffedLvl() == GlyphLevel(type)) {
+			int lvl = FirstArmor().level();
+			if (grass && lvl % 2 == 1)
+				lvl--;
+			FirstArmor().guessingLevel = lvl;
+		}
+		else if (SecondArmor().glyph != null && SecondArmor().glyph.getClass() == type
+				&& SecondArmor().buffedLvl() == GlyphLevel(type)) {
+			int lvl = SecondArmor().level();
+			if (grass && lvl % 2 == 1)
+				lvl--;
+			SecondArmor().guessingLevel = lvl;
+		}
+	}
+	public void guessArmorByGlyph(Class<?extends Armor.Glyph> type){
+		guessArmorByGlyph(type, false);
+	}
+
     public Artifact artifact(){
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
 		if (!lostInvent || (artifact != null && artifact.keptThoughLostInvent)){

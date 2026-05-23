@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -67,6 +68,7 @@ public class Ring extends KindofMisc {
 	private static ItemStatusHandler<Ring> handler;
 	
 	private String gem;
+	protected boolean guessType;
 	
 	//rings cannot be 'used' like other equipment, so they ID purely based on exp
 	private float levelsToID = 1;
@@ -115,6 +117,7 @@ public class Ring extends KindofMisc {
 	public void activate( Char ch ) {
 		buff = buff();
 		buff.attachTo( ch );
+		Tracker(ch);
 	}
 
 	@Override
@@ -153,17 +156,22 @@ public class Ring extends KindofMisc {
         if (levelKnown || cursedKnown){
             levelKnown = false;
             cursedKnown = false;
+			guessingLevel = -1;
+			guessType = false;
         }else if (isKnown()){
             handler.ignore(this);
         }else {
             initGems();
         }
     }
+
 	@Override
 	public String name() {
-		return isKnown() ? super.name() : Messages.get(Ring.class, gem);
+		if (isKnown() || Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY) || guessType)
+			return super.name();
+		return Messages.get(this, gem);
 	}
-	
+
 	@Override
 	public String info(){
         String noteA = NoteGet(this);
@@ -217,9 +225,50 @@ public class Ring extends KindofMisc {
     }
 	
 	protected String statsInfo(){
+		if (isIdentified() && isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
+			if (Dungeon.hero.belongings.ring() == this){
+				if (Dungeon.hero.belongings.misc() != null){
+					if (Dungeon.hero.belongings.misc().cursed)
+						Dungeon.hero.belongings.misc().guessingLevel = Math.min(2, level());
+					else
+						Dungeon.hero.belongings.misc().guessingLevel = level();
+				}
+			}
+			else if (Dungeon.hero.belongings.misc() == this){
+				if (Dungeon.hero.belongings.ring() != null){
+					if (Dungeon.hero.belongings.ring().cursed)
+						Dungeon.hero.belongings.ring().guessingLevel = Math.min(2, level());
+					else
+						Dungeon.hero.belongings.ring().guessingLevel = level();
+				}
+			}
+		}
 		return "";
 	}
-	
+	public static <T extends Ring> void guessSignalRing(Hero hero, Class<T> type, boolean guessByTime){
+
+		T ring = null;
+		if (hero.belongings.ring() != null && hero.belongings.ring().getClass() == type
+				&& ( hero.belongings.misc() == null || hero.belongings.misc().getClass() != type) ){
+			ring = (T) hero.belongings.ring();
+		} else if (hero.belongings.misc() != null && hero.belongings.misc().getClass() == type
+				&& ( hero.belongings.ring() == null || hero.belongings.ring().getClass() != type) ) {
+			ring = (T) hero.belongings.misc();
+		}
+
+		if (ring == null)
+			return;
+
+		if (!guessByTime || hero.wholeTime()){
+			if (!ring.cursed || ring.level() < 2) {
+				ring.guessingLevel = ring.level();
+				ring.guessType = true;
+			}
+			else if ( ring.isKnown() || ring.guessType ) {
+				ring.guessingLevel = Math.min(2, ring.level());
+			}
+		}
+	}
 	@Override
 	public Item upgrade() {
 		super.upgrade();
@@ -301,17 +350,20 @@ public class Ring extends KindofMisc {
 	}
 
 	private static final String LEVELS_TO_ID    = "levels_to_ID";
+	private static final String GuessType		= "Guess_Type";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( LEVELS_TO_ID, levelsToID );
+		bundle.put( GuessType, guessType);
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		levelsToID = bundle.getFloat( LEVELS_TO_ID );
+		guessType	= bundle.getBoolean( GuessType );
 	}
 	
 	public void onHeroGainExp( float levelPercent, Hero hero ){

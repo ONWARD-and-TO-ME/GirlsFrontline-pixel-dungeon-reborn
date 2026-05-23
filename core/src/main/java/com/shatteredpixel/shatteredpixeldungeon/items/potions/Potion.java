@@ -69,6 +69,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -371,8 +372,11 @@ public class Potion extends Item {
 	
 	@Override
 	public String name() {
-		return isKnown() ? super.name() : Messages.get(this, color);
+		if (isKnown() || Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
+			return super.name();
+		return Messages.get(this, color);
 	}
+
     @Override
     public String info() {
         String noteA = NoteGet(this);

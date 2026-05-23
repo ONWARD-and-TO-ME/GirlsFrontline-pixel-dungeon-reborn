@@ -233,7 +233,7 @@ public class ItemSlot extends Button {
                     extra.resetColor();
                 }
 			} else {
-				int str = item instanceof Weapon ? ((Weapon)item).STRReq(0) : ((Armor)item).STRReq(0);
+				int str = item instanceof Weapon ? ((Weapon)item).STRReq(false) : ((Armor)item).STRReq(false);
 				extra.text( Messages.format( TXT_TYPICAL_STR, str ) );
 				extra.hardlight( WARNING );
 			}
@@ -249,7 +249,10 @@ public class ItemSlot extends Button {
 		int buffedLvl = item.buffedVisiblyUpgraded();
 
 		if (trueLvl != 0 || buffedLvl != 0) {
-			level.text( Messages.format( TXT_LEVEL, buffedLvl ) );
+			String text =  Messages.format( TXT_LEVEL, buffedLvl );
+			if (!item.levelKnown)
+				text += "?";
+			level.text( text );
 			level.measure();
 			if (trueLvl == buffedLvl || buffedLvl <= 0) {
 				level.hardlight(buffedLvl > 0 ? UPGRADED : DEGRADED);

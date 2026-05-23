@@ -447,6 +447,7 @@ public class debugBook extends TestItem {
                     item.levelKnown = false;
                     item.cursedKnown = false;
                 }
+                item.guessingLevel = -1;
                 Sample.INSTANCE.play( Assets.Sounds.READ );
             }
         }

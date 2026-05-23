@@ -38,6 +38,7 @@ public class RingOfEnergy extends Ring {
 	}
 
 	public String statsInfo() {
+		super.statsInfo();
 		if (isIdentified()){
 			String info = Messages.get(this, "stats",
 					new DecimalFormat("#.##").format(100f * (Math.pow(1.20f, soloBuffedBonus()) - 1f)),
