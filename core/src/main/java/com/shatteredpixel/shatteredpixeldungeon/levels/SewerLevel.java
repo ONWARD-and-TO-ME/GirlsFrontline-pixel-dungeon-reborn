@@ -21,10 +21,13 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels;
 
+import com.nlf.calendar.Lunar;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Ripple;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.WholeCake;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.SewerPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.AlarmTrap;
@@ -121,7 +124,13 @@ public class SewerLevel extends RegularLevel {
 	@Override
 	protected void createItems() {
 		Ghost.Quest.spawn( this );
-		
+		if (Dungeon.depth == 1) {
+			Lunar lunar = new Lunar();
+			if (lunar.getMonth() == 4 && lunar.getDay() == 10)
+				itemsToSpawn.add(new WholeCake(Messages.get(WholeCake.class, "ONWARD"), Messages.get(WholeCake.class, "TO_ME")));
+			if (SPDSettings.isSpecialDay())
+				itemsToSpawn.add(new WholeCake(SPDSettings.getSpecialDay_Message()));
+		}
 		super.createItems();
 	}
 	

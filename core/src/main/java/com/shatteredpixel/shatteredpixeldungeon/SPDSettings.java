@@ -31,6 +31,7 @@ import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameSettings;
 import com.watabou.utils.Point;
 
+import java.util.Calendar;
 import java.util.Locale;
 
 public class SPDSettings extends GameSettings {
@@ -195,7 +196,9 @@ public class SPDSettings extends GameSettings {
 	public static final String SEED_CODE_RANDOM	= "";
 
 	public static final String KEY_SUPPORT_NAGGED= "support_nagged";
-	
+	public static final String AutoIdentify		= "Auto_Identify";
+	public static final String Special_Day		= "Special_Day_";
+
 	public static void seedCode(String value) {
 		put(KEY_SEED_CODE,value);
 	}
@@ -238,7 +241,46 @@ public class SPDSettings extends GameSettings {
 	public static boolean supportNagged() {
 		return getBoolean(KEY_SUPPORT_NAGGED, false);
 	}
-	
+	public static void AutoIdentify(boolean value){
+		put(AutoIdentify, value);
+	}
+	public static boolean isAutoIdentify(){
+		return getBoolean(AutoIdentify, false);
+	}
+	public static void resetSpecialDay_PlayTimes(){
+		put(Special_Day + "PlayTimes", 100);
+	}
+	public static void addSpecialDay_PlayTimes(int value){
+		put(Special_Day + "PlayTimes", getSpecialDay_PlayTimesNeed()-value);
+	}
+	public static void setSpecialDay_Month(int value){
+		put(Special_Day + "Month", value);
+	}
+	public static void setSpecialDay_Day(int value){
+		put(Special_Day + "Day", value);
+	}
+	public static void setSpecialDay_Message(String value){
+		put(Special_Day + "Message", value);
+	}
+	public static int getSpecialDay_PlayTimesNeed(){
+		return getInt(Special_Day+"PlayTimes", 0);
+	}
+	public static int getSpecialDay_Month(){
+		return getInt(Special_Day+"Month", -2);
+	}
+	public static int getSpecialDay_Day(){
+		return getInt(Special_Day+"Day", -2);
+	}
+	public static String getSpecialDay_Message(){
+		return getString(Special_Day + "Message", "");
+	}
+	public static boolean isSpecialDay(){
+		Calendar calendar = Calendar.getInstance();
+		return calendar.get(Calendar.MONTH) == getSpecialDay_Month() && calendar.get(Calendar.DAY_OF_MONTH) == getSpecialDay_Day();
+	}
+	public static boolean canChangeSpecialDay(){
+		return getSpecialDay_PlayTimesNeed()<=0;
+	}
 	//Audio
 	
 	public static final String KEY_MUSIC		= "music";
