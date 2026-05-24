@@ -122,7 +122,7 @@ public class SpectralNecromancer extends Necromancer {
 
 				Char blocker = Actor.findChar(summoningPos);
 				if (blocker.alignment != alignment){
-					blocker.damage( Random.NormalIntRange(2, 10), this );
+					blocker.damage( Random.NormalIntRange(2, 10), this, this );
 				}
 
 				spend(TICK);

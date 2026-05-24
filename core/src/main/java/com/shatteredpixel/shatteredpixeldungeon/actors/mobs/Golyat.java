@@ -71,7 +71,7 @@ public class Golyat extends Mob {
             if (ch != null && ch.isAlive()) {
                 int damage = Random.NormalIntRange(6, 12);
                 damage = Math.max( 0,  damage - (ch.drRoll() + ch.drRoll()) );
-                ch.damage( damage, this );
+                ch.damage( damage, this, this );
                 if (ch == Dungeon.hero && !ch.isAlive()) {
                     heroKilled = true;
                 }

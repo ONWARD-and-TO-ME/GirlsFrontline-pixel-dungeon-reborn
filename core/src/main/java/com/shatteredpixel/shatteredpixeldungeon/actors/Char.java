@@ -565,6 +565,9 @@ public abstract class Char extends Actor {
 	}
 
 	public void damage( int dmg, Object src ) {
+		damage(dmg, src, null);
+	}
+	public void damage( int dmg, Object src, Char enemy ) {
         if (buff(Empulse.class) != null){
             dmg+= dmg*hero.pointsInTalent(Talent.EMP_Two)/10;
         }

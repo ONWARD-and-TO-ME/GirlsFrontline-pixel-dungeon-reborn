@@ -167,7 +167,7 @@ public class Jaguar extends Mob {
 
                     Char ch = Actor.findChar( c );
                     if (ch != null && ch.alignment == Alignment.ALLY) {
-                        ch.damage(damageRoll() - ch.drRoll(), this );
+                        ch.damage(damageRoll() - ch.drRoll(), this, Jaguar.this );
 
                         if (Random.Int(5) < 1) {
                             Buff.prolong(ch, Weakness.class, 4f);
@@ -192,7 +192,7 @@ public class Jaguar extends Mob {
 
                 int dmg = damageRoll() * 3;
 
-                ch.damage( dmg,Jaguar.this );
+                ch.damage( dmg,Jaguar.this,Jaguar.this );
 
                 if (ch.alignment == Alignment.ALLY) {
                     Buff.prolong(ch, Weakness.class, 8f);

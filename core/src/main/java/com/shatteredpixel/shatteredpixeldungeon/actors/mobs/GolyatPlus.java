@@ -70,7 +70,7 @@ public class GolyatPlus extends Mob {
             if (ch != null && ch.isAlive()) {
                 int damage = 999;
                 damage = Math.max( 0,  damage - (ch.drRoll() + ch.drRoll()) );
-                ch.damage( damage, this );
+                ch.damage( damage, this, this );
                 if (ch == Dungeon.hero && !ch.isAlive()) {
                     heroKilled = true;
                 }

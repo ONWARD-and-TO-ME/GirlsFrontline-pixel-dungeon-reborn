@@ -49,7 +49,7 @@ public class ArmoredStatue extends Statue {
 			armor = Generator.randomArmor();
 		} while (armor.cursed);
 		armor.inscribe(Armor.Glyph.random());
-
+		armor.update();
 		//double HP
 		HP = HT = 30 + Dungeon.curDepth() * 10;
 	}

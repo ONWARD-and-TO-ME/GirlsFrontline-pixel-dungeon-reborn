@@ -217,9 +217,9 @@ public class YogDzewa extends Mob {
 				}
 				for (Char ch : affected) {
 					if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
-						ch.damage(Random.NormalIntRange(30, 50), new Eye.DeathGaze());
+						ch.damage(Random.NormalIntRange(30, 50), new Eye.DeathGaze(), this);
 					} else {
-						ch.damage(Random.NormalIntRange(20, 30), new Eye.DeathGaze());
+						ch.damage(Random.NormalIntRange(20, 30), new Eye.DeathGaze(), this);
 					}
 
 					if (Dungeon.level.heroFOV[pos]) {
@@ -446,7 +446,7 @@ public class YogDzewa extends Mob {
 	public void aggro(Char ch) {
 		for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
 			if (Dungeon.level.distance(pos, mob.pos) <= 4 &&
-					(mob instanceof Larva || mob instanceof RipperDemon)) {
+					(mob instanceof Larva || mob instanceof RipperDemon || mob instanceof Eye || mob instanceof Scorpio)) {
 				mob.aggro(ch);
 			}
 		}

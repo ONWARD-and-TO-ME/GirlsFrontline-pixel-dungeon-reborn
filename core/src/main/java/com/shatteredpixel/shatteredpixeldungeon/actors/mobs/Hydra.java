@@ -175,7 +175,7 @@ public class Hydra extends Mob {
             }
 
             if (hit( this, ch, true )) {
-                ch.damage( Random.NormalIntRange( 22, 22 ), new Beam() );
+                ch.damage( Random.NormalIntRange( 22, 22 ), new Beam(), this );
 
                 if (Dungeon.level.heroFOV[pos]) {
                     ch.sprite.flash();

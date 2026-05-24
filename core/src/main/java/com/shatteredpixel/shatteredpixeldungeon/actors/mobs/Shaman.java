@@ -116,7 +116,7 @@ public abstract class Shaman extends Mob {
 			}
 			
 			int dmg = Random.NormalIntRange( 3, 9);
-			enemy.damage( dmg, new EarthenBolt() );
+			enemy.damage( dmg, new EarthenBolt(), this );
 			
 			if (!enemy.isAlive() && enemy == Dungeon.hero) {
 				Dungeon.fail( getClass() );

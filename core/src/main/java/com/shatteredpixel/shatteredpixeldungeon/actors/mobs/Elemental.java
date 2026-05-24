@@ -325,7 +325,7 @@ public abstract class Elemental extends Mob {
 			}
 			
 			for (Char ch : affected) {
-				ch.damage( Math.round( damage * 0.4f ), this );
+				ch.damage( Math.round( damage * 0.4f ), this, this );
 			}
 
 			boolean visible = sprite.visible || enemy.sprite.visible;

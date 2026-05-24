@@ -593,7 +593,7 @@ public class Elphelt extends Mob {
 						ch.pos = newPos;
 
 						// 2테마 보스에 맞는 데미지
-						ch.damage( Random.NormalIntRange(30,50) - ch.drRoll(), Elphelt.this );
+						ch.damage( Random.NormalIntRange(30,50) - ch.drRoll(), Elphelt.this, Elphelt.this );
 
 						if (traceChar.collisionPos == newPos) {
 							Paralysis.prolong(ch, Paralysis.class, 2f);
@@ -648,7 +648,7 @@ public class Elphelt extends Mob {
 		Char ch = findChar(traceMagnum.collisionPos);
 		if (ch != null) {
 			// 필중
-			ch.damage(damage - ch.drRoll(), Elphelt.this );
+			ch.damage(damage - ch.drRoll(), Elphelt.this, Elphelt.this );
 			ch.sprite.centerEmitter().start( Speck.factory( Speck.HEART ), 0.2f, 5 );
 			//  3턴 지속 매혹 부여
 			if (Random.Int(RANGE_MAGNUM) <= traceMagnum.dist) {
@@ -920,7 +920,7 @@ public class Elphelt extends Mob {
 							if (ch instanceof Elphelt) {
 								dmg /= 10;
 							}
-							ch.damage( dmg , Elphelt.this );
+							ch.damage( dmg , Elphelt.this, Elphelt.this );
 						}
 
 						if (ch == Dungeon.hero && !ch.isAlive()) {
