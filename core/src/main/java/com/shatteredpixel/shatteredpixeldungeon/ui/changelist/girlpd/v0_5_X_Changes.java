@@ -347,6 +347,7 @@ public class v0_5_X_Changes {
             message.add("我的git库的地址在下方展示，如果想要开发而又不太想找我说话，可以直接自行下载的" +
                     "\n\n https://github.com/ONWARD-and-TO-ME/GirlsFrontline-pixel-dungeon-reborn.git");
             message.add("这个ChangeButton.java其实是我犯病的时候爆改的，把他当作一个状态机来做了，大概能再重制回二百来行代码，但我没空闲时间去仔细研究哩……");
+            message.add("我挺想同步破碎的道具日志的，这样子我就能对查种器进行大刀阔斧的改动了，例如直接从日志上选择道具，而非现在这样的输入文本，试想一下，直接选择道具，是不是比现在的输入文本便捷多了?" );
         }
         changes.addButton(new ChangeButton(new Hero(HeroClass.HUNTRESS), "", message));
     }
