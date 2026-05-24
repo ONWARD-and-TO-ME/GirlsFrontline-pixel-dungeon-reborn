@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.ui.changelist.girlpd;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -12,13 +13,19 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elphelt;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GolyatFactory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotLasher;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Succubus;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Swarm;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DEL;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.FieldPot;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.GeminiShield;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gun562Accessories;
+import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ScaleArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
@@ -30,8 +37,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Gemini;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Letter;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Peach;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Succor;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.WholeCake;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Recycle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cypros;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.Ump45;
@@ -77,6 +88,9 @@ import java.util.Arrays;
 
 public class v0_5_X_Changes {
     public static void addAllChanges(ArrayList<ChangeInfo> changeInfos) {
+        if (SPDSettings.isBirthday())
+            SomethingSaying(changeInfos);
+        add_0_5_8_2_Changes(changeInfos);
         add_0_5_7_3_To_0_5_8_1_Changes(changeInfos);
         add_0_5_7_2_Changes(changeInfos);
         add_0_5_7_1_Changes(changeInfos);
@@ -96,6 +110,84 @@ public class v0_5_X_Changes {
 		add_0_5_0_Changes(changeInfos);
     }
 
+    public static void Example( ArrayList<ChangeInfo> changeInfos ) {
+        ChangeInfo changes = new ChangeInfo("v0.5.8v2", true, "");
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+        changes.hardlight( CharSprite.POSITIVE );
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+        changes.hardlight( CharSprite.POSITIVE );
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+        changes.hardlight( CharSprite.NEGATIVE );
+        changeInfos.add(changes);
+    }
+    public static void add_0_5_8_2_Changes( ArrayList<ChangeInfo> changeInfos ) {
+        ChangeInfo changes = new ChangeInfo("v0.5.8v2", true, "");
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+        changes.addButton(new ChangeButton(new ScrollOfIdentify(), "辅助鉴定", "我加入了一个辅助鉴定功能，当你做出一些对物品或装备产生初步鉴定的操作时，将会把鉴定内容标记出来。" +
+                "\n\n目前这个功能尚不完善，仅限猜测未鉴定武器、护甲的等级下限、部分瞄准镜的等级、消耗多充能的HE燃烧弹与DT农药等等。" +
+                "\n\n这个功能的开启要求完成全知挑战。"));
+        changes.addButton(new ChangeButton(new ScrollOfIdentify(), "全知挑战", "在返回地表处找德尔(目前暂用波波沙皮肤)，即可开启。" +
+                "\n\n全知挑战将会直接知道磁盘、药水、瞄准镜的真实名称，武器、护甲的真实等级及其附魔、刻印，并且可以透过地上的物品类别(补给箱、墓碑等)直接看出内部物品(只能看最顶上的那个物品)。" +
+                "\n\n全知挑战禁止生成力量药水与升级磁盘(允许初始携带)，而所有的武器与护甲的阶数都会调整到符合当前力量。" +
+                "\n\n武器与护甲首次降阶时将会依据距离1阶的阶数差进行补级。" +
+                "\n\n投武在首次降阶时有概率获得附魔。"));
+        changes.addButton(new ChangeButton(new WholeCake("节日蛋糕", "现在加入一个功能，你可以在第二页主界面处记录一个日期作为节日，到了该天将会在局内1层为你生成一个节日蛋糕。" +
+                "\n\n你可以自定义文本，文本的修改不做限制。" +
+                "\n\n目前时间仅限写入公历/新历的时间，旧历/农历的功能后续再加入。" +
+                "\n\n时间的修改有限制，每100有效次对局允许修改，允许次数不做储存。" +
+                "\n\n失败的对局提供1次，获胜的对局提供10次，可混用。")));
+        changes.addButton(new ChangeButton(new PotionOfDivineInspiration(), "有人向我反应，有部分区域的献祭火不好完成，现在你可以使用神意合剂将献祭火砸灭了，将其砸灭也视为完成。" +
+                "\n\n但不提供鉴定。。。"));
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+        changes.hardlight( CharSprite.POSITIVE );
+        changeInfos.add(changes);
+        changes.addButton(new ChangeButton(new Tengu(), "现在10层衔尾蛇切换阶段时，不在不变动区域的友方单位不再会被移除，而是传送至玩家周围了\n\n不在不变动区域的敌方依旧会被移除，如果有。"));
+        changes.addButton(new ChangeButton(new LloydsBeacon(), "上一个版本我改写空降妖精的时候，原计划是在背包也进行冷却来着，但不知道为什么写去必须装备着才冷却了。现在补回来了。"));
+        changes.addButton(new ChangeButton(new ScaleArmor(), "外骨骼相关", "修复了外骨骼复合产生的破损度在boss战期间的意外增长"));
+        changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER), "过载", "我稍微调整了一下过载的衰减，现在待机时的过载时间衰减值普遍降低，并且在Boss战期间，待机衰减会进一步降低。" +
+                "\n\n而武器护甲在其生效时，如武器攻击，护甲防御没闪避掉的攻击，这个时候将会加快衰减。"));
+        changes.addButton(new ChangeButton(new ScrollOfIdentify(), "行窃预知", "我很抱歉，在上一个版本中，我将UMP9初始携带的行窃预知的结果判断反转了，导致已寻找变成未寻找，未寻找变成已寻找……" +
+                "\n\n而现在已经修复好了，可以放心地给行窃预知加点了。"));
+        changes.addButton(new ChangeButton(new Gun562Accessories(), "修复了56-1升级56-2后会获得永久不衰减的过载。"));
+        changes.addButton(new ChangeButton(new PotionOfInvisibility(), "升阶秘法", "修复了+2升阶秘法在使用磁盘时令刺客伏击重置的bug。"));
+        changes.addButton(new ChangeButton(new RotLasher(), "我想应该很多人受到过触手的伏击，以及想要击杀腐莓却无处落脚。" +
+                "\n\n现在腐莓房及其生成的腐莓触手同步了破碎，发现玩家将会先等待一回合，并且腐莓四周必定有格子进行攻击。"));
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+        changes.hardlight( CharSprite.POSITIVE );
+        changeInfos.add(changes);
+        changes.addButton(new ChangeButton(new GeminiShield(), "双生妖精(暂用ST-AR15贴图)", "现在双生妖精受到玩家攻击时不再闪避了，以便于使用治疗.50进行治疗。" +
+                "\n\n现在双生妖精在受到远程伤害时也会互相转移仇恨。"));
+        changes.addButton(new ChangeButton(new ScaleArmor(), 0x88EEFF,"重甲刻印","现在四种激光怪的攻击可以被重甲抵挡了。" +
+                "\n\n并且重甲的防御上限变为等级的平方，下限不做调整。" +
+                "\n\n也不清楚这样的改动到位没有……"));
+        changes.addButton(new ChangeButton(new Blacksmith(), "现在外骨骼合并只需要同阶即可(针对火控外骨骼及全知挑战)" +
+                "\n\n放入火控外骨骼则另一个外骨骼无论其等级多少都将作为耗材。" +
+                "\n\n现在可以放入未鉴定等级的无诅咒装备作为消耗材料，倘若放入两个未鉴定装备则会以左边的为主装备。"));
+        changes.addButton(new ChangeButton(new TengusMask(), "现在三层通用天赋的解锁条件从12级+心智升级，降低至12级，但专职天赋依旧需要进行心智升级以获取。"));
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+        changes.hardlight( CharSprite.NEGATIVE );
+        changeInfos.add(changes);
+        changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561), "电磁增幅", "现在电磁增幅的概率将会受到攻速影响，过快或者过慢的武器会对概率造成影响。"));
+    }
     public static void add_0_5_7_3_To_0_5_8_1_Changes( ArrayList<ChangeInfo> changeInfos ) {
         ChangeInfo changes = new ChangeInfo("v0.5.7v3 ~ 0.5.8v1", true, "");
         changes.hardlight(Window.TITLE_COLOR);
@@ -208,6 +300,55 @@ public class v0_5_X_Changes {
         changes.addButton(new ChangeButton(new HeroSprite(HeroClass.TYPE561, 6), 0.8F, "56-1式", "修复了56-1式初始饱食度上限少了300点的bug。"));
         changes.addButton(new ChangeButton(new WandmakerSprite(), 0.8F, "未知小彩蛋", "为了方便新玩家尽快玩到想玩的内容，我在某些地方留了点后门，快去找一找吧~awa"));
         changes.addButton(new ChangeButton(new Image(Icons.WARNING.get()), "代码整理", "由于1月底到2月中旬期间的一系列改动与回退，我不经意间把0.5.3前后因修改底层导致在此之前的存档作废这个问题给修好了。(如果还有人保留着0.5.3及以前的存档的话)"));
+    }
+    public static void SomethingSaying( ArrayList<ChangeInfo> changeInfos ){
+        ChangeInfo changes = new ChangeInfo("我有点话想说", true, "");
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+        ArrayList<String> message = new ArrayList<>();
+        {
+            message.add("也不知道你是先看到那个文本还是先看到这里，这里是对于那个文本的补充，但我担心要是在此做了前后限制，就很少有人看到这里了，所以就不做顺序限制了……");
+            message.add("我没死，也没生病，只是现实很忙，难以腾出时间。现在依旧会继续完成一些小更新，如修复bug、完善某些内容等。");
+            message.add("这次更新还是有点令我不太满意的，毕竟时间比较赶，少做了一些东西……");
+            message.add("接下来基本都是碎碎念了，不想看的可以就此退出了。");
+            message.add("双生妖精的机制是我很满意的，相互传递仇恨，互相拉扯，可惜填写数值的方面我并不擅长……");
+            message.add("56-1的红书、G11的子弹，这两个的充能透支是从一个角色中切割出来的，这个角色就是M16A1。" +
+                    "\n\nM16A1我原本打算做成地牢不生成食物+充能回复减慢，再搭配一些机制，例如与怪物共享饥饿扣血，或者生吃怪物；" +
+                    "\n而充能方面则是，" +
+                    "\n正数充能有三种模式，单发、常规、倾泻，效果如字面意思，" +
+                    "\n负数部分则是，尝试透支充能射击，负数充能越多概率越低。" +
+                    "\n\n可惜了，这个角色将会在很长的一段时间内，就停留在这个空想的阶段了……");
+            message.add("我一点也不会做数值调整。" +
+                    "\n你知道吗，G11的子弹透支其实蛮超模的，只是恰好多写了计入贴膜，莫名其妙平衡了一点。" +
+                    "\n56-1重制的时候，那个割草其实是我拍案做决定的，结果做成写着机制的数值怪了，而当时竟然还有人说重制56-1不能玩……");
+            message.add("德尔的几个订单中，其实过载才是主要内容，其余的都是顺手写的，属于是为了这碟醋包的饺子……");
+            message.add("我其实还想加入丹德莱的来着，就少前1片面回忆里边的丹德莱。" +
+                    "\n\n你知道吗，片面回忆其实有个bug，在33333帧也就是55分33秒的时候界面会消失，" +
+                    "\n在此前未选完卡，然后利用一个未知机制让界面恢复，你就能重新选一套完整的卡，这样子你就带着一套不完整的卡和一套完整的卡，两套卡了。" +
+                    "\n这个机制我推测是要把怪击退出范围，然后让怪重新走进来。" +
+                    "\n\n我正是想要把这个玩法做成一个角色，然后把这个作为彩蛋来着，可惜了……");
+            message.add("你知道吗，全知挑战原本不是辅助鉴定的前置挑战，而是隐藏角色蒂玛或者某个善于改装的人形的前置挑战" +
+                    "\n\n这个角色可以在局内拆解各个武器的模块，自行DIY一款武器。" +
+                    "\n\n甚至将武器带回0层实现局外成长。" +
+                    "\n\n不过……");
+            message.add("其实我还想加几个联动小游戏作为5区商店条件来着，例如荣耀日的音游、少前1的兵棋，" +
+                    "\n\n还差一个但是想不到了……" +
+                    "\n\n三个小游戏，触发掉一个(无论胜败)就会开启5区商店。" +
+                    "\n\n而通关数量觉得商店装备的等级上限。");
+            message.add("其实我挺想对Cat说一声对不起的，那时候我精神状态不好，把我的锅扣到他头上了，还闹了一波退群，这就是我说的，大抵是我咎由自取吧……");
+            message.add("双生妖精如果生成时盾被丢到了一个无视野位置，并且怪物也无法看到盾的时候，导可以无伤单刷怪的，但玩家要尽早撤离以脱离视野，或者让导挡住路径。" +
+                    "\n\n衔尾蛇的切地图对非保留区域的怪也是为此而改的，因为我的双生之盾被吞了……");
+            message.add("你知道吗，过载其实可以被G11内部的子弹模块贪下来的，不要傻乎乎地让过载扣掉等级了。");
+            message.add("这次更新还有好几个通用天赋还没做来着……" +
+                    "\n例如踩陷阱的回收陷阱，以及旧56-1的部分天赋" +
+                    "\n\n所以当时重制我为什么要直接移除掉这部分代码呢……");
+            message.add("到这里，我的话好像说完了，又好像还漏了点什么东西？不管了……" +
+                    "\n\n哦对了，你知道吗，不咎、等待响应、ONWARD、TO ME都是我哦。");
+            message.add("我的git库的地址在下方展示，如果想要开发而又不太想找我说话，可以直接自行下载的" +
+                    "\n\n https://github.com/ONWARD-and-TO-ME/GirlsFrontline-pixel-dungeon-reborn.git");
+            message.add("这个ChangeButton.java其实是我犯病的时候爆改的，把他当作一个状态机来做了，大概能再重制回二百来行代码，但我没空闲时间去仔细研究哩……");
+        }
+        changes.addButton(new ChangeButton(new Hero(HeroClass.HUNTRESS), "", message));
     }
     public static void add_0_5_7_Changes( ArrayList<ChangeInfo> changeInfos ){
         ChangeInfo changes = new ChangeInfo("v0.5.7", true, "");

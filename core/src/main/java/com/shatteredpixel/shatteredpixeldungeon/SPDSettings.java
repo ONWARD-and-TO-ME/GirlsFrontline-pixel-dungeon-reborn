@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
+import com.nlf.calendar.Lunar;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -252,6 +253,10 @@ public class SPDSettings extends GameSettings {
 	}
 	public static void addSpecialDay_PlayTimes(int value){
 		put(Special_Day + "PlayTimes", getSpecialDay_PlayTimesNeed()-value);
+	}
+	public static boolean isBirthday(){
+		Lunar lunar = new Lunar();
+		return lunar.getMonth() == 4 && lunar.getDay() == 10;
 	}
 	public static void setSpecialDay_Month(int value){
 		put(Special_Day + "Month", value);

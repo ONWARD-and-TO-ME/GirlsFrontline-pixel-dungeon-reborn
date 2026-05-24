@@ -464,7 +464,7 @@ public class ChangeButton extends Component {
             return ((Mob) A).sprite();
         else if(A instanceof Hero)
             return new HeroSprite(((Hero) A).heroClass, 1);
-        else if(A instanceof Ring) {
+        else if(A instanceof Ring || A instanceof Scroll || A instanceof Potion) {
             Image itemIcon = new Image(Assets.Sprites.ITEM_ICONS);
             itemIcon.scale.set(1.6F);
             itemIcon.frame(ItemSpriteSheet.Icons.film.get(((Item) A).icon));

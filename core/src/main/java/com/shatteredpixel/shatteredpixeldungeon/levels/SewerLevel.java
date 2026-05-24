@@ -125,8 +125,7 @@ public class SewerLevel extends RegularLevel {
 	protected void createItems() {
 		Ghost.Quest.spawn( this );
 		if (Dungeon.depth == 1) {
-			Lunar lunar = new Lunar();
-			if (lunar.getMonth() == 4 && lunar.getDay() == 10)
+			if (SPDSettings.isBirthday())
 				itemsToSpawn.add(new WholeCake(Messages.get(WholeCake.class, "ONWARD"), Messages.get(WholeCake.class, "TO_ME")));
 			if (SPDSettings.isSpecialDay())
 				itemsToSpawn.add(new WholeCake(SPDSettings.getSpecialDay_Message()));
