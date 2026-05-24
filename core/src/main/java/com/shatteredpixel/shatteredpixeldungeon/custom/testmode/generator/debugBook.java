@@ -22,14 +22,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.ColorItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cypros;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -430,19 +428,15 @@ public class debugBook extends TestItem {
 
         @Override
         public boolean itemSelectable(Item item) {
-            return (item instanceof EquipableItem &&!(item instanceof MissileWeapon))||item instanceof Wand||item instanceof Scroll ||(item instanceof Potion &&!(item instanceof Brew)&&!(item instanceof Elixir)&&!(item instanceof AlchemicalCatalyst));
+            return (item instanceof EquipableItem &&!(item instanceof MissileWeapon))||item instanceof Wand||(item instanceof ColorItem &&!(item instanceof Brew)&&!(item instanceof Elixir)&&!(item instanceof AlchemicalCatalyst));
         }
 
         @Override
         public void onSelect( Item item ) {
 
             if(item != null){
-                if (item instanceof Ring){
-                    ((Ring) item).setIgnore();
-                } else if(item instanceof Scroll){
-                    ((Scroll) item).setIgnore();
-                } else if(item instanceof Potion){
-                    ((Potion) item).setIgnore();
+                if (item instanceof ColorItem){
+                    ((ColorItem) item).setIgnore();
                 } else if (item instanceof EquipableItem ||item instanceof Wand){
                     item.levelKnown = false;
                     item.cursedKnown = false;

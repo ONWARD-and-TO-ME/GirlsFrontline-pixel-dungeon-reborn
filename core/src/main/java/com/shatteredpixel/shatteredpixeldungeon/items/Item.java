@@ -71,6 +71,7 @@ import com.watabou.utils.Callback;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 
 public class Item implements Bundlable {
 
@@ -529,7 +530,21 @@ public class Item implements Bundlable {
 
 		updateQuickslot();
 	}
-	
+
+	public Item clone( Item item ){
+		overLoad = item.overLoad;
+		overLoadLeft = item.overLoadLeft;
+		coolDownLeft = item.coolDownLeft;
+		cursed = item.cursed;
+		cursedKnown = item.cursedKnown;
+		levelKnown	= item.levelKnown;
+		guessingLevel = item.guessingLevel;
+		BuffLevelPoint= item.BuffLevelPoint;
+		noted = item.noted;
+		updateTime = item.updateTime;
+		level(item.level);
+		return this;
+	}
 	public Item upgrade() {
 		
 		this.level++;
@@ -922,9 +937,9 @@ public class Item implements Bundlable {
             if (overLoad == OverLoad.OVERLOADING && coolDownLeft > 0 && CooldownTracker.updateTime > updateTime){
                 float num = CooldownTracker.updateTime;
                 if (Item.this instanceof EquipableItem && !(Item.this instanceof MissileWeapon))
-                    overLoadLeft -= 0.5F*(num - updateTime);
+                    overLoadLeft -= 0.1F * (num - updateTime);
                 else
-                    overLoadLeft -= num - updateTime;
+                    overLoadLeft -= (num - updateTime) * 0.5F;
                 overLoadLeft = Math.max(0, overLoadLeft);
                 updateTime = CooldownTracker.updateTime;
             }

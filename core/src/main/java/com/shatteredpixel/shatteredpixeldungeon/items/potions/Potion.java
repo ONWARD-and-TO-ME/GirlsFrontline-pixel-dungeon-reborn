@@ -47,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfShr
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfSnapFreeze;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfStormClouds;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
+import com.shatteredpixel.shatteredpixeldungeon.items.ColorItem;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -79,7 +80,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Potion extends Item {
+public class Potion extends Item implements ColorItem {
 
 	public static final String AC_DRINK = "DRINK";
 	
@@ -354,12 +355,14 @@ public class Potion extends Item {
                     handler.ignore((Potion) ScrollOfTransmutation.changeItem(this));
                 else
                     handler.ignore(this);
+				Dungeon.guessType.remove(getClass());
             } else {
                 initColors();
             }
             updateQuickslot();
         }
     }
+
 	@Override
 	public Item identify( boolean byHero ) {
 		super.identify(byHero);

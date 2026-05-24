@@ -157,6 +157,10 @@ public enum HeroClass {
 
         LevelTeleporter LevelTP = new LevelTeleporter();
         TestBomb testBomb       = new TestBomb();
+		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)){
+			new PotionOfStrength().identify();
+			new ScrollOfUpgrade().identify();
+		}
 		if (DeviceCompat.isDebug() || Dungeon.isChallenged(Challenges.TEST_MODE)){
 			CustomWeapon customWeapon = new CustomWeapon();
 			customWeapon.adjustStatus();
@@ -276,9 +280,7 @@ public enum HeroClass {
 	private static void initWarrior( Hero hero ) {
 		(hero.belongings.weapon = new Ump45()).identify();
 		new PotionOfHealing().identify().collect();
-		new PotionOfStrength().identify();
-		if (!Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
-			new PotionOfStrength().collect();
+		new PotionOfStrength().identify().collect();
 		new ScrollOfRage().identify();
 		if (hero.belongings.armor != null){
 			hero.belongings.armor.affixSeal(new BrokenSeal());

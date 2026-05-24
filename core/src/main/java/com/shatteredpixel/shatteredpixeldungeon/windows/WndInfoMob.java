@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.HealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ui.Component;
 
 public class WndInfoMob extends WndTitledMessage {
@@ -45,6 +46,7 @@ public class WndInfoMob extends WndTitledMessage {
 		private CharSprite image;
 		private RenderedTextBlock name;
 		private HealthBar health;
+		private BitmapText hpText;
 		private BuffIndicator buffs;
 		
 		public MobTitle( Mob mob ) {
@@ -59,6 +61,18 @@ public class WndInfoMob extends WndTitledMessage {
 			health = new HealthBar();
 			health.level(mob);
 			add( health );
+
+			hpText = new BitmapText(PixelScene.pixelFont);
+			int hp = mob.HP;
+			int shield = mob.shielding();
+			int ht = mob.HT;
+			if (shield <= 0){
+				hpText.text(hp + "/" + ht);
+			} else {
+				hpText.text(hp + "+" + shield +  "/" + ht);
+			}
+			hpText.alpha(0.6f);
+			add(hpText);
 
 			buffs = new BuffIndicator( mob, false );
 			add( buffs );
@@ -77,6 +91,12 @@ public class WndInfoMob extends WndTitledMessage {
 					image.height() > name.height() ? y +(image.height() - name.height()) / 1.2f : y);
 
 			health.setRect(image.width() + GAP, name.bottom() + GAP, w, health.height());
+
+			hpText.scale.set(PixelScene.align(0.5f));
+			hpText.x = health.x + 1;
+			hpText.y = health.y + (health.height - (hpText.baseLine()+hpText.scale.y))/2f;
+			hpText.y -= 0.001f; //prefer to be slightly higher
+			PixelScene.align(hpText);
 
 			buffs.setPos(
 				name.right() + GAP-1,

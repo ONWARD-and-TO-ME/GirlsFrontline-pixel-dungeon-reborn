@@ -21,7 +21,7 @@ public class Peach extends FairyItems {
             case 1: Buff.affect(hero, BasicBuffs.Velocity.class, 50).set(1.50F);break;
             case 2: Buff.affect(hero, BasicBuffs.Accuracy.class, 50).set(2.00F);break;
             case 3: Buff.affect(hero, BasicBuffs.Evasion.class,  50).set(1.50F);break;
-            case 4: Buff.affect(hero, BasicBuffs.Reduce.class,   50).set(0.75F);break;
+            case 4: Buff.affect(hero, BasicBuffs.Reduce.class,   50).set(0.50F);break;
         }
         Talent.onFoodEaten(hero, 0, this);
 

@@ -44,20 +44,13 @@ public class Gun562Accessories extends Item{
 			Gun561 gun561=(Gun561)hero.belongings.weapon;
 			Gun562 gun562=new Gun562();
 
+			gun562.clone(gun561);
+			gun562.activate(hero);
 			(hero.belongings.weapon=gun562).identify();
 			int id=Dungeon.quickslot.getSlot(gun561);
 			if(id>=0){
 				Dungeon.quickslot.setSlot(id,gun562);
 			}
-			gun562.overLoad = gun561.overLoad;
-			gun562.overLoadLeft = gun561.overLoadLeft;
-
-			gun562.activate(hero);
-			gun562.level(gun561.trueLevel());
-            gun562.curseInfusionBonus=gun561.curseInfusionBonus;
-            //保留诅咒棱晶状态
-            gun562.enchant(gun561.enchantment);
-            //保留附魔
 
 			hero.spendAndNext(3f);
 			detach(hero.belongings.backpack);

@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon;
 
 import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
-import static com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring.getBuffedBonus;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -32,7 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.type561.Type56FourTwo;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
@@ -82,6 +80,16 @@ abstract public class Weapon extends KindOfWeapon {
 	public int tier;
 	public boolean UpdatedTierToLevel = false;
 
+	public Item clone(Item item){
+		Weapon weapon = (Weapon) item;
+		super.clone(weapon);
+		tier    = weapon.tier;
+		enchant(weapon.enchantment);
+		augment = weapon.augment;
+		masteryPotionBonus = weapon.masteryPotionBonus;
+		curseInfusionBonus = weapon.curseInfusionBonus;
+		return this;
+	}
 	@Override
 	public void update(){
 		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)){

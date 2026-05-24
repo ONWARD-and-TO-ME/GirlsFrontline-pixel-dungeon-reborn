@@ -34,6 +34,9 @@ public class WholeCake extends Food {
 	}
 	private String title;
 	private String body;
+	public WholeCake(){
+		this("", "");
+	}
 	public WholeCake(String body){
 		this("节日蛋糕", body);
 	}

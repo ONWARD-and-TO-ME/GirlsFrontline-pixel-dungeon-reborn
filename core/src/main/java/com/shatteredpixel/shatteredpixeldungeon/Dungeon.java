@@ -54,6 +54,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.ColorItem;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
@@ -89,7 +90,6 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.Gregorian;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
-import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.PathFinder;
@@ -242,6 +242,7 @@ public class Dungeon {
     }
     public static ArrayList<Class<?>> itemAOfSave ;
     public static ArrayList<String> NOTEAOfSave ;
+	public static HashSet<Class<? extends ColorItem>> guessType ;
 
 	public static QuickSlot quickslot = new QuickSlot();
 	
@@ -270,6 +271,7 @@ public class Dungeon {
     public static void init(String seedCode,int paramChallenges) {
         itemAOfSave = new ArrayList<>();
         NOTEAOfSave = new ArrayList<>();
+		guessType	= new HashSet<>();
 		version = Game.versionCode;
 		challenges = paramChallenges;
 		if (isGameMode(WndStartGame.GameMode.IDENTIFY)){
@@ -627,6 +629,7 @@ public class Dungeon {
     private static final String LOCKXMAS       = "LOCKXMAS";
     private static final String ROLLTIMES       = "ROLLTIMES";
 	private static final String GAME_MODE		= "Game_Mode";
+	public static final String GuessType		= "Guess_Type";
 	public static void saveGame( int save ) {
 		try {
 			Bundle bundle = new Bundle();
@@ -655,6 +658,7 @@ public class Dungeon {
             String[] NoteToSave =NOTEAOfSave.toArray(new String[0]);
             bundle.put(NOTESAVEB,NoteToSave);
             //对应物品类型的标签
+			bundle.put(GuessType, guessType.toArray(new Class[0]));
 
             bundle.put( GOLD, gold );
 			bundle.put( ENERGY, energy );
@@ -760,6 +764,12 @@ public class Dungeon {
         }else {
             NOTEAOfSave = new ArrayList<>();
         }
+
+        guessType = new HashSet<>();
+		if (bundle.contains(GuessType)){
+			for (Class<? extends ColorItem> i : bundle.getClassArray(GuessType))
+				guessType.add(i);
+		}
 		GameMode = bundle.getLong(GAME_MODE);
 		if (bundle.getBoolean(LOCKXMAS))
 			GameMode += (long) Math.pow(2, WndStartGame.GameMode.CHRISTMAS.code());

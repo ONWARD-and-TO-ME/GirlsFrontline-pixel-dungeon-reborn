@@ -129,6 +129,19 @@ public class Armor extends EquipableItem {
 		this.tier = tier;
 	}
 
+    public Item clone(Item item){
+        Armor armor = (Armor) item;
+        super.clone(armor);
+        broken = armor.broken;
+        duration = armor.duration;
+        tier    = armor.tier;
+        inscribe(armor.glyph);
+        augment = armor.augment;
+        masteryPotionBonus = armor.masteryPotionBonus;
+        curseInfusionBonus = armor.curseInfusionBonus;
+        return this;
+    }
+
     @Override
     public void update(){
         if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)){

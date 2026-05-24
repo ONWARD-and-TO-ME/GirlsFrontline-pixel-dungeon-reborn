@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.ItemStatusHandler;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
+import com.shatteredpixel.shatteredpixeldungeon.items.ColorItem;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -44,7 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Ring extends KindofMisc {
+public class Ring extends KindofMisc implements ColorItem {
 	
 	protected Buff buff;
 
@@ -68,7 +69,6 @@ public class Ring extends KindofMisc {
 	private static ItemStatusHandler<Ring> handler;
 	
 	private String gem;
-	protected boolean guessType;
 	
 	//rings cannot be 'used' like other equipment, so they ID purely based on exp
 	private float levelsToID = 1;
@@ -157,7 +157,7 @@ public class Ring extends KindofMisc {
             levelKnown = false;
             cursedKnown = false;
 			guessingLevel = -1;
-			guessType = false;
+			Dungeon.guessType.remove(getClass());
         }else if (isKnown()){
             handler.ignore(this);
         }else {
@@ -167,7 +167,7 @@ public class Ring extends KindofMisc {
 
 	@Override
 	public String name() {
-		if (isKnown() || Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY) || guessType)
+		if (isKnown() || Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY) || isGuess())
 			return super.name();
 		return Messages.get(this, gem);
 	}
@@ -262,9 +262,9 @@ public class Ring extends KindofMisc {
 		if (!guessByTime || hero.wholeTime()){
 			if (!ring.cursed || ring.level() < 2) {
 				ring.guessingLevel = ring.level();
-				ring.guessType = true;
+				ring.guessType();
 			}
-			else if ( ring.isKnown() || ring.guessType ) {
+			else if ( ring.isKnown() || ring.isGuess() ) {
 				ring.guessingLevel = Math.min(2, ring.level());
 			}
 		}
@@ -350,20 +350,19 @@ public class Ring extends KindofMisc {
 	}
 
 	private static final String LEVELS_TO_ID    = "levels_to_ID";
-	private static final String GuessType		= "Guess_Type";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( LEVELS_TO_ID, levelsToID );
-		bundle.put( GuessType, guessType);
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		levelsToID = bundle.getFloat( LEVELS_TO_ID );
-		guessType	= bundle.getBoolean( GuessType );
+		if (bundle.contains(Dungeon.GuessType))
+			guessType();
 	}
 	
 	public void onHeroGainExp( float levelPercent, Hero hero ){

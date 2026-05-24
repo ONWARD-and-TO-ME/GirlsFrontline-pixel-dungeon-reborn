@@ -143,7 +143,7 @@ public class MeleeWeapon extends Weapon {
             if (isIdentified()){
                 defInfo = Messages.get(this, "stats_desc",  Math.max(0,DEF + DEFUPGRADE * buffedLvl() + REM));
             } else{
-                defInfo = Messages.get(this, "typical_stats_desc", DEF );
+                defInfo = Messages.get(this, "typical_stats_desc", Math.max(0,DEF + DEFUPGRADE * guessingLevel() + REM) );
             }
             if(DEFUPGRADE>0) {
                 defInfo += "通过升级可以使伤害吸收量增长。";
