@@ -107,19 +107,13 @@ public abstract class Geminis extends NPC {
     public void damage(int dmg, Object src, Char enemy) {
         if (twin == null)
             twin = (Geminis) Actor.findById(twinID);
-		if (twin != null) {
-			if (src instanceof Mob && !(src instanceof Geminis)){
-				dmg /= 2;
+		if (twin != null && !(src instanceof Geminis)) {
+			if (src instanceof Mob)
 				((Mob) src).aggro(twin);
-				twin.damage(dmg, this, enemy);
-			}
-			else if (!(enemy instanceof Geminis)) {
-				dmg /= 2;
-				if (enemy instanceof Mob) {
-					((Mob) enemy).aggro(twin);
-				}
-				twin.damage(dmg, this, enemy);
-			}
+			else if (enemy instanceof Mob && !(enemy instanceof Geminis))
+				((Mob) enemy).aggro(twin);
+			dmg /= 2;
+			twin.damage(dmg, this, enemy);
 		}
         super.damage(dmg, src, enemy);
     }

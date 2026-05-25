@@ -119,6 +119,7 @@ public class WelcomeScene extends PixelScene {
 
 		RenderedTextBlock text = PixelScene.renderTextBlock(6);
 		String message;
+		
 		if(GirlsFrontlinePixelDungeon.versionCode == previousVersion && !SPDSettings.intro()){
 			message = Messages.get(this, "coutinue_msg");
 		}else if (previousVersion == 0 || SPDSettings.intro()) {

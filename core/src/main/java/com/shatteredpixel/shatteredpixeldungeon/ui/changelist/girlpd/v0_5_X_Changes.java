@@ -139,10 +139,10 @@ public class v0_5_X_Changes {
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
         changes.hardlight(Window.TITLE_COLOR);
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new ScrollOfIdentify(), "辅助鉴定", "我加入了一个辅助鉴定功能，当你做出一些对物品或装备产生初步鉴定的操作时，将会把鉴定内容标记出来。" +
+        changes.addButton(new ChangeButton(new ScrollOfIdentify(), -2F, null, null, -2, "辅助鉴定", "我加入了一个辅助鉴定功能，当你做出一些对物品或装备产生初步鉴定的操作时，将会把鉴定内容标记出来。" +
                 "\n\n目前这个功能尚不完善，仅限猜测未鉴定武器、护甲的等级下限、部分瞄准镜的等级、消耗多充能的HE燃烧弹与DT农药等等。" +
                 "\n\n这个功能的开启要求完成全知挑战。"));
-        changes.addButton(new ChangeButton(new ScrollOfIdentify(), "全知挑战", "在返回地表处找德尔(目前暂用波波沙皮肤)，即可开启。" +
+        changes.addButton(new ChangeButton(new ScrollOfIdentify(), -2F, null, null, -2, "全知挑战", "在返回地表处找德尔(目前暂用波波沙皮肤)，即可开启。" +
                 "\n\n全知挑战将会直接知道磁盘、药水、瞄准镜的真实名称，武器、护甲的真实等级及其附魔、刻印，并且可以透过地上的物品类别(补给箱、墓碑等)直接看出内部物品(只能看最顶上的那个物品)。" +
                 "\n\n全知挑战禁止生成力量药水与升级磁盘(允许初始携带)，而所有的武器与护甲的阶数都会调整到符合当前力量。" +
                 "\n\n武器与护甲首次降阶时将会依据距离1阶的阶数差进行补级。" +
@@ -154,31 +154,33 @@ public class v0_5_X_Changes {
                 "\n\n失败的对局提供1次，获胜的对局提供10次，可混用。")));
         changes.addButton(new ChangeButton(new PotionOfDivineInspiration(), "有人向我反应，有部分区域的献祭火不好完成，现在你可以使用神意合剂将献祭火砸灭了，将其砸灭也视为完成。" +
                 "\n\n但不提供鉴定。。。"));
+        changes.addButton(new ChangeButton(new BlacksmithSprite(), 0.8F, "新增", "我给怪物信息界面的血条加入了当前具体血量的显示。" +
+                "\n\n字体大小后面再做调整。"));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new Tengu(), "现在10层衔尾蛇切换阶段时，不在不变动区域的友方单位不再会被移除，而是传送至玩家周围了\n\n不在不变动区域的敌方依旧会被移除，如果有。"));
+        changes.addButton(new ChangeButton(new Tengu(), 0.8F, "现在10层衔尾蛇切换阶段时，不在不变动区域的友方单位不再会被移除，而是传送至玩家周围了\n\n不在不变动区域的敌方依旧会被移除，如果有。"));
         changes.addButton(new ChangeButton(new LloydsBeacon(), "上一个版本我改写空降妖精的时候，原计划是在背包也进行冷却来着，但不知道为什么写去必须装备着才冷却了。现在补回来了。"));
-        changes.addButton(new ChangeButton(new ScaleArmor(), "外骨骼相关", "修复了外骨骼复合产生的破损度在boss战期间的意外增长"));
+        changes.addButton(new ChangeButton(new ScaleArmor(), -2F, null, null, -2, "外骨骼相关", "修复了外骨骼复合产生的破损度在boss战期间的意外增长"));
         changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER), "过载", "我稍微调整了一下过载的衰减，现在待机时的过载时间衰减值普遍降低，并且在Boss战期间，待机衰减会进一步降低。" +
                 "\n\n而武器护甲在其生效时，如武器攻击，护甲防御没闪避掉的攻击，这个时候将会加快衰减。"));
-        changes.addButton(new ChangeButton(new ScrollOfIdentify(), "行窃预知", "我很抱歉，在上一个版本中，我将UMP9初始携带的行窃预知的结果判断反转了，导致已寻找变成未寻找，未寻找变成已寻找……" +
+        changes.addButton(new ChangeButton(new ScrollOfIdentify(), -2F, null, null, -2,  "行窃预知", "我很抱歉，在上一个版本中，我将UMP9初始携带的行窃预知的结果判断反转了，导致已寻找变成未寻找，未寻找变成已寻找……" +
                 "\n\n而现在已经修复好了，可以放心地给行窃预知加点了。"));
-        changes.addButton(new ChangeButton(new Gun562Accessories(), "修复了56-1升级56-2后会获得永久不衰减的过载。"));
-        changes.addButton(new ChangeButton(new PotionOfInvisibility(), "升阶秘法", "修复了+2升阶秘法在使用磁盘时令刺客伏击重置的bug。"));
+        changes.addButton(new ChangeButton(new Gun562Accessories(), "修复56-1升级56-2后获得永久不衰减的过载的bug。"));
+        changes.addButton(new ChangeButton(new PotionOfInvisibility(), -2F, null, null, -2, "升阶秘法", "修复了+2升阶秘法在使用磁盘时令刺客伏击重置的bug。"));
         changes.addButton(new ChangeButton(new RotLasher(), "我想应该很多人受到过触手的伏击，以及想要击杀腐莓却无处落脚。" +
                 "\n\n现在腐莓房及其生成的腐莓触手同步了破碎，发现玩家将会先等待一回合，并且腐莓四周必定有格子进行攻击。"));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new GeminiShield(), "双生妖精(暂用ST-AR15贴图)", "现在双生妖精受到玩家攻击时不再闪避了，以便于使用治疗.50进行治疗。" +
+        changes.addButton(new ChangeButton(new GeminiShield(), 0.8F, null, null, -2, "双生妖精(暂用ST-AR15贴图)", "现在双生妖精受到玩家攻击时不再闪避了，以便于使用治疗.50进行治疗。" +
                 "\n\n现在双生妖精在受到远程伤害时也会互相转移仇恨。"));
-        changes.addButton(new ChangeButton(new ScaleArmor(), 0x88EEFF,"重甲刻印","现在四种激光怪的攻击可以被重甲抵挡了。" +
+        changes.addButton(new ChangeButton(new ScaleArmor(), -2F, null, null, 0x88EEFF,"重甲刻印","现在四种激光怪的攻击可以被重甲抵挡了。" +
                 "\n\n并且重甲的防御上限变为等级的平方，下限不做调整。" +
                 "\n\n也不清楚这样的改动到位没有……"));
-        changes.addButton(new ChangeButton(new Blacksmith(), "现在外骨骼合并只需要同阶即可(针对火控外骨骼及全知挑战)" +
+        changes.addButton(new ChangeButton(new Blacksmith(), 0.8F, null, null, -2, "装备重铸","现在外骨骼合并只需要同阶即可(针对火控外骨骼及全知挑战)" +
                 "\n\n放入火控外骨骼则另一个外骨骼无论其等级多少都将作为耗材。" +
                 "\n\n现在可以放入未鉴定等级的无诅咒装备作为消耗材料，倘若放入两个未鉴定装备则会以左边的为主装备。"));
         changes.addButton(new ChangeButton(new TengusMask(), "现在三层通用天赋的解锁条件从12级+心智升级，降低至12级，但专职天赋依旧需要进行心智升级以获取。"));
@@ -186,7 +188,7 @@ public class v0_5_X_Changes {
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
         changes.hardlight( CharSprite.NEGATIVE );
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561), "电磁增幅", "现在电磁增幅的概率将会受到攻速影响，过快或者过慢的武器会对概率造成影响。"));
+        changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561), 0.8F, null, null, -2, "电磁增幅", "现在电磁增幅的概率将会受到攻速影响，过快或者过慢的武器会对概率造成影响。"));
     }
     public static void add_0_5_7_3_To_0_5_8_1_Changes( ArrayList<ChangeInfo> changeInfos ) {
         ChangeInfo changes = new ChangeInfo("v0.5.7v3 ~ 0.5.8v1", true, "");
@@ -345,11 +347,14 @@ public class v0_5_X_Changes {
             message.add("到这里，我的话好像说完了，又好像还漏了点什么东西？不管了……" +
                     "\n\n哦对了，你知道吗，不咎、等待响应、ONWARD、TO ME都是我哦。");
             message.add("我的git库的地址在下方展示，如果想要开发而又不太想找我说话，可以直接自行下载的" +
-                    "\n\n https://github.com/ONWARD-and-TO-ME/GirlsFrontline-pixel-dungeon-reborn.git");
+                    "\n\n https://github.com/" +
+                    "\n ONWARD-and-TO-ME/" +
+                    "\n GirlsFrontline-pixel-" +
+                    "\n dungeon-reborn.git");
             message.add("这个ChangeButton.java其实是我犯病的时候爆改的，把他当作一个状态机来做了，大概能再重制回二百来行代码，但我没空闲时间去仔细研究哩……");
             message.add("我挺想同步破碎的道具日志的，这样子我就能对查种器进行大刀阔斧的改动了，例如直接从日志上选择道具，而非现在这样的输入文本，试想一下，直接选择道具，是不是比现在的输入文本便捷多了?" );
         }
-        changes.addButton(new ChangeButton(new Hero(HeroClass.HUNTRESS), "", message));
+        changes.addButton(new ChangeButton(new HeroSprite(HeroClass.HUNTRESS, 0), "", message));
     }
     public static void add_0_5_7_Changes( ArrayList<ChangeInfo> changeInfos ){
         ChangeInfo changes = new ChangeInfo("v0.5.7", true, "");

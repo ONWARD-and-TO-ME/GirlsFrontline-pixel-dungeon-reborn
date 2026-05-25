@@ -205,17 +205,20 @@ public class AlchemistsToolkit extends Artifact {
 	}
 	
 	private static final String WARM_UP = "warm_up";
+	private static final String ChangeLabor = "ChangeLaboratory";
 	
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(WARM_UP, warmUpDelay);
+		bundle.put(ChangeLabor, Secret);
 	}
 	
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		warmUpDelay = bundle.getFloat(WARM_UP);
+		Secret		= bundle.getBoolean(ChangeLabor);
 	}
 	
 	public class kitEnergy extends ArtifactBuff {
