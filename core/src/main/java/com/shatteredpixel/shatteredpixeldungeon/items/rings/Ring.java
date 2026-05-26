@@ -361,8 +361,6 @@ public class Ring extends KindofMisc implements ColorItem {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		levelsToID = bundle.getFloat( LEVELS_TO_ID );
-		if (bundle.contains(Dungeon.GuessType))
-			guessType();
 	}
 	
 	public void onHeroGainExp( float levelPercent, Hero hero ){

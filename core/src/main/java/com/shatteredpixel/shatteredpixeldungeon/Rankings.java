@@ -222,6 +222,8 @@ public enum Rankings {
 		
 		Dungeon.challenges = data.getInt(CHALLENGES);
 		Dungeon.GameMode = data.getLong( GAME_MODE );
+		if (rec.win && Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
+			Badges.Test_Identify();
 
 	}
 	

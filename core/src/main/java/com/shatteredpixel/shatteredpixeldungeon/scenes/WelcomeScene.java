@@ -119,16 +119,16 @@ public class WelcomeScene extends PixelScene {
 
 		RenderedTextBlock text = PixelScene.renderTextBlock(6);
 		String message;
-		
-		if(GirlsFrontlinePixelDungeon.versionCode == previousVersion && !SPDSettings.intro()){
-			message = Messages.get(this, "coutinue_msg");
-		}else if (previousVersion == 0 || SPDSettings.intro()) {
+		if (previousVersion == 0 || SPDSettings.intro())
 			message = Messages.get(this, "welcome_msg");
-		} else if (previousVersion < GirlsFrontlinePixelDungeon.versionCode) {
+		else if(SPDSettings.isBirthday())
+			message = "祝您玩的愉快~";
+		else if(GirlsFrontlinePixelDungeon.versionCode == previousVersion)
+			message = Messages.get(this, "coutinue_msg");
+		else if (previousVersion < GirlsFrontlinePixelDungeon.versionCode)
 			message = Messages.get(this, "update_msg");
-		} else {
+		else
 			message = Messages.get(this, "what_msg");
-		}
 		text.text(message, Math.min(w-20, 300));
 		float textSpace = okay.top() - topRegion - 4;
 		text.setPos((w - text.width()) / 2f, (topRegion + 2) + (textSpace - text.height())/2);

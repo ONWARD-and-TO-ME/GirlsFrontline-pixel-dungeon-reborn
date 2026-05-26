@@ -837,6 +837,9 @@ public class Badges {
     }
 	public static void Test_Identify(){
 		displayBadge(Badge.Identify);
+		if (!local.contains( Badge.Identify )){
+			local.add( Badge.Identify );
+		}
 	}
 	public static void validateMasteryCombo( int n ) {
 		if (!local.contains( Badge.MASTERY_COMBO ) && n == 10) {
