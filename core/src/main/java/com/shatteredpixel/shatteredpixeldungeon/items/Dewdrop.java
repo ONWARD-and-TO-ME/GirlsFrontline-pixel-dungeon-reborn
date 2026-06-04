@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -49,7 +50,7 @@ public class Dewdrop extends Item {
 	public boolean doPickUp(Hero hero, int pos) {
 		
 		Waterskin flask = hero.belongings.getItem( Waterskin.class );
-		
+		Catalog.setSeen(getClass());
 		if (flask != null && !flask.isFull()){
 
 			flask.collectDew( this );
@@ -60,6 +61,8 @@ public class Dewdrop extends Item {
 			int terr = Dungeon.level.map[pos];
 			if (!consumeDew(1, hero, terr == Terrain.ENTRANCE|| terr == Terrain.EXIT || terr == Terrain.UNLOCKED_EXIT)){
 				return false;
+			} else {
+				Catalog.countUse(getClass());
 			}
 			
 		}

@@ -456,11 +456,13 @@ public class YogDzewa extends Mob {
 	@Override
 	public void die( Object cause ) {
 
+		Bestiary.skipCountingEncounters = true;
 		for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
 			if (mob instanceof Larva || mob instanceof RipperDemon || mob instanceof Eye || mob instanceof Scorpio) {
 				mob.die( cause );
 			}
 		}
+		Bestiary.skipCountingEncounters = false;
 
         Cypros cypros = Dungeon.hero.belongings.getItem(Cypros.class);
         if (cypros == null && Dungeon.hero.belongings.weapon instanceof Cypros)

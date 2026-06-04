@@ -21,7 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.spells;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
@@ -37,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Random;
@@ -90,7 +93,10 @@ public class ArcaneCatalyst extends Spell {
     }
 	@Override
 	protected void onCast(Hero hero) {
-		
+		if (Random.Float() < ((Spell) curItem).TalentChance())
+			Talent.onScrollUsed(hero, 1);
+		Catalog.setSeen(curItem.getClass());
+		Catalog.countUse(curItem.getClass());
 		detach( curUser.belongings.backpack );
 		updateQuickslot();
 		

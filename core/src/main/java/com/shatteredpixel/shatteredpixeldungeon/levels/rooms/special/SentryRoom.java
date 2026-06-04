@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
@@ -228,6 +229,9 @@ public class SentryRoom extends SpecialRoom {
 
 		@Override
 		protected boolean act() {
+			if (Dungeon.level.heroFOV[pos]){
+				Bestiary.setSeen(getClass());
+			}
 			if (fieldOfView == null || fieldOfView.length != Dungeon.level.length()){
 				fieldOfView = new boolean[Dungeon.level.length()];
 			}

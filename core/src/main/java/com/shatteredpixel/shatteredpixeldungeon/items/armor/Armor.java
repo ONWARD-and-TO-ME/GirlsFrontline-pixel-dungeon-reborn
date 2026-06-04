@@ -62,20 +62,20 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Stone;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Swiftness;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Thorns;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -227,6 +227,24 @@ public class Armor extends EquipableItem {
 		return actions;
 	}
 
+    @Override
+    public boolean collect(Bag container) {
+        if(super.collect(container)){
+            if (Dungeon.hero != null && Dungeon.hero.isAlive() && isIdentified() && glyph != null){
+                Catalog.setSeen(glyph.getClass());
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+    @Override
+    public Item identify(boolean byHero) {
+        if (glyph != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
+            Catalog.setSeen(glyph.getClass());
+        }
+        return super.identify(byHero);
+    }
 	@Override
 	public void execute(Hero hero, String action) {
 
@@ -934,6 +952,10 @@ public class Armor extends EquipableItem {
 		if (seal != null){
 			seal.setGlyph(glyph);
 		}
+        if (glyph != null && isIdentified() && Dungeon.hero != null
+                && Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
+            Catalog.setSeen(glyph.getClass());
+        }
 		return this;
 	}
 
@@ -972,7 +994,7 @@ public class Armor extends EquipableItem {
 				Brimstone.class, Stone.class, Entanglement.class,
 				Repulsion.class, Camouflage.class, Flow.class };
 		
-		private static final Class<?>[] rare = new Class<?>[]{
+		public static final Class<?>[] rare = new Class<?>[]{
 				Affection.class, AntiMagic.class, Thorns.class };
 		
 		private static final float[] typeChances = new float[]{
@@ -981,7 +1003,7 @@ public class Armor extends EquipableItem {
 				10  //3.33% each
 		};
 
-		private static final Class<?>[] curses = new Class<?>[]{
+		public static final Class<?>[] curses = new Class<?>[]{
 				AntiEntropy.class, Corrosion.class, Displacement.class, Metabolism.class,
 				Multiplicity.class, Stench.class, Overgrowth.class, Bulk.class
 		};

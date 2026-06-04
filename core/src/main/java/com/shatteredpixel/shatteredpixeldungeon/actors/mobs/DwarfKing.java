@@ -479,11 +479,13 @@ public class DwarfKing extends Mob {
 				for (Summoning s : buffs(Summoning.class)) {
 					s.detach();
 				}
+				Bestiary.skipCountingEncounters = true;
 				for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
 					if (m instanceof Ghoul || m instanceof Monk || m instanceof Warlock || m instanceof Golem) {
 						m.die(null);
 					}
 				}
+				Bestiary.skipCountingEncounters = false;
 			}
 		} else if (phase == 2 && shielding() == 0) {
 			properties.remove(Property.IMMOVABLE);
@@ -528,9 +530,11 @@ public class DwarfKing extends Mob {
 
 		Dungeon.level.unseal();
 
+		Bestiary.skipCountingEncounters = true;
 		for (Mob m : getSubjects()){
 			m.die(null);
 		}
+		Bestiary.skipCountingEncounters = false;
 
 		yell( Messages.get(this, "defeated") );
 	}

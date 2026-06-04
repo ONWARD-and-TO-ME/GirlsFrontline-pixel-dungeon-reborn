@@ -26,10 +26,12 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPassage;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -43,6 +45,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 public class BeaconOfReturning extends Spell {
 	
@@ -175,6 +178,10 @@ public class BeaconOfReturning extends Spell {
 			Game.switchScene( InterlevelScene.class );
 		}
 		detach(hero.belongings.backpack);
+		if (Random.Float() < TalentChance())
+			Talent.onScrollUsed(hero, 1);
+		Catalog.setSeen(getClass());
+		Catalog.countUse(getClass());
 	}
 	
 	@Override
@@ -237,5 +244,9 @@ public class BeaconOfReturning extends Spell {
 			outQuantity = 5;
 		}
 		
+	}
+	@Override
+	public int outPut(){
+		return 5;
 	}
 }

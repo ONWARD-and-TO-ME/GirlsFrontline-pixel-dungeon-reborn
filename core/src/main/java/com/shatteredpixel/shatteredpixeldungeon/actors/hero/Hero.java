@@ -131,6 +131,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.AK47;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ShootGun;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -1578,7 +1579,7 @@ public class Hero extends Char {
 			resting = false;
 		}
 
-		if (this.buff(Drowsy.class) != null){
+		if (buff(Drowsy.class) != null){
 			Buff.detach(this, Drowsy.class);
 			GLog.w( Messages.get(this, "pain_resist") );
 		}
@@ -2025,6 +2026,7 @@ public class Hero extends Char {
 		if (ankh != null) {
 			interrupt();
 			resting = false;
+			Catalog.countUse(Ankh.class);
 
 			if (ankh.isBlessed()) {
 				this.HP = HT / 4;

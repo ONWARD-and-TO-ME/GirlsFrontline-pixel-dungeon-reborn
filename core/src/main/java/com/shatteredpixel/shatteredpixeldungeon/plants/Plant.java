@@ -152,6 +152,7 @@ public abstract class Plant implements Bundlable {
 					|| Dungeon.isChallenged(Challenges.NO_HERBALISM)) {
 				super.onThrow( cell );
 			} else {
+				Catalog.countUse(getClass());
 				Dungeon.level.plant( this, cell );
 				if (Dungeon.hero.subClass == HeroSubClass.WARDEN) {
 					for (int i : PathFinder.NEIGHBOURS8) {

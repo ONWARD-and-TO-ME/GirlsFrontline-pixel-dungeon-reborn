@@ -615,7 +615,10 @@ public enum Talent {
 		return factor;
 	}
 
-	public static void onPotionUsed( Hero hero, float mul ){
+    public static void onPotionUsed( Hero hero, float mul ){
+        onPotionUsed(hero, mul, hero.pos);
+    }
+	public static void onPotionUsed( Hero hero, float mul, int pos ){
 		if (hero.hasTalent(RESTORED_WILLPOWER)){
 			ShieldBuff shield = hero.buff(BrokenSeal.WarriorShield.class);
             int shieldToGive = Math.round( hero.HT/100F*hero.pointsInTalent(RESTORED_WILLPOWER)*3.5F*mul );
@@ -642,7 +645,7 @@ public enum Talent {
 		if (hero.hasTalent(RESTORED_NATURE)){
 			ArrayList<Integer> grassCells = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8){
-				grassCells.add(hero.pos+i);
+				grassCells.add(pos+i);
 			}
 			Random.shuffle(grassCells);
 			for (int cell : grassCells){

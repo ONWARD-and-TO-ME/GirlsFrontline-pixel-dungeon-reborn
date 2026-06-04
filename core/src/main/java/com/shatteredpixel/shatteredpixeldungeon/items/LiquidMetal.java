@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -147,12 +148,14 @@ public class LiquidMetal extends Item {
 					return;
 				} else if (maxToUse < quantity()) {
 					m.repair(maxToUse*durabilityPerMetal);
+					Catalog.countUses(LiquidMetal.class, maxToUse);
 					quantity(quantity()-maxToUse);
 					GLog.i(Messages.get(LiquidMetal.class, "apply", maxToUse));
 
 				} else {
 					m.repair(quantity()*durabilityPerMetal);
 					GLog.i(Messages.get(LiquidMetal.class, "apply", quantity()));
+					Catalog.countUses(LiquidMetal.class, quantity());
 					detachAll(Dungeon.hero.belongings.backpack);
 				}
 

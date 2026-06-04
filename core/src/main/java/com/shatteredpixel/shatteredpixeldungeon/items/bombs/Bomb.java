@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMirrorImag
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -132,9 +133,14 @@ public class Bomb extends Item {
 	}
 
 	public void explode(int cell){
+		explode(false, cell);
+	}
+	public void explode(boolean other ,int cell){
 		//We're blowing up, so no need for a fuse anymore.
 		this.fuse = null;
 
+		if (!other)
+			Catalog.countUse(getClass());
 		Sample.INSTANCE.play( Assets.Sounds.BLAST );
 
 		if (explodesDestructively()) {
@@ -405,7 +411,12 @@ public class Bomb extends Item {
 					result = Reflection.newInstance(validIngredients.get(i.getClass()));
 				}
 			}
-			
+
+			if (result instanceof ArcaneBomb){
+				Catalog.countUse(GooBlob.class);
+			} else if (result instanceof ShrapnelBomb){
+				Catalog.countUse(MetalShard.class);
+			}
 			return result;
 		}
 		

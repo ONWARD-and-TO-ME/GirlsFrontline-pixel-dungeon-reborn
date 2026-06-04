@@ -84,4 +84,8 @@ public class MagicalPorter extends InventorySpell {
 		}
 		
 	}
+	@Override
+	public int outPut(){
+		return 8;
+	}
 }

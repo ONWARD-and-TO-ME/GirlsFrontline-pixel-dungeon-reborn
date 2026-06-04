@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -67,6 +68,8 @@ public class FlockTrap extends Trap {
 				if ((t = Dungeon.level.traps.get(i)) != null && t.active){
 					if (t.disarmedByActivation) t.disarm();
 					t.reveal();
+					Bestiary.setSeen(t.getClass());
+					Bestiary.countEncounter(t.getClass());
 					t.activate();
 				}
 				Dungeon.level.occupyCell(sheep);

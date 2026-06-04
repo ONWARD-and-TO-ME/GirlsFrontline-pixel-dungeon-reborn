@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
@@ -33,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -116,7 +118,7 @@ public class TimekeepersHourglass extends Artifact {
 									activeBuff = new timeFreeze();
 									Talent.onArtifactUsed(Dungeon.hero);
 									activeBuff.attachTo(Dungeon.hero);
-                                    if (hero.hasTalent(Talent.ENHANCED_RINGS_V2))
+                                    if (hero.hasTalent(Talent.ENHANCED_RINGS_V2) && hero.buff(EnhancedRings.CoolDown.class) == null)
                                         ((timeFreeze)activeBuff).reduceCharge(0f);
                                     else
                                         ((timeFreeze)activeBuff).processTime(0f);
@@ -430,6 +432,7 @@ public class TimekeepersHourglass extends Artifact {
 		@Override
 		public boolean doPickUp(Hero hero, int pos) {
 			TimekeepersHourglass hourglass = hero.belongings.getItem( TimekeepersHourglass.class );
+			Catalog.setSeen(getClass());
 			if (hourglass != null && !hourglass.cursed) {
                 if (hourglass.level()>=hourglass.levelCap){
                     GLog.p( Messages.get(this, "maxlevel") );

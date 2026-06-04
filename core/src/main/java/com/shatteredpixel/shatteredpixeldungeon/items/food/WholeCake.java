@@ -35,7 +35,7 @@ public class WholeCake extends Food {
 	private String title;
 	private String body;
 	public WholeCake(){
-		this("", "");
+		this("某人的蛋糕", "0.5.8v2版本纯粹是为了这个私货而加急制作的。但是令人遗憾的是，没有多少人发现这个私货……\n\n或者说，没有人按照我预设的剧本进行演出……");
 	}
 	public WholeCake(String body){
 		this("节日蛋糕", body);

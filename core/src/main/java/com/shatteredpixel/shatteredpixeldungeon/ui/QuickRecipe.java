@@ -93,7 +93,7 @@ public class QuickRecipe extends Component {
 	
 	private ArrayList<ItemSlot> inputs;
 	private QuickRecipe.arrow arrow;
-	private ItemSlot output;
+	public ItemSlot output;
 	
 	public QuickRecipe(Recipe.SimpleRecipe r){
 		this(r, r.getIngredients(), r.sampleOutput(null));
@@ -265,6 +265,8 @@ public class QuickRecipe extends Component {
 	
 	//gets recipes for a particular alchemy guide page
 	//a null entry indicates a break in section
+	public static int BREW = 8;
+	public static int SPELL = 9;
 	public static ArrayList<QuickRecipe> getRecipes( int pageIdx ){
 		ArrayList<QuickRecipe> result = new ArrayList<>();
 		switch (pageIdx){

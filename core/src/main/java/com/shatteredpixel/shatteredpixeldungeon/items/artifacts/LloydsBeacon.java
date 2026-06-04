@@ -333,8 +333,8 @@ public class LloydsBeacon extends Artifact {
             updateQuickslot();
             
             PathFinder.buildDistanceMap(Dungeon.level.entrance, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
-            if (PathFinder.distance[ch.pos] == Integer.MAX_VALUE){
-                GLog.w( Messages.get(this, "preventing") );
+            if (ch == Dungeon.hero && PathFinder.distance[ch.pos] == Integer.MAX_VALUE){
+                GLog.w( Messages.get(LloydsBeacon.class, "preventing") );
                 return;
             }
             if (ch == curUser) {

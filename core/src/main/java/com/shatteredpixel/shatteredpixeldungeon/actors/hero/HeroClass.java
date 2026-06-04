@@ -104,6 +104,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.GSH18;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.Cannon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
@@ -284,6 +285,7 @@ public enum HeroClass {
 		new ScrollOfRage().identify();
 		if (hero.belongings.armor != null){
 			hero.belongings.armor.affixSeal(new BrokenSeal());
+			Catalog.setSeen(BrokenSeal.class); //as it's not added to the inventory
 		}
 
 		ThrowingStone stone = new ThrowingStone();

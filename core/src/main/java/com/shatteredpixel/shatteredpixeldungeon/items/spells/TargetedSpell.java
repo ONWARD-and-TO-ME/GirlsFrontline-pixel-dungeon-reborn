@@ -22,10 +22,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -33,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
+import com.watabou.utils.Random;
 
 public abstract class TargetedSpell extends Spell {
 	
@@ -87,8 +92,12 @@ public abstract class TargetedSpell extends Spell {
 					public void call() {
 						curSpell.affectTarget(shot, curUser);
 						curSpell.detach( curUser.belongings.backpack );
+						if (Random.Float() < ((Spell) curItem).TalentChance())
+							Talent.onScrollUsed(curUser, 1);
+						Catalog.setSeen(curItem.getClass());
+						Catalog.countUse(curItem.getClass());
 						Invisibility.dispel();
-						curSpell.updateQuickslot();
+						updateQuickslot();
 						curUser.spendAndNext( 1f );
 					}
 				});

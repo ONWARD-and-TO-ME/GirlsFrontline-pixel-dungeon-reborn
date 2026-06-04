@@ -65,4 +65,8 @@ public class AquaBlast extends TargetedSpell {
 		}
 		
 	}
+	@Override
+	public int outPut(){
+		return 8;
+	}
 }

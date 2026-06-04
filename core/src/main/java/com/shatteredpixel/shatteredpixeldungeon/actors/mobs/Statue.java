@@ -53,14 +53,18 @@ public class Statue extends Mob {
     }
 	
 	public Statue() {
+		this(true);
+	}
+	public Statue(boolean noEquip) {
 		super();
-		
-		do {
-			weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
-		} while (weapon.cursed);
-		
-		weapon.enchant( Enchantment.random() );
-		weapon.update();
+		if (!noEquip) {
+			do {
+				weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
+			} while (weapon.cursed);
+
+			weapon.enchant(Enchantment.random());
+			weapon.update();
+		}
 		HP = HT = 15 + Dungeon.curDepth() * 5;
 		defenseSkill = 4 + Dungeon.curDepth();
 	}
@@ -172,7 +176,10 @@ public class Statue extends Mob {
 
 	@Override
 	public String description() {
-		return Messages.get(this, "desc", weapon.name());
+		String desc = Messages.get(this, "desc");
+		if (weapon != null)
+			desc += Messages.get(this, "equip_desc", weapon.name());
+		return desc;
 	}
 	
 	{
@@ -181,9 +188,9 @@ public class Statue extends Mob {
 
 	public static Statue random(){
 		if (Random.Int(10) == 0){
-			return new ArmoredStatue();
+			return new ArmoredStatue(false);
 		} else {
-			return new Statue();
+			return new Statue(false);
 		}
 	}
 	

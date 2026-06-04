@@ -615,8 +615,7 @@ public class Item implements Bundlable {
 	public Item identify( boolean byHero ) {
 
 		if (byHero && hero != null && hero.isAlive()){
-            if(!Dungeon.isChallenged(Challenges.TEST_MODE))
-			    Catalog.setSeen(getClass());
+			Catalog.setSeen(getClass());
 			if (!isIdentified())
                 Talent.onItemIdentified(hero, this);
 		}

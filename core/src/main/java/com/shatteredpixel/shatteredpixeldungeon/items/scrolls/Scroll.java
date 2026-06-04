@@ -195,6 +195,9 @@ public abstract class Scroll extends Item implements ColorItem {
     }
 
 	protected void readAnimation() {
+		if (!anonymous) {
+			Catalog.countUse(getClass());
+		}
         Invisibility.dispel(true);
         Talent.onScrollUsed(hero, mulOnTalentUsed);
 		curUser.spend( TIME_TO_READ );

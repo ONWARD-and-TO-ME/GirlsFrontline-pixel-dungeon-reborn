@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile.WardParticle;
@@ -241,6 +242,10 @@ public class WandOfWarding extends Wand {
 					break;
 			}
 
+			if (Actor.chars().contains(this) && tier >= 3){
+				Bestiary.setSeen(WardSentry.class);
+			}
+
 			if (tier < 6){
 				tier++;
 				viewDistance++;
@@ -253,6 +258,8 @@ public class WandOfWarding extends Wand {
 
 		}
 
+		//this class is used so that wards and sentries can have two entries in the Bestiary
+		public static class WardSentry extends Ward{};
 		public void wandHeal( int wandLevel ){
 			wandHeal( wandLevel, 1f );
 		}

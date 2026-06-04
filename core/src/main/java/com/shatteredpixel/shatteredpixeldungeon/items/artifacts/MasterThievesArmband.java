@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -174,6 +175,7 @@ public class MasterThievesArmband extends Artifact {
 								exp -= 10 + Math.round(3.33f * level());
 								GLog.p(Messages.get(MasterThievesArmband.class, "level_up"));
 								upgrade();
+								Catalog.countUse(MasterThievesArmband.class);
 							}
 							Item.updateQuickslot();
 							curUser.next();
@@ -298,6 +300,7 @@ public class MasterThievesArmband extends Artifact {
 					exp -= 10 + Math.round(3.33f * level());
 					GLog.p(Messages.get(MasterThievesArmband.class, "level_up"));
 					upgrade();
+					Catalog.countUse(MasterThievesArmband.class);
 				}
 				return true;
 			}

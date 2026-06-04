@@ -313,7 +313,12 @@ public class RatKing extends NPC {
     
     @Override
     public String description() {
-        return ((FncSprite)sprite).XMAS ?
+        boolean XMAS;
+        if (sprite == null)
+            XMAS = Dungeon.isXMAS();
+        else
+            XMAS = ((FncSprite)sprite).XMAS;
+        return XMAS ?
                 Messages.get(this, "desc_festive")
                 : super.description();
     }

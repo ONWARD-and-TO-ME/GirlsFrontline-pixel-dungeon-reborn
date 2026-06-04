@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurs
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Clipper;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -130,6 +131,7 @@ public class WndDEL extends Window {
                     btnItem1.item.cursedKnown = true;
                     if (btnItem2.item != null) {
                         btnItem2.item.detach(Dungeon.hero.belongings.backpack);
+                        Catalog.countUse(btnItem2.item.getClass());
                         del.WorkLoadUsed(1);
                         Dungeon.gold -= 200;
                         mission1.addMission(50, btnItem1.item);
@@ -169,6 +171,7 @@ public class WndDEL extends Window {
                 else if (mission == 3) {
                     btnItem2.item = btnItem2.item.detach(Dungeon.hero.belongings.backpack, btnItem2.item.quantity(), 0);
                     int left = btnItem2.item.quantity();
+                    Catalog.countUses(btnItem2.item.getClass(), left);
                     int time = left/signalCost();
                     Dungeon.gold -= DEL.getMissionGold(mission)*time*((MissileWeapon) btnItem1.item).tier;
                     for (int i = 0; i < time; i++){
@@ -189,6 +192,7 @@ public class WndDEL extends Window {
                 }
                 else if (mission == 4){
                     btnItem1.item.detach(Dungeon.hero.belongings.backpack, 15);
+                    Catalog.countUses(btnItem1.item.getClass(), 15);
                     Dungeon.gold -= DEL.getMissionGold(mission);
                     del.WorkLoadUsed(DEL.getMissionWorkLoad(mission));
                     mission1.addMission(DEL.getMissionTimes(4), new Clipper());

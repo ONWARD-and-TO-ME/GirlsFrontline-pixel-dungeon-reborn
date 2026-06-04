@@ -24,10 +24,15 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.HuntressArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.LeatherArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.MageArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.MailArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.RogueArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ScaleArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Type561Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.WarriorArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CapeOfThorns;
@@ -42,12 +47,21 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SandalsOfNature;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.UnstableSpellbook;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Berry;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Blandfruit;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.ChargrilledMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.FrozenCarpaccio;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Maccol;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Pasty;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Choco;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SaltyZongzi;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.StewedMeat;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.SugarZongzi;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.WholeCake;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.XMasSugar;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
@@ -62,6 +76,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfParalyticG
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfElements;
@@ -132,7 +147,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gun562;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.HB.Kriss;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.M1911;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.GSH18;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.NAGANT;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.Wa;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Launcher.Gepard;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Launcher.SRS;
@@ -161,6 +175,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.C96;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.Lar;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.SR3;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Bolas;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Clipper;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.FishingSpear;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ForceCube;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
@@ -175,6 +190,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingSp
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Tomahawk;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Trident;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Dreamfoil;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
@@ -368,7 +384,7 @@ public class Generator {
 					Thunder.class,
 					GSH18.class
 			};
-			WEP_T1.probs = new float[]{ 0, 1, 0, 1, 1, 1, 1, 1, 1, 0.09f, 0.75f };
+			WEP_T1.probs = new float[]{ 0, 1, 0, 1, 1, 1, 1, 1, 1, 0.5f, 0.75f };
 			
 			WEP_T2.classes = new Class<?>[]{
 					M16.class,
@@ -390,9 +406,10 @@ public class Generator {
 					Wa.class,
 					C96.class,
 					Gun562.class,
-					MOSINNAGANT.class
+					MOSINNAGANT.class,
+					Pickaxe.class
 			};
-			WEP_T3.probs = new float[]{ 6, 5, 5, 4, 4, 4, 2, 0 ,2 };
+			WEP_T3.probs = new float[]{ 6, 5, 5, 4, 4, 4, 2, 0 ,2 ,0 };
 			
 			WEP_T4.classes = new Class<?>[]{
 					Win97.class,
@@ -419,10 +436,9 @@ public class Generator {
 					SAIGA.class,
 					Ntw20.class,
 					Mg42.class,
-					GROZA.class,
-					NAGANT.class
+					GROZA.class
 			};
-			WEP_T6.probs = new float[]{ 2, 3, 2, 2, 0 };
+			WEP_T6.probs = new float[]{ 2, 3, 2, 2 };
 			
 			//see Generator.randomArmor
 			ARMOR.classes = new Class<?>[]{
@@ -430,7 +446,12 @@ public class Generator {
 					LeatherArmor.class,
 					MailArmor.class,
 					ScaleArmor.class,
-					PlateArmor.class };
+					PlateArmor.class,
+					WarriorArmor.class,
+					MageArmor.class,
+					RogueArmor.class,
+					HuntressArmor.class,
+					Type561Armor.class };
 			ARMOR.probs = new float[]{ 0, 0, 0, 0, 0 };
 			
 			//see Generator.randomMissile
@@ -439,16 +460,18 @@ public class Generator {
 			
 			MIS_T1.classes = new Class<?>[]{
 					ThrowingStone.class,
-					ThrowingKnife.class
+					ThrowingKnife.class,
+					Dart.class
 			};
-			MIS_T1.probs = new float[]{ 6, 5 };
+			MIS_T1.probs = new float[]{ 6, 5, 0 };
 			
 			MIS_T2.classes = new Class<?>[]{
 					FishingSpear.class,
 					ThrowingClub.class,
-					Shuriken.class
+					Shuriken.class,
+					Clipper.class
 			};
-			MIS_T2.probs = new float[]{ 6, 5, 4 };
+			MIS_T2.probs = new float[]{ 6, 5, 4, 0 };
 			
 			MIS_T3.classes = new Class<?>[]{
 					ThrowingSpear.class,
@@ -473,14 +496,23 @@ public class Generator {
 			
 			FOOD.classes = new Class<?>[]{
 					Food.class,
-					Choco.class,
 					Pasty.class,
+					XMasSugar.class,
+					Choco.class,
 					MysteryMeat.class,
+					ChargrilledMeat.class,
+					StewedMeat.class,
+					FrozenCarpaccio.class,
 					Maccol.class,
-                    XMasSugar.class,
-                    SaltyZongzi.class
+					SmallRation.class,
+					Berry.class,
+					Blandfruit.class,
+					MeatPie.class,
+					SaltyZongzi.class,
+					SugarZongzi.class,
+					WholeCake.class
             };
-            FOOD.defaultProbs = new float[]{ 4, 0, 1, 0, 0, HolidayDiff(XMasSugar.class) ,0};
+            FOOD.defaultProbs = new float[]{ 4, HolidayDiff(Pasty.class), HolidayDiff(XMasSugar.class), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 			FOOD.probs = FOOD.defaultProbs.clone();
 			
 			RING.classes = new Class<?>[]{

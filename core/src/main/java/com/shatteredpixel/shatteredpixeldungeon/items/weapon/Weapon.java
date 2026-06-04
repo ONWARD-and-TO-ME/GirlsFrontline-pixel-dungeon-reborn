@@ -233,7 +233,26 @@ abstract public class Weapon extends KindOfWeapon {
 		usesLeftToID = USES_TO_ID;
 		availableUsesToID = USES_TO_ID/2f;
 	}
-	
+
+	@Override
+	public boolean collect(Bag container) {
+		if(super.collect(container)){
+			if (Dungeon.hero != null && Dungeon.hero.isAlive() && isIdentified() && enchantment != null){
+				Catalog.setSeen(enchantment.getClass());
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public Item identify(boolean byHero) {
+		if (enchantment != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
+			Catalog.setSeen(enchantment.getClass());
+		}
+		return super.identify(byHero);
+	}
 	@Override
 	public float accuracyFactor( Char owner ) {
 		
@@ -434,6 +453,10 @@ abstract public class Weapon extends KindOfWeapon {
 		if (ench == null || !ench.curse()) curseInfusionBonus = false;
 		enchantment = ench;
 		updateQuickslot();
+		if (ench != null && isIdentified() && Dungeon.hero != null
+				&& Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
+			Catalog.setSeen(ench.getClass());
+		}
 		return this;
 	}
 
@@ -465,14 +488,14 @@ abstract public class Weapon extends KindOfWeapon {
 
 	public static abstract class Enchantment implements Bundlable {
 		
-		private static final Class<?>[] common = new Class<?>[]{
+		public static final Class<?>[] common = new Class<?>[]{
 				Blazing.class, Chilling.class, Kinetic.class, Shocking.class};
 		
-		private static final Class<?>[] uncommon = new Class<?>[]{
+		public static final Class<?>[] uncommon = new Class<?>[]{
 				Blocking.class, Blooming.class, Elastic.class,
 				Lucky.class, Projecting.class, Unstable.class};
 		
-		private static final Class<?>[] rare = new Class<?>[]{
+		public static final Class<?>[] rare = new Class<?>[]{
 				Corrupting.class, Grim.class, Vampiric.class};
 		
 		private static final float[] typeChances = new float[]{
@@ -481,7 +504,7 @@ abstract public class Weapon extends KindOfWeapon {
 				10  //3.33% each
 		};
 		
-		private static final Class<?>[] curses = new Class<?>[]{
+		public static final Class<?>[] curses = new Class<?>[]{
 				Annoying.class, Displacing.class, Exhausting.class, Fragile.class,
 				Sacrificial.class, Wayward.class, Polarized.class, Friendly.class
 		};

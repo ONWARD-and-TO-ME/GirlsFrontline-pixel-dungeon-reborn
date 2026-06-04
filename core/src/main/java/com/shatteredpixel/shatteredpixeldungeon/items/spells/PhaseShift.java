@@ -89,5 +89,9 @@ public class PhaseShift extends TargetedSpell {
 		}
 		
 	}
-	
+
+	@Override
+	public int outPut(){
+		return 8;
+	}
 }

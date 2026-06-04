@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Projec
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocking;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Unstable;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampiric;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.NAGANT;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -123,6 +124,7 @@ public class TestMelee extends TestItem {
             for (int i = 0; i < Generator.Category.WEP_T6.classes.length; i++) {
                 t6_WeaponList.add((Class<? extends MeleeWeapon>) Generator.Category.WEP_T6.classes[i]);
             }
+            t6_WeaponList.add(NAGANT.class);
         }
     }
 

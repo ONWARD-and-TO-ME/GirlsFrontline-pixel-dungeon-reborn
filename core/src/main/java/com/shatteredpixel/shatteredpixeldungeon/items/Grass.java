@@ -287,6 +287,8 @@ public class Grass extends Item {
     public String info(){
         String info = super.info();
         Grass grass = Dungeon.hero.belongings.getItem(Grass.class);
+        if (grass == null)
+            return info;
         if (grass.quantity>=costA)
             info +="\n" + Messages.get(this,"ActAB");
         if (grass.quantity>=costB)

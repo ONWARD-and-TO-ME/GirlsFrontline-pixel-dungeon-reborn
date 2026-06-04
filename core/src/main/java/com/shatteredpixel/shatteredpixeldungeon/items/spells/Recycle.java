@@ -92,4 +92,8 @@ public class Recycle extends InventorySpell {
         }
 
     }
+    @Override
+    public int outPut(){
+        return 12;
+    }
 }

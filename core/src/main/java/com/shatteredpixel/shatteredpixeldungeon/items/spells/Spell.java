@@ -38,7 +38,12 @@ public abstract class Spell extends Item {
 		stackable = true;
 		defaultAction = AC_CAST;
 	}
-	
+	public int outPut(){
+		return 1;
+	}
+	protected float TalentChance(){
+		return 1F / outPut();
+	}
 	@Override
 	public ArrayList<String> actions(Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );

@@ -22,20 +22,25 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 
 public abstract class InventorySpell extends Spell {
 	
 	@Override
 	protected void onCast(Hero hero) {
-		curItem = detach( hero.belongings.backpack );
+		curItem = this;
+		curUser = hero;
 		GameScene.selectItem( itemSelector );
 	}
 
@@ -83,12 +88,14 @@ public abstract class InventorySpell extends Spell {
 				curUser.spend( 1f );
 				curUser.busy();
 				(curUser.sprite).operate( curUser.pos );
-				
+				detach( curUser.belongings.backpack );
+				if (Random.Float() < ((Spell) curItem).TalentChance())
+					Talent.onScrollUsed(Dungeon.hero, 1);
+				Catalog.setSeen(curItem.getClass());
+				Catalog.countUse(curItem.getClass());
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Invisibility.dispel();
 				
-			} else {
-				curItem.collect( curUser.belongings.backpack );
 			}
 		}
 	};

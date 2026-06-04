@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 //import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.ExtractSummoned;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ExtractUpgrade;
@@ -40,6 +41,14 @@ public abstract class NPC extends Mob {
 
 		alignment = Alignment.NEUTRAL;
 		state = PASSIVE;
+	}
+	@Override
+	protected boolean act() {
+		if (Dungeon.level.heroFOV[pos]){
+			Bestiary.setSeen(getClass());
+		}
+
+		return super.act();
 	}
     @Override
     public void MustDie( Object cause ){

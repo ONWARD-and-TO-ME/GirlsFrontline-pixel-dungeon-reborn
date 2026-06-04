@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -43,13 +44,20 @@ public class ArmoredStatue extends Statue {
 	protected Armor armor;
 
 	public ArmoredStatue(){
-		super();
+		super(true);
+	}
+	public ArmoredStatue(boolean noEquip){
+		super(noEquip);
 
-		do {
-			armor = Generator.randomArmor();
-		} while (armor.cursed);
-		armor.inscribe(Armor.Glyph.random());
-		armor.update();
+		if (!noEquip) {
+			do {
+				armor = Generator.randomArmor();
+			} while (armor.cursed);
+			armor.inscribe(Armor.Glyph.random());
+			armor.update();
+		}
+		else
+			armor = new PlateArmor();
 		//double HP
 		HP = HT = 30 + Dungeon.curDepth() * 10;
 	}
@@ -139,7 +147,10 @@ public class ArmoredStatue extends Statue {
 
 	@Override
 	public String description() {
-		return Messages.get(this, "desc", weapon.name(), armor.name());
+		String desc = Messages.get(this, "desc");
+		if (weapon != null && armor != null)
+			desc += Messages.get(this, "equip_desc", weapon.name(), armor.name());
+		return desc;
 	}
 
 }

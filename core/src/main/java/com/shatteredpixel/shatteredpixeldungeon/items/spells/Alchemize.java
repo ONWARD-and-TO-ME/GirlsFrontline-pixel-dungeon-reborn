@@ -24,8 +24,10 @@ package com.shatteredpixel.shatteredpixeldungeon.items.spells;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -36,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndEnergizeItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTradeItem;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 
 public class Alchemize extends Spell {
 	
@@ -71,6 +74,10 @@ public class Alchemize extends Spell {
 		
 	}
 
+	@Override
+	public int outPut(){
+		return 8;
+	}
 	private static WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
 		@Override
 		public String textPrompt() {
@@ -213,6 +220,10 @@ public class Alchemize extends Spell {
 		}
 
 		private void consumeAlchemize(){
+			if (Random.Float() < ((Spell) curItem).TalentChance())
+				Talent.onScrollUsed(Dungeon.hero, 1);
+			Catalog.setSeen(curItem.getClass());
+			Catalog.countUse(curItem.getClass());
 			Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 			if (curItem.quantity() <= 1){
 				curItem.detachAll(Dungeon.hero.belongings.backpack);

@@ -126,7 +126,7 @@ public abstract class Recipe {
 		}
 		
 		@Override
-		public final Item brew(ArrayList<Item> ingredients) {
+		public Item brew(ArrayList<Item> ingredients) {
 			if (!testIngredients(ingredients)) return null;
 			
 			int[] needed = inQuantity.clone();

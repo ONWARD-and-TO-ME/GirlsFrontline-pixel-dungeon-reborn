@@ -24,9 +24,12 @@ package com.shatteredpixel.shatteredpixeldungeon.items.spells;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -69,6 +72,7 @@ public class ReclaimTrap extends TargetedSpell {
 				Sample.INSTANCE.play(Assets.Sounds.LIGHTNING);
 				ScrollOfRecharging.chargeParticle(hero);
 				storedTrap = t.getClass();
+				Bestiary.setSeen(t.getClass());
 				
 			} else {
 				GLog.w(Messages.get(this, "no_trap"));
@@ -79,6 +83,7 @@ public class ReclaimTrap extends TargetedSpell {
 			storedTrap = null;
 			
 			t.pos = bolt.collisionPos;
+			Bestiary.countEncounter(t.getClass());
 			t.activate();
 			
 		}
@@ -143,6 +148,11 @@ public class ReclaimTrap extends TargetedSpell {
 			
 			output = ReclaimTrap.class;
 			outQuantity = 4;
+		}
+		@Override
+		public Item brew(ArrayList<Item> ingredients) {
+			Catalog.countUse(MetalShard.class);
+			return super.brew(ingredients);
 		}
 		
 	}

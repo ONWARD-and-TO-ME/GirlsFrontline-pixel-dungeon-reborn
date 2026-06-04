@@ -283,7 +283,9 @@ public class Potion extends Item implements ColorItem {
 	protected void drink( Hero hero ) {
 		
 		detach( hero.belongings.backpack );
-		
+		if (!anonymous)
+			Catalog.countUse(getClass());
+
 		hero.spend( TIME_TO_DRINK );
 		hero.busy();
 		apply( hero );
@@ -303,9 +305,18 @@ public class Potion extends Item implements ColorItem {
 
 			Dungeon.level.pressCell( cell );
 			shatter( cell );
+			if (!anonymous) {
+				Catalog.countUse(getClass());
+				Talent.onPotionUsed(curUser, mulOnTalentUsed, cell);
+			}
 			
 		}
 	}
+
+    protected float talentChance() {
+        return 1;
+    }
+
 	protected float mulOnTalentUsed = 1F;
 	public void apply( Hero hero ) {
         Talent.onPotionUsed(hero, mulOnTalentUsed);

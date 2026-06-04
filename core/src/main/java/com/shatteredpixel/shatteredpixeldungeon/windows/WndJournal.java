@@ -21,42 +21,65 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cypros;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Launcher.Launcher;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SA.SurpriseAttack;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesGrid;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesList;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingGridPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Collection;
 
 public class WndJournal extends WndTabbed {
 	
@@ -67,11 +90,11 @@ public class WndJournal extends WndTabbed {
 	public static final int HEIGHT_L    = 130;
 	
 	private static final int ITEM_HEIGHT	= 18;
-	
 	private GuideTab guideTab;
 	private AlchemyTab alchemyTab;
 	private NotesTab notesTab;
 	private CatalogTab catalogTab;
+    private BadgesTab badgesTab;
 	
 	public static int last_index = 0;
 	
@@ -90,48 +113,78 @@ public class WndJournal extends WndTabbed {
 		alchemyTab = new AlchemyTab();
 		add(alchemyTab);
 		alchemyTab.setRect(0, 0, width, height);
-		
-		notesTab = new NotesTab();
-		add(notesTab);
-		notesTab.setRect(0, 0, width, height);
-		notesTab.updateList();
+
+		if (Dungeon.hero != null) {
+			notesTab = new NotesTab();
+			add(notesTab);
+			notesTab.setRect(0, 0, width, height);
+			notesTab.updateList();
+		}
 		
 		catalogTab = new CatalogTab();
 		add(catalogTab);
 		catalogTab.setRect(0, 0, width, height);
 		catalogTab.updateList();
-		
-		Tab[] tabs = {
-				new IconTab( new ItemSprite(ItemSpriteSheet.GUIDE_PAGE, null) ) {
-					protected void select( boolean value ) {
-						super.select( value );
-						guideTab.active = guideTab.visible = value;
-						if (value) last_index = 0;
-					}
-				},
-				new IconTab( new ItemSprite(ItemSpriteSheet.ALCH_PAGE, null) ) {
+
+		badgesTab = new BadgesTab();
+		add(badgesTab);
+		badgesTab.setRect(0, 0, width, height);
+		badgesTab.updateList();
+
+		ArrayList<Tab> tabs = new ArrayList<>();
+		int page = 0;
+		int finalPage = page;
+		tabs.add(new IconTab( new ItemSprite(ItemSpriteSheet.GUIDE_PAGE, null) ) {
+			protected void select( boolean value ) {
+				super.select( value );
+				guideTab.active = guideTab.visible = value;
+				if (value) last_index = finalPage;
+			}
+		});
+		page++;
+		int finalPage1 = page;
+		tabs.add(new IconTab( new ItemSprite(ItemSpriteSheet.ALCH_PAGE, null) ) {
 					protected void select( boolean value ) {
 						super.select( value );
 						alchemyTab.active = alchemyTab.visible = value;
-						if (value) last_index = 1;
+						if (value) last_index = finalPage1;
 					}
-				},
-				new IconTab( Icons.get(Icons.STAIRS) ) {
-					protected void select( boolean value ) {
-						super.select( value );
-						notesTab.active = notesTab.visible = value;
-						if (value) last_index = 2;
-					}
-				},
-				new IconTab( new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER, null) ) {
+				});
+		if (Dungeon.hero != null) {
+			page++;
+			int finalPage2 = page;
+			tabs.add(new IconTab(Icons.get(Icons.STAIRS)) {
+				protected void select(boolean value) {
+					super.select(value);
+					notesTab.active = notesTab.visible = value;
+					if (value) last_index = finalPage2;
+				}
+			});
+		}
+		page++;
+		int finalPage3 = page;
+		tabs.add(new IconTab( new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER, null) ) {
 					protected void select( boolean value ) {
 						super.select( value );
 						catalogTab.active = catalogTab.visible = value;
-						if (value) last_index = 3;
+						if (value) last_index = finalPage3;
 					}
-				}
-		};
-		
+				});
+		page++;
+		int finalPage4 = page;
+		tabs.add(new IconTab( Icons.BADGES.get() ) {
+					protected void select( boolean value ) {
+						super.select( value );
+						badgesTab.active = badgesTab.visible = value;
+						if (value) last_index = finalPage4;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(badgesTab, "title");
+					}
+				});
+
 		for (Tab tab : tabs) {
 			add( tab );
 		}
@@ -147,7 +200,8 @@ public class WndJournal extends WndTabbed {
 		guideTab.layout();
 		alchemyTab.layout();
 		catalogTab.layout();
-		notesTab.layout();
+		if (Dungeon.hero != null)
+			notesTab.layout();
 	}
 
 	private static class ListItem extends Component {
@@ -517,42 +571,42 @@ public class WndJournal extends WndTabbed {
 			list.scrollTo(0, 0);
 		}
 	}
-	
+
 	private static class NotesTab extends Component {
-		
+
 		private ScrollPane list;
-		
+
 		@Override
 		protected void createChildren() {
 			list = new ScrollPane( new Component() );
 			add( list );
 		}
-		
+
 		@Override
 		protected void layout() {
 			super.layout();
 			list.setRect( 0, 0, width, height);
 		}
-		
+
 		private void updateList(){
 			Component content = list.content();
-			
+
 			float pos = 0;
-			
+
 			//Keys
 			ArrayList<Notes.KeyRecord> keys = Notes.getRecords(Notes.KeyRecord.class);
 			if (!keys.isEmpty()){
 				ColorBlock line = new ColorBlock( width(), 1, 0xFF222222);
 				line.y = pos;
 				content.add(line);
-				
+
 				RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "keys"), 9);
 				title.hardlight(TITLE_COLOR);
 				title.maxWidth( (int)width() - 2 );
 				title.setPos( (width() - title.width())/2f, pos + 1 + ((ITEM_HEIGHT) - title.height())/2f);
 				PixelScene.align(title);
 				content.add(title);
-				
+
 				pos += Math.max(ITEM_HEIGHT, title.height());
 			}
 			for(Notes.Record rec : keys){
@@ -560,24 +614,24 @@ public class WndJournal extends WndTabbed {
 						Messages.titleCase(rec.desc()), rec.depth() );
 				item.setRect( 0, pos, width(), ITEM_HEIGHT );
 				content.add( item );
-				
+
 				pos += item.height();
 			}
-			
+
 			//Landmarks
 			ArrayList<Notes.LandmarkRecord> landmarks = Notes.getRecords(Notes.LandmarkRecord.class);
 			if (!landmarks.isEmpty()){
 				ColorBlock line = new ColorBlock( width(), 1, 0xFF222222);
 				line.y = pos;
 				content.add(line);
-				
+
 				RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "landmarks"), 9);
 				title.hardlight(TITLE_COLOR);
 				title.maxWidth( (int)width() - 2 );
 				title.setPos( (width() - title.width())/2f, pos + 1 + ((ITEM_HEIGHT) - title.height())/2f);
 				PixelScene.align(title);
 				content.add(title);
-				
+
 				pos += Math.max(ITEM_HEIGHT, title.height());
 			}
 			for (Notes.Record rec : landmarks) {
@@ -585,38 +639,32 @@ public class WndJournal extends WndTabbed {
 						Messages.titleCase(rec.desc()), rec.depth() );
 				item.setRect( 0, pos, width(), ITEM_HEIGHT );
 				content.add( item );
-				
+
 				pos += item.height();
 			}
-			
+
 			content.setSize( width(), pos );
 			list.setSize( list.width(), list.height() );
 		}
-		
+
 	}
-	
-	private static class CatalogTab extends Component{
-		
+
+	public static class CatalogTab extends Component{
+
 		private RedButton[] itemButtons;
-		private static final int NUM_BUTTONS = 7;
-		
-		private static int currentItemIdx   = 0;
-		
+		private static final int NUM_BUTTONS = 3;
+
+		public static int currentItemIdx   = 0;
+		private static float[] scrollPositions = new float[NUM_BUTTONS];
+
 		//sprite locations
-		private static final int WEAPON_IDX = 0;
-		private static final int ARMOR_IDX  = 1;
-		private static final int WAND_IDX   = 2;
-		private static final int RING_IDX   = 3;
-		private static final int ARTIF_IDX  = 4;
-		private static final int POTION_IDX = 5;
-		private static final int SCROLL_IDX = 6;
-		
-		private static final int spriteIndexes[] = {1, 2, 4, 5, 6, 9, 11};
-		
-		private ScrollPane list;
-		
-		private ArrayList<CatalogItem> items = new ArrayList<>();
-		
+		private static final int EQUIP_IDX = 0;
+		private static final int CONSUM_IDX = 1;
+		private static final int BESTIARY_IDX = 2;
+		private static final int LORE_IDX = 3;
+
+		private ScrollingGridPane grid;
+
 		@Override
 		protected void createChildren() {
 			itemButtons = new RedButton[NUM_BUTTONS];
@@ -629,45 +677,47 @@ public class WndJournal extends WndTabbed {
 						updateList();
 					}
 				};
-				itemButtons[i].icon(new ItemSprite(ItemSpriteSheet.SOMETHING + spriteIndexes[i], null));
 				add( itemButtons[i] );
 			}
-			
-			list = new ScrollPane( new Component() ) {
+			itemButtons[EQUIP_IDX].icon(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER));
+			itemButtons[CONSUM_IDX].icon(new ItemSprite(ItemSpriteSheet.POTION_HOLDER));
+			itemButtons[BESTIARY_IDX].icon(new ItemSprite(ItemSpriteSheet.CATA_HOLDER));
+//			itemButtons[LORE_IDX].icon(new ItemSprite(ItemSpriteSheet.SPELL_HOLDER));
+
+			grid = new ScrollingGridPane(){
 				@Override
-				public void onClick( float x, float y ) {
-					int size = items.size();
-					for (int i=0; i < size; i++) {
-						if (items.get( i ).onClick( x, y )) {
-							break;
-						}
-					}
+				public synchronized void update() {
+					super.update();
+					scrollPositions[currentItemIdx] = content.camera.scroll.y;
 				}
 			};
-			add( list );
+			add( grid );
 		}
-		
+
 		@Override
 		protected void layout() {
 			super.layout();
-			
+
 			int perRow = NUM_BUTTONS;
 			float buttonWidth = width()/perRow;
-			
+
 			for (int i = 0; i < NUM_BUTTONS; i++) {
-				itemButtons[i].setRect((i%perRow) * (buttonWidth), (i/perRow) * (ITEM_HEIGHT ),
+				itemButtons[i].setRect(x +(i%perRow) * (buttonWidth),
+						y + (i/perRow) * (ITEM_HEIGHT ),
 						buttonWidth, ITEM_HEIGHT);
 				PixelScene.align(itemButtons[i]);
 			}
-			
-			list.setRect(0, itemButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - itemButtons[NUM_BUTTONS-1].bottom() - 1);
+
+			grid.setRect(x,
+					itemButtons[NUM_BUTTONS-1].bottom() + 1,
+					width,
+					height - itemButtons[NUM_BUTTONS-1].height() - 1);
 		}
-		
-		private void updateList() {
-			
-			items.clear();
-			
+
+		public void updateList() {
+
+			grid.clear();
+
 			for (int i = 0; i < NUM_BUTTONS; i++){
 				if (i == currentItemIdx){
 					itemButtons[i].icon().color(TITLE_COLOR);
@@ -675,198 +725,457 @@ public class WndJournal extends WndTabbed {
 					itemButtons[i].icon().resetColor();
 				}
 			}
-			
-			Component content = list.content();
-			content.clear();
-			list.scrollTo( 0, 0 );
-			
-			ArrayList<Class<? extends Item>> itemClasses;
-			final HashMap<Class<?  extends Item>, Boolean> known = new HashMap<>();
-			if (currentItemIdx == WEAPON_IDX) {
-				itemClasses = new ArrayList<>(Catalog.WEAPONS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == ARMOR_IDX){
-				itemClasses = new ArrayList<>(Catalog.ARMOR.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == WAND_IDX){
-				itemClasses = new ArrayList<>(Catalog.WANDS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == RING_IDX){
-				itemClasses = new ArrayList<>(Catalog.RINGS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, Ring.getKnown().contains(cls));
-			} else if (currentItemIdx == ARTIF_IDX){
-				itemClasses = new ArrayList<>(Catalog.ARTIFACTS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == POTION_IDX){
-				itemClasses = new ArrayList<>(Catalog.POTIONS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, Potion.getKnown().contains(cls));
-			} else if (currentItemIdx == SCROLL_IDX) {
-				itemClasses = new ArrayList<>(Catalog.SCROLLS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, Scroll.getKnown().contains(cls));
-			} else {
-				itemClasses = new ArrayList<>();
-			}
-			
-			Collections.sort(itemClasses, new Comparator<Class<? extends Item>>() {
-				@Override
-				public int compare(Class<? extends Item> a, Class<? extends Item> b) {
-					int result = 0;
-					
-					//specifically known items appear first, then seen items, then unknown items.
-					if (known.get(a) && Catalog.isSeen(a)) result -= 2;
-					if (known.get(b) && Catalog.isSeen(b)) result += 2;
-					if (Catalog.isSeen(a))                 result --;
-					if (Catalog.isSeen(b))                 result ++;
-					
-					return result;
+
+			grid.scrollTo( 0, 0 );
+
+			if (currentItemIdx == EQUIP_IDX) {
+				int totalItems = 0;
+				int totalSeen = 0;
+				for (Catalog catalog : Catalog.equipmentCatalogs){
+					totalItems += catalog.totalItems();
+					totalSeen += catalog.totalSeen();
 				}
-			});
-			
-			float pos = 0;
-			for (Class<? extends Item> itemClass : itemClasses) {
-				CatalogItem item = new CatalogItem(Reflection.newInstance(itemClass), known.get(itemClass), Catalog.isSeen(itemClass));
-				item.setRect( 0, pos, width, ITEM_HEIGHT );
-				content.add( item );
-				items.add( item );
+				grid.addHeader("_" + Messages.get(this, "title_equipment") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
 
-				pos += item.height();
+				for (Catalog catalog : Catalog.equipmentCatalogs){
+					grid.addHeader("_" + Messages.titleCase(catalog.title()) + "_ (" + catalog.totalSeen() + "/" + catalog.totalItems() + "):");
+					addGridItems(grid, catalog.items());
+				}
+
+			} else if (currentItemIdx == CONSUM_IDX){
+				int totalItems = 0;
+				int totalSeen = 0;
+				for (Catalog catalog : Catalog.consumableCatalogs){
+					totalItems += catalog.totalItems();
+					totalSeen += catalog.totalSeen();
+				}
+				grid.addHeader("_" + Messages.get(this, "title_consumables") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
+
+				if (Dungeon.hero == null){
+					Potion.initColors();
+					Scroll.initLabels();
+					Ring.initGems();
+				}
+				for (Catalog catalog : Catalog.consumableCatalogs){
+					grid.addHeader("_" + Messages.titleCase(catalog.title()) + "_ (" + catalog.totalSeen() + "/" + catalog.totalItems() + "):");
+					addGridItems(grid, catalog.items());
+				}
+
+			} else if (currentItemIdx == BESTIARY_IDX){
+				int totalItems = 0;
+				int totalSeen = 0;
+				for (Bestiary bestiary : Bestiary.values()){
+					totalItems += bestiary.totalEntities();
+					totalSeen += bestiary.totalSeen();
+				}
+				grid.addHeader("_" + Messages.get(this, "title_bestiary") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
+
+				for (Bestiary bestiary : Bestiary.values()){
+					grid.addHeader("_" + Messages.titleCase(bestiary.title()) + "_ (" + bestiary.totalSeen() + "/" + bestiary.totalEntities() + "):");
+					addGridEntities(grid, bestiary.entities());
+				}
+
 			}
-			
-			content.setSize( width, pos );
-			list.setSize( list.width(), list.height() );
-		}
-		
-		private static class CatalogItem extends ListItem {
-			
-			private Item item;
-			private boolean seen;
-			
-			public CatalogItem(Item item, boolean IDed, boolean seen ) {
-				super( new ItemSprite(item), Messages.titleCase(item.trueName()));
-				
-				this.item = item;
-                this.item.canShowNote=false;
-                this.item.canNote=false;
-				this.seen = seen;
 
-				if ( seen && !IDed ){
-					if (item instanceof Ring){
-						((Ring) item).anonymize();
-					} else if (item instanceof Potion){
-						((Potion) item).anonymize();
-					} else if (item instanceof Scroll){
-						((Scroll) item).anonymize();
+			grid.setRect(x, itemButtons[NUM_BUTTONS-1].bottom() + 1, width,
+					height - itemButtons[NUM_BUTTONS-1].height() - 1);
+
+			grid.scrollTo(0, scrollPositions[currentItemIdx]);
+		}
+
+		private static String property(MeleeWeapon weapon){
+			String info = "";
+			if (weapon instanceof Cypros){
+				info+=Messages.format("该武器阶数_%d_。\n", weapon.tier);
+				((Cypros) weapon).setMode(Cypros.Mode.MAGNUM, false);
+				((Cypros) weapon).setMode(Cypros.Mode.TRAVAILLER, false);
+				info+=Messages.format("_特拉维小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。基础防御_0_~_%d_，防御成长_0_~_%d_。",
+						((Cypros) weapon).minBaseDmg(0), ((Cypros) weapon).maxBaseDmg(0),
+						weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(0, 1),
+						weapon.RCH, weapon.DLY, weapon.ACC, weapon.DEF, weapon.DEFUPGRADE);
+				info+="\n\n";
+				((Cypros) weapon).setMode(Cypros.Mode.CONFIRE, false);
+				info+=Messages.format("_康菲尔小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
+						((Cypros) weapon).minBaseDmg(1), ((Cypros) weapon).maxBaseDmg(1),
+						weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(1, 1),
+						weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier*100);
+				info+="\n\n";
+				((Cypros) weapon).setMode(Cypros.Mode.MAGNUM, false);
+				info+=Messages.format("_马格南婚礼_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
+						((Cypros) weapon).minBaseDmg(2), ((Cypros) weapon).maxBaseDmg(2),
+						weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(2, 1),
+						weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier*100);
+			}
+			else {
+				info += Messages.format("该武器阶数_%d_，基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。",
+						weapon.tier,
+						weapon.minBaseDmg(), weapon.maxBaseDmg(),
+						weapon.minUpgrade(1), weapon.maxUpgrade(1),
+						weapon.RCH, weapon.DLY, weapon.ACC);
+				if (weapon.DEF > 0)
+					info += Messages.format("基础防御_0_~_%d_。", weapon.DEF);
+				if (weapon.DEFUPGRADE > 0)
+					info += Messages.format("防御成长_0_~_%d_。", weapon.DEFUPGRADE);
+				if (weapon instanceof Launcher)
+					info += "\n该类武器对_.50_有伤害加成。";
+				else if (weapon instanceof SurpriseAttack)
+					info += Messages.format("\n该类武器在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。", ((SurpriseAttack) weapon).damageMin * 100);
+			}
+			return info;
+		}
+		private static void addGridItems( ScrollingGridPane grid, Collection<Class<?>> classes) {
+			for (Class<?> itemClass : classes) {
+
+				boolean seen = Catalog.isSeen(itemClass);;
+				ItemSprite sprite = null;
+				Image secondIcon = null;
+				String title = "";
+				String desc = "";
+				String property = "";
+
+				if (Item.class.isAssignableFrom(itemClass)) {
+
+					Item item = (Item) Reflection.newInstance(itemClass);
+
+					if (item instanceof MeleeWeapon)
+						property = property((MeleeWeapon) item);
+					if (seen) {
+						if (item instanceof Ring) {
+							((Ring) item).anonymize();
+						} else if (item instanceof Potion) {
+							((Potion) item).anonymize();
+						} else if (item instanceof Scroll) {
+							((Scroll) item).anonymize();
+						}
 					}
+
+					sprite = new ItemSprite(item.image, seen ? item.glowing() : null);
+					if (!seen)  {
+						if (item instanceof ExoticPotion){
+							sprite.frame(ItemSpriteSheet.POTION_CRIMSON);
+						}
+						sprite.lightness(0);
+						title = "???";
+						desc = Messages.get(CatalogTab.class, "not_seen_item");
+						desc += "\n\n" + Messages.get(item, "discover_hint");
+					} else {
+						title = Messages.titleCase( item.name() );
+						//some items don't include direct stats, generally when they're not applicable
+						if (item instanceof ClassArmor || item instanceof SpiritBow){
+							desc += item.desc();
+						} else {
+							desc += item.info();
+						}
+
+						if (Catalog.useCount(itemClass) > 0) {
+							if (item.isUpgradable() || item instanceof Artifact) {
+								desc += "\n\n" + Messages.get(CatalogTab.class, "upgrade_count", Catalog.useCount(itemClass));
+							} else if (item instanceof Gold) {
+								desc += "\n\n" + Messages.get(CatalogTab.class, "gold_count", Catalog.useCount(itemClass));
+							} else if (item instanceof EnergyCrystal) {
+								desc += "\n\n" + Messages.get(CatalogTab.class, "energy_count", Catalog.useCount(itemClass));
+							} else {
+								desc += "\n\n" + Messages.get(CatalogTab.class, "use_count", Catalog.useCount(itemClass));
+							}
+						}
+
+						//mage's staff normally has 2 pixels extra at the top for particle effects, we chop that off here
+						if (item instanceof MagesStaff){
+							RectF frame = sprite.frame();
+							frame.top += frame.height()/8f;
+							sprite.frame(frame);
+						}
+
+						if (item.icon != -1) {
+							secondIcon = new Image(Assets.Sprites.ITEM_ICONS);
+							secondIcon.frame(ItemSpriteSheet.Icons.film.get(item.icon));
+						}
+					}
+
+				} else if (Weapon.Enchantment.class.isAssignableFrom(itemClass)){
+
+					Weapon.Enchantment ench = (Weapon.Enchantment) Reflection.newInstance(itemClass);
+
+					if (seen){
+						sprite = new ItemSprite(ItemSpriteSheet.GREATAXE, ench.glowing());
+						title = Messages.titleCase(ench.name());
+						desc = ench.desc();
+					} else {
+						sprite = new ItemSprite(ItemSpriteSheet.GREATAXE);
+						sprite.lightness(0f);
+						title = "???";
+						desc = Messages.get(CatalogTab.class, "not_seen_enchantment");
+						desc += "\n\n" + Messages.get(ench, "discover_hint");
+					}
+
+				} else if (Armor.Glyph.class.isAssignableFrom(itemClass)){
+
+					Armor.Glyph glyph = (Armor.Glyph) Reflection.newInstance(itemClass);
+
+					if (seen){
+						sprite = new ItemSprite(ItemSpriteSheet.ARMOR_CLOTH, glyph.glowing());
+						title = Messages.titleCase(glyph.name());
+						desc = glyph.desc();
+					} else {
+						sprite = new ItemSprite(ItemSpriteSheet.ARMOR_CLOTH);
+						sprite.lightness(0f);
+						title = "???";
+						desc = Messages.get(CatalogTab.class, "not_seen_glyph");
+						desc += "\n\n" + Messages.get(glyph, "discover_hint");
+					}
+
 				}
-				
+
+				String finalTitle = title;
+				String finalDesc = desc;
+				String finalProperty = property;
+				ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(sprite) {
+					@Override
+					public boolean onClick(float x, float y) {
+						if (inside(x, y)) {
+							Image sprite = new Image(icon);
+							if (!finalProperty.isEmpty()) {
+								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
+									GameScene.show(new WndJournalItem(sprite, finalTitle, finalDesc, finalProperty, seen));
+								} else {
+									GirlsFrontlinePixelDungeon.scene().addToFront(new WndJournalItem(sprite, finalTitle, finalDesc, finalProperty, seen));
+								}
+							}
+							else {
+								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene){
+									GameScene.show(new WndJournalElse(sprite, finalTitle, finalDesc));
+								} else {
+									GirlsFrontlinePixelDungeon.scene().addToFront(new WndJournalElse(sprite, finalTitle, finalDesc));
+								}
+							}
+							return true;
+						} else {
+							return false;
+						}
+					}
+				};
+				if (secondIcon != null){
+					gridItem.addSecondIcon(secondIcon);
+				}
 				if (!seen) {
-					icon.copy( new ItemSprite( ItemSpriteSheet.SOMETHING + spriteIndexes[currentItemIdx], null) );
-					label.text("???");
-					label.hardlight( 0x999999 );
-				} else if (!IDed) {
-					icon.copy( new ItemSprite( ItemSpriteSheet.SOMETHING + spriteIndexes[currentItemIdx], null) );
-					label.hardlight( 0xCCCCCC );
+					gridItem.hardLightBG(2f, 1f, 2f);
 				}
-				
+				grid.addItem(gridItem);
 			}
-			
-			public boolean onClick( float x, float y ) {
-				if (inside( x, y )) {
-                    if (item == null)
-                        return false;
-                    item.canNote = false;
-                    item.canShowNote = false;
-                    if (seen) {
-                        if (item instanceof ClassArmor) {
-                            GameScene.show(new WndTitledMessage(new Image(icon),
-                                    Messages.titleCase(item.trueName()), item.desc()));
-                        }
-                        else if (item instanceof MeleeWeapon) {
-                            GameScene.show(new WndItemStory(new Image(icon),
-                                    Messages.titleCase(item.trueName()), item.info(), property((MeleeWeapon) item)));
-                        }
-                        else {
-                            GameScene.show(new WndTitledMessage(new Image(icon),
-                                    Messages.titleCase(item.trueName()), item.info()));
-                        }
-                    }else if (!(item instanceof Potion|| item instanceof Scroll|| item instanceof Ring)){
-                        GameScene.show(new WndTitledMessage(new ItemSprite(item),
-                                Messages.titleCase(item.trueName()),"???"));
-                    }
-					return true;
-				} else {
-					return false;
-				}
-			}
-            private static String property(MeleeWeapon weapon){
-                String info = "";
-                if (weapon instanceof Cypros){
-                    info+=Messages.format("该武器阶数_%d_。\n", weapon.tier);
-                    ((Cypros) weapon).setMode(Cypros.Mode.MAGNUM, false);
-                    ((Cypros) weapon).setMode(Cypros.Mode.TRAVAILLER, false);
-                    info+=Messages.format("_特拉维小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。基础防御_0_~_%d_，防御成长_0_~_%d_。",
-                            ((Cypros) weapon).minBaseDmg(0), ((Cypros) weapon).maxBaseDmg(0),
-                            weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(0, 1),
-                            weapon.RCH, weapon.DLY, weapon.ACC, weapon.DEF, weapon.DEFUPGRADE);
-                    info+="\n\n";
-                    ((Cypros) weapon).setMode(Cypros.Mode.CONFIRE, false);
-                    info+=Messages.format("_康菲尔小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
-                            ((Cypros) weapon).minBaseDmg(1), ((Cypros) weapon).maxBaseDmg(1),
-                            weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(1, 1),
-                            weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier*100);
-                    info+="\n\n";
-                    ((Cypros) weapon).setMode(Cypros.Mode.MAGNUM, false);
-                    info+=Messages.format("_马格南婚礼_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
-                            ((Cypros) weapon).minBaseDmg(2), ((Cypros) weapon).maxBaseDmg(2),
-                            weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(2, 1),
-                            weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier*100);
-                }
-                else {
-                    info += Messages.format("该武器阶数_%d_，基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。",
-                            weapon.tier,
-                            weapon.minBaseDmg(), weapon.maxBaseDmg(),
-                            weapon.minUpgrade(1), weapon.maxUpgrade(1),
-                            weapon.RCH, weapon.DLY, weapon.ACC);
-                    if (weapon.DEF > 0)
-                        info += Messages.format("基础防御_0_~_%d_。", weapon.DEF);
-                    if (weapon.DEFUPGRADE > 0)
-                        info += Messages.format("防御成长_0_~_%d_。", weapon.DEFUPGRADE);
-                    if (weapon instanceof Launcher)
-                        info += "\n该类武器对_.50_有伤害加成。";
-                    else if (weapon instanceof SurpriseAttack)
-                        info += Messages.format("\n该类武器在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。", ((SurpriseAttack) weapon).damageMin * 100);
-                }
-                return info;
-            }
-            private static class WndItemStory extends WndTitledMessage{
-                public WndItemStory(Image image, String title, String trueMessage, String message) {
-                    super(new Image(image), title, trueMessage);
-                    IconButton showProperty = new IconButton(Icons.INFO.get()){
-                        protected void onClick() {
-                            GameScene.show(new WndItemProperty(new Image(image), title, message, trueMessage));
-                            WndItemStory.this.hide();
-                        }
-                    };
-                    showProperty.setRect(width-16, 0 , 16 ,16);
-                    showProperty.visible = Badges.isUnlocked(Badges.Badge.HAPPY_END);
-                    showProperty.enable(showProperty.visible);
-                    add(showProperty);
-                }
-            }
-            private static class WndItemProperty extends WndTitledMessage{
-                public WndItemProperty(Image image, String title, String trueMessage, String message) {
-                    super(new Image(image), title, trueMessage);
-                    IconButton showStory = new IconButton(Icons.CHANGESLOG.get()){
-                        protected void onClick() {
-                            GameScene.show(new WndItemStory(new Image(image), title, message, trueMessage));
-                            WndItemProperty.this.hide();
-                        }
-                    };
-                    showStory.setRect(width-16, 0 , 16 ,16);
-                    add(showStory);
-                }
-            }
 		}
-		
+
+		private static void addGridEntities(ScrollingGridPane grid, Collection<Class<?>> classes) {
+			for (Class<?> entityCls : classes){
+
+				boolean seen = Bestiary.isSeen(entityCls);
+				Mob mob = null;
+				Image icon = null;
+				String title = null;
+				String desc = null;
+				if (Mob.class.isAssignableFrom(entityCls)) {
+
+					mob = (Mob) Reflection.newInstance(entityCls);
+
+					if (mob instanceof Mimic || mob instanceof Pylon) {
+						mob.alignment = Char.Alignment.ENEMY;
+					}
+					if (mob instanceof WandOfWarding.Ward){
+						if (mob instanceof WandOfWarding.Ward.WardSentry){
+							((WandOfWarding.Ward) mob).upgrade(3);
+							((WandOfWarding.Ward) mob).upgrade(3);
+							((WandOfWarding.Ward) mob).upgrade(3);
+							((WandOfWarding.Ward) mob).upgrade(3);
+						} else {
+							((WandOfWarding.Ward) mob).upgrade(0);
+						}
+					}
+
+
+					CharSprite sprite = mob.sprite();
+					sprite.idle();
+
+					icon = sprite;
+					if (seen) {
+						title = Messages.titleCase(mob.name());
+						desc = mob.description();
+						if (Bestiary.encounterCount(entityCls) > 1){
+							desc += "\n\n" + Messages.get(CatalogTab.class, "enemy_count", Bestiary.encounterCount(entityCls));
+						}
+					} else {
+						icon.lightness(0f);
+						title = "???";
+						if (mob instanceof WandOfRegrowth.Lotus){
+							desc = Messages.get(CatalogTab.class, "not_seen_plant");
+						} else if (mob.alignment == Char.Alignment.ENEMY){
+							desc = Messages.get(CatalogTab.class, "not_seen_enemy");
+						} else {
+							desc = Messages.get(CatalogTab.class, "not_seen_ally");
+						}
+						desc += "\n\n" + Messages.get(mob, "discover_hint");
+					}
+
+				} else if (Trap.class.isAssignableFrom(entityCls)){
+
+					Trap trap = (Trap) Reflection.newInstance(entityCls);
+					icon = TerrainFeaturesTilemap.getTrapVisual(trap);
+
+					if (seen) {
+						title = Messages.titleCase(trap.name());
+						desc = trap.desc();
+						if (Bestiary.encounterCount(entityCls) > 1){
+							desc += "\n\n" + Messages.get(CatalogTab.class, "trap_count", Bestiary.encounterCount(entityCls));
+						}
+					} else {
+						icon.lightness(0f);
+						title = "???";
+						desc = Messages.get(CatalogTab.class, "not_seen_trap");
+						desc += "\n\n" + Messages.get(trap, "discover_hint");
+					}
+
+				} else if (Plant.class.isAssignableFrom(entityCls)){
+
+					Plant plant = (Plant) Reflection.newInstance(entityCls);
+					icon = TerrainFeaturesTilemap.getPlantVisual(plant);
+
+					if (seen) {
+						title = Messages.titleCase(plant.name());
+						desc = plant.desc();
+						if (Bestiary.encounterCount(entityCls) > 1){
+							desc += "\n\n" + Messages.get(CatalogTab.class, "plant_count", Bestiary.encounterCount(entityCls));
+						}
+					} else {
+						icon.lightness(0f);
+						title = "???";
+						desc = Messages.get(CatalogTab.class, "not_seen_plant");
+						desc += "\n\n" + Messages.get(plant, "discover_hint");
+					}
+
+				}
+
+				//we have to clip the bounds of the sprite if it's too large
+				if (icon.width() >= 17 || icon.height() >= 17) {
+					float size = Math.max(icon.width(), icon.height());
+					icon.scale.set(16/size);
+				}
+				Mob finalMob = mob;
+				String finalTitle = title;
+				String finalDesc = desc;
+                ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(icon) {
+					@Override
+					public boolean onClick(float x, float y) {
+						if (inside(x, y)) {
+							if (seen && finalMob != null){
+								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
+									GameScene.show(new WndJournalElse(finalMob, finalTitle, finalDesc));
+								} else {
+									GirlsFrontlinePixelDungeon.scene().addToFront(new WndJournalElse(finalMob, finalTitle, finalDesc));
+								}
+							} else {
+
+								Image image = new Image(icon);
+								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
+									GameScene.show(new WndJournalElse(image, finalTitle, finalDesc));
+								} else {
+									GirlsFrontlinePixelDungeon.scene().addToFront(new WndJournalElse(image, finalTitle, finalDesc));
+								}
+							}
+
+							return true;
+						} else {
+							return false;
+						}
+					}
+				};
+				if (!seen) {
+					gridItem.hardLightBG(2f, 1f, 2f);
+				}
+				grid.addItem(gridItem);
+			}
+		};
+	}
+
+	public static class BadgesTab extends Component {
+
+		private RedButton btnLocal;
+		private RedButton btnGlobal;
+
+		private RenderedTextBlock title;
+
+		private Component badgesLocal;
+		private Component badgesGlobal;
+
+		public static boolean global = false;
+
+		@Override
+		protected void createChildren() {
+
+			if (Dungeon.hero != null) {
+				btnLocal = new RedButton(Messages.get(this, "this_run")) {
+					@Override
+					protected void onClick() {
+						super.onClick();
+						global = false;
+						updateList();
+					}
+				};
+				btnLocal.icon(Icons.BADGES.get());
+				add(btnLocal);
+
+				btnGlobal = new RedButton(Messages.get(this, "overall")) {
+					@Override
+					protected void onClick() {
+						super.onClick();
+						global = true;
+						updateList();
+					}
+				};
+				btnGlobal.icon(Icons.BADGES.get());
+				add(btnGlobal);
+
+				if (Badges.filterReplacedBadges(false).size() <= 8) {
+					badgesLocal = new BadgesList(false);
+				} else {
+					badgesLocal = new BadgesGrid(false);
+				}
+				add(badgesLocal);
+			} else {
+				title = PixelScene.renderTextBlock(Messages.get(this, "title_main_menu"), 9);
+				title.hardlight(Window.TITLE_COLOR);
+				add(title);
+			}
+
+			badgesGlobal = new BadgesGrid(true);
+			add( badgesGlobal );
+		}
+
+		@Override
+		protected void layout() {
+			super.layout();
+
+			if (btnLocal != null) {
+				btnLocal.setRect(x, y, width / 2, 18);
+				btnGlobal.setRect(x + width / 2, y, width / 2, 18);
+
+				badgesLocal.setRect(x, y + 20, width, height-20);
+				badgesGlobal.setRect( x, y + 20, width, height-20);
+			} else {
+				title.setPos( x + (width - title.width())/2, y + (12-title.height())/2);
+
+				badgesGlobal.setRect( x, y + 14, width, height-14);
+			}
+		}
+
+		private void updateList(){
+			if (btnLocal != null) {
+				badgesLocal.visible = badgesLocal.active = !global;
+				badgesGlobal.visible = badgesGlobal.active = global;
+
+				btnLocal.textColor(global ? Window.WHITE : Window.TITLE_COLOR);
+				btnGlobal.textColor(global ? Window.TITLE_COLOR : Window.WHITE);
+			} else {
+				badgesGlobal.visible = badgesGlobal.active = true;
+			}
+		}
+
 	}
 }
