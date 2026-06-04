@@ -35,6 +35,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.DarkGold;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.BlacksmithRoom;
@@ -171,10 +173,16 @@ public class Blacksmith extends NPC {
 		}
 
 		if (item1 instanceof Armor
-				&& item2 instanceof Armor && ((Armor) item2).tier == ((Armor) item1).tier){
+				&& item2 instanceof Armor && ((Armor) item2).tier == ((Armor) item1).tier) {
 			return null;
 		}
-		else if (item1.getClass() != item2.getClass()) {
+
+		if (item1 instanceof MagesStaff && item2.getClass() == ((MagesStaff) item1).wand.getClass()
+				|| item2 instanceof MagesStaff && item1.getClass() == ((MagesStaff) item2).wand.getClass()) {
+			return null;
+		}
+
+		if (item1.getClass() != item2.getClass()) {
 			return Messages.get(Blacksmith.class, "diff_type");
 		}
 		
@@ -201,33 +209,35 @@ public class Blacksmith extends NPC {
 		return null;
 	}
 	
-	public static void upgrade( Item item1, Item item2 ) {
+	public static void upgrade( ArrayList<Item> items, ArrayList<Class<? extends Item>> itemsClass ) {
 		
 		Item first, second;
-		if (item1 instanceof ClassArmor){
-			first = item1;
-			second = item2;
+		if (itemsClass.contains(ClassArmor.class)){
+			first = items.remove(itemsClass.indexOf(ClassArmor.class));
+			second = items.get(0);
 		}
-		else if (item2 instanceof ClassArmor) {
-			first = item2;
-			second = item1;
+		else if (itemsClass.contains(MagesStaff.class)) {
+			first = items.remove(itemsClass.indexOf(MagesStaff.class));
+			second = items.get(0);
 		}
-		else if (item1.levelKnown && item2.levelKnown) {
-			if (item2.level() > item1.level()) {
+		else {
+			Item item1 = items.get(0);
+			Item item2 = items.get(1);
+			if (item1.levelKnown && item2.levelKnown) {
+				if (item2.level() > item1.level()) {
+					first = item2;
+					second = item1;
+				} else {
+					first = item1;
+					second = item2;
+				}
+			} else if (!item1.levelKnown) {
 				first = item2;
 				second = item1;
 			} else {
 				first = item1;
 				second = item2;
 			}
-		}
-		else if (!item1.levelKnown) {
-			first = item2;
-			second = item1;
-		}
-		else {
-			first = item1;
-			second = item2;
 		}
 
 		Sample.INSTANCE.play( Assets.Sounds.EVOKE );
@@ -254,6 +264,7 @@ public class Blacksmith extends NPC {
 		} else {
 			first.upgrade();
 		}
+		Catalog.countUse(first.getClass());
 		Dungeon.hero.spendAndNext( 2f );
 		Badges.validateItemLevelAquired( first );
 		Item.updateQuickslot();

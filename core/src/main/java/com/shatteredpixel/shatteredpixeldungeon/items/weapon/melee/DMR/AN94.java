@@ -1,4 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 public class AN94 extends DesignatedMarksmanRifle {
@@ -9,7 +10,14 @@ public class AN94 extends DesignatedMarksmanRifle {
 
         tier = 4;
         RCH = 3;
-        dmgUpgradeDiffer = -1;
+        dmgBaseDiffer = -1F;
+        dmgUpgradeDiffer = -1F;
     }
 
+    @Override
+    public int proc(Char attacker, Char defender, int damage ) {
+        if (enchantment != null)
+            damage = enchantment.proc(this, attacker, defender, damage);
+        return super.proc(attacker, defender, damage);
+    }
 }

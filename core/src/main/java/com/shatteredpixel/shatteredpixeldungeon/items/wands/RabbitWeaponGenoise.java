@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.wands;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Genoise;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
@@ -31,17 +30,16 @@ public class RabbitWeaponGenoise extends Wand {
     public void onZap(Ballistica beam) {
         for (int n : PathFinder.NEIGHBOURS8) {
             int c = beam.collisionPos + n;
-            if ( c >= 0 && Blob.volumeAt( c, GooWarn.class ) == 0 ) {
-                GameScene.add( Blob.seed( c, Math.round( 1 + TIME_TO_EXPLODE ), GooWarn.class) );
+            if ( c >= 0 ) {
+                GameScene.add( Blob.seedStrict( c, Math.round(1 + TIME_TO_EXPLODE), GooWarn.class ) );
             }
         }
 
-        if (beam.collisionPos >= 0 && Blob.volumeAt( beam.collisionPos, GenoiseWarn.class ) == 0) {
-            GameScene.add( Blob.seed( beam.collisionPos, Math.round( 1 + TIME_TO_EXPLODE ), GenoiseWarn.class) );
+        if (beam.collisionPos >= 0) {
+            GenoiseWarn.genoise = new Genoise( beam.collisionPos, min(level()), max(level()) );
+            GenoiseWarn.fuseTime = TIME_TO_EXPLODE;
+            GameScene.add( Blob.seedStrict( beam.collisionPos, Math.round(1 + TIME_TO_EXPLODE), GenoiseWarn.class ) );
         }
-
-        Genoise newGenoise = Genoise.newGenoise( beam.collisionPos, min(level()), max(level()) );
-        Actor.addDelayed(newGenoise, TIME_TO_EXPLODE);
 
     }
 

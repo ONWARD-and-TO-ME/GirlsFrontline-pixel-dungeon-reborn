@@ -105,7 +105,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		if (result == null){
 			//This shouldn't ever trigger
 			GLog.n( Messages.get(this, "nothing") );
-			curItem.collect( curUser.belongings.backpack );
+			collect( curUser.belongings.backpack );
 		} else {
 			if (result != item) {
 				int slot = Dungeon.quickslot.getSlot(item);
@@ -131,6 +131,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 			if (result.isIdentified()){
 				Catalog.setSeen(result.getClass());
 			}
+			result.Tracker(Dungeon.hero);
 			Transmuting.show(curUser, item, result);
 			curUser.sprite.emitter().start(Speck.factory(Speck.CHANGE), 0.2f, 10);
 			GLog.p( Messages.get(this, "morph") );
@@ -204,21 +205,8 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		do {
 			n = (Weapon) Reflection.newInstance(c.classes[Random.chances(c.probs)]);
 		} while (Challenges.isItemBlocked(n) || n.getClass() == w.getClass());
-		
-		int level = w.trueLevel();
-		if (level > 0) {
-			n.upgrade( level );
-		} else if (level < 0) {
-			n.degrade( -level );
-		}
-		
-		n.enchantment = w.enchantment;
-		n.curseInfusionBonus = w.curseInfusionBonus;
-		n.masteryPotionBonus = w.masteryPotionBonus;
-		n.levelKnown = w.levelKnown;
-		n.cursedKnown = w.cursedKnown;
-		n.cursed = w.cursed;
-		n.augment = w.augment;
+
+		n.clone(w);
 		
 		return n;
 		
@@ -229,19 +217,8 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		do {
 			n = (Ring)Generator.random( Generator.Category.RING );
 		} while (Challenges.isItemBlocked(n) || n.getClass() == r.getClass());
-		
-		n.level(0);
-		
-		int level = r.level();
-		if (level > 0) {
-			n.upgrade( level );
-		} else if (level < 0) {
-			n.degrade( -level );
-		}
-		
-		n.levelKnown = r.levelKnown;
-		n.cursedKnown = r.cursedKnown;
-		n.cursed = r.cursed;
+
+		n.clone(r);
 		
 		return n;
 	}

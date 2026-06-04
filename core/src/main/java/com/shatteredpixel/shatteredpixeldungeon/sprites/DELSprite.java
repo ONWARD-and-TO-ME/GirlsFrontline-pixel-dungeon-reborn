@@ -23,28 +23,27 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.effects.ShieldHalo;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
 
-public class WandmakerSprite extends MobSprite {
-	
-	private ShieldHalo shield;
-	
-	public WandmakerSprite() {
+public class DELSprite extends MobSprite {
+
+	private Emitter emitter;
+
+	public DELSprite() {
 		super();
 		
-		texture( Assets.Sprites.MAKER );
-
-		TextureFilm frames = new TextureFilm( texture, 18, 16 );
-
-		idle = new Animation( 2, true );
-		idle.frames( frames, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 3, 3, 3, 3, 3, 3, 2, 0 );
-
+		texture( Assets.Sprites.TROLL );
+		
+		TextureFilm frames = new TextureFilm( texture, 13, 22);
+		
+		idle = new Animation( 15, true );
+		idle.frames( frames, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 3 );
+		
 		run = new Animation( 20, true );
 		run.frames( frames, 0 );
-
+		
 		die = new Animation( 20, false );
 		die.frames( frames, 0 );
 		
@@ -54,18 +53,28 @@ public class WandmakerSprite extends MobSprite {
 	@Override
 	public void link( Char ch ) {
 		super.link( ch );
-		add(State.SHIELDED);
+		
+		emitter = new Emitter();
+		emitter.autoKill = false;
+		emitter.pos( x + 7, y + 12 );
+		parent.add( emitter );
 	}
 	
 	@Override
-	public void die() {
-		super.die();
+	public void update() {
+		super.update();
 		
-		processStateRemoval(State.SHIELDED);
-		emitter().start( ElmoParticle.FACTORY, 0.03f, 60 );
-
-		if (visible) {
-			Sample.INSTANCE.play( Assets.Sounds.BURNING );
+		if (emitter != null) {
+			emitter.visible = visible;
+		}
+	}
+	
+	@Override
+	public void onComplete( Animation anim ) {
+		super.onComplete( anim );
+		
+		if (visible && emitter != null && anim == idle) {
+			emitter.burst( Speck.factory( Speck.FORGE ), 3 );
 		}
 	}
 

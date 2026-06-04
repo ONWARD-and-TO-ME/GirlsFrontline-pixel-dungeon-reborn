@@ -105,7 +105,7 @@ public class Item implements Bundlable {
 	public boolean dropsDownHeap = false;
 	
 	private int level = 0;
-	public int guessingLevel = -1;
+	public int guessingLevel = 0;
     public int BuffLevelPoint = 0;
     public String noted = "";
     public boolean canNote = true;
@@ -491,7 +491,8 @@ public class Item implements Bundlable {
 	}
 	
 	public boolean isSimilar( Item item ) {
-		return level == item.level && getClass() == item.getClass() && overLoad == OverLoad.NONE;
+		return level == item.level && getClass() == item.getClass()
+				&& overLoad == OverLoad.NONE && item.overLoad == OverLoad.NONE;
 	}
 
 	protected void onDetach(){
@@ -532,6 +533,10 @@ public class Item implements Bundlable {
 	}
 
 	public Item clone( Item item ){
+		if (item.trueLevel() > 0)
+			upgrade(item.trueLevel());
+		else
+			degrade(-item.trueLevel());
 		overLoad = item.overLoad;
 		overLoadLeft = item.overLoadLeft;
 		coolDownLeft = item.coolDownLeft;

@@ -39,6 +39,9 @@ import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class WndBlacksmith extends Window {
 
 	private static final int BTN_SIZE	= 36;
@@ -90,7 +93,8 @@ public class WndBlacksmith extends Window {
 		btnReforge = new RedButton( Messages.get(this, "reforge") ) {
 			@Override
 			protected void onClick() {
-				Blacksmith.upgrade( btnItem1.item, btnItem2.item );
+				Blacksmith.upgrade( new ArrayList<>(Arrays.asList(btnItem1.item, btnItem2.item)),
+						new ArrayList<>(Arrays.asList(btnItem1.item.getClass(), btnItem2.item.getClass())) );
 				hide();
 			}
 		};

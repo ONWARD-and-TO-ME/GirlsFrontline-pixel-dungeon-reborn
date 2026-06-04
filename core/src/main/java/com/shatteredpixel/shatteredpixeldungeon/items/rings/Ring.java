@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.rings;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
@@ -156,7 +157,7 @@ public class Ring extends KindofMisc implements ColorItem {
         if (levelKnown || cursedKnown){
             levelKnown = false;
             cursedKnown = false;
-			guessingLevel = -1;
+			guessingLevel = 0;
 			Dungeon.guessType.remove(getClass());
         }else if (isKnown()){
             handler.ignore(this);
@@ -167,8 +168,10 @@ public class Ring extends KindofMisc implements ColorItem {
 
 	@Override
 	public String name() {
-		if (isKnown() || Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY) || isGuess())
+		if (isKnown() || Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
 			return super.name();
+		if (showGuess())
+			return "? " + super.name();
 		return Messages.get(this, gem);
 	}
 
@@ -223,30 +226,50 @@ public class Ring extends KindofMisc implements ColorItem {
 
         return bonus;
     }
-	
+	protected boolean canGuessType(){
+        Ring other;
+		if (Dungeon.hero.belongings.ring() == this) {
+            if (Dungeon.hero.belongings.misc() instanceof Ring)
+				other = (Ring) Dungeon.hero.belongings.misc();
+			else
+				other = null;
+		}
+		else if (Dungeon.hero.belongings.misc() == this){
+            if (Dungeon.hero.belongings.ring() == null)
+				return false;
+			other = Dungeon.hero.belongings.ring();
+		}
+		else
+			return false;
+		if (other == null)
+			return true;
+		if (other.getClass() == getClass())
+			return true;
+		if (other.isKnown() || other.isGuess())
+			return true;
+		return false;
+	}
 	protected String statsInfo(){
-		if (isIdentified() && isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
+		if (isIdentified() && isEquipped(Dungeon.hero)){
+			Ring other = null;
 			if (Dungeon.hero.belongings.ring() == this){
-				if (Dungeon.hero.belongings.misc() != null){
-					if (Dungeon.hero.belongings.misc().cursed)
-						Dungeon.hero.belongings.misc().guessingLevel = Math.min(2, level());
-					else
-						Dungeon.hero.belongings.misc().guessingLevel = level();
-				}
+				if (Dungeon.hero.belongings.misc() instanceof Ring)
+					other = (Ring) Dungeon.hero.belongings.misc();
 			}
-			else if (Dungeon.hero.belongings.misc() == this){
-				if (Dungeon.hero.belongings.ring() != null){
-					if (Dungeon.hero.belongings.ring().cursed)
-						Dungeon.hero.belongings.ring().guessingLevel = Math.min(2, level());
-					else
-						Dungeon.hero.belongings.ring().guessingLevel = level();
-				}
+			else
+				other = Dungeon.hero.belongings.ring();
+			if (other != null && other.getClass() == getClass()){
+				if (other.cursed)
+					other.guessingLevel = Math.min(2, other.level());
+				else
+					other.guessingLevel = other.level();
 			}
 		}
 		return "";
 	}
 	public static <T extends Ring> void guessSignalRing(Hero hero, Class<T> type, boolean guessByTime){
-
+		if (Dungeon.hero == null)
+			return;
 		T ring = null;
 		if (hero.belongings.ring() != null && hero.belongings.ring().getClass() == type
 				&& ( hero.belongings.misc() == null || hero.belongings.misc().getClass() != type) ){
@@ -380,25 +403,27 @@ public class Ring extends KindofMisc implements ColorItem {
 		int lvl = super.buffedLvl();
         EnhancedRings buff = Dungeon.hero.buff(EnhancedRings.class);
 		if ( buff != null ){
-            if (buff.level != 3)
+			Ring other = null;
+			if (Dungeon.hero.belongings.ring() == this) {
+				if (Dungeon.hero.belongings.misc() instanceof Ring)
+					other = (Ring) Dungeon.hero.belongings.misc();
+			}
+			else if (Dungeon.hero.belongings.misc() == this)
+				other = Dungeon.hero.belongings.ring();
+
+			if (other == null || buff.level != 3)
 			    lvl += buff.level;
             else {
-                if ( this == Dungeon.hero.belongings.ring() ){
-                    if ( Dungeon.hero.belongings.misc() instanceof Ring ){
-                        if (Dungeon.hero.belongings.misc().level() <= this.level())
-                            lvl += 3;
-                    }
-                    else
-                        lvl += 3;
-                }
-                else if ( this == Dungeon.hero.belongings.misc() ){
-                    if ( Dungeon.hero.belongings.ring() != null){
-                        if ( Dungeon.hero.belongings.ring().level() < this.level() )
-                            lvl += 3;
-                    }
-                    else
-                        lvl += 3;
-                }
+				if (level() > other.level())
+					lvl += 3;
+				else if (level() < other.level())
+					lvl += 1;
+				else {
+					if (Dungeon.hero.belongings.misc() == this)
+						lvl += 3;
+					else
+						lvl += 1;
+				}
             }
 		}
 		return lvl;
@@ -446,7 +471,9 @@ public class Ring extends KindofMisc implements ColorItem {
 	}
 
 	public class RingBuff extends Buff {
-		
+		public Ring ring(){
+			return Ring.this;
+		}
 		@Override
 		public boolean act() {
 			

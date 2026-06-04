@@ -179,7 +179,7 @@ public class Jupiter extends Mob {
             }
 
             if (hit( this, ch, true )) {
-                ch.damage( Random.NormalIntRange( 70, 70 ), this, this );
+                ch.damage( Random.NormalIntRange( 70, 70 ), new Hydra.Beam(), this );
 
                 if (Dungeon.level.heroFOV[pos]) {
                     ch.sprite.flash();

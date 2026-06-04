@@ -106,7 +106,7 @@ public class ChangeButton extends Component {
         }
         else
             if (color > 0)
-                this.icon.glow = new Image.Glow(color);
+                this.icon.glowing = new Image.Glow(color);
         this.color = color;
         add(this.icon);
         if (cycle!=null){
@@ -204,7 +204,7 @@ public class ChangeButton extends Component {
         }
         else
             if (color.get(0) > 0)
-                this.icon.glow = new Image.Glow(color.get(0));
+                this.icon.glowing = new Image.Glow(color.get(0));
 
         add(this.icon);
 
@@ -262,7 +262,7 @@ public class ChangeButton extends Component {
                 if (size.get(i)  > 0F)
                     image.scale.set(size.get(i));
                 if (color.get(i)  > 0)
-                    image.glow = new Image.Glow(color.get(i));
+                    image.glowing = new Image.Glow(color.get(i));
                 this.pageImage.add(image);
             }
         }

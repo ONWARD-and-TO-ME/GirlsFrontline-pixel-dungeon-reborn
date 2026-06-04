@@ -167,7 +167,9 @@ public class ItemSlot extends Button {
 		sprite.view(ItemSpriteSheet.SOMETHING, null);
 		layout();
 	}
-	
+	public Item item(){
+		return item;
+	}
 	public void item( Item item ) {
 		if (this.item == item) {
 			if (item != null) {

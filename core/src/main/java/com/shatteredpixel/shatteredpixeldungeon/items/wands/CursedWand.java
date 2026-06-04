@@ -239,7 +239,7 @@ public class CursedWand {
 
 			//Bomb explosion
 			case 2:
-				new Bomb().explode(targetPos);
+				new Bomb().explode(true, targetPos);
 				tryForWandProc(Actor.findChar(targetPos), origin);
 				return true;
 

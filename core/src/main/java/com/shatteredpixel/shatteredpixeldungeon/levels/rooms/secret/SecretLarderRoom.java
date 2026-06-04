@@ -23,8 +23,10 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
 import static com.shatteredpixel.shatteredpixeldungeon.Challenges.NO_FOOD;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Blandfruit;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.ChargrilledMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Maccol;
@@ -56,8 +58,11 @@ public class SecretLarderRoom extends SecretRoom {
 		
 		Painter.fill(level, c.x-1, c.y-1, 3, 3, Terrain.WATER);
 		Painter.set(level, c, Terrain.GRASS);
-		
-		level.plant(new BlandfruitBush.Seed(), level.pointToCell(c));
+
+		if (Dungeon.isChallenged(Challenges.NO_HERBALISM))
+			level.drop(new Blandfruit(), level.pointToCell(c));
+		else
+			level.plant(new BlandfruitBush.Seed(), level.pointToCell(c));
 		
 		int extraFood = (int)(Hunger.STARVING - Hunger.HUNGRY) * (1 + Dungeon.curDepth() / 5);
 		

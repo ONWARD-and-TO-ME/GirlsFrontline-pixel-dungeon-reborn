@@ -195,7 +195,15 @@ public class Blob extends Actor {
 			}
 		}
 	}
+	public void setVolume( Level level, int cell, int amount ){
+		if (cur == null) cur = new int[level.length()];
+		if (off == null) off = new int[cur.length];
 
+		cur[cell] = amount;
+		volume = amount;
+
+		area.union(cell%level.width(), cell/level.width());
+	}
 	public void seed( Level level, int cell, int amount ) {
 		if (cur == null) cur = new int[level.length()];
 		if (off == null) off = new int[cur.length];
@@ -222,17 +230,19 @@ public class Blob extends Actor {
 	public void onBuildFlagMaps( Level l ){
 		//do nothing by default, only some blobs affect flags
 	}
-	
+	public void set(){}
 	public String tileDesc() {
 		return null;
 	}
 	
 	public static<T extends Blob> T seed( int cell, int amount, Class<T> type ) {
-		return seed(cell, amount, type, Dungeon.level);
+		return seed(cell, amount, type, Dungeon.level, false);
 	}
-	
+	public static<T extends Blob> T seedStrict( int cell, int amount, Class<T> type ) {
+		return seed(cell, amount, type, Dungeon.level, true);
+	}
 	@SuppressWarnings("unchecked")
-	public static<T extends Blob> T seed( int cell, int amount, Class<T> type, Level level ) {
+	public static<T extends Blob> T seed( int cell, int amount, Class<T> type, Level level, boolean strict ) {
 		
 		T gas = (T)level.blobs.get( type );
 		
@@ -243,13 +253,14 @@ public class Blob extends Actor {
 				gas.spend(1f);
 			}
 		}
-		
-		if (gas != null){
-			level.blobs.put( type, gas );
-			gas.seed( level, cell, amount );
-		}
-		
-		return gas;
+		gas.set();
+        level.blobs.put(type, gas);
+		if (strict)
+			gas.setVolume( level, cell, amount );
+		else
+        	gas.seed( level, cell, amount );
+
+        return gas;
 	}
 
 	public static int volumeAt( int cell, Class<? extends Blob> type){

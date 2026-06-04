@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.plants;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Blandfruit;
+import com.watabou.utils.Reflection;
 
 public class BlandfruitBush extends Plant {
 
@@ -36,6 +37,10 @@ public class BlandfruitBush extends Plant {
 		Dungeon.level.drop( new Blandfruit(), pos ).sprite.drop();
 	}
 
+	@Override
+	public Plant.Seed seed(){
+		return Reflection.newInstance(Seed.class);
+	}
 	//seed is never dropped
 	public static class Seed extends Plant.Seed {
 		{

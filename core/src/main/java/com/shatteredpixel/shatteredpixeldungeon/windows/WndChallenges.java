@@ -26,12 +26,14 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.utils.DeviceCompat;
 
 import java.util.ArrayList;
 
@@ -112,9 +114,12 @@ public class WndChallenges extends Window {
 					value |= Challenges.MASKS[i];
 				}
 			}
-            if (Dungeon.isChallenged(Challenges.TEST_MODE) && remove_Last) {
-                value += Challenges.TEST_MODE;
+            if ((Dungeon.isChallenged(Challenges.TEST_MODE) || DeviceCompat.isDebug()) && remove_Last) {
+				if (Dungeon.isChallenged(Challenges.TEST_MODE))
+                	value += Challenges.TEST_MODE;
                 Dungeon.challenges = value;
+				if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene)
+					GirlsFrontlinePixelDungeon.seamlessResetScene();
             }
 			SPDSettings.challenges( value );
 		}

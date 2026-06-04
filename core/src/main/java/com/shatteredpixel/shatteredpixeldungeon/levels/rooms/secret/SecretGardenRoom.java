@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
@@ -50,11 +51,17 @@ public class SecretGardenRoom extends SecretRoom {
 		entrance().setHidden(Dungeon.hero);
 		
 		level.plant(new Starflower.Seed(), plantPos(level));
-		level.plant(new WandOfRegrowth.Seedpod.Seed(), plantPos( level ));
+		if (Dungeon.isChallenged(Challenges.NO_HERBALISM))
+			level.addTriggerPlant(plantPos(level), new WandOfRegrowth.Seedpod());
+		else
+			level.plant(new WandOfRegrowth.Seedpod.Seed(), plantPos( level ));
 		level.plant(new WandOfRegrowth.Dewcatcher.Seed(), plantPos( level ));
 		
 		if (Random.Int(2) == 0){
-			level.plant(new WandOfRegrowth.Seedpod.Seed(), plantPos( level ));
+			if (Dungeon.isChallenged(Challenges.NO_HERBALISM))
+				level.addTriggerPlant(plantPos(level), new WandOfRegrowth.Seedpod());
+			else
+				level.plant(new WandOfRegrowth.Seedpod.Seed(), plantPos( level ));
 		} else {
 			level.plant(new WandOfRegrowth.Dewcatcher.Seed(), plantPos( level ));
 		}

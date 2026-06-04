@@ -76,6 +76,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.DeathMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.Endure;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.ImmortalShieldAffecter;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
@@ -563,11 +564,12 @@ public abstract class Char extends Actor {
 		needsShieldUpdate = false;
 		return cachedShield;
 	}
-
-	public void damage( int dmg, Object src ) {
-		damage(dmg, src, null);
-	}
+	protected Char WorkingEnemy;
 	public void damage( int dmg, Object src, Char enemy ) {
+		WorkingEnemy = enemy;
+		damage(dmg, src);
+	}
+	public void damage( int dmg, Object src ) {
         if (buff(Empulse.class) != null){
             dmg+= dmg*hero.pointsInTalent(Talent.EMP_Two)/10;
         }

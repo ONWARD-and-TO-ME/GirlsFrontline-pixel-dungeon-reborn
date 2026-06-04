@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -59,6 +60,7 @@ import com.watabou.utils.ColorMath;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -166,7 +168,8 @@ public class WandOfRegrowth extends Wand {
 		if (!cells.isEmpty() && Random.Float() > furrowedChance &&
 				(Random.Int(6) < chrgUsed)){ // 16%/33%/50% chance to spawn a seed pod or dewcatcher
 			int cell = cells.remove(0);
-			Dungeon.level.plant( Random.Int(2) == 0 ? new Seedpod.Seed() : new Dewcatcher.Seed(), cell);
+			Plant plant =  Random.Int(2) == 0 ? new Seedpod() : new Dewcatcher();
+			Dungeon.level.plant(plant.seed(), cell);
 		}
 
 		if (!cells.isEmpty() && Random.Float() > furrowedChance &&
@@ -320,27 +323,23 @@ public class WandOfRegrowth extends Wand {
 
 			int nDrops = Random.NormalIntRange(3, 6);
 
-			ArrayList<Integer> candidates = new ArrayList<>();
-			for (int i : PathFinder.NEIGHBOURS8){
-				if (Dungeon.level.passable[pos+i]
-						&& pos+i != Dungeon.level.entrance
-						&& pos+i != Dungeon.level.exit){
-					candidates.add(pos+i);
-				}
+			ArrayList<Item> items = new ArrayList<>();
+			for (int i = 0; i < nDrops; i++){
+				items.add(new Dewdrop());
 			}
-
-			for (int i = 0; i < nDrops && !candidates.isEmpty(); i++){
-				Integer c = Random.element(candidates);
-				if (Dungeon.level.heaps.get(c) == null) {
-					Dungeon.level.drop(new Dewdrop(), c).sprite.drop(pos);
-				} else {
-					Dungeon.level.drop(new Dewdrop(), c).sprite.drop(c);
-				}
-				candidates.remove(c);
-			}
-
+			Level level;
+			if (Dungeon.level == null)
+				level = Plant.level;
+			else
+				level = Dungeon.level;
+			level.throwPath(items, pos);
+			Plant.level = null;
 		}
 
+		@Override
+		public Plant.Seed seed(){
+			return Reflection.newInstance(Seed.class);
+		}
 		//seed is never dropped, only care about plant class
 		public static class Seed extends Plant.Seed {
 			{
@@ -360,23 +359,24 @@ public class WandOfRegrowth extends Wand {
 
 			int nSeeds = Random.NormalIntRange(2, 4);
 
-			ArrayList<Integer> candidates = new ArrayList<>();
-			for (int i : PathFinder.NEIGHBOURS8){
-				if (Dungeon.level.passable[pos+i]
-						&& pos+i != Dungeon.level.entrance
-						&& pos+i != Dungeon.level.exit){
-					candidates.add(pos+i);
-				}
+			ArrayList<Item> items = new ArrayList<>();
+			for (int i = 0; i < nSeeds; i++){
+				items.add(Generator.random(Generator.Category.SEED));
 			}
-
-			for (int i = 0; i < nSeeds && !candidates.isEmpty(); i++){
-				Integer c = Random.element(candidates);
-				Dungeon.level.drop(Generator.random(Generator.Category.SEED), c).sprite.drop(pos);
-				candidates.remove(c);
-			}
+			Level level;
+			if (Dungeon.level == null)
+				level = Plant.level;
+			else
+				level = Dungeon.level;
+			level.throwPath(items, pos);
+			Plant.level = null;
 
 		}
 
+		@Override
+		public Plant.Seed seed(){
+			return Reflection.newInstance(Seed.class);
+		}
 		//seed is never dropped, only care about plant class
 		public static class Seed extends Plant.Seed {
 			{

@@ -60,6 +60,7 @@ import com.watabou.utils.RectF;
 
 import java.nio.Buffer;
 import java.util.Arrays;
+import java.util.HashSet;
 
 public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip.Listener {
 	
@@ -324,7 +325,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 
 	public void die() {
 		sleeping = false;
-		remove( State.PARALYSED );
+		processStateRemoval( State.PARALYSED );
 		play( die );
 
 		hideEmo();
@@ -374,8 +375,21 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		ra = ba = ga = 1f;
 		flashTime = FLASH_INTERVAL;
 	}
-	
+
+	private final HashSet<State> stateAdditions = new HashSet<>();
+
 	public void add( State state ) {
+		//instant as it just changes an animation property that will get read later
+		if (state == State.PARALYSED){
+			paused = true;
+		} else {
+			synchronized (State.class) {
+				stateRemovals.remove(state);
+				stateAdditions.add(state);
+			}
+		}
+	}
+	protected synchronized void processStateAddition( State state ) {
 		switch (state) {
 			case BURNING:
 				burning = emitter();
@@ -433,8 +447,21 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				break;
 		}
 	}
-	
+	private final HashSet<State> stateRemovals = new HashSet<>();
+
 	public void remove( State state ) {
+		//instant as it just changes an animation property that will get read later
+		if (state == State.PARALYSED){
+			paused = false;
+		} else {
+			synchronized (State.class) {
+				stateAdditions.remove(state);
+				stateRemovals.add(state);
+			}
+		}
+	}
+
+	protected synchronized void processStateRemoval( State state ) {
 		switch (state) {
 			case BURNING:
 				if (burning != null) {
@@ -541,7 +568,18 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		if (flashTime > 0 && (flashTime -= Game.elapsed) <= 0) {
 			resetColor();
 		}
-		
+
+		synchronized (State.class) {
+			for (State s : stateAdditions) {
+				processStateAddition(s);
+			}
+			stateAdditions.clear();
+			for (State s : stateRemovals) {
+				processStateRemoval(s);
+			}
+			stateRemovals.clear();
+		}
+
 		if (burning != null) {
 			burning.visible = visible;
 		}
@@ -670,7 +708,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		hideEmo();
 		
 		for( State s : State.values()){
-			remove(s);
+			processStateRemoval(s);
 		}
 		
 		if (health != null){

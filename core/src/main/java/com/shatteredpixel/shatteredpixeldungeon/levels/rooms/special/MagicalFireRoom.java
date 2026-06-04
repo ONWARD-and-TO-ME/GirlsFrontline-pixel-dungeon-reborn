@@ -69,7 +69,7 @@ public class MagicalFireRoom extends SpecialRoom {
 		if (door.x == left || door.x == right){
 			firePos.y = top+1;
 			while (firePos.y != bottom){
-				Blob.seed(level.pointToCell(firePos), 1, EternalFire.class, level);
+				Blob.seed(level.pointToCell(firePos), 1, EternalFire.class, level, false);
 				Painter.set(level, firePos, Terrain.EMPTY_SP);
 				firePos.y++;
 			}
@@ -81,7 +81,7 @@ public class MagicalFireRoom extends SpecialRoom {
 		} else {
 			firePos.x = left+1;
 			while (firePos.x != right){
-				Blob.seed(level.pointToCell(firePos), 1, EternalFire.class, level);
+				Blob.seed(level.pointToCell(firePos), 1, EternalFire.class, level, false);
 				Painter.set(level, firePos, Terrain.EMPTY_SP);
 				firePos.x++;
 			}

@@ -20,18 +20,21 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.items.food;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 import com.nlf.calendar.Lunar;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Calendar;
@@ -44,6 +47,7 @@ public class Pasty extends Food {
 		NONE,
 		EASTER, //TBD
 		HWEEN,//2nd week of october though first day of november，公历11月1日
+		BREAD,
 		ZHONG_QIU//农历八月十五日
 	}
 
@@ -64,9 +68,16 @@ public class Pasty extends Food {
         if (holiday == Holiday.NONE){
 			switch(calendar.get(Calendar.MONTH)){
 				case Calendar.NOVEMBER:
-					if (calendar.get(Calendar.DAY_OF_MONTH) == 1){
+					if (calendar.get(Calendar.DAY_OF_MONTH) == 1)
 						holiday = Holiday.HWEEN;
-					}
+					break;
+				case Calendar.MAY:
+					if (calendar.get(Calendar.WEEK_OF_MONTH) >= 4)
+						holiday = Holiday.BREAD;
+					break;
+				case Calendar.JUNE:
+					if (calendar.get(Calendar.WEEK_OF_MONTH) <= 2)
+						holiday = Holiday.BREAD;
 					break;
 			}
 		}
@@ -86,6 +97,9 @@ public class Pasty extends Food {
 		switch(holiday){
 			case NONE:default:
 				image = ItemSpriteSheet.PASTY;
+				break;
+			case BREAD:
+				image = ItemSpriteSheet.CINNAMON_ROLL;
 				break;
 			case HWEEN:
 				image = ItemSpriteSheet.PUMPKIN_PIE;
@@ -118,6 +132,8 @@ public class Pasty extends Food {
 		switch(holiday){
 			case NONE:default:
 				return Messages.get(this, "pasty");
+			case BREAD:
+				return Messages.get(this, "cinnamonRoll");
 			case HWEEN:
 				return Messages.get(this, "pie");
 			case ZHONG_QIU:
@@ -130,13 +146,39 @@ public class Pasty extends Food {
 		switch(holiday){
 			case NONE:default:
 				return Messages.get(this, "pasty_desc");
+			case BREAD:
+				return Messages.get(this, "cinnamonRoll_desc");
 			case HWEEN:
 				return Messages.get(this, "pie_desc");
 			case ZHONG_QIU:
 				return Messages.get(this, "salty_moon_cake_desc");
 		}
 	}
-	
+
+	public void EatText(){
+		switch(holiday){
+			case NONE:
+				ArrayList<Mob> mobs = new ArrayList<>();
+				for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
+					if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
+						mobs.add(mob);
+					}
+				}
+				if (mobs.isEmpty())
+					super.EatText();
+				else if (mobs.size() == 1)
+					GLog.i( Messages.get(this, "one", mobs.remove(0).name()) );
+				else
+					GLog.i( Messages.get(this, "many") );
+				break;
+			case BREAD:
+				GLog.i( Messages.get(this, "cinnamon_msg") );
+				break;
+			default:
+				super.EatText();
+		}
+	}
+
 	@Override
     public int value() {
         return 20*quantity;

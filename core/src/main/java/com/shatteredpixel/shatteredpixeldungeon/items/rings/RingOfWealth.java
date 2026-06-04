@@ -98,7 +98,7 @@ public class RingOfWealth extends Ring {
 		return (float)Math.pow(1.20, getBuffedBonus(target, Wealth.class));
 	}
 	
-	public static ArrayList<Item> tryForBonusDrop(Char target, int tries ){
+	public static ArrayList<Item> tryForBonusDrop(Char target, int tries, Ring ring ){
 		int bonus = getBuffedBonus(target, Wealth.class);
 
 		HashSet<Wealth> buffs = target.buffs(Wealth.class);
@@ -127,6 +127,10 @@ public class RingOfWealth extends Ring {
 		triesToDrop -= tries;
 		while ( triesToDrop <= 0 ){
 			if (dropsToEquip <= 0){
+				if (ring == null)
+					ring = target.buff(Wealth.class).ring();
+				if (ring.canGuessType())
+					ring.guessType();
                 int equipBonus = 0;
 
                 for(Wealth w : target.buffs(Wealth.class)) {
@@ -146,7 +150,7 @@ public class RingOfWealth extends Ring {
 			} else {
 				Item i;
 				do {
-					i = genConsumableDrop(bonus - 1);
+					i = genConsumableDrop(bonus - 1, ring);
 				} while (Challenges.isItemBlocked(i));
 				drops.add(i);
 				dropsToEquip--;
@@ -168,7 +172,10 @@ public class RingOfWealth extends Ring {
 	// 3 used for +0-1 equips, 4 used for +2 or higher equips
 	private static int latestDropTier = 0;
 
-	public static void showFlareForBonusDrop( Visual vis ){
+	public static void showFlareForBonusDrop( Visual vis, Ring wealth ){
+		if (wealth != null && wealth.canGuessType())
+			wealth.guessType();
+
 		if (vis == null || vis.parent == null) return;
 		switch (latestDropTier){
 			default:
@@ -189,7 +196,9 @@ public class RingOfWealth extends Ring {
 		latestDropTier = 0;
 	}
 	
-	public static Item genConsumableDrop(int level) {
+	public static Item genConsumableDrop(int level, Ring ring) {
+		if (ring != null && ring.canGuessType())
+			ring.guessType();
 		float roll = Random.Float();
 		//60% chance - 4% per level. Starting from +15: 0%
 		if (roll < (0.6f - 0.04f * level)) {
@@ -221,9 +230,10 @@ public class RingOfWealth extends Ring {
 	}
 
 	private static Item genMidValueConsumable(){
+		Item i;
 		switch (Random.Int(6)){
 			case 0: default:
-				Item i = genLowValueConsumable();
+				i = genLowValueConsumable();
 				return i.quantity(i.quantity()*2);
 			case 1:
 				i = Generator.randomUsingDefaults(Generator.Category.POTION);
@@ -241,6 +251,8 @@ public class RingOfWealth extends Ring {
 	}
 
 	private static Item genHighValueConsumable(){
+		if (Dungeon.hero.buff(Wealth.class).ring().canGuessType())
+			Dungeon.hero.buff(Wealth.class).ring().guessType();
 		switch (Random.Int(4)){
 			case 0: default:
 				Item i = genMidValueConsumable();

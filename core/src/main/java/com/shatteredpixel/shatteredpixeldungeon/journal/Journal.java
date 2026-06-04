@@ -53,7 +53,7 @@ public class Journal {
 	}
 	
 	//package-private
-	static boolean saveNeeded = false;
+	public static boolean saveNeeded = false;
 	
 	public static void saveGlobal(){
 		if (!saveNeeded){

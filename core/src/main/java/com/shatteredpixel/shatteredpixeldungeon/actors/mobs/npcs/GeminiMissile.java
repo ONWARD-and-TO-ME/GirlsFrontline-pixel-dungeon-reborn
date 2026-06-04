@@ -27,7 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.PrismaticSprite;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -47,6 +46,37 @@ public class GeminiMissile extends Geminis {
         if (enemy instanceof Hero)
             return 0;
         return HT/3;
+    }
+
+    @Override
+    public void damage(int dmg, Object src) {
+        Char mob = null;
+        if (src instanceof Char && !(src instanceof Geminis))
+            mob = (Char) src;
+        else if (WorkingEnemy != null && !(WorkingEnemy instanceof Geminis))
+            mob = WorkingEnemy;
+        if (mob != null){
+            if (miss(mob, 2) && special(mob) || miss(mob, 3))
+                dmg = 0;
+        }
+        WorkingEnemy = null;
+        super.damage(dmg, src);
+    }
+    private boolean special(Char ch){
+        return Random.IntRange(
+                0, Random.NormalIntRange(
+                        Random.Int(
+                                0, ch.attackSkill(this)), ch.attackSkill(this)))
+                < Random.IntRange(
+                0, Random.NormalIntRange(
+                        Random.Int(
+                                0, defenseSkill(ch)), defenseSkill(ch)));
+    }
+    private boolean miss(Char enemy, int times){
+        boolean miss = Random.Float(enemy.attackSkill(this)) < Random.Float(defenseSkill(enemy));
+        if (times <= 0)
+            return miss;
+        return miss && miss(enemy, times - 1);
     }
     @Override
     public boolean canAttack(Char enemy){

@@ -88,17 +88,7 @@ public class GnollSWAP extends Gnoll {
         items.add(i);
         itemsClass.add(i.getClass());
 
-        ArrayList<Integer> dropPlace = new ArrayList<>();
-
-        for (int c : PathFinder.NEIGHBOURS9)
-            if (Dungeon.level.passable[c + pos])
-                dropPlace.add(c + pos);
-
-        if (dropPlace.isEmpty())
-            dropPlace.add(pos);
-
-        for (Item item : items)
-            Dungeon.level.drop(item, dropPlace.get(Random.Int(dropPlace.size()))).sprite.drop(pos);
+        Dungeon.level.throwPath(items, pos);
     }
 
     public void beckon(int cell) {

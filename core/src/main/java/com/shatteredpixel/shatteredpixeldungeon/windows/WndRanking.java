@@ -35,7 +35,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.RankingsScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -69,7 +68,6 @@ public class WndRanking extends WndTabbed {
 	private static final int HEIGHT			= 144;
 	
 	private static Thread thread;
-	private String error = null;
 	
 	private Image busy;
     private Rankings.Record record;
@@ -89,14 +87,9 @@ public class WndRanking extends WndTabbed {
 		thread = new Thread() {
 			@Override
 			public void run() {
-				try {
-					Badges.loadGlobal();
-					Rankings.INSTANCE.loadGameData( rec );
-                    record = rec;
-				} catch ( Exception e ) {
-					error = Messages.get(WndRanking.class, "error");
-                    error += String.valueOf(e);
-				}
+				Badges.loadGlobal();
+				Rankings.INSTANCE.loadGameData( rec );
+				record = rec;
 			}
 		};
 
@@ -113,24 +106,19 @@ public class WndRanking extends WndTabbed {
     public void hide() {
         super.hide();
         if (change)
-            GirlsFrontlinePixelDungeon.switchNoFade(RankingsScene.class);
+			GirlsFrontlinePixelDungeon.seamlessResetScene();
     }
 	@Override
 	public void update() {
 		super.update();
 		
 		if (thread != null && !thread.isAlive() && busy != null) {
-			if (error == null) {
-				remove( busy );
-				busy = null;
-				if (Dungeon.hero != null) {
-					createControls();
-				} else {
-					hide();
-				}
+			remove( busy );
+			busy = null;
+			if (Dungeon.hero != null) {
+				createControls();
 			} else {
 				hide();
-				Game.scene().add( new WndError( error ) );
 			}
 		}
 	}

@@ -1,16 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.TierOfTalent;
-import com.shatteredpixel.shatteredpixeldungeon.custom.seedfinder.SeedFindScene;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ErrorButton;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.watabou.noosa.Game;
-import java.io.IOException;
 
 //temporary
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
@@ -125,11 +121,10 @@ public class TitleScene extends PixelScene {
 		btnRankings.icon(Icons.get(Icons.RANKINGS));
 		add(btnRankings);
 
-		StyledButton btnBadges = new StyledButton(GREY_BUTTON,"徽章"){
+		StyledButton btnBadges = new StyledButton(GREY_BUTTON,"图鉴"){
 			@Override
 			protected void onClick() {
-                inGame = false;
-				GirlsFrontlinePixelDungeon.switchNoFade( BadgesScene.class );
+				GirlsFrontlinePixelDungeon.scene().addToFront( new WndJournal());
 			}
 		};
 		btnBadges.icon(Icons.get(Icons.BADGES));

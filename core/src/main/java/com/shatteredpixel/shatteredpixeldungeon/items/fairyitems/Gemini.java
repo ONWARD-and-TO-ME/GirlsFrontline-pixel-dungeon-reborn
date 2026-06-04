@@ -98,8 +98,8 @@ public class Gemini extends FairyItems {
                 missile.twin(shield);
                 shield.HT = maxHP(2);
                 missile.HT= maxHP(0.75F);
-                shield.HP = this.shield.remove(0);
-                missile.HP= this.missile.remove(0);
+                shield.HP = Math.min(shield.HT, this.shield.remove(0));
+                missile.HP= Math.min(missile.HT, this.missile.remove(0));
 
                 shield.state = shield.HUNTING;
                 shield.enemy = closest;
@@ -118,11 +118,13 @@ public class Gemini extends FairyItems {
 
             return true;
         }
-        public int maxHP(Geminis geminis){
+        public static int maxHP(Geminis geminis){
+            if (Dungeon.hero == null)
+                return 10;
             if (geminis instanceof GeminiShield)
-                return maxHP(2);
+                return maxHP(Dungeon.hero, 2);
             else
-                return maxHP(0.75F);
+                return maxHP(Dungeon.hero, 0.75F);
         }
         public int maxHP(float mul){
             return maxHP((Hero)target, mul);

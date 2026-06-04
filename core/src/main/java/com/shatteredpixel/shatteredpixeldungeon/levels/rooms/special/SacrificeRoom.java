@@ -64,7 +64,7 @@ public class SacrificeRoom extends SpecialRoom {
         if (SeedFinder.SeedFinding)
             level.drop(prize(level), level.pointToCell(c)).setRoom(Heap.Room.Sacrifice);
         else
-            Blob.seed( level.pointToCell(c), 6 + Dungeon.curDepth() * 4, SacrificialFire.class, level );
+            Blob.seed( level.pointToCell(c), 6 + Dungeon.curDepth() * 4, SacrificialFire.class, level, false );
 		door.set( Door.Type.EMPTY );
 	}
 

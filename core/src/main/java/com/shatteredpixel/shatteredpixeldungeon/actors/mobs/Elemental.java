@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
@@ -353,10 +354,20 @@ public abstract class Elemental extends Mob {
 		{
 			spriteClass = ElementalSprite.Chaos.class;
 			
-			loot = new ScrollOfTransmutation();
+			loot = loot();
 			lootChance = 1f;
 		}
-		
+
+		private Item loot(){
+			Item item = new ScrollOfTransmutation();
+			if (Dungeon.mobRan >= 100)
+				return item;
+			int quantity = 0;
+			do {
+				quantity++;
+			}while (Random.Int(100) < Dungeon.mobRan);
+			return item.quantity(quantity);
+		}
 		@Override
 		protected void meleeProc( Char enemy, int damage ) {
 			CursedWand.cursedEffect(null, this, enemy);

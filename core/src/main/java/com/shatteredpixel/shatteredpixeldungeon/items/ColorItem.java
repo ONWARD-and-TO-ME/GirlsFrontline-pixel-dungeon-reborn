@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.watabou.utils.Bundlable;
 
 public interface ColorItem extends Bundlable {
@@ -10,5 +11,8 @@ public interface ColorItem extends Bundlable {
     };
     default boolean isGuess(){
         return Dungeon.guessType.contains(getClass());
+    }
+    default boolean showGuess(){
+        return isGuess() && SPDSettings.isAutoIdentify();
     }
 }

@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Genoise;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.GenoiseWarn;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.GooWarn;
@@ -53,8 +54,6 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 public class Elphelt extends Mob {
@@ -111,7 +110,7 @@ public class Elphelt extends Mob {
 	public final Ballistica getTraceGenoise()   { return traceGenoise; }
 
     public boolean onGenoise = false;
-	private int maxGenoiseStack = 5;
+	private final int maxGenoiseStack = 5;
 	private int curGenoiseStack = maxGenoiseStack;
 	public int genoiseDst = -1;
 
@@ -124,8 +123,6 @@ public class Elphelt extends Mob {
 	public int dstRush = -1;
 
 	public boolean canBlast = false;
-
-	private HashSet<Genoise> Genoises = new HashSet<>();
 
 	public int phase = 0;
 
@@ -408,19 +405,16 @@ public class Elphelt extends Mob {
 
 		for (int n : PathFinder.NEIGHBOURS8) {
 			int c = pos + n;
-			if ( c >= 0 && Blob.volumeAt( c, GooWarn.class ) == 0 ) {
-				GameScene.add( Blob.seed( c, Math.round( 1 + TIME_TO_EXPLODE ), GooWarn.class) );
+			if ( c >= 0 ) {
+				GameScene.add( Blob.seedStrict( c, Math.round(1 + TIME_TO_EXPLODE), GooWarn.class ) );
 			}
 		}
 
-		if (pos >= 0 && Blob.volumeAt( pos, GenoiseWarn.class ) == 0) {
-			GameScene.add( Blob.seed( pos, Math.round( 1 + TIME_TO_EXPLODE ), GenoiseWarn.class) );
+		if (pos >= 0) {
+			GenoiseWarn.fuseTime = TIME_TO_EXPLODE;
+			GenoiseWarn.genoise = new Elphelt_Genoise( pos );
+			GameScene.add( Blob.seedStrict( pos, Math.round(1 + TIME_TO_EXPLODE), GenoiseWarn.class ) );
 		}
-
-		Genoise newGenoise = new Genoise( pos );
-		addDelayed(newGenoise, TIME_TO_EXPLODE);
-
-		Genoises.add( newGenoise );
 
 		curGenoiseStack = Math.max(curGenoiseStack-1, 0);
 
@@ -670,9 +664,6 @@ public class Elphelt extends Mob {
 	private static final String PHASE           = "phase";
 	private static final String CURGENOISE      = "curGenoise";
 	private static final String ONGENOISE       = "onGenoise";
-	private static final String GENOISEPOS      = "GenoisePos";
-	private static final String GENOISETIME     = "GenoiseTime";
-	private static final String NUMGENOISE      = "numGenoise";
 
 	private static final String CANBLAST        = "canBlast";
 
@@ -683,8 +674,6 @@ public class Elphelt extends Mob {
 	private static final String BRIDLEDST       = "BridleDst";
 
 
-	private int NumOfGenoise = 0;
-
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
@@ -693,17 +682,6 @@ public class Elphelt extends Mob {
 		bundle.put( ONGENOISE, onGenoise);
 
 		bundle.put( CANBLAST, canBlast );
-
-		NumOfGenoise = Genoises.size();
-		bundle.put( NUMGENOISE, NumOfGenoise );
-
-		Iterator<Genoise> it = Genoises.iterator();
-
-		for (int i=0; i<NumOfGenoise; ++i) {
-			Genoise g = it.next();
-			bundle.put( GENOISEPOS + String.valueOf(i), g.getTarget() );
-			bundle.put( GENOISETIME + String.valueOf(i), g.cooldown() );
-		}
 
 		bundle.put( BRIDLETIME, timerRush );
 		bundle.put( CANBRIDLE, canRush );
@@ -726,14 +704,6 @@ public class Elphelt extends Mob {
 		curGenoiseStack = bundle.getInt( CURGENOISE );
 
 		canBlast = bundle.getBoolean( CANBLAST );
-
-		NumOfGenoise = bundle.getInt( NUMGENOISE );
-
-		for (int i=0; i< NumOfGenoise; ++i) {
-			Genoise g = new Genoise( bundle.getInt(GENOISEPOS + String.valueOf(i) ) );
-			addDelayed( g , bundle.getFloat( GENOISETIME + String.valueOf(i) ) );
-			Genoises.add(g);
-		}
 
 		timerRush = bundle.getInt( BRIDLETIME );
 		canRush = bundle.getBoolean( CANBRIDLE );
@@ -861,28 +831,14 @@ public class Elphelt extends Mob {
 	}
 
 
-	private class Genoise extends Actor {
+	private class Elphelt_Genoise extends Genoise {
 
-		{
-			actPriority = BUFF_PRIO;
-		}
-
-		private int target = -1;
-
-		Genoise(int cell) {
+		Elphelt_Genoise(int cell) {
 			target = cell;
 		}
 
-		public final int getTarget() { return target; }
-
 		@Override
-		protected boolean act() {
-
-			if (!Genoises.contains(Elphelt.Genoise.this)) {
-				return false;
-			}
-
-			Genoises.remove(Elphelt.Genoise.this);
+		public void explore() {
 
 			Sample.INSTANCE.play( Assets.Sounds.BLAST );
 
@@ -935,8 +891,6 @@ public class Elphelt extends Mob {
 				Dungeon.observe();
 			}
 
-			remove(Elphelt.Genoise.this);
-			return true;
 		}
 	}
     public static class Finish extends CounterBuff {

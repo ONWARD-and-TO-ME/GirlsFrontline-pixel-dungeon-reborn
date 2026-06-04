@@ -694,21 +694,19 @@ public class Armor extends EquipableItem {
         int lvl = super.buffedLvl();
         if (BuffLevelPoint != 0)
             return lvl;
-		if (isEquipped( hero ) || hero.belongings.contains( this )){
-            if (hero != null) {
-                if (hero.buff(EquipLevelUp.class) != null) {
-                    lvl += 1 + hero.pointsInTalent(Talent.Type56FourTwoTwo);
+		if (isEquipped( hero ) || hero.belongings.contains(this)) {
+            if (hero.buff(EquipLevelUp.class) != null) {
+                lvl += 1 + hero.pointsInTalent(Talent.Type56FourTwoTwo);
+            }
+            Hunger hunger = hero.buff(Hunger.class);
+            if (hunger != null) {
+                if (hero.hasTalent(Talent.Type56Two_Armor)) {
+                    if (hunger.fullA() >= 500 - 100 * hero.pointsInTalent(Talent.Type56Two_Armor))
+                        lvl += 1;
                 }
-                Hunger hunger = hero.buff(Hunger.class);
-                if (hunger != null){
-                    if (hero.hasTalent(Talent.Type56Two_Armor)) {
-                        if (hunger.fullA() >= 500 - 100 * hero.pointsInTalent(Talent.Type56Two_Armor))
-                            lvl += 1;
-                    }
-                    if (hero.hasTalent(Talent.Type56_22V2)){
-                        if (hunger.isFull())
-                            lvl += hero.pointsInTalent(Talent.Type56_22V2);
-                    }
+                if (hero.hasTalent(Talent.Type56_22V2)) {
+                    if (hunger.isFull())
+                        lvl += hero.pointsInTalent(Talent.Type56_22V2);
                 }
             }
             //down at 200, 200+300, 200+300+400, ...

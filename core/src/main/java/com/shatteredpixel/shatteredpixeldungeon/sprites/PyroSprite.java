@@ -53,7 +53,7 @@ public class PyroSprite extends MobSprite{
     @Override
     public void die() {
         super.die();
-        remove( CharSprite.State.BURNING );
+        processStateRemoval( CharSprite.State.BURNING );
     }
 
 }

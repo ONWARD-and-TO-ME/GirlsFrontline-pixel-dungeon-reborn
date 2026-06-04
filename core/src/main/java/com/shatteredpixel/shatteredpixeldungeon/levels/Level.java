@@ -167,6 +167,7 @@ public abstract class Level implements Bundlable {
 	public SparseArray<Trigger> triggers;
 	public HashSet<CustomTilemap> customTiles;
 	public HashSet<CustomTilemap> customWalls;
+	public HashMap<Integer, ArrayList<Plant>> triggersPlant = new HashMap<>();
 	
 	protected ArrayList<Item> itemsToSpawn = new ArrayList<>();
 
@@ -282,6 +283,7 @@ public abstract class Level implements Bundlable {
 			triggers = new SparseArray<>();
 			customTiles = new HashSet<>();
 			customWalls = new HashSet<>();
+			triggersPlant = new HashMap<>();
 			
 		} while (!build());
 		
@@ -292,6 +294,13 @@ public abstract class Level implements Bundlable {
 		createItems();
 
 		Random.popGenerator();
+		for (Integer pos : triggersPlant.keySet()){
+			for (Plant plant : triggersPlant.get(pos)) {
+				Plant.level = this;
+				plant.activate(pos);
+			}
+		}
+		triggersPlant = new HashMap<>();
 	}
 	
 	public void setSize(int w, int h){
@@ -936,6 +945,33 @@ public abstract class Level implements Bundlable {
 
 	public void removeTrigger(Trigger trigger){
 		triggers.remove(trigger.pos);
+	}
+	public void addTriggerPlant(int pos, Plant plant){
+		if (triggersPlant.containsKey(pos))
+			triggersPlant.get(pos).add(plant);
+		else
+			triggersPlant.put(pos, new ArrayList<>(Arrays.asList(plant)));
+	}
+	public void throwPath(ArrayList<Item> items, int pos){
+		ArrayList<Integer> dropPlace = new ArrayList<>();
+
+		for (int c : PathFinder.NEIGHBOURS9)
+			if (passable[c + pos])
+				dropPlace.add(c + pos);
+
+		if (dropPlace.isEmpty())
+			dropPlace.add(pos);
+
+		ArrayList<Integer> dropAvoidItem = new ArrayList<>(dropPlace);
+		for (Item item : items) {
+			ItemSprite sprite;
+			if (!dropAvoidItem.isEmpty())
+				sprite = drop(item, dropAvoidItem.remove(Random.Int(dropAvoidItem.size()))).sprite;
+			else
+				sprite = drop(item, dropPlace.get(Random.Int(dropPlace.size()))).sprite;
+			if (sprite != null)
+				sprite.drop(pos);
+		}
 	}
 
 	public Plant plant( Plant.Seed seed, int pos ) {

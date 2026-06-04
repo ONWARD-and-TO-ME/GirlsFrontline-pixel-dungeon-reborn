@@ -36,6 +36,7 @@ import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Matrix;
 import com.watabou.glwrap.Vertexbuffer;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.audio.Sample;
@@ -52,8 +53,7 @@ public class ItemSprite extends MovieClip {
 	private static final float DROP_INTERVAL = 0.4f;
 	
 	public Heap heap;
-	
-	private Glowing glowing;
+
 	//FIXME: a lot of this emitter functionality isn't very well implemented.
 	//right now I want to ship 0.3.0, but should refactor in the future.
 	protected Emitter emitter;
@@ -376,27 +376,14 @@ public class ItemSprite extends MovieClip {
 		return tx.getPixel( col * SIZE + x, row * SIZE + y );
 	}
 	
-	public static class Glowing {
-		
-		public int color;
-		public float red;
-		public float green;
-		public float blue;
-		public float period;
-		
+	public static class Glowing extends Image.Glow {
+
 		public Glowing( int color ) {
-			this( color, 1f );
+			super(color);
 		}
-		
+
 		public Glowing( int color, float period ) {
-
-			this.color = color;
-
-			red = (color >> 16) / 255f;
-			green = ((color >> 8) & 0xFF) / 255f;
-			blue = (color & 0xFF) / 255f;
-			
-			this.period = period;
+			super(color, period);
 		}
 	}
 }

@@ -27,12 +27,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Gemini;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GhostSprite;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 
 public abstract class Geminis extends NPC {
 	
@@ -104,18 +106,19 @@ public abstract class Geminis extends NPC {
 	}
 
     @Override
-    public void damage(int dmg, Object src, Char enemy) {
+    public void damage(int dmg, Object src) {
         if (twin == null)
             twin = (Geminis) Actor.findById(twinID);
 		if (twin != null && !(src instanceof Geminis)) {
 			if (src instanceof Mob)
 				((Mob) src).aggro(twin);
-			else if (enemy instanceof Mob && !(enemy instanceof Geminis))
-				((Mob) enemy).aggro(twin);
+			else if (WorkingEnemy instanceof Mob && !(WorkingEnemy instanceof Geminis))
+				((Mob) WorkingEnemy).aggro(twin);
 			dmg /= 2;
-			twin.damage(dmg, this, enemy);
+			twin.damage(dmg, this, WorkingEnemy);
 		}
-        super.damage(dmg, src, enemy);
+		WorkingEnemy = null;
+        super.damage(dmg, src);
     }
 
 	@Override
@@ -163,16 +166,19 @@ public abstract class Geminis extends NPC {
                     Geminis.this.spend(0.5F);
                     return true;
                 }
-                int shield;
-                int missile;
+                GeminiShield shield;
+                GeminiMissile missile;
                 if (Geminis.this instanceof GeminiShield){
-                    shield = Geminis.this.HP;
-                    missile= twin.HP;
+                    shield = (GeminiShield) Geminis.this;
+                    missile= (GeminiMissile) twin;
                 }else {
-                    shield = twin.HP;
-                    missile= Geminis.this.HP;
+                    shield = (GeminiShield) twin;
+                    missile= (GeminiMissile) Geminis.this;
                 }
-				Buff.affect(Dungeon.hero, Gemini.Contract.class).add(shield, missile);
+				int s = 0;
+				if (missile.buff( Barrier.class ) != null)
+					s = missile.buff( Barrier.class ).shielding();
+				Buff.affect(Dungeon.hero, Gemini.Contract.class).add(shield.HP , missile.HP + Random.Int(s) / 2);
                 Geminis.this.destroy();
                 sprite.die();
                 twin.destroy();

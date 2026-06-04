@@ -52,7 +52,7 @@ public class MagicWellRoom extends SpecialRoom {
 			(Class<? extends WellWater>)Random.element( WATERS );
 			
 		
-		WellWater.seed(c.x + level.width() * c.y, 1, waterClass, level);
+		WellWater.seed(c.x + level.width() * c.y, 1, waterClass, level, false);
 		
 		entrance().set( Door.Type.REGULAR );
 	}

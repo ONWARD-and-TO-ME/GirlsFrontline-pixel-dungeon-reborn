@@ -36,11 +36,14 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextNumberInput;
+import com.shatteredpixel.shatteredpixeldungeon.ui.canScrollRedButton;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndSlider;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndWithCanScrollButton;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.GameMath;
 
 import java.util.ArrayList;
 
@@ -51,64 +54,48 @@ public class debugBook extends TestItem {
     }
     private static final String AC_SetMode = "setMode";
     private static final String AC_APPLY = "apply";
-    private static int modeA = 0;
-    private static final String AC_EXP = "EXP";
-    private static final String AC_STR = "STR";
-    private static final String AC_LVL = "LVL";
-    private static final String AC_MOB = "MOB";
-    private static final String AC_CHA = "CHA";
+    private static Mode mode = Mode.NONE;
+    private static final String AC_SET_NUM = "SET";
+    enum Mode{
+        NONE, EXPERIENCE, STRENGTH, LEVEL, IGNORE, MOB, CHARGE, RESET, COMPLETE;
+        public String modeName(){
+            return Messages.get(debugBook.class, name());
+        }
+    }
     @Override
     public String name(){
         return Messages.get(this, "name") + modeName();
     }
     private String modeName(){
-        switch(modeA)
-        {
-            case 1:
-                return "-"+Messages.get(this, "ac_exp");
-            case 2:
-                return "-"+Messages.get(this, "ac_str");
-            case 3:
-                return "-"+Messages.get(this, "ac_lvl");
-            case 4:
-                return "-"+Messages.get(this, "ac_ign");
-            case 5:
-                return "-"+Messages.get(this, "ac_mob");
-            case 6:
-                return "-"+Messages.get(this, "ac_cha");
-            case 7:
-                return "-"+Messages.get(this, "ac_reset");
-            case 8:
-                return "-"+Messages.get(this, "ac_complete");
-            default:
-                return "";
-        }
+        if (mode == Mode.NONE)
+            return "";
+        return "——" + mode.modeName();
     }
     private String modeDesc(){
-        switch(modeA)
+        switch(mode)
         {
-            case 1:
+            case EXPERIENCE:
                 return Messages.get(this, "exp");
-            case 2:
+            case STRENGTH:
                 return Messages.get(this, "str");
-            case 3:
+            case LEVEL:
                 return Messages.get(this, "lvl");
-            case 4:
+            case IGNORE:
                 return Messages.get(this, "ign");
-            case 5:
-                return Messages.get(this, "mob");
-            case 6:
+            case MOB:
+                return Messages.get(this, "mob_");
+            case CHARGE:
                 return Messages.get(this, "cha", chaDesc());
-            case 7:
-                return Messages.get(this, "reset");
-            case 8:
-                return Messages.get(this, "complete");
+            case RESET:
+                return Messages.get(this, "res");
+            case COMPLETE:
+                return Messages.get(this, "comp");
             default:
                 return "";
         }
     }
     private String chaDesc(){
-        switch (chargeMode){
+        switch (workingNum){
             case 1:
                 return Messages.get(this,"cha_rem");
             case 2:
@@ -128,40 +115,22 @@ public class debugBook extends TestItem {
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
         actions.add(AC_SetMode);
-        if(modeA!=0)
+        if(mode != Mode.NONE)
             actions.add(AC_APPLY);
-        switch (modeA){
-            case 0: default:
+        switch (mode){
+            case NONE:
                 defaultAction=AC_SetMode;
                 break;
-            case 1:
-                actions.add(AC_EXP);
-                defaultAction=AC_EXP;
+            case EXPERIENCE:
+            case STRENGTH:
+            case LEVEL:
+            case MOB:
+            case CHARGE:
+                actions.add(AC_SET_NUM);
                 break;
-            case 2:
-                actions.add(AC_STR);
-                defaultAction=AC_STR;
-                break;
-            case 3:
-                actions.add(AC_LVL);
-                defaultAction=AC_LVL;
-                break;
-            case 4:
+            default:
                 defaultAction=AC_APPLY;
                 break;
-            case 5:
-                actions.add(AC_MOB);
-                defaultAction=AC_MOB;
-            case 6:
-                actions.add(AC_CHA);
-                defaultAction=AC_CHA;
-            case 7:
-                defaultAction=AC_APPLY;
-                break;
-            case 8:
-                defaultAction=AC_APPLY;
-                break;
-
         }
         return actions;
     }
@@ -169,214 +138,162 @@ public class debugBook extends TestItem {
     @Override
     public void execute(Hero hero, String action) {
         super.execute(hero, action);
-        if (action.equals(AC_SetMode)) {
-            setMode();
-        } else if (action.equals(AC_EXP)) {
-            setEXP();
-        } else if (action.equals(AC_STR)) {
-            setSTR();
-        } else if (action.equals(AC_LVL)) {
-            setLVL();
-        } else if (action.equals(AC_MOB)) {
-            setMOB();
-        } else if (action.equals(AC_CHA)) {
-            setCHA();
-        }else if(action.equals(AC_APPLY)){
-            switch (modeA){
-                case 1:
-                    updateEXP();
-                    break;
-                case 2:
-                    updateSTR();
-                    break;
-                case 3:
-                    GameScene.selectItem(itemLVL);
-                    break;
-                case 4:
-                    GameScene.selectItem(itemIGN);
-                    break;
-                case 5:
-                    mobAPPLY();
-                    break;
-                case 6:
-                    GameScene.selectItem(itemCHA);
-                    break;
-                case 7:
-                    resetLevel();
-                    break;
-                case 8:
-                    complete();
-                    break;
-                case 0: default:
-                    break;
-            }
-        }
-    }
-
-    private void setMode(){
-        GirlsFrontlinePixelDungeon.scene().addToFront(
-                new WndTextNumberInput(
-                        Messages.get(this, "mode_title"),
-                        Messages.get(this, "mode_body"),
-                        "",
-                        20,
-                        false,
-                        Messages.get(this, "yes"),
-                        Messages.get(this, "no"),
-                        false
-                ){
-                    @Override
-                    public void onSelect(boolean check, String text) {
-                        if (check && text.matches("\\d+")){
-                            modeChange(Integer.parseInt(text));
-                        }
-                    }
+        switch (action) {
+            case AC_SetMode:
+                setMode();
+                break;
+            case AC_SET_NUM:
+                switch (mode) {
+                    case EXPERIENCE:
+                        setEXP();
+                        break;
+                    case STRENGTH:
+                        setSTR();
+                        break;
+                    case LEVEL:
+                        setLVL();
+                        break;
+                    case MOB:
+                        setMOB();
+                        break;
+                    case CHARGE:
+                        setCHA();
+                        break;
                 }
-        );
-    }
-    private void modeChange(int mode){
-        if(mode == 1) {
-            modeA = 1;
-            defaultAction = AC_EXP;
-            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_exp")));
-            updateQuickslot();
-        }
-        else if(mode==2){
-            modeA = 2;
-            defaultAction = AC_STR;
-            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_str")));
-            updateQuickslot();
-        }
-        else if(mode==3){
-            modeA = 3;
-            defaultAction = AC_LVL;
-            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_lvl")));
-            updateQuickslot();
-        }
-        else if(mode==4){
-            modeA = 4;
-            defaultAction = AC_APPLY;
-            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_ign")));
-            updateQuickslot();
-        }
-        else if(mode==5){
-            modeA = 5;
-            defaultAction = AC_MOB;
-            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_mob")));
-            updateQuickslot();
-        }
-        else if(mode==6){
-            modeA = 6;
-            defaultAction = AC_CHA;
-            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_cha")));
-            updateQuickslot();
-        }
-        else if(mode == 7){
-            modeA = 7;
-            defaultAction = AC_APPLY;
-            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_reset")));
-            updateQuickslot();
-        }
-        else if(mode == 8){
-            modeA = 8;
-            defaultAction = AC_APPLY;
-            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_complete")));
-            updateQuickslot();
-        }
-        else {
-            modeA = 0;
-            defaultAction = AC_SetMode;
-            GLog.p(Messages.get(this,"modeText",Messages.get(this,"ac_setMode")));
-            updateQuickslot();
+                break;
+            case AC_APPLY:
+                switch (mode) {
+                    case EXPERIENCE:
+                        updateEXP();
+                        break;
+                    case STRENGTH:
+                        updateSTR();
+                        break;
+                    case LEVEL:
+                        GameScene.selectItem(itemLVL);
+                        break;
+                    case IGNORE:
+                        GameScene.selectItem(itemIGN);
+                        break;
+                    case MOB:
+                        mobAPPLY();
+                        break;
+                    case CHARGE:
+                        GameScene.selectItem(itemCHA);
+                        break;
+                    case RESET:
+                        resetLevel();
+                        break;
+                    case COMPLETE:
+                        complete();
+                        break;
+                    case NONE:
+                    default:
+                        break;
+                }
+                break;
         }
     }
 
-    private int exp;
-    private void setEXP(){
-        Game.runOnRenderThread(()-> GameScene.show(
-                new WndTextNumberInput(
-                        Messages.get(this, "exp_title"),
-                        Messages.get(this, "exp_body"),
-                        "",
-                        4,
-                        false,
-                        Messages.get(this, "yes"),
-                        Messages.get(this, "no"),
-                        false){
-                    public void onSelect(boolean check, String text){
-                        if (check && text.matches("\\d+")){
-                            exp = Math.min(Integer.parseInt(text), 40);
-                            defaultAction = AC_APPLY;
-                            updateQuickslot();
-                        }
+    private int workingNum = 0;
+    private void setMode(){
+        workingNum = 0;
+        ArrayList<canScrollRedButton> buttons = new ArrayList<>();
+        for (Mode e : Mode.values()){
+            if (e != Mode.NONE)
+                buttons.add(new canScrollRedButton(e, e.modeName()){
+
+                    public boolean onClick(float x, float y){
+                        if(!inside(x,y)) return false;
+                        onClick();
+
+                        return true;
                     }
-                }));
+
+                    @Override
+                    public void onClick(){
+                        super.onClick();
+                        modeChange((Mode) anEnum);
+                    }
+
+                    @Override
+                    public void layout(){
+                        super.layout();
+                        hotArea.width = hotArea.height = 0;
+                    }
+                });
+        }
+        INSTANCE = new WndWithCanScrollButton(buttons);
+        GirlsFrontlinePixelDungeon.scene().addToFront(INSTANCE);
+    }
+    private WndWithCanScrollButton INSTANCE = null;
+    private void modeChange(Mode mode_){
+        mode = mode_;
+        if (INSTANCE != null)
+            INSTANCE.hide();
+        switch (mode_){
+            case EXPERIENCE: case STRENGTH: case LEVEL: case MOB: case CHARGE:
+                defaultAction = AC_SET_NUM; break;
+            default:
+                defaultAction = AC_APPLY; break;
+        }
+        GLog.p(Messages.get(this,"modeText", mode_.modeName()));
+        updateQuickslot();
+    }
+
+    private void setEXP(){
+        Game.runOnRenderThread(()-> GameScene.show(new WndSlider(Messages.get(debugBook.class, "exp_title"), 2, hero.lvl){
+            @Override
+            public void hide(){
+                super.hide();
+                workingNum = (int) GameMath.gate(1, num, 40);
+                defaultAction = AC_APPLY;
+                updateQuickslot();
+            }
+        }));
     }
     private void updateEXP(){
-        if(exp<=0)
-            exp=1;
-        if(exp-hero.lvl!=0){
+        if(workingNum-hero.lvl!=0){
             new PotionOfExperience().apply(hero);
-            hero.lvl = exp;
-            hero.attackSkill = 10 + exp - 1;
-            hero.defenseSkill = 5 + exp - 1;
+            hero.lvl = workingNum;
+            hero.attackSkill = 10 + workingNum - 1;
+            hero.defenseSkill = 5 + workingNum - 1;
             Sample.INSTANCE.play( Assets.Sounds.READ );
             hero.updateHT( true );
         }
     }
-
-    private int str;
     private void setSTR(){
-        Game.runOnRenderThread(()-> GameScene.show(
-                new WndTextNumberInput(
-                        Messages.get(this, "str_title"),
-                        Messages.get(this, "str_body"),
-                        "",
-                        4,
-                        false,
-                        Messages.get(this, "yes"),
-                        Messages.get(this, "no"),
-                        false){
-                    public void onSelect(boolean check, String text){
-                        if (check && text.matches("\\d+")){
-                            str = Integer.parseInt(text);
-                            defaultAction = AC_APPLY;
-                            updateQuickslot();
-                        }
-                    }
-                }));
+        Game.runOnRenderThread(()-> GameScene.show(new WndSlider(Messages.get(debugBook.class, "str_title"), 4, hero.STR){
+            @Override
+            public void hide(){
+                super.hide();
+                workingNum = num;
+                defaultAction = AC_APPLY;
+                updateQuickslot();
+            }
+        }));
     }
     private void updateSTR(){
             new PotionOfStrength().apply(hero);
-            hero.STR = str;
+            hero.STR = workingNum;
             Sample.INSTANCE.play( Assets.Sounds.READ );
     }
-    private int lvl;
     private void setLVL(){
-        Game.runOnRenderThread(()->GameScene.show(
-                new WndTextNumberInput(
-                        Messages.get(this, "lvl_title"),
-                        Messages.get(this, "lvl_body"),
-                        "",
-                        4,
-                        false,
-                        Messages.get(this, "yes"),
-                        Messages.get(this, "no"),
-                        false){
-                    public void onSelect(boolean check, String text){
-                        if (check && text.matches("\\d+")){
-                            lvl = Math.min(Integer.parseInt(text), 6666);
-                            defaultAction = AC_APPLY;
-                            updateQuickslot();
-                        }
-                    }
-                }));
+        Game.runOnRenderThread(()-> GameScene.show(new WndSlider(Messages.get(debugBook.class, "lvl_title"), 4){
+            @Override
+            public void hide(){
+                super.hide();
+                workingNum = num;
+                defaultAction = AC_APPLY;
+                updateQuickslot();
+            }
+        }));
     }
     protected WndBag.ItemSelector itemLVL = new WndBag.ItemSelector() {
 
         @Override
         public String textPrompt() {
-            return Messages.get(this, "lvl_select");
+            return Messages.get(debugBook.class, "lvl_select");
         }
 
         @Override
@@ -392,11 +309,8 @@ public class debugBook extends TestItem {
         @Override
         public void onSelect( Item item ) {
             if(item != null){
-                if(!(lvl > 0)){
-                    lvl = 0;
-                }
                 if (item instanceof Artifact){
-                    lvl = Math.min(lvl, ((Artifact) item).levelCap);
+                    int lvl = Math.min(workingNum, ((Artifact) item).levelCap);
                     int lvlB = lvl-item.level();
                     if (lvlB>=0) {
                         item.upgrade(lvlB);
@@ -404,10 +318,10 @@ public class debugBook extends TestItem {
                         item.degrade(-lvlB);
                     }
                 }else {
-                    if (item.level()==lvl){
-                        item.level(-lvl);
+                    if (item.level()==workingNum){
+                        item.level(-workingNum);
                     }else {
-                        item.level(lvl);
+                        item.level(workingNum);
                     }
                 }
                 Sample.INSTANCE.play( Assets.Sounds.READ );
@@ -418,7 +332,7 @@ public class debugBook extends TestItem {
 
         @Override
         public String textPrompt() {
-            return Messages.get(this, "ign_select");
+            return Messages.get(debugBook.class, "ign_select");
         }
 
         @Override
@@ -441,63 +355,65 @@ public class debugBook extends TestItem {
                     item.levelKnown = false;
                     item.cursedKnown = false;
                 }
-                item.guessingLevel = -1;
+                item.guessingLevel = 0;
                 Sample.INSTANCE.play( Assets.Sounds.READ );
             }
         }
     };
-    private int mobA = 2;
     private void setMOB(){
-        Game.runOnRenderThread(()-> GameScene.show(
-                new WndTextNumberInput(
-                        Messages.get(this, "mob_title"),
-                        Messages.get(this, "mob_body"),
-                        String.valueOf(Dungeon.mobRan),
-                        4,
-                        false,
-                        Messages.get(this, "yes"),
-                        Messages.get(this, "no"),
-                        false){
-                    public void onSelect(boolean check, String text){
-                        if (check && text.matches("\\d+")){
-                            mobA = Integer.parseInt(text);
-                            defaultAction = AC_APPLY;
-                            updateQuickslot();
-                        }
-                    }
-                }));
+        Game.runOnRenderThread(()-> GameScene.show(new WndSlider(Messages.get(debugBook.class, "mob_title"), 3, Dungeon.mobRan){
+            @Override
+            public void hide(){
+                super.hide();
+                workingNum = num;
+                defaultAction = AC_APPLY;
+                updateQuickslot();
+            }
+        }));
     }
     private void mobAPPLY(){
-        Dungeon.mobRan=mobA;
+        Dungeon.mobRan=workingNum;
     }
-    private int chargeMode = 0;
+    private void addButton(ArrayList<canScrollRedButton> buttons, String message, int setNum){
+        buttons.add(new canScrollRedButton(message, setNum){
+
+            public boolean onClick(float x, float y){
+                if(!inside(x,y)) return false;
+                onClick();
+
+                return true;
+            }
+
+            @Override
+            public void onClick(){
+                super.onClick();
+                if (INSTANCE != null)
+                    INSTANCE.hide();
+                workingNum = num;
+                defaultAction = AC_APPLY;
+                updateQuickslot();
+            }
+
+            @Override
+            public void layout(){
+                super.layout();
+                hotArea.width = hotArea.height = 0;
+            }
+        });
+    }
     private void setCHA(){
-        Game.runOnRenderThread(()->GameScene.show(
-                new WndTextNumberInput(
-                        Messages.get(this, "cha_title"),
-                        Messages.get(this, "cha_body"),
-                        "",
-                        4,
-                        false,
-                        Messages.get(this, "yes"),
-                        Messages.get(this, "no"),
-                        false){
-                    public void onSelect(boolean check, String text){
-                        if (check && text.matches("\\d+")){
-                            chargeMode = Math.min(Integer.parseInt(text), 2);
-                            chargeMode = Math.max(chargeMode, 0);
-                            GLog.p(Messages.get(this, "changeCha"), chaDesc());
-                            defaultAction = AC_APPLY;
-                            updateQuickslot();
-                        }
-                    }
-                }));
+        ArrayList<canScrollRedButton> buttons = new ArrayList<>();
+        addButton(buttons, Messages.get(debugBook.class, "cha_full"), 0);
+        addButton(buttons, Messages.get(debugBook.class, "cha_rem"), 1);
+        addButton(buttons, Messages.get(debugBook.class, "cha_lock"), 2);
+        INSTANCE = new WndWithCanScrollButton(buttons);
+        GirlsFrontlinePixelDungeon.scene().addToFront(INSTANCE);
     }
     protected WndBag.ItemSelector itemCHA = new WndBag.ItemSelector() {
 
         @Override
         public String textPrompt() {
-            return Messages.get(this, "cha_select");
+            return Messages.get(debugBook.class, "cha_select");
         }
 
         @Override
@@ -514,7 +430,7 @@ public class debugBook extends TestItem {
         @Override
         public void onSelect( Item item ) {
             if(item != null){
-                switch (chargeMode){
+                switch (workingNum){
                     case 1:
                         lockCharge(item);
                         break;
@@ -644,6 +560,7 @@ public class debugBook extends TestItem {
         updateQuickslot();
     }
     private void resetLevel(){//mark
+        defaultAction = AC_SetMode;
         InterlevelScene.returnLevel = Dungeon.depth;
         if (Dungeon.level instanceof LastShopLevel)
             Dungeon.RollTimes=0;
@@ -651,6 +568,7 @@ public class debugBook extends TestItem {
         Game.switchScene( InterlevelScene.class );
     }
     private void complete(){
+        defaultAction = AC_SetMode;
         Ghost.Quest.complete();
         Ghost.Quest.spawned = true;
         Ghost.Quest.processed = true;

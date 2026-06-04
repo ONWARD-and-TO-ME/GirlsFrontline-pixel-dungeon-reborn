@@ -74,7 +74,7 @@ public class SecretLaboratoryRoom extends SecretRoom {
 		Point pot = center();
 		Painter.set( level, pot, Terrain.ALCHEMY );
 
-		Blob.seed( pot.x + level.width() * pot.y, 1, Alchemy.class, level );
+		Blob.seed( pot.x + level.width() * pot.y, 1, Alchemy.class, level, false );
 
 		int pos;
 		do {

@@ -156,5 +156,8 @@ public class ReclaimTrap extends TargetedSpell {
 		}
 		
 	}
-	
+	@Override
+	public int outPut(){
+		return 4;
+	}
 }

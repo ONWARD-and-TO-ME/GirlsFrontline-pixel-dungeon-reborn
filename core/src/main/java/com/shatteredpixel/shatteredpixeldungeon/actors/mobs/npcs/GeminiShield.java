@@ -21,28 +21,13 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PrismaticGuard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.PrismaticSprite;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Gemini;
 import com.watabou.utils.Random;
 
 public class GeminiShield extends Geminis {
@@ -64,6 +49,23 @@ public class GeminiShield extends Geminis {
         return HT/3;
     }
 
+    @Override
+    public void damage(int dmg, Object src) {
+        Char mob = null;
+        if (src instanceof Char && !(src instanceof Geminis))
+            mob = (Char) src;
+        else if (!(WorkingEnemy instanceof Geminis))
+            mob = WorkingEnemy;
+        if (mob != null){
+            if (Random.Float( mob.attackSkill( this ) ) < Random.Float( defenseSkill( mob ) ))
+                dmg -= Random.IntRange(0,
+                        Random.NormalIntRange(
+                                Random.Int(0, drRoll()),
+                                drRoll() ));
+        }
+        WorkingEnemy = null;
+        super.damage(dmg, src);
+    }
     @Override
     public int drRoll() {
         return Random.NormalIntRange(HT/5, HT/4);

@@ -658,33 +658,33 @@ public class ItemSpriteSheet {
 		assignItemRect(RECYCLE,         10, 15);
 	}
 	//食物行
-	private static final int FOOD         = xy(1, 28);  //16 slots
-	public static final int MEAT          = FOOD+0;
-	public static final int STEAK         = FOOD+1;
-	public static final int STEWED        = FOOD+2;
-	public static final int OVERPRICED    = FOOD+3;
-	public static final int CARPACCIO     = FOOD+4;
-	public static final int RATION        = FOOD+5;
-	public static final int PASTY         = FOOD+6;
-	public static final int PUMPKIN_PIE   = FOOD+7;
-	public static final int CANDY_CANE    = FOOD+8;
-	public static final int MEAT_PIE      = FOOD+9;
-	public static final int BLANDFRUIT    = FOOD+10;
-	public static final int BLAND_CHUNKS  = FOOD+11;
-	public static final int BERRY 		  = FOOD+12;
-	public static final int MACCOL        = FOOD+13;
-	public static final int CINNAMONROLL  = FOOD+14;
-    public static final int XMASGIFT   = FOOD+25;
-    public static final int WHOLECAKE   = FOOD+26;
-	public static final int SUGARZONGZI   = FOOD+27;
-	public static final int SALTYZONGZI   = FOOD+28;
-	public static final int CHOCO         = FOOD+29;
-	public static final int NUTSMOONCAKE  = FOOD+30;
-	public static final int SALTYMOONCAKE = FOOD+31;
+	private static final int FOOD         	= xy(1, 28);  //16 slots
+	public static final int MEAT          	= FOOD+0;
+	public static final int STEAK         	= FOOD+1;
+	public static final int STEWED        	= FOOD+2;
+	public static final int OVERPRICED    	= FOOD+3;
+	public static final int CARPACCIO     	= FOOD+4;
+	public static final int RATION        	= FOOD+5;
+	public static final int PASTY         	= FOOD+6;
+	public static final int PUMPKIN_PIE   	= FOOD+7;
+	public static final int CANDY_CANE    	= FOOD+8;
+	public static final int MEAT_PIE      	= FOOD+9;
+	public static final int BLANDFRUIT    	= FOOD+10;
+	public static final int BLAND_CHUNKS  	= FOOD+11;
+	public static final int BERRY 		  	= FOOD+12;
+	public static final int MACCOL        	= FOOD+13;
+	public static final int CINNAMON_ROLL	= FOOD+14;
+    public static final int XMASGIFT		= FOOD+25;
+    public static final int WHOLECAKE   	= FOOD+26;
+	public static final int SUGARZONGZI   	= FOOD+27;
+	public static final int SALTYZONGZI   	= FOOD+28;
+	public static final int CHOCO         	= FOOD+29;
+	public static final int NUTSMOONCAKE  	= FOOD+30;
+	public static final int SALTYMOONCAKE 	= FOOD+31;
 	static{
 		assignItemRect(MEAT,         15,11);
 		assignItemRect(STEAK,        15,11);
-		assignItemRect(OVERPRICED,   15,14);
+		assignItemRect(OVERPRICED,   15,11);
 		assignItemRect(CARPACCIO,    15,11);
 		assignItemRect(BLANDFRUIT,    9,12);
 		assignItemRect(RATION,       16,13);
@@ -696,7 +696,7 @@ public class ItemSpriteSheet {
 		assignItemRect(BLAND_CHUNKS, 14, 6);
 		assignItemRect(BERRY,         11,11);
 		assignItemRect(MACCOL,        8,14);
-		assignItemRect(CINNAMONROLL,  8, 8);
+		assignItemRect(CINNAMON_ROLL,  8, 8);
         assignItemRect(XMASGIFT , 13,14);
         assignItemRect(WHOLECAKE , 16,15);
 		assignItemRect(SUGARZONGZI , 16,14);

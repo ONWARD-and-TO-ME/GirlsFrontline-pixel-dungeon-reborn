@@ -75,11 +75,16 @@ public class GuardianTrap extends Trap {
 			state = WANDERING;
 		}
 
-		public Guardian(){
-			super();
+        public Guardian(){
+            this(true);
+        }
+		public Guardian(boolean noEquip){
+			super(noEquip);
 
-			weapon.enchant(null);
-			weapon.degrade(weapon.level());
+            if (weapon != null) {
+                weapon.enchant(null);
+                weapon.degrade(weapon.level());
+            }
 		}
 
 		@Override

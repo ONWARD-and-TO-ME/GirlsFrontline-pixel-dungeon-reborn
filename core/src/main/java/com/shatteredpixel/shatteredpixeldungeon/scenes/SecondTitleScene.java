@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.ui.canScrollRedButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndWithCanScrollButton;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -259,9 +260,22 @@ public class SecondTitleScene extends PixelScene {
 			super.onSelect(index);
 			if (index != -1) {
 				if (index == 0) {
-					GirlsFrontlinePixelDungeon.scene().addToFront(new SettingWindow(true));
+					INSTANCE = new WndWithCanScrollButton(setButton(0, 11), 2);
+					GirlsFrontlinePixelDungeon.scene().addToFront(INSTANCE);
 				} else if (index == 1) {
-					GirlsFrontlinePixelDungeon.scene().addToFront(new SettingWindow(false));
+					int end;
+					switch (month + 1){
+						case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+							end = 31; break;
+						case 4: case 6: case 9: case 11:
+							end = 30; break;
+						case 2:
+							end = 29; break;
+						default:
+							end = 1; break;
+					}
+					INSTANCE = new WndWithCanScrollButton(setButton(1, end), 2);
+					GirlsFrontlinePixelDungeon.scene().addToFront(INSTANCE);
 				} else if (index == 2) {
 					GirlsFrontlinePixelDungeon.scene().addToFront(
 							new WndTextInput(
@@ -298,79 +312,40 @@ public class SecondTitleScene extends PixelScene {
 		public void onBackPressed() {
 			//do nothing, prevents accidentally closing
 		}
-		private class SettingWindow extends Window {
-			private final ArrayList<canScrollRedButton> buttons = new ArrayList<>();
-			public SettingWindow(boolean isMonth){
+		private static WndWithCanScrollButton INSTANCE;
+		private ArrayList<canScrollRedButton> setButton(int start, int end){
+			ArrayList<canScrollRedButton> buttons = new ArrayList<>();
+			for (int i = start; i <= end; i++){
+				canScrollRedButton cb = new canScrollRedButton(start == 0? i+1 : i){
+					public boolean onClick(float x, float y){
+						if(!inside(x,y)) return false;
+						onClick();
 
-				super();
-				resize(120, 144);
-				int placed = 0;
-				ScrollPane list = new ScrollPane(new Component()) {
-
-					@Override
-					public void onClick(float x, float y) {
-						int max_size = buttons.size();
-						for (int i = 0; i < max_size; ++i) {
-							if (buttons.get(i).onClick(x, y))
-								break;
-						}
+						return true;
 					}
 
+					@Override
+					public void onClick(){
+						super.onClick();
+						hide();
+						if (INSTANCE != null)
+							INSTANCE.hide();
+						if (start == 0)
+							WndCake.this.month = num - 1;
+						else
+							WndCake.this.day = num;
+						GirlsFrontlinePixelDungeon.scene().addToFront(new WndCake(WndCake.this));
+					}
+
+					@Override
+					public void layout(){
+						super.layout();
+						hotArea.width = hotArea.height = 0;
+					}
 				};
-				add(list);
-				Component content = list.content();
-				int start, end;
-				if (isMonth){
-					start = 0;
-					end = 11;
-				}
-				else {
-					start = 1;
-					end = 31;
-				}
-				while (start <= end){
-					canScrollRedButton cb = new canScrollRedButton(isMonth? start+1 : start){
-						public boolean onClick(float x, float y){
-							if(!inside(x,y)) return false;
-							onClick();
-
-							return true;
-						}
-
-						@Override
-						public void onClick(){
-							super.onClick();
-							hide();
-							if (isMonth)
-								WndCake.this.month = num - 1;
-							else
-								WndCake.this.day = num;
-							GirlsFrontlinePixelDungeon.scene().addToFront(new WndCake(WndCake.this));
-						}
-
-						@Override
-						public void layout(){
-							super.layout();
-							hotArea.width = hotArea.height = 0;
-						}
-					};
-					cb.setRect(0, 18*placed, 120, 16);
-					PixelScene.align(cb);
-					placed ++;
-					content.add(cb);
-					buttons.add(cb);
-					start++;
-				}
-				content.setSize(120, buttons.get(buttons.size()-1).bottom());
-				list.setSize( list.width(), list.height() );
-				list.setRect(0, 0, 120, 144);
-				list.scrollTo(0,0);
+				buttons.add(cb);
 			}
-
-			@Override
-			public void onBackPressed() {
-				super.onBackPressed();
-			}
+			return buttons;
 		}
 	}
 }

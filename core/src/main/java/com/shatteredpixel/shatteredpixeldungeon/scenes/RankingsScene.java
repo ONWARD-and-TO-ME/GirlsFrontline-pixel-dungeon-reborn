@@ -61,7 +61,7 @@ public class RankingsScene extends PixelScene {
 	// 每页显示的记录数
 	private static final int RECORDS_PER_PAGE = 10;
 	
-	private int currentPage = 0;
+	private static int currentPage = 0;
 
 	@Override
 	public void create() {
@@ -136,7 +136,7 @@ public class RankingsScene extends PixelScene {
 					protected void onClick() {
 						if (currentPage > 0) {
 							currentPage--;
-							create();
+							GirlsFrontlinePixelDungeon.seamlessResetScene();
 						}
 					}
 				};
@@ -148,7 +148,7 @@ public class RankingsScene extends PixelScene {
 					protected void onClick() {
 						if (currentPage < totalPages - 1) {
 							currentPage++;
-							create();
+							GirlsFrontlinePixelDungeon.seamlessResetScene();
 						}
 					}
 				};

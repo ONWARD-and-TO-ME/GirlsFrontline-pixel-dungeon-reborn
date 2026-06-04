@@ -108,7 +108,7 @@ public class MenuPane extends Component {
 		};
 		add(depthButton);
 
-		if (Challenges.activeChallenges() > 0){
+		if (Challenges.activeChallenges() > 0 || Dungeon.isChallenged(Challenges.TEST_MODE)){
 			challengeIcon = Icons.get(Icons.CHAL_COUNT);
 			add(challengeIcon);
 

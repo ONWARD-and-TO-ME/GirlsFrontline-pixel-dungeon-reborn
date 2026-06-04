@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.bombs;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -94,19 +95,22 @@ public class RegrowthBomb extends Bomb {
 		
 		Integer plantPos = Random.element(plantCandidates);
 		if (plantPos != null){
-			Plant.Seed plant;
+			Plant plant;
 			switch (Random.chances(new float[]{0, 6, 3, 1})){
 				case 1: default:
-					plant = new WandOfRegrowth.Dewcatcher.Seed();
+					plant = new WandOfRegrowth.Dewcatcher();
 					break;
 				case 2:
-					plant = new WandOfRegrowth.Seedpod.Seed();
+					plant = new WandOfRegrowth.Seedpod();
 					break;
 				case 3:
-					plant = new Starflower.Seed();
+					plant = new Starflower();
 					break;
 			}
-			Dungeon.level.plant( plant, plantPos);
+			if (plant instanceof WandOfRegrowth.Seedpod && Dungeon.isChallenged(Challenges.NO_HERBALISM))
+				plant.activate(plantPos);
+			else
+				Dungeon.level.plant( plant.seed(), plantPos);
 		}
 	}
 	

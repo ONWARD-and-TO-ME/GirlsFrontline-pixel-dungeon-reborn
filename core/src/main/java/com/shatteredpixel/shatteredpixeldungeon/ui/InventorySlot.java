@@ -81,16 +81,14 @@ public class InventorySlot extends ItemSlot {
 			bg.texture( TextureCache.createSolid( equipped ? EQUIPPED : NORMAL ) );
 			bg.resetColor();
 			if (item.cursed && item.cursedKnown) {
-				bg.ra = +0.3f;
+				bg.ra = 0.3f;
 				bg.ga = -0.15f;
 			} else if (!item.isIdentified()) {
-				if ((item instanceof EquipableItem || item instanceof Wand) && item.cursedKnown){
-					bg.ba = 0.3f;
-				} else {
-					bg.ra = 0.3f;
-					bg.ba = 0.3f;
-				}
-			}
+                if ((!(item instanceof EquipableItem) && !(item instanceof Wand)) || !item.cursedKnown) {
+                    bg.ra = 0.3f;
+                }
+                bg.ba = 0.3f;
+            }
 
 			if (item.name() == null) {
 				enable( false );
@@ -102,10 +100,6 @@ public class InventorySlot extends ItemSlot {
 			bg.texture( TextureCache.createSolid( NORMAL ) );
 			bg.resetColor();
 		}
-	}
-
-	public Item item(){
-		return item;
 	}
 
 	@Override

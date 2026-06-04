@@ -31,10 +31,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -53,9 +55,13 @@ public abstract class Plant implements Bundlable {
 	
 	public int image;
 	public int pos;
+	public static Level level;
 
 	protected Class<? extends Plant.Seed> seedClass;
 
+	public Seed seed(){
+		return Reflection.newInstance(seedClass);
+	}
 	public void trigger(){
 
 		Char ch = Actor.findChar(pos);
@@ -71,9 +77,16 @@ public abstract class Plant implements Bundlable {
 
 		wither();
 		activate( ch );
+		Bestiary.setSeen(getClass());
+		Bestiary.countEncounter(getClass());
 	}
 	
 	public abstract void activate( Char ch );
+	public void activate( int pos ){
+		this.pos = pos;
+		Char ch = Actor.findChar(pos);
+		activate(ch);
+	};
 	
 	public void wither() {
 		Dungeon.level.uproot( pos );

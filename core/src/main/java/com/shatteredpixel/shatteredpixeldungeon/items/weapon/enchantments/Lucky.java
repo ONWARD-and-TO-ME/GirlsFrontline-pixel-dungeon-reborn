@@ -43,8 +43,8 @@ public class Lucky extends Weapon.Enchantment {
 		// lvl 1 ~ 12%
 		// lvl 2 ~ 14%
 		float procChance = (level+4f)/(level+40f) * procChanceMultiplier(attacker);
-		if (defender.HP <= damage && Random.Float() < procChance){
-			Buff.affect(defender, LuckProc.class);
+		if (defender.HP <= damage){
+			Buff.affect(defender, LuckProc.class).setDoDrop(Random.Float() < procChance);
 		}
 		
 		return damage;
@@ -53,11 +53,11 @@ public class Lucky extends Weapon.Enchantment {
 	
 	public static Item genLoot(){
 		//80% common, 20% uncommon, 0% rare
-		return RingOfWealth.genConsumableDrop(-5);
+		return RingOfWealth.genConsumableDrop(-5, null);
 	}
 
 	public static void showFlare( Visual vis ){
-		RingOfWealth.showFlareForBonusDrop(vis);
+		RingOfWealth.showFlareForBonusDrop(vis, null);
 	}
 
 	@Override
@@ -67,11 +67,20 @@ public class Lucky extends Weapon.Enchantment {
 	
 	//used to keep track of whether a luck proc is incoming. see Mob.die()
 	public static class LuckProc extends Buff {
+		private boolean doDrop = false;
 		
 		@Override
 		public boolean act() {
 			detach();
 			return true;
+		}
+		public void setDoDrop(boolean doDrop){
+			if (this.doDrop)
+				return;
+			this.doDrop = doDrop;
+		}
+		public boolean doDrop(){
+			return doDrop;
 		}
 	}
 	

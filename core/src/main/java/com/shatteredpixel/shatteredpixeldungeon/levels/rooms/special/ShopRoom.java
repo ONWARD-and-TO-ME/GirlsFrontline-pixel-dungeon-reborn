@@ -25,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
@@ -47,15 +46,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
-import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Commander;
-import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Gemini;
-import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Letter;
-import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Peach;
-import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Succor;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.FairyItems;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SugarZongzi;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Maccol;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.SaltyZongzi;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
@@ -227,6 +221,11 @@ public class ShopRoom extends SpecialRoom {
             itemsToSpawn.add(new Torch());
             break;
 		}
+		if (Dungeon.depth == 25){
+			w.identify(false);
+			m.identify(false);
+			a.identify(false);
+		}
 		w.enchant(null);
 		w.cursed = false;
 		w.level(0);
@@ -240,7 +239,6 @@ public class ShopRoom extends SpecialRoom {
             if (Random.Int(10) < 7)
                 w.upgrade();
         }
-		w.identify(false);
 		itemsToSpawn.add(w);
 
         a.inscribe(null);
@@ -256,7 +254,6 @@ public class ShopRoom extends SpecialRoom {
             if (Random.Int(10) < 7)
                 a.upgrade();
         }
-        a.identify(false);
         itemsToSpawn.add(a);
 
         m.level(0);
@@ -273,7 +270,6 @@ public class ShopRoom extends SpecialRoom {
             }
             m.level(lvl);
         }
-        m.identify(false);
         itemsToSpawn.add(m);
 
         itemsToSpawn.add( TippedDart.randomTipped(2) );
@@ -350,14 +346,8 @@ public class ShopRoom extends SpecialRoom {
 				break;
 		}
 
-        if (Challenges.isItemBlocked(new Ankh()) && Random.Int(4 - Challenges.activeChallenges()/3) == 0) {
-            switch(Random.Int(5)){
-                case 0: itemsToSpawn.add(new Commander());break;
-                case 1: itemsToSpawn.add(new Gemini());break;
-                case 2: itemsToSpawn.add(new Letter());break;
-                case 3: itemsToSpawn.add(new Peach());break;
-                case 4: itemsToSpawn.add(new Succor());break;
-            }
+        if (Challenges.isItemBlocked(new Ankh())) {
+			itemsToSpawn.add(FairyItems.RandomFairy(false));
         }
         else
 		    itemsToSpawn.add( new Ankh() );

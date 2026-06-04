@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Annoying;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Displacing;
@@ -58,6 +59,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampir
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SakuraBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -111,10 +113,11 @@ abstract public class Weapon extends KindOfWeapon {
 				if (this instanceof MissileWeapon && Random.Int(4) == 0)
 					enchant();
 			}
-			int str = (hero.STR() - 10) / 2;
-			tier = Math.min(10, str + 1);
+			int baseSTR = 10;
 			if (this instanceof SakuraBlade)
-				tier--;
+				baseSTR = 12;
+			int str = (int) Math.floor((hero.STR() - baseSTR) / 2F);
+			tier = Math.min(10, str + 1);
 		}
 	}
 
@@ -381,8 +384,8 @@ abstract public class Weapon extends KindOfWeapon {
         int lvl = super.buffedLvl();
         if (BuffLevelPoint != 0)
             return lvl;
-		if (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this )){
-            if (hero!=null&&hero.buff(EquipLevelUp.class) != null)
+		if (isEquipped( hero ) || hero.belongings.contains( this )){
+            if (hero.buff(EquipLevelUp.class) != null)
                 lvl += Dungeon.hero.hasTalent(Talent.Type56FourTwoTwo)?Dungeon.hero.pointsInTalent(Talent.Type56FourTwoTwo):1;
 			return lvl;
 		}
