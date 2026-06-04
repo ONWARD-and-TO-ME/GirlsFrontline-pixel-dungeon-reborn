@@ -59,7 +59,7 @@ public class WndTabbed extends Window {
 	}
 	
 	public void select( int index ) {
-		select( tabs.get( index ) );
+		select( tabs.get( Math.min(index, tabs.size()-1) ) );
 	}
 	
 	public void select( Tab tab ) {

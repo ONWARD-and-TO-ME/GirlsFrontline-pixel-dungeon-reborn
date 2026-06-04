@@ -102,6 +102,7 @@ public class MenuPane extends Component {
 			@Override
 			protected void onClick() {
 				super.onClick();
+				WndJournal.TitleScene = false;
 				//just open journal for now, maybe have it open landmarks after expanding that page?
 				GameScene.show( new WndJournal() );
 			}
@@ -339,10 +340,12 @@ public class MenuPane extends Component {
 							Document.ADVENTURERS_GUIDE.pageBody(flashingPage) ));
 					Document.ADVENTURERS_GUIDE.readPage(flashingPage);
 				} else {
+					WndJournal.TitleScene = false;
 					GameScene.show( new WndJournal() );
 				}
 				flashingPage = null;
 			} else {
+				WndJournal.TitleScene = false;
 				GameScene.show( new WndJournal() );
 			}
 		}

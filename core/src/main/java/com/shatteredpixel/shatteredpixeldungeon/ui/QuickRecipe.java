@@ -25,6 +25,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.items.food.Food.SummonPas
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -268,6 +269,8 @@ public class QuickRecipe extends Component {
 	public static int BREW = 8;
 	public static int SPELL = 9;
 	public static ArrayList<QuickRecipe> getRecipes( int pageIdx ){
+		if (Dungeon.hero == null)
+			Dungeon.hero = new Hero();
 		ArrayList<QuickRecipe> result = new ArrayList<>();
 		switch (pageIdx){
 			case 0: default:

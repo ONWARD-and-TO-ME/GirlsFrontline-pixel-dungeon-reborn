@@ -124,7 +124,7 @@ public class TitleScene extends PixelScene {
 		StyledButton btnBadges = new StyledButton(GREY_BUTTON,"图鉴"){
 			@Override
 			protected void onClick() {
-				GirlsFrontlinePixelDungeon.scene().addToFront( new WndJournal());
+				GirlsFrontlinePixelDungeon.switchNoFade(JournalScene.class);
 			}
 		};
 		btnBadges.icon(Icons.get(Icons.BADGES));

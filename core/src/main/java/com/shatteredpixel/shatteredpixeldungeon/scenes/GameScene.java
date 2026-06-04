@@ -194,7 +194,77 @@ public class GameScene extends PixelScene {
 	{
 		inGameScene = true;
 	}
-	
+	public void SimplyCreate(){
+		super.create();
+		scene = this;
+		terrain = new Group();
+		add( terrain );
+
+		water = new SkinnedBlock(
+				Dungeon.level.width() * DungeonTilemap.SIZE,
+				Dungeon.level.height() * DungeonTilemap.SIZE,
+				Dungeon.level.waterTex() ){
+
+			@Override
+			protected NoosaScript script() {
+				return NoosaScriptNoLighting.get();
+			}
+
+			@Override
+			public void draw() {
+				//water has no alpha component, this improves performance
+				Blending.disable();
+				super.draw();
+				Blending.enable();
+			}
+		};
+		water.autoAdjust = true;
+		terrain.add( water );
+
+		ripples = new Group();
+		terrain.add( ripples );
+
+		DungeonTileSheet.setupVariance(Dungeon.level.map.length, Dungeon.seedCurLevel());
+
+		tiles = new DungeonTerrainTilemap();
+		terrain.add( tiles );
+
+		customTiles = new Group();
+		terrain.add(customTiles);
+
+		visualGrid = new GridTileMap();
+		terrain.add( visualGrid );
+
+		terrainFeatures = new TerrainFeaturesTilemap(Dungeon.level.plants, Dungeon.level.traps);
+		terrain.add(terrainFeatures);
+
+		levelVisuals = Dungeon.level.addVisuals();
+
+		floorEmitters = new Group();
+
+		heaps = new Group();
+
+		emitters = new Group();
+		effects = new Group();
+		healthIndicators = new Group();
+		emoicons = new Group();
+		overFogEffects = new Group();
+
+		mobs = new Group();
+		raisedTerrain = new RaisedTerrainTilemap();
+		walls = new DungeonWallsTilemap();
+
+		customWalls = new Group();
+
+		gases = new Group();
+
+		fog = new FogOfWar( Dungeon.level.width(), Dungeon.level.height() );
+		spells = new Group();
+		statuses = new Group();
+
+		fadeIn();
+
+	}
 	@Override
 	public void create() {
 		

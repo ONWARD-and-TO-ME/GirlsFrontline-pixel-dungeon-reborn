@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -90,6 +91,7 @@ public class WndJournal extends WndTabbed {
 	public static final int HEIGHT_L    = 130;
 	
 	private static final int ITEM_HEIGHT	= 18;
+	public static boolean TitleScene;
 	private GuideTab guideTab;
 	private AlchemyTab alchemyTab;
 	private NotesTab notesTab;
@@ -99,6 +101,8 @@ public class WndJournal extends WndTabbed {
 	public static int last_index = 0;
 	
 	public WndJournal(){
+		if (Dungeon.hero == null)
+			Dungeon.hero = new Hero();
 		
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 		int height = PixelScene.landscape() ? HEIGHT_L : HEIGHT_P;
@@ -114,7 +118,7 @@ public class WndJournal extends WndTabbed {
 		add(alchemyTab);
 		alchemyTab.setRect(0, 0, width, height);
 
-		if (Dungeon.hero != null) {
+		if (!TitleScene) {
 			notesTab = new NotesTab();
 			add(notesTab);
 			notesTab.setRect(0, 0, width, height);
@@ -150,7 +154,7 @@ public class WndJournal extends WndTabbed {
 						if (value) last_index = finalPage1;
 					}
 				});
-		if (Dungeon.hero != null) {
+		if (!TitleScene) {
 			page++;
 			int finalPage2 = page;
 			tabs.add(new IconTab(Icons.get(Icons.STAIRS)) {
@@ -200,7 +204,7 @@ public class WndJournal extends WndTabbed {
 		guideTab.layout();
 		alchemyTab.layout();
 		catalogTab.layout();
-		if (Dungeon.hero != null)
+		if (!TitleScene)
 			notesTab.layout();
 	}
 
@@ -297,7 +301,7 @@ public class WndJournal extends WndTabbed {
 			list.setRect( 0, 0, width, height);
 		}
 		
-		private void updateList(){
+		public void updateList(){
 			Component content = list.content();
 			
 			float pos = 0;
@@ -515,7 +519,7 @@ public class WndJournal extends WndTabbed {
 			content.add(body);
 
 			Document.ALCHEMY_GUIDE.readPage(currentPageIdx);
-			
+
 			ArrayList<QuickRecipe> toAdd = QuickRecipe.getRecipes(currentPageIdx);
 			
 			float left;
@@ -751,7 +755,7 @@ public class WndJournal extends WndTabbed {
 				}
 				grid.addHeader("_" + Messages.get(this, "title_consumables") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
 
-				if (Dungeon.hero == null){
+				if (TitleScene){
 					Potion.initColors();
 					Scroll.initLabels();
 					Ring.initGems();
@@ -1109,7 +1113,7 @@ public class WndJournal extends WndTabbed {
 		@Override
 		protected void createChildren() {
 
-			if (Dungeon.hero != null) {
+			if (!TitleScene) {
 				btnLocal = new RedButton(Messages.get(this, "this_run")) {
 					@Override
 					protected void onClick() {
