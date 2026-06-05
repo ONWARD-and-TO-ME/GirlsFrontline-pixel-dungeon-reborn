@@ -46,6 +46,7 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Mimic extends Mob {
@@ -251,6 +252,14 @@ public class Mimic extends Mob {
 		return true;
 	}
 
+	public static Mimic spawnAt( int pos, Class mimicType ){
+		LinkedList<Item> items = new LinkedList<>();
+		if (Dungeon.level != null && Dungeon.level.heaps.get(pos) != null){
+			items = new LinkedList<>(Dungeon.level.heaps.get(pos).items);
+			Dungeon.level.heaps.get(pos).destroy();
+		}
+		return spawnAt( pos, items, mimicType);
+	}
 	public static Mimic spawnAt( int pos, Item item ){
 		return spawnAt( pos, Arrays.asList(item), Mimic.class);
 	}

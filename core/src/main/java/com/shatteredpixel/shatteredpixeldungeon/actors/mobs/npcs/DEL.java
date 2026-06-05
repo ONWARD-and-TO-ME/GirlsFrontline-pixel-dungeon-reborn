@@ -97,7 +97,6 @@ public class DEL extends NPC {
             if (!add) {
                 add = true;
                 WorkLoad += 20;
-                Notes.add(Notes.Landmark.DEL);
                 if (Dungeon.level instanceof RegularLevel){
                     for (Room room : ((RegularLevel) Dungeon.level).rooms()){
                         if (room instanceof FairyRoom) {
@@ -123,7 +122,11 @@ public class DEL extends NPC {
 		}
 		return super.act();
 	}
-	
+
+    @Override
+    public Notes.Landmark landmark() {
+        return Notes.Landmark.DEL;
+    }
 	@Override
 	public boolean interact(Char c) {
 		

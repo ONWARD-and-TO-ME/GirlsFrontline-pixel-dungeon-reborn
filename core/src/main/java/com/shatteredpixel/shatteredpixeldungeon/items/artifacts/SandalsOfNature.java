@@ -267,7 +267,13 @@ public class SandalsOfNature extends Artifact {
 	}
 
 	public class Naturalism extends ArtifactBuff{
+		@Override
+		public boolean act(){
+			lockcha();
+			return super.act();
+		}
 		public void charge() {
+			lockcha();
 			if (cursed || target.buff(MagicImmune.class) != null) return;
 			if (charge < chargeCap){
 				//0.5 charge per grass at +0, up to 1 at +10

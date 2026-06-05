@@ -3,19 +3,17 @@ package com.shatteredpixel.shatteredpixeldungeon.custom.testmode;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalMimic;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.custom.messages.M;
-import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GuardianTrap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -36,7 +34,6 @@ import com.watabou.utils.PointF;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -81,10 +78,6 @@ public class MobPlacer extends TestItem{
         return actions;
     }
 
-    private List<Item> crystal = new ArrayList<Item>() {{
-        add(Generator.random());
-    }};
-
     @Override
     public void execute(Hero hero, String action) {
         super.execute(hero, action);
@@ -96,14 +89,16 @@ public class MobPlacer extends TestItem{
                         if (canPlaceMob(cell)) {
                             try {
                                 Mob m = Reflection.newInstance(getMobClass());
-                                if(m instanceof Mimic){
-                                    m.HP = m.HT = (1 + ((Mimic) m).level) * 6;
-                                    m.defenseSkill = 2 + ((Mimic) m).level/2;
-                                    if(m instanceof CrystalMimic){
-                                        ((CrystalMimic) m).items = (ArrayList<Item>) crystal;
-                                    } else {
-                                        m.pos = cell;
-                                    }
+                                if (m instanceof Statue){
+                                    if (m instanceof ArmoredStatue)
+                                        m = new ArmoredStatue(false);
+                                    else if (m instanceof GuardianTrap.Guardian)
+                                        m = new GuardianTrap.Guardian(false);
+                                    else
+                                        m = new Statue(false);
+                                }
+                                else if(m instanceof Mimic){
+                                    m = Mimic.spawnAt(cell, m.getClass());
                                 }
                                 GameScene.add(m);
 

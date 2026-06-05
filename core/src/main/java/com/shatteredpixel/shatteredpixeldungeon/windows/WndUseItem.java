@@ -42,13 +42,15 @@ public class WndUseItem extends WndInfoItem {
 	private static final float BUTTON_HEIGHT	= 16;
 
 	private static final float GAP	= 2;
-    private Window ownerA;
+    public final Window owner;
+	public Item item;
 
 	public WndUseItem( final Window owner, final Item item ) {
 
 		super(item);
 
-        ownerA = owner;
+        this.owner = owner;
+		this.item = item;
 		float y = height;
 
 		if (Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(item)) {
@@ -203,7 +205,7 @@ public class WndUseItem extends WndInfoItem {
                                 if(check){
                                     item.notedSet(text);
                                     hide();
-                                    Game.scene().add(new WndUseItem(ownerA, item));
+                                    Game.scene().add(new WndUseItem(owner, item));
                                 }
                             }
                         }

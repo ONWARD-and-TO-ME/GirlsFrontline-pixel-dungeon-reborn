@@ -23,8 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.items.ColorItem;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Image;
 
 public enum Icons {
@@ -142,6 +145,12 @@ public enum Icons {
 
 	SKIP;
 
+	public static Image Notice(ColorItem item){
+		Image itemIcon = new Image(Assets.Sprites.ITEM_ICONS);
+		itemIcon.scale.set(1.6F);
+		itemIcon.frame(ItemSpriteSheet.Icons.film.get(((Item) item).icon));
+		return itemIcon;
+	}
 	public Image get() {
 		return get( this );
 	}

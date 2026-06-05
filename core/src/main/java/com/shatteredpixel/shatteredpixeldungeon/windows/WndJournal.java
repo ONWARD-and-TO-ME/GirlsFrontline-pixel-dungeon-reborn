@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
@@ -65,6 +66,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesGrid;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesList;
+import com.shatteredpixel.shatteredpixeldungeon.ui.CustomNoteButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -75,6 +77,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
@@ -99,8 +102,14 @@ public class WndJournal extends WndTabbed {
     private BadgesTab badgesTab;
 	
 	public static int last_index = 0;
+	private static WndJournal INSTANCE = null;
 	
 	public WndJournal(){
+
+		if (INSTANCE != null){
+			INSTANCE.hide();
+		}
+
 		if (Dungeon.hero == null)
 			Dungeon.hero = new Hero();
 		
@@ -196,6 +205,8 @@ public class WndJournal extends WndTabbed {
 		layoutTabs();
 		
 		select(last_index);
+
+		INSTANCE = this;
 	}
 
 	@Override
@@ -578,77 +589,115 @@ public class WndJournal extends WndTabbed {
 
 	private static class NotesTab extends Component {
 
-		private ScrollPane list;
+		private ScrollingGridPane grid;
+		private CustomNoteButton custom;
 
 		@Override
 		protected void createChildren() {
-			list = new ScrollPane( new Component() );
-			add( list );
+			grid = new ScrollingGridPane();
+			add(grid);
 		}
 
 		@Override
 		protected void layout() {
 			super.layout();
-			list.setRect( 0, 0, width, height);
+			grid.setRect( x, y, width, height);
 		}
 
 		private void updateList(){
-			Component content = list.content();
 
-			float pos = 0;
+			grid.addHeader("_" + Messages.get(this, "title") + "_", 9, true);
 
-			//Keys
-			ArrayList<Notes.KeyRecord> keys = Notes.getRecords(Notes.KeyRecord.class);
-			if (!keys.isEmpty()){
-				ColorBlock line = new ColorBlock( width(), 1, 0xFF222222);
-				line.y = pos;
-				content.add(line);
+			grid.addHeader(Messages.get(this, "desc"), 6, true);
 
-				RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "keys"), 9);
-				title.hardlight(TITLE_COLOR);
-				title.maxWidth( (int)width() - 2 );
-				title.setPos( (width() - title.width())/2f, pos + 1 + ((ITEM_HEIGHT) - title.height())/2f);
-				PixelScene.align(title);
-				content.add(title);
+			ArrayList<Notes.CustomRecord> customRecs = Notes.getRecords(Notes.CustomRecord.class);
 
-				pos += Math.max(ITEM_HEIGHT, title.height());
-			}
-			for(Notes.Record rec : keys){
-				ListItem item = new ListItem( Icons.get(Icons.STAIRS),
-						Messages.titleCase(rec.desc()), rec.depth() );
-				item.setRect( 0, pos, width(), ITEM_HEIGHT );
-				content.add( item );
+			if (!customRecs.isEmpty()){
+				for (Notes.CustomRecord rec : customRecs){
+					ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(rec.icon()){
+						@Override
+						public boolean onClick(float x, float y) {
+							if (inside(x, y)) {
+								GameScene.show(new CustomNoteButton.CustomNoteWindow(rec, WndJournal.INSTANCE));
+								return true;
+							} else {
+								return false;
+							}
+						}
+					};
 
-				pos += item.height();
-			}
+					Visual secondIcon = rec.secondIcon();
+					if (secondIcon != null){
+						gridItem.addSecondIcon( secondIcon );
+					}
 
-			//Landmarks
-			ArrayList<Notes.LandmarkRecord> landmarks = Notes.getRecords(Notes.LandmarkRecord.class);
-			if (!landmarks.isEmpty()){
-				ColorBlock line = new ColorBlock( width(), 1, 0xFF222222);
-				line.y = pos;
-				content.add(line);
-
-				RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "landmarks"), 9);
-				title.hardlight(TITLE_COLOR);
-				title.maxWidth( (int)width() - 2 );
-				title.setPos( (width() - title.width())/2f, pos + 1 + ((ITEM_HEIGHT) - title.height())/2f);
-				PixelScene.align(title);
-				content.add(title);
-
-				pos += Math.max(ITEM_HEIGHT, title.height());
-			}
-			for (Notes.Record rec : landmarks) {
-				ListItem item = new ListItem( Icons.get(Icons.STAIRS),
-						Messages.titleCase(rec.desc()), rec.depth() );
-				item.setRect( 0, pos, width(), ITEM_HEIGHT );
-				content.add( item );
-
-				pos += item.height();
+					grid.addItem(gridItem);
+				}
 			}
 
-			content.setSize( width(), pos );
-			list.setSize( list.width(), list.height() );
+			int i = Statistics.deepestFloor;
+			int j = Statistics.deepestSub;
+			while (i > 0){
+
+				ArrayList<Notes.Record> recs = Notes.getRecords(i + j*1000);
+				if (j > 0 && recs.isEmpty()){
+					j--;
+					continue;
+				}
+
+				String depth = String.valueOf(i);
+				if (j > 0)
+					depth += "/" + j;
+
+				if (i + j*1000 == Dungeon.levelId) {
+					grid.addHeader("_" + Messages.get(this, "floor_header", depth) + "_");
+				} else {
+					grid.addHeader(Messages.get(this, "floor_header", depth));
+				}
+
+				for( Notes.Record rec : recs){
+
+					ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(rec.icon()){
+						@Override
+						public boolean onClick(float x, float y) {
+							if (inside(x, y)) {
+								if (rec.icon() instanceof CharSprite) {
+									GameScene.show(new WndJournalElse((CharSprite) rec.icon(),
+											Messages.titleCase(rec.title()),
+											rec.desc()));
+								}else {
+									GameScene.show(new WndJournalElse(rec.icon(),
+											Messages.titleCase(rec.title()),
+											rec.desc()));
+								}
+								return true;
+							} else {
+								return false;
+							}
+						}
+					};
+
+					Visual secondIcon = rec.secondIcon();
+					if (secondIcon != null){
+						gridItem.addSecondIcon( secondIcon );
+					}
+
+					grid.addItem(gridItem);
+				}
+				if ( j > 0 ) {
+					j--;
+				}else {
+					i--;
+					j = Statistics.deepestSub;
+				}
+			}
+
+			custom = new CustomNoteButton();
+			grid.content().add(custom);
+			custom.setPos(width-custom.width()-1, 0);
+
+			grid.setRect(x, y, width, height);
+
 		}
 
 	}

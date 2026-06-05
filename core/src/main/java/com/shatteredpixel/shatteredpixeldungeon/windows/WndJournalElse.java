@@ -37,6 +37,17 @@ import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
 public class WndJournalElse extends WndTitledMessage {
+    public WndJournalElse(CharSprite sprite, String title, String message){
+        super(new MobTitle(sprite, title), message);
+        PointerArea blocker = new PointerArea( 0, 0, PixelScene.uiCamera.width, PixelScene.uiCamera.height ) {
+            @Override
+            protected void onClick( PointerEvent event ) {
+                onBackPressed();
+            }
+        };
+        blocker.camera = PixelScene.uiCamera;
+        add(blocker);
+    }
     public WndJournalElse(Mob mob, String title, String message){
         super(new MobTitle(mob, title), message);
         PointerArea blocker = new PointerArea( 0, 0, PixelScene.uiCamera.width, PixelScene.uiCamera.height ) {
@@ -50,7 +61,7 @@ public class WndJournalElse extends WndTitledMessage {
     }
 
     public WndJournalElse(Image icon, String title, String message ) {
-        super( icon, title, message);
+        super( Instance(icon), title, message);
 
         PointerArea blocker = new PointerArea( 0, 0, PixelScene.uiCamera.width, PixelScene.uiCamera.height ) {
             @Override
@@ -62,13 +73,27 @@ public class WndJournalElse extends WndTitledMessage {
         add(blocker);
 
     }
-
+    private static Image Instance(Image icon){
+        if (!(icon instanceof CharSprite))
+            return icon;
+        CharSprite sprite = Reflection.newInstance(((CharSprite) icon).getClass());
+        sprite.idle();
+        return sprite;
+    }
     private static class MobTitle extends Component {
 
         private static final int GAP	= 2;
 
         private final CharSprite image;
         private final RenderedTextBlock title;
+        public MobTitle(CharSprite sprite, String title){
+            this.title = PixelScene.renderTextBlock( title, 9 );
+            this.title.hardlight( 0xFFFF44 );
+            add( this.title );
+            image = Reflection.newInstance(sprite.getClass());
+            image.idle();
+            add( this.image );
+        }
 
         public MobTitle(Mob mob, String title) {
 

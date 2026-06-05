@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SpawnerSprite;
@@ -138,9 +139,15 @@ public class DemonSpawner extends Mob {
 	public void die(Object cause) {
 		if (spawnRecorded){
 			Statistics.spawnersAlive--;
+			Notes.remove(landmark());
 		}
 		GLog.h(Messages.get(this, "on_death"));
 		super.die(cause);
+	}
+
+	@Override
+	public Notes.Landmark landmark() {
+		return Notes.Landmark.DEMON_SPAWNER;
 	}
 
 	public static final String SPAWN_COOLDOWN = "spawn_cooldown";

@@ -57,6 +57,10 @@ public class Shopkeeper extends NPC {
 		properties.add(Property.IMMOVABLE);
 	}
 
+    @Override
+    public Notes.Landmark landmark() {
+        return Notes.Landmark.SHOP;
+    }
     private static Class<? extends ShopkeeperSprite> ShopKeeperSprite(){
         if ((Dungeon.depth-1)/5< Statistics.deepestFloor/5&&Dungeon.depth!=16)
             return ShopkeeperSprite.MirrorShopkeeper.class;

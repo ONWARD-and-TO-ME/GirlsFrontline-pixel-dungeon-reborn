@@ -52,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -108,6 +109,7 @@ public class Item implements Bundlable {
 	public int guessingLevel = 0;
     public int BuffLevelPoint = 0;
     public String noted = "";
+	public int customNoteID	= -1;
     public boolean canNote = true;
     public boolean canShowNote = true;
     public boolean showSelf = false;
@@ -307,9 +309,9 @@ public class Item implements Bundlable {
         String info = "";
         if(note!=null&& !note.isEmpty()){
             if(item.stackable){
-                info =Messages.get(Item.class, "classnote",note)+"\n\n";
+                info =Messages.get(Item.class, "classNote",note)+"\n\n";
             }else {
-                info =Messages.get(Item.class, "itemnote",note)+"\n\n";
+                info =Messages.get(Item.class, "itemNote",note)+"\n\n";
             }
         }
         if(!item.canShowNote){
@@ -721,6 +723,7 @@ public class Item implements Bundlable {
 	private static final String KEPT_LOST       = "kept_lost";
     private static final String UPGRADEUSED     = "UpgradeUSED";
     private static final String NOTED           = "noted";
+	private static final String NOTE_ID			= "customNOTE_ID";
     private static final String CAN_HOLD        = "canHold";
     private static final String BUFFLEVELPOINT  = "BUFFLEVELPOINT";
     private static final String COOLDOWN_LEFT   = "cooldownLeft";
@@ -749,6 +752,8 @@ public class Item implements Bundlable {
         bundle.put(OVER_LOAD, overLoad);
         bundle.put(OVER_LOAD_LEFT, overLoadLeft);
         bundle.put(UPDATE_TIME, updateTime);
+		if (customNoteID != -1)
+			bundle.put(NOTE_ID, customNoteID);
 	}
 	
 	@Override
@@ -785,6 +790,8 @@ public class Item implements Bundlable {
             overLoad    = OverLoad.NONE;
         overLoadLeft= bundle.getFloat(OVER_LOAD_LEFT);
         updateTime = bundle.getInt(UPDATE_TIME);
+		if (bundle.contains(NOTE_ID))
+			customNoteID = bundle.getInt(NOTE_ID);
 	}
 
 	public int targetingPos( Hero user, int dst ){

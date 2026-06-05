@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ActHPtoGetFood;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Adrenaline;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AdrenalineSurge;
@@ -80,7 +81,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap.Type;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Bulk;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
@@ -138,6 +138,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RabbitBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.triggers.Trigger;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
@@ -448,7 +449,6 @@ public class Hero extends Char {
 	public int bonusTalentPoints(int tier){
         int point;
 		if (lvl < (Talent.tierLevelThresholds[tier]-1)
-				|| (tier == 3 && subClass == HeroSubClass.NONE)
 				|| (tier == 4 && armorAbility == null)) {
 			point = 0;
 		} else if (buff(PotionOfDivineInspiration.DivineInspirationTracker.class) != null
@@ -1647,6 +1647,10 @@ public class Hero extends Char {
 
 		Mob target = null;
 		for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
+			if (fieldOfView[ m.pos ] && m.landmark() != null){
+				Notes.add(m.landmark());
+			}
+
 			if (fieldOfView[ m.pos ] && m.alignment == Alignment.ENEMY) {
 				visible.add(m);
 				if (!visibleEnemies.contains( m )) {
@@ -1687,6 +1691,31 @@ public class Hero extends Char {
 		}
 
 		visibleEnemies = visible;
+		//we also scan for blob landmarks here
+		for (Blob b : Dungeon.level.blobs.values().toArray(new Blob[0])){
+			if (b.volume > 0 && b.landmark() != null && !Notes.contains(b.landmark())){
+				int cell;
+				boolean found = false;
+				//if a single cell within the blob is visible, we add the landmark
+				for (int i=b.area.top; i < b.area.bottom; i++) {
+					for (int j = b.area.left; j < b.area.right; j++) {
+						cell = j + i* Dungeon.level.width();
+						if (fieldOfView[cell] && b.cur[cell] > 0) {
+							Notes.add( b.landmark() );
+							found = true;
+							break;
+						}
+					}
+					if (found) break;
+				}
+
+				//Clear blobs that only exist for landmarks.
+				// Might want to make this a properly if it's used more
+				if (found && b instanceof WeakFloorRoom.WellID){
+					b.fullyClear();
+				}
+			}
+		}
 	}
 	
 	public int visibleEnemies() {
@@ -2238,6 +2267,7 @@ public class Hero extends Char {
 				} else if (door == Terrain.CRYSTAL_DOOR) {
 					hasKey = Notes.remove(new CrystalKey(Dungeon.depth));
 					if (hasKey) {
+						Notes.remove(Notes.Landmark.DISTANT_WELL, Dungeon.depth-1);
 						Level.set(doorCell, Terrain.EMPTY);
 						Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 						CellEmitter.get( doorCell ).start( Speck.factory( Speck.DISCOVER ), 0.025f, 20 );

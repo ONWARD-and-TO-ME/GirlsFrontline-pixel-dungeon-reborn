@@ -80,7 +80,7 @@ public class GuardianTrap extends Trap {
         }
 		public Guardian(boolean noEquip){
 			super(noEquip);
-
+			levelGenStatue = false;
             if (weapon != null) {
                 weapon.enchant(null);
                 weapon.degrade(weapon.level());

@@ -90,7 +90,12 @@ public class Statue extends Mob {
 		}
 		return super.act();
 	}
-	
+
+	public boolean levelGenStatue = true;
+	@Override
+	public Notes.Landmark landmark() {
+		return levelGenStatue ? Notes.Landmark.STATUE : null;
+	}
 	@Override
 	public int damageRoll() {
 		return weapon.damageRoll(this);
@@ -156,10 +161,12 @@ public class Statue extends Mob {
 		Dungeon.level.drop( weapon, pos ).sprite.drop();
 		super.die( cause );
 	}
-	
+
 	@Override
 	public void destroy() {
-		Notes.remove( Notes.Landmark.STATUE );
+		if (landmark() != null) {
+			Notes.remove( landmark() );
+		}
 		super.destroy();
 	}
 

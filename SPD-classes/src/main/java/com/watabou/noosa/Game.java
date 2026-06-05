@@ -46,6 +46,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class Game implements ApplicationListener {
 
@@ -289,7 +290,8 @@ public class Game implements ApplicationListener {
 	
 	public static void reportException( Throwable tr ) {
 		if (instance != null && Gdx.app != null) {
-			instance.logException(tr);
+			instance.saveCrashReport(instance.generateCrashReport(tr));
+			Gdx.app.exit();
 		} else {
 			//fallback if error happened in initialization
 			StringWriter sw = new StringWriter();
@@ -299,30 +301,90 @@ public class Game implements ApplicationListener {
 			System.err.println(sw.toString());
 		}
 	}
-	
-	protected void logException( Throwable tr ){
+
+	/** 崩溃日志目录*/
+	public static final String CRASH_DIR = "crash_logs";
+	/** 崩溃日志文件前缀*/
+	private static final String CRASH_FILE_PREFIX = "crash_";
+	/** 崩溃日志文件后缀*/
+	public static final String CRASH_FILE_EXTENSION = ".log";
+	public static long Seed = -1;
+	public static int Challenges = -1;
+	public static long GameMode = -1;
+	private void ensureCrashDirExists() {
+		if (Gdx.files != null) {
+			FileHandle crashDir = Gdx.files.local(CRASH_DIR);
+			if (!crashDir.exists()) {
+				crashDir.mkdirs();
+			}
+		}
+	}
+	private String getStackTrace(Throwable ex) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
-		tr.printStackTrace(pw);
+		ex.printStackTrace(pw);
 		pw.flush();
 		Gdx.app.error("GAME", sw.toString());
-        saveCrash(sw);
-        Gdx.app.exit();
+		return sw.toString();
 	}
-	private static void saveCrash(StringWriter sw){
-        try {
-            String crashContent = sw.toString();
-            FileHandle crashDir = Gdx.files.local("crash_logs");
-            if (!crashDir.exists()) {
-                crashDir.mkdirs();
-            }
-            String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", java.util.Locale.getDefault()).format(new Date());
-            FileHandle crashFile = crashDir.child("crash_" + timestamp + ".log");
-            crashFile.writeString(crashContent, false);
-        } catch (Exception e) {
-            System.err.println("Failed to save crash report: " + e.getMessage());
-        }
-    }
+	public void saveCrashReport(String crashReport) {
+		try {
+			if (Gdx.files == null) {
+				// 如果Gdx.files不可用，输出到控制台
+				System.err.println("Gdx.files not available, printing crash report to console:");
+				System.err.println(crashReport);
+				return;
+			}
+
+			ensureCrashDirExists();
+
+			String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.getDefault()).format(new Date());
+			String fileName = CRASH_FILE_PREFIX + timestamp + CRASH_FILE_EXTENSION;
+			FileHandle crashFile = Gdx.files.local(CRASH_DIR).child(fileName);
+			crashFile.writeString(crashReport, false);
+		} catch (Exception e) {
+			System.err.println("Failed to save crash report: " + e.getMessage());
+			// 即使保存失败，也要输出到控制台
+			System.err.println(crashReport);
+		}
+	}
+	public String generateCrashReport(Throwable ex) {
+		StringBuilder sb = new StringBuilder();
+		String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+
+		sb.append("=== CRASH REPORT ===\n");
+		sb.append("Time: ").append(timestamp).append("\n");
+		sb.append("Game Version: ").append(version).append("\n");
+
+		if(DeviceCompat.isDesktop()){
+			sb.append("Java Version: ").append(System.getProperty("java.version")).append("\n");
+			sb.append("OS: ").append(System.getProperty("os.name")).append(" ").append(System.getProperty("os.version")).append("\n\n");
+		}
+
+		sb.append("GameSeed: ").append(Seed).append("\n");
+		sb.append("Challenges: ").append(Challenges).append("\n");
+		sb.append("GameMode: ").append(Seed).append("\n\n");
+
+		sb.append("Exception Type: ").append(ex.getClass().getName()).append("\n");
+		sb.append("Exception Message: ").append(ex.getMessage()).append("\n\n");
+
+		sb.append("Stack Trace:\n");
+		sb.append(getStackTrace(ex));
+
+		// 添加原因异常
+		Throwable cause = ex.getCause();
+		while (cause != null) {
+			sb.append("\nCaused by:\n");
+			sb.append(cause.getClass().getName()).append(": ").append(cause.getMessage()).append("\n");
+			sb.append(getStackTrace(cause));
+			cause = cause.getCause();
+		}
+
+		sb.append("\n=== END REPORT ===\n");
+
+		return sb.toString();
+	}
+
 	public static void runOnRenderThread(Callback c){
 		Gdx.app.postRunnable(new Runnable() {
 			@Override

@@ -270,10 +270,14 @@ public class Blacksmith extends NPC {
 		Item.updateQuickslot();
 		
 		Quest.reforged = true;
-		
+
 		Notes.remove( Notes.Landmark.TROLL );
 	}
-	
+
+	@Override
+	public Notes.Landmark landmark() {
+		return (!Quest.completed || !Quest.reforged) ? Notes.Landmark.TROLL : null;
+	}
 	@Override
 	public int defenseSkill( Char enemy ) {
 		return INFINITE_EVASION;

@@ -21,24 +21,21 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.ui.changelist;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.items.ColorItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentIcon;
 import com.watabou.noosa.Image;
@@ -464,11 +461,8 @@ public class ChangeButton extends Component {
             return ((Mob) A).sprite();
         else if(A instanceof Hero)
             return new HeroSprite(((Hero) A).heroClass, 1);
-        else if(A instanceof Ring || A instanceof Scroll || A instanceof Potion) {
-            Image itemIcon = new Image(Assets.Sprites.ITEM_ICONS);
-            itemIcon.scale.set(1.6F);
-            itemIcon.frame(ItemSpriteSheet.Icons.film.get(((Item) A).icon));
-            return itemIcon;
+        else if(A instanceof ColorItem) {
+            return Icons.Notice((ColorItem) A);
         }
         else if(A instanceof Item)
             return new ItemSprite((Item) A);
@@ -580,7 +574,7 @@ public class ChangeButton extends Component {
     private static String getSignalName(Object A){
         if (A instanceof Char)
             return ((Char) A).name();
-        else if ((A instanceof Ring) || (A instanceof Scroll) || (A instanceof Potion))
+        else if (A instanceof ColorItem)
             return ((Item) A).trueName();
         else if (A instanceof Item)
             return A.toString();

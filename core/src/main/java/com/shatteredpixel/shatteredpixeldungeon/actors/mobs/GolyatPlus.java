@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.GolyatBomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GolyatPlusSprite;
@@ -52,6 +53,10 @@ public class GolyatPlus extends Mob {
 
     }
 
+    @Override
+    public Notes.Landmark landmark(){
+        return Notes.Landmark.GOLYAT_SWAP;
+    }
     @Override
     public int damageRoll() {
         return Random.NormalIntRange( 1, 3 );

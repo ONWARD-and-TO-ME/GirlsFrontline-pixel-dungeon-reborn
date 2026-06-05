@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.XMasGift;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Choco;
 //import com.shatteredpixel.shatteredpixeldungeon.items.SALTYMOONCAKE;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.XMasSugar;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.FncSprite;
@@ -56,7 +57,11 @@ public class RatKing extends NPC {
         
         state =Dungeon.depth==0?PASSIVE: SLEEPING;
     }
-    
+
+    @Override
+    public Notes.Landmark landmark() {
+        return Dungeon.depth == 5 ? Notes.Landmark.RAT_KING : null;
+    }
     // 添加统一的礼物计数器，用于跟踪鼠王是否已经给予过玩家物品
     public static class GiftTracker extends CounterBuff {
         { revivePersists = true; }

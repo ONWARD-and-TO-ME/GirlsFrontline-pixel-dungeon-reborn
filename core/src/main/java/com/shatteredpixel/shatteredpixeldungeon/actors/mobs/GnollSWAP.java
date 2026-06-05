@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff.buffType;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSWAPSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
@@ -32,6 +33,10 @@ public class GnollSWAP extends Gnoll {
         lootChance = 0.0F;
     }
 
+    @Override
+    public Notes.Landmark landmark(){
+        return Notes.Landmark.GNOLL_SWAP;
+    }
     public int damageRoll() {
         return Random.NormalIntRange(1, 10);
     }

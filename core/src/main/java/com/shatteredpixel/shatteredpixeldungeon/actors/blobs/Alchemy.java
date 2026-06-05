@@ -32,7 +32,12 @@ import com.watabou.utils.Random;
 public class Alchemy extends Blob {
 
 	protected int pos;
-	
+
+	@Override
+	public Notes.Landmark landmark() {
+		return Notes.Landmark.ALCHEMY;
+	}
+
 	@Override
 	protected void evolve() {
 		int cell;

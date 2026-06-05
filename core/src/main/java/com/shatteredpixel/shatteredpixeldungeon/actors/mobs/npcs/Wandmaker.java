@@ -60,7 +60,12 @@ public class Wandmaker extends NPC {
 
 		properties.add(Property.IMMOVABLE);
 	}
-	
+
+	@Override
+	public Notes.Landmark landmark() {
+		return Notes.Landmark.WANDMAKER;
+	}
+
 	@Override
 	protected boolean act() {
 		if (Dungeon.level.heroFOV[pos] && Quest.wand1 != null){

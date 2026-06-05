@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Rect;
@@ -34,7 +35,11 @@ public class Blob extends Actor {
 	{
 		actPriority = BLOB_PRIO;
 	}
-	
+
+	public Notes.Landmark landmark() {
+		return null;
+	}
+
 	public int volume = 0;
 	
 	public int[] cur;
@@ -142,7 +147,7 @@ public class Blob extends Actor {
 	public void use( BlobEmitter emitter ) {
 		this.emitter = emitter;
 	}
-	
+
 	protected void evolve() {
 		
 		boolean[] blocking = Dungeon.level.solid;

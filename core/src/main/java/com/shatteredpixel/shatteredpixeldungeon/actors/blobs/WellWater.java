@@ -51,9 +51,9 @@ public abstract class WellWater extends Blob {
 			}
 		}
 		if (seen){
-			Notes.add(record());
+			Notes.add(landmark());
 		} else {
-			Notes.remove(record());
+			Notes.remove(landmark());
 		}
 	}
 	
@@ -111,9 +111,7 @@ public abstract class WellWater extends Blob {
 	protected abstract boolean affectHero( Hero hero );
 	
 	protected abstract Item affectItem( Item item, int pos );
-	
-	protected abstract Notes.Landmark record();
-	
+
 	public static void affectCell( int cell ) {
 		
 		Class<?>[] waters = {WaterOfHealth.class, WaterOfAwareness.class, WaterOfTransmutation.class};

@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BanditSprite;
 import com.watabou.utils.Random;
 
@@ -41,7 +42,11 @@ public class Bandit extends Thief {
 		//guaranteed first drop, then 1/3, 1/9, etc.
 		lootChance = 1f;
 	}
-	
+
+	@Override
+	public Notes.Landmark landmark(){
+		return Notes.Landmark.THIEF_SWAP;
+	}
 	@Override
 	protected boolean steal( Hero hero ) {
 		if (super.steal( hero )) {

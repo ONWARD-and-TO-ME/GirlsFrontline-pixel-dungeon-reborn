@@ -263,7 +263,7 @@ public class Ratmogrify extends ArmorAbility {
 				Bestiary.countEncounter(original.getClass());
 			}
 			if (original instanceof Statue){
-				Notes.remove( Notes.Landmark.STATUE );
+				Notes.remove( original.landmark() );
 			}
 		}
 		@Override

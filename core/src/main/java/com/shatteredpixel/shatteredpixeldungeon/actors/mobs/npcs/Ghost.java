@@ -82,6 +82,10 @@ public class Ghost extends NPC {
 	}
 
 	@Override
+	public Notes.Landmark landmark() {
+		return Notes.Landmark.GHOST;
+	}
+	@Override
 	protected boolean act() {
 		if (Quest.processed()) {
 			target = Dungeon.hero.pos;

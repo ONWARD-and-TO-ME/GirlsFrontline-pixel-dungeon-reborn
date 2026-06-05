@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ConfusionGas;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SpinnerCatSprite;
@@ -20,6 +21,10 @@ public class SpinnerCat extends Spinner {
 		HP = HT = 35;
 	}
 
+	@Override
+	public Notes.Landmark landmark(){
+		return Notes.Landmark.SPINNER_CAT;
+	}
 	@Override
 	public int damageRoll() {
 		return Random.NormalIntRange(5, 15);

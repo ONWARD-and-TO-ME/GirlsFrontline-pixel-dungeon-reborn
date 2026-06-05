@@ -78,7 +78,11 @@ public class MapEditor extends TestItem {
             this.resize(110, 114 + (int)MapEditor.this.name.height());
         }
     }
-
+    public static Image TerrainIcon(int terrain){
+        MapEditor map = new MapEditor();
+        TerrainButton btn = map.new TerrainButton(terrain);
+        return new Image(btn.icon());
+    }
     private class TerrainButton extends IconButton {
         public int terrain = -1;
 

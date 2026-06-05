@@ -368,6 +368,8 @@ public class Dungeon {
 				Statistics.completedWithNoKilling = false;
 			}
 		}
+		if (id / 1000 > Statistics.deepestSub)
+			Statistics.deepestSub = id / 1000;
 
 		level.create(levelDepth,id);
 		Statistics.qualifiedForNoKilling = !bossLevel();
@@ -752,6 +754,7 @@ public class Dungeon {
 		version = bundle.getInt( VERSION );
         RollTimes = bundle.getInt( ROLLTIMES );
 		seed = bundle.contains( SEED ) ? bundle.getLong( SEED ) : DungeonSeed.randomSeed();
+		Game.Seed = seed;
         customSeedText = bundle.contains( SEED_CODE ) ? bundle.getString( SEED_CODE ) : "";
         if (bundle.contains(NOTESAVEA)) {
             itemAOfSave = new ArrayList<>(Arrays.asList((Class<?>[]) bundle.getClassArray(NOTESAVEA)));
@@ -773,6 +776,7 @@ public class Dungeon {
 		GameMode = bundle.getLong(GAME_MODE);
 		if (bundle.getBoolean(LOCKXMAS))
 			GameMode += (long) Math.pow(2, WndStartGame.GameMode.CHRISTMAS.code());
+		Game.GameMode = GameMode;
 
 		Actor.clear();
 		Actor.restoreNextID( bundle );
@@ -780,10 +784,11 @@ public class Dungeon {
 		quickslot.reset();
 		QuickSlotButton.reset();
 
-		Dungeon.level = null;
-		Dungeon.depth = -1;
+		level = null;
+		depth = -1;
 
-		Dungeon.challenges = bundle.getInt( CHALLENGES );
+		challenges = bundle.getInt( CHALLENGES );
+		Game.Challenges = challenges;
 		Dungeon.mobsToChampion = bundle.getInt( MOBS_TO_CHAMPION );
 		
 		Scroll.restore( bundle );

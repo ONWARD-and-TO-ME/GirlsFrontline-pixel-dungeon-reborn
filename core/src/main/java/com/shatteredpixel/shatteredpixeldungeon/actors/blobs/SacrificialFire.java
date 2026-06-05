@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SacrificialParticle;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SacrificeRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -192,6 +193,11 @@ public class SacrificialFire extends Blob {
 		Sample.INSTANCE.play(Assets.Sounds.BURNING );
 		GLog.w( Messages.get(SacrificialFire.class, "reward"));
 		Dungeon.level.drop( SacrificeRoom.prize( Dungeon.level ), firePos ).sprite.drop();
+		Notes.remove( landmark() );
+	}
+	@Override
+	public Notes.Landmark landmark() {
+		return Notes.Landmark.SACRIFICIAL_FIRE;
 	}
 	public static class Marked extends FlavourBuff {
 

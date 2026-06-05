@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.CursedWand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocking;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -358,6 +359,10 @@ public abstract class Elemental extends Mob {
 			lootChance = 1f;
 		}
 
+		@Override
+		public Notes.Landmark landmark(){
+			return Notes.Landmark.Elemental_SWAP;
+		}
 		private Item loot(){
 			Item item = new ScrollOfTransmutation();
 			if (Dungeon.mobRan >= 100)

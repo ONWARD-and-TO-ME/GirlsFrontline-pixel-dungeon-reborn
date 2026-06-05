@@ -720,6 +720,7 @@ public class Elphelt extends Mob {
 
 		if (phase > 0) BossHealthBar.assignBoss(this);
 		if (phase > 1) BossHealthBar.bleed(true);
+		Elphelt_Genoise.INSTANCE = this;
 	}
 
 	{
@@ -830,9 +831,9 @@ public class Elphelt extends Mob {
 		}
 	}
 
-
-	private class Elphelt_Genoise extends Genoise {
-
+	public static class Elphelt_Genoise extends Genoise {
+		public Elphelt_Genoise(){}
+		public static Elphelt INSTANCE;
 		Elphelt_Genoise(int cell) {
 			target = cell;
 		}
@@ -876,12 +877,15 @@ public class Elphelt extends Mob {
 							if (ch instanceof Elphelt) {
 								dmg /= 10;
 							}
-							ch.damage( dmg , Elphelt.this, Elphelt.this );
+							Object src = INSTANCE;
+							if (src == null)
+								src = Elphelt.class;
+							ch.damage( dmg , src, INSTANCE);
 						}
 
 						if (ch == Dungeon.hero && !ch.isAlive()) {
-							Dungeon.fail( Elphelt.this.getClass() );
-							GLog.n( Messages.get( Elphelt.this, "genoise_kill") );
+							Dungeon.fail( Elphelt.class );
+							GLog.n( Messages.get( Elphelt.class, "genoise_kill") );
 						}
 					}
 				}
