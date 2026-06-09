@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
@@ -92,5 +93,13 @@ public class Challenges {
 		return false;
 
 	}
-
+	public static Item Instance( Item item ){
+		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)){
+			if (item instanceof ScrollOfUpgrade)
+				return Generator.random(Generator.Category.SCROLL);
+			if (item instanceof PotionOfStrength)
+				return Generator.random(Generator.Category.POTION);
+		}
+		return null;
+	}
 }

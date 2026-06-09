@@ -250,7 +250,7 @@ public class GameScene extends PixelScene {
 		healthIndicators = new Group();
 		emoicons = new Group();
 		overFogEffects = new Group();
-
+		cellSelector = new CellSelector( tiles );
 		mobs = new Group();
 		raisedTerrain = new RaisedTerrainTilemap();
 		walls = new DungeonWallsTilemap();

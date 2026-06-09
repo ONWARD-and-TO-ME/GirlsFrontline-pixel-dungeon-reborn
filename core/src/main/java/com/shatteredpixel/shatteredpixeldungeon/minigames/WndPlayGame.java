@@ -53,15 +53,15 @@ public class WndPlayGame extends Window {
         }
 
         pos = 88.0F;
+        CardFront cardImage5f = new CardFront(PlayGame.AIcards.get(0));
+        cardImage5f.setRect(pos, 0.0F, 20.0F, 32.0F);
+        this.add(cardImage5f);
+        pos -= 22.0F;
+        CardFront cardImage6f = new CardFront(PlayGame.AIcards.get(1));
+        cardImage6f.setRect(pos, 0.0F, 20.0F, 32.0F);
+        this.add(cardImage6f);
+        pos -= 22.0F;
         if (!endGame) {
-            CardBack cardImage5 = new CardBack();
-            cardImage5.setRect(pos, 0.0F, 20.0F, 32.0F);
-            this.add(cardImage5);
-            pos -= 22.0F;
-            CardBack cardImage6 = new CardBack();
-            cardImage6.setRect(pos, 0.0F, 20.0F, 32.0F);
-            this.add(cardImage6);
-            pos -= 22.0F;
             if (PlayGame.AIcards.size() >= 3) {
                 CardBack cardImage7 = new CardBack();
                 cardImage7.setRect(pos, 0.0F, 20.0F, 32.0F);
@@ -119,14 +119,6 @@ public class WndPlayGame extends Window {
             btnPass.setRect(55.0F, 90.0F, 55.0F, 20.0F);
             this.add(btnPass);
         } else {
-            CardFront cardImage5f = new CardFront(PlayGame.AIcards.get(0));
-            cardImage5f.setRect(pos, 0.0F, 20.0F, 32.0F);
-            this.add(cardImage5f);
-            pos -= 22.0F;
-            CardFront cardImage6f = new CardFront(PlayGame.AIcards.get(1));
-            cardImage6f.setRect(pos, 0.0F, 20.0F, 32.0F);
-            this.add(cardImage6f);
-            pos -= 22.0F;
             if (PlayGame.AIcards.size() >= 3) {
                 CardFront cardImage7f = new CardFront(PlayGame.AIcards.get(2));
                 cardImage7f.setRect(pos, 0.0F, 20.0F, 32.0F);

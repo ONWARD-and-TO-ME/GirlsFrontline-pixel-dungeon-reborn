@@ -37,9 +37,10 @@ public class ScrollingGridPane extends ScrollPane {
 
     private static final int ITEM_SIZE	= 17;
     private static final int MIN_GROUP_SIZE = 3*(ITEM_SIZE+1);
-
-    public ScrollingGridPane(){
+    private final boolean small;
+    public ScrollingGridPane(boolean small){
         super(new Component());
+        this.small = small;
     }
 
     @Override
@@ -81,23 +82,73 @@ public class ScrollingGridPane extends ScrollPane {
 
         int sepsUsed = 0;
 
+        //these variables help control logic for laying out multiple grid groups on one line
+        boolean freshRow = true; //whether the previous group is still on its first row
+        boolean lastWasSmallheader = false; //whether the last UI element was a header on its own
+        float widthThisGroup = 0; //how wide the current group is (we use a min of 3 items)
+
         for (int i = 0; i < items.size(); i++){
             Component item = items.get(i);
             if (item instanceof GridHeader){
-                if (left > 0){
-                    left = 0;
-                    top += ITEM_SIZE+1;
+                //we can sometimes get two smaller headers next to each other if a group has no items in it
+                //so we need to treat it as if there were grid items for proper layout
+                if (left > 0 || lastWasSmallheader){
+
+                    //this bit of logic exists so that multiple headers can be on one row
+                    // if all of their groups have a small number of items, with a min space for 3
+                    float spacing = Math.max(0, MIN_GROUP_SIZE - widthThisGroup);
+                    float spaceLeft = width() - (left + spacing);
+                    int spaceReq = 0;
+                    for (int j = i+1; j < items.size(); j++){
+                        if (items.get(j) instanceof GridItem){
+                            spaceReq += ITEM_SIZE+1;
+                        } else {
+                            break;
+                        }
+                    }
+                    spaceReq = Math.max(spaceReq, MIN_GROUP_SIZE);
+                    if (!((GridHeader) item).center && freshRow && spaceLeft >= spaceReq && small){
+                        left = left + spacing;
+                        top -= item.height()+1;
+                        ColorBlock sep;
+                        if (separators.size() > sepsUsed){
+                            sep = separators.get(sepsUsed++);
+                        } else {
+                            sep = new ColorBlock(1, 1, 0xFF222222);
+                            separators.add(sep);
+                            content.add(sep);
+                            sepsUsed++;
+                        }
+                        sep.size(1, item.height()+1+ITEM_SIZE);
+                        sep.x = left-1;
+                        sep.y = top;
+                    } else {
+                        left = 0;
+                        top += ITEM_SIZE + 2;
+                        freshRow = true;
+                    }
                 }
                 item.setRect(left, top, width(), item.height());
                 top += item.height()+1;
-            }
-            if (item instanceof GridItem){
+                widthThisGroup = 0;
+
+                if (!((GridHeader) item).center){
+                    lastWasSmallheader = true;
+                } else {
+                    lastWasSmallheader = false;
+                }
+
+            } if (item instanceof GridItem){
                 if (left + ITEM_SIZE > width()) {
                     left = 0;
+                    widthThisGroup = 0;
                     top += ITEM_SIZE+1;
+                    freshRow = false;
                 }
                 item.setRect(left, top, ITEM_SIZE, ITEM_SIZE);
                 left += ITEM_SIZE+1;
+                widthThisGroup += ITEM_SIZE+1;
+                lastWasSmallheader = false;
             }
 
         }

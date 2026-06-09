@@ -378,15 +378,11 @@ public abstract class Mob extends Char {
 				|| (buff instanceof Dread && buff(Terror.class) == null)) {
 			if (enemySeen) {
                 sprite.showStatus(CharSprite.NEGATIVE, Messages.get(this, "rage"));
-                if (enemy != null) {
-                    if (enemy.getClass() != RatXMAS.class)
-                        state = HUNTING;
-                }
+				if (getClass() != RatXMAS.class)
+					state = HUNTING;
             } else {
-                if (enemy != null) {
-                    if (enemy.getClass() != RatXMAS.class)
-                        state = WANDERING;
-                }
+				if (getClass() != RatXMAS.class)
+					state = WANDERING;
             }
 		}
 	}
@@ -725,7 +721,7 @@ public abstract class Mob extends Char {
             if (beacon != null && beacon.level() < beacon.levelCap) {
                 beacon.upgrade();
 				Catalog.countUses(LloydsBeacon.class, beacon.level() == 3 ? 4 : 3);
-                GLog.p( Messages.get(LloydsBeacon.class, "levelup") );
+                GLog.p( Messages.get(LloydsBeacon.class, "levelUp") );
             }
         }
 		if (cause == Chasm.class){

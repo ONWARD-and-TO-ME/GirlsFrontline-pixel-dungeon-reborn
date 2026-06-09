@@ -893,8 +893,10 @@ public abstract class Level implements Bundlable {
 	}
 	
 	public Heap drop( Item item, int cell ) {
-
-		if (item == null || Challenges.isItemBlocked(item)){
+		if (Challenges.isItemBlocked(item)){
+			item = Challenges.Instance(item);
+		}
+		if (item == null){
 
 			//create a dummy heap, give it a dummy sprite, don't add it to the game, and return it.
 			//effectively nullifies whatever the logic calling this wants to do, including dropping items.

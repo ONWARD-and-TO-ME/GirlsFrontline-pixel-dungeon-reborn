@@ -131,10 +131,10 @@ public class Armor extends EquipableItem {
 
     public Item clone(Item item){
         Armor armor = (Armor) item;
-        super.clone(armor);
         broken = armor.broken;
         duration = armor.duration;
         tier    = armor.tier;
+        super.clone(armor);
         inscribe(armor.glyph);
         augment = armor.augment;
         masteryPotionBonus = armor.masteryPotionBonus;

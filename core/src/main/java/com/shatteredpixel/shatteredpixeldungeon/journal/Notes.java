@@ -301,7 +301,8 @@ public class Notes {
 				case SECRETS_FLOOR: return Messages.get(Level.Feeling.class, "secrets_desc");
 
 				case SHOP:
-					if (levelId % 1000 == 20)    return Messages.get(ImpShopkeeper.class, "desc");
+					if (levelId % 1000 == 25)    return Messages.get(NoelShopkeeper.class, "desc");
+					else if (levelId % 1000 == 20)    return Messages.get(ImpShopkeeper.class, "desc");
 					else                return Messages.get(Shopkeeper.class, "desc");
 				case ALCHEMY:           return Messages.get(Level.class, "alchemy_desc");
 				case GARDEN:            return Messages.get(Foliage.class, "desc");

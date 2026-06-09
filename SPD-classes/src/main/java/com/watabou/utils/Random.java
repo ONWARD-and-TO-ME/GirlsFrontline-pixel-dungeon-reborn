@@ -91,6 +91,48 @@ public class Random {
 	public static float NormalFloat( float min, float max ) {
 		return min + ((Float(max - min) + Float(max - min))/2f);
 	}
+	public static float NormalFloat( int times ){
+		if (times == 0)
+			return 0;
+		float f = 0;
+		for (int i = 0; i < times; i++)
+			f += Float();
+		return f / times;
+	}
+	public static float SB_Float( float times ){
+		switch (Int(6)){
+			case 0: return Float();
+			case 1: return SB1_Float(times);
+			case 2: return SB2_Float(times);
+			case 3: return SB3_Float(times);
+			case 4: return SB4_Float(times);
+			default:return SB_Float(Float(times));
+		}
+	}
+	public static float SB1_Float( float times ){
+		float f = Float();
+		times -= Float();
+		while (times > 0){
+			f += Float();
+			f /= 2;
+			times -= Float();
+		}
+		return f;
+	}
+	public static float SB2_Float( float times ){
+		return (NormalFloat((int) times) + SB1_Float(times))/2;
+	}
+	public static float SB3_Float( float times ){
+		return NormalFloat( NormalFloat(0, SB2_Float(times)), NormalFloat(SB2_Float(times), 1) );
+	}
+	public static float SB4_Float( float times ){
+		float num = SB3_Float(times);
+		while ( times > 0){
+			num = (float) Math.pow(num, NormalFloat(0.5F, 2F));
+			times -= Float();
+		}
+		return num;
+	}
 
 	//returns a uniformly distributed int in the range [0, max)
 	public static synchronized int Int( int max ) {
@@ -109,7 +151,7 @@ public class Random {
 
 	//returns a triangularly distributed int in the range [min, max]
 	public static int NormalIntRange( int min, int max ) {
-		return min + (int)((Float() + Float()) * (max - min + 1) / 2f);
+		return min + (int)(NormalFloat(2) * (max - min + 1));
 	}
 
 	//returns a uniformly distributed long in the range [-2^63, 2^63)

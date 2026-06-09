@@ -365,9 +365,14 @@ public class WndJournal extends WndTabbed {
 			
 			public boolean onClick( float x, float y ) {
 				if (inside( x, y ) && found) {
-					GameScene.show( new WndStory( iconForPage(page),
+					Window window = new WndStory( iconForPage(page),
 							Document.ADVENTURERS_GUIDE.pageTitle(page),
-							Document.ADVENTURERS_GUIDE.pageBody(page) ));
+							Document.ADVENTURERS_GUIDE.pageBody(page) );
+					if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
+						GameScene.show(window);
+					} else {
+						GirlsFrontlinePixelDungeon.scene().addToFront(window);
+					}
 					Document.ADVENTURERS_GUIDE.readPage(page);
 					return true;
 				} else {
@@ -594,7 +599,7 @@ public class WndJournal extends WndTabbed {
 
 		@Override
 		protected void createChildren() {
-			grid = new ScrollingGridPane();
+			grid = new ScrollingGridPane(true);
 			add(grid);
 		}
 
@@ -737,7 +742,7 @@ public class WndJournal extends WndTabbed {
 			itemButtons[BESTIARY_IDX].icon(new ItemSprite(ItemSpriteSheet.CATA_HOLDER));
 //			itemButtons[LORE_IDX].icon(new ItemSprite(ItemSpriteSheet.SPELL_HOLDER));
 
-			grid = new ScrollingGridPane(){
+			grid = new ScrollingGridPane(false){
 				@Override
 				public synchronized void update() {
 					super.update();
@@ -837,6 +842,7 @@ public class WndJournal extends WndTabbed {
 		}
 
 		private static String property(MeleeWeapon weapon){
+			weapon.update();
 			String info = "";
 			if (weapon instanceof Cypros){
 				info+=Messages.format("该武器阶数_%d_。\n", weapon.tier);
@@ -988,17 +994,19 @@ public class WndJournal extends WndTabbed {
 						if (inside(x, y)) {
 							Image sprite = new Image(icon);
 							if (!finalProperty.isEmpty()) {
+								Window window = new WndJournalItem(sprite, finalTitle, finalDesc, finalProperty, seen);
 								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
-									GameScene.show(new WndJournalItem(sprite, finalTitle, finalDesc, finalProperty, seen));
+									GameScene.show(window);
 								} else {
-									GirlsFrontlinePixelDungeon.scene().addToFront(new WndJournalItem(sprite, finalTitle, finalDesc, finalProperty, seen));
+									GirlsFrontlinePixelDungeon.scene().addToFront(window);
 								}
 							}
 							else {
+								Window window = new WndJournalElse(sprite, finalTitle, finalDesc);
 								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene){
-									GameScene.show(new WndJournalElse(sprite, finalTitle, finalDesc));
+									GameScene.show(window);
 								} else {
-									GirlsFrontlinePixelDungeon.scene().addToFront(new WndJournalElse(sprite, finalTitle, finalDesc));
+									GirlsFrontlinePixelDungeon.scene().addToFront(window);
 								}
 							}
 							return true;
@@ -1051,7 +1059,7 @@ public class WndJournal extends WndTabbed {
 					if (seen) {
 						title = Messages.titleCase(mob.name());
 						desc = mob.description();
-						if (Bestiary.encounterCount(entityCls) > 1){
+						if (Bestiary.encounterCount(entityCls) > 0){
 							desc += "\n\n" + Messages.get(CatalogTab.class, "enemy_count", Bestiary.encounterCount(entityCls));
 						}
 					} else {
@@ -1075,7 +1083,7 @@ public class WndJournal extends WndTabbed {
 					if (seen) {
 						title = Messages.titleCase(trap.name());
 						desc = trap.desc();
-						if (Bestiary.encounterCount(entityCls) > 1){
+						if (Bestiary.encounterCount(entityCls) > 0){
 							desc += "\n\n" + Messages.get(CatalogTab.class, "trap_count", Bestiary.encounterCount(entityCls));
 						}
 					} else {
@@ -1093,7 +1101,7 @@ public class WndJournal extends WndTabbed {
 					if (seen) {
 						title = Messages.titleCase(plant.name());
 						desc = plant.desc();
-						if (Bestiary.encounterCount(entityCls) > 1){
+						if (Bestiary.encounterCount(entityCls) > 0){
 							desc += "\n\n" + Messages.get(CatalogTab.class, "plant_count", Bestiary.encounterCount(entityCls));
 						}
 					} else {
@@ -1118,18 +1126,18 @@ public class WndJournal extends WndTabbed {
 					public boolean onClick(float x, float y) {
 						if (inside(x, y)) {
 							if (seen && finalMob != null){
+								Window window = new WndJournalElse(finalMob, finalTitle, finalDesc);
 								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
-									GameScene.show(new WndJournalElse(finalMob, finalTitle, finalDesc));
+									GameScene.show(window);
 								} else {
-									GirlsFrontlinePixelDungeon.scene().addToFront(new WndJournalElse(finalMob, finalTitle, finalDesc));
+									GirlsFrontlinePixelDungeon.scene().addToFront(window);
 								}
 							} else {
-
-								Image image = new Image(icon);
+								Window window = new WndJournalElse(new Image(icon), finalTitle, finalDesc);
 								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
-									GameScene.show(new WndJournalElse(image, finalTitle, finalDesc));
+									GameScene.show(window);
 								} else {
-									GirlsFrontlinePixelDungeon.scene().addToFront(new WndJournalElse(image, finalTitle, finalDesc));
+									GirlsFrontlinePixelDungeon.scene().addToFront(window);
 								}
 							}
 

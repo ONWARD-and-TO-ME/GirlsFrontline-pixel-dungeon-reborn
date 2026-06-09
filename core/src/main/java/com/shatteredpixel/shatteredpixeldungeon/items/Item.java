@@ -550,6 +550,7 @@ public class Item implements Bundlable {
 		noted = item.noted;
 		updateTime = item.updateTime;
 		level(item.level);
+		Tracker( hero );
 		return this;
 	}
 	public Item upgrade() {

@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Levitation;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
@@ -277,6 +278,8 @@ public class LloydsBeacon extends Artifact {
             if (outMap(target))
                 return;
             if (Dungeon.level.solid[target] && !Dungeon.level.passable[target] && !Dungeon.level.avoid[target])
+                return;
+            if (Dungeon.level.avoid[target] && Dungeon.hero.buff(Levitation.class) == null )
                 return;
             if (Dungeon.level.visited[target] || Dungeon.level.mapped[target]){
                 int cd = 50;

@@ -345,7 +345,7 @@ public class CursedWand {
 				Char ch = Actor.findChar(targetPos);
 				int spawnCell = targetPos;
 				if (ch != null){
-					ArrayList<Integer> candidates = new ArrayList<Integer>();
+					ArrayList<Integer> candidates = new ArrayList<>();
 					for (int n : PathFinder.NEIGHBOURS8) {
 						int cell = targetPos + n;
 						if (Dungeon.level.passable[cell] && Actor.findChar( cell ) == null) {
@@ -359,7 +359,7 @@ public class CursedWand {
 					}
 				}
 
-				Mimic mimic = Mimic.spawnAt(spawnCell, new ArrayList<Item>(), GoldenMimic.class);
+				Mimic mimic = Mimic.spawnAt(spawnCell, GoldenMimic.class);
 				mimic.stopHiding();
 				mimic.alignment = Char.Alignment.ENEMY;
 				Item reward;
@@ -423,7 +423,11 @@ public class CursedWand {
 					result = Generator.random(Random.oneOf(Generator.Category.WEAPON, Generator.Category.ARMOR,
 							Generator.Category.RING, Generator.Category.ARTIFACT));
 				} while (result.cursed);
-				if (result.isUpgradable()) result.upgrade();
+				if (result.isUpgradable()) {
+					if (result.level() < origin.level())
+						result.level(origin.level());
+					result.upgrade();
+				}
 				result.cursed = result.cursedKnown = true;
 				if (origin instanceof Wand){
 					GLog.w( Messages.get(CursedWand.class, "transmogrify_wand") );
