@@ -76,7 +76,7 @@ public class Pasty extends Food {
 						holiday = Holiday.BREAD;
 					break;
 				case Calendar.JUNE:
-					if (calendar.get(Calendar.WEEK_OF_MONTH) <= 2)
+					if (calendar.get(Calendar.WEEK_OF_MONTH) <= 3)
 						holiday = Holiday.BREAD;
 					break;
 			}
