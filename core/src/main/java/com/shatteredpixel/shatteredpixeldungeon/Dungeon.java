@@ -94,6 +94,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 import com.watabou.utils.SparseArray;
 
 import java.io.IOException;
@@ -240,8 +241,6 @@ public class Dungeon {
             return false;
         }
     }
-    public static ArrayList<Class<?>> itemAOfSave ;
-    public static ArrayList<String> NOTEAOfSave ;
 	public static HashSet<Class<? extends ColorItem>> guessType ;
 
 	public static QuickSlot quickslot = new QuickSlot();
@@ -269,8 +268,6 @@ public class Dungeon {
 	}
 
     public static void init(String seedCode,int paramChallenges) {
-        itemAOfSave = new ArrayList<>();
-        NOTEAOfSave = new ArrayList<>();
 		guessType	= new HashSet<>();
 		version = Game.versionCode;
 		challenges = paramChallenges;
@@ -293,7 +290,10 @@ public class Dungeon {
             customSeedText = seedCode;
 			seed = DungeonSeed.convertFromText(customSeedText);
 		}
-	
+
+		Game.Seed = seed;
+		Game.Challenges = challenges;
+		Game.GameMode = GameMode;
 		Actor.clear();
 		Actor.resetNextID();
 
@@ -356,6 +356,10 @@ public class Dungeon {
 	public static Level newLevel(Level level,int levelDepth,int id){
 		Dungeon.level = null;
 		Actor.clear();
+
+		Game.Seed = seed;
+		Game.Challenges = challenges;
+		Game.GameMode = GameMode;
 
         depth       = levelDepth;
         CreateId    = id;
@@ -621,7 +625,7 @@ public class Dungeon {
     //private static final String Summoned		    = "ExtractSummoned";
 	private static final String DROPPED         = "dropped%d";
 	private static final String PORTED          = "ported%d";
-	private static final String LEVEL		    = "level";
+	public static final String LEVEL		    = "level";
 	private static final String LIMDROPS        = "limited_drops";
 	private static final String CHAPTERS	    = "chapters";
 	private static final String QUESTS		    = "quests";
@@ -654,12 +658,6 @@ public class Dungeon {
             bundle.put( ROLLTIMES, RollTimes);
 			bundle.put( GAME_MODE, GameMode);
 
-            Class<?>[] ItemToSave = itemAOfSave.toArray(new Class[0]);
-            bundle.put(NOTESAVEA,ItemToSave);
-            //物品类型
-            String[] NoteToSave =NOTEAOfSave.toArray(new String[0]);
-            bundle.put(NOTESAVEB,NoteToSave);
-            //对应物品类型的标签
 			bundle.put(GuessType, guessType.toArray(new Class[0]));
 
             bundle.put( GOLD, gold );
@@ -724,9 +722,9 @@ public class Dungeon {
 		bundle.put( LEVEL, level );
         if(level!=null&&level.FirstSave){//mark
             level.FirstSave = false;
-            FileUtils.bundleToFile(GamesInProgress.depthFile(save,level.levelId, 1),bundle);
+            FileUtils.bundleToFile(GamesInProgress.depthFile(save,level.levelId, true), bundle);
         }
-        FileUtils.bundleToFile(GamesInProgress.depthFile(save,level.levelId, 0),bundle);
+        FileUtils.bundleToFile(GamesInProgress.depthFile(save,level.levelId, false), bundle);
     }
 	
 	public static void saveAll() throws IOException {
@@ -756,23 +754,9 @@ public class Dungeon {
 		seed = bundle.contains( SEED ) ? bundle.getLong( SEED ) : DungeonSeed.randomSeed();
 		Game.Seed = seed;
         customSeedText = bundle.contains( SEED_CODE ) ? bundle.getString( SEED_CODE ) : "";
-        if (bundle.contains(NOTESAVEA)) {
-            itemAOfSave = new ArrayList<>(Arrays.asList((Class<?>[]) bundle.getClassArray(NOTESAVEA)));
-        }else {
-            itemAOfSave = new ArrayList<>();
-        }
-
-        if (bundle.contains(NOTESAVEB)) {
-            NOTEAOfSave = new ArrayList<>(Arrays.asList(bundle.getStringArray(NOTESAVEB)));
-        }else {
-            NOTEAOfSave = new ArrayList<>();
-        }
-
         guessType = new HashSet<>();
-		if (bundle.contains(GuessType)){
-			for (Class<? extends ColorItem> i : bundle.getClassArray(GuessType))
-				guessType.add(i);
-		}
+		if (bundle.contains(GuessType))
+			guessType.addAll(Arrays.<Class<? extends ColorItem>>asList(bundle.getClassArray(GuessType)));
 		GameMode = bundle.getLong(GAME_MODE);
 		if (bundle.getBoolean(LOCKXMAS))
 			GameMode += (long) Math.pow(2, WndStartGame.GameMode.CHRISTMAS.code());
@@ -835,6 +819,18 @@ public class Dungeon {
 		}
 		
 		Notes.restoreFromBundle( bundle );
+		if (bundle.contains(NOTESAVEA) && bundle.contains(NOTESAVEB)) {
+			ArrayList<Class<? extends Item>> itemOfSave = new ArrayList<Class<? extends Item>>(Arrays.<Class<? extends Item>>asList(bundle.getClassArray(NOTESAVEA)));
+			ArrayList<String> NoteOfSave = new ArrayList<>(Arrays.asList(bundle.getStringArray(NOTESAVEB)));
+			while (itemOfSave.size() > NoteOfSave.size())
+				itemOfSave.remove(itemOfSave.size()-1);
+			while (NoteOfSave.size() > itemOfSave.size())
+				NoteOfSave.remove(NoteOfSave.size()-1);
+			Item item;
+			while (!itemOfSave.isEmpty())
+				if ((item = Reflection.newInstance(itemOfSave.remove(0))) != null)
+					item.addOldNote(NoteOfSave.remove(0));
+		}
 
 		hero = null;
 		hero = (Hero)bundle.get( HERO );
@@ -896,7 +892,7 @@ public class Dungeon {
         }
     }
 
-    public static Level tryLoadLevel(int levelId, int copy){//mark
+    public static Level tryLoadLevel(int levelId, boolean copy){//mark
         Level level = BeforeTryLoadLevel(levelId, copy);
         if (level!=null){
             GetSight();
@@ -905,20 +901,20 @@ public class Dungeon {
         return null;
     }
 
-    private static Level BeforeTryLoadLevel(int levelId, int copy){
+    private static Level BeforeTryLoadLevel(int levelId, boolean copy){
         final int save=GamesInProgress.curSlot;
         final String fileName=GamesInProgress.depthFile(save,levelId,copy);
         if(FileUtils.fileExists(fileName)){
             //file may be deleted between fileExists and loadLevel,who knows.
             try{
-                return loadLevel(save,levelId,copy);
+                return loadLevel(save,levelId, copy);
             }catch(IOException e){
                 Game.reportException(e);
             }
         }
         return null;
     }
-    public static Level loadLevel(int save,int levelId, int copy) throws IOException {
+    public static Level loadLevel(int save,int levelId, boolean copy) throws IOException {
         Dungeon.level = null;
         Actor.clear();
 

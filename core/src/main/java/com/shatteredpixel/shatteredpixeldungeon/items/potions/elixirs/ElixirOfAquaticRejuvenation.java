@@ -45,15 +45,16 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 	
 	{
 		image = ItemSpriteSheet.ELIXIR_AQUA;
+		mulOnTalentUsed = 1.25F;
 	}
 	
 	@Override
 	public void apply(Hero hero) {
+		super.apply(hero);
 		if (Dungeon.isChallenged(Challenges.NO_HEALING)){
 			PotionOfHealing.pharmacophobiaProc(hero);
 		} else {
 			Buff.affect(hero, AquaHealing.class).set(Math.round(hero.HT * 1.5f));
-			Talent.onPotionUsed( hero, 1.25F );
 		}
 	}
 	

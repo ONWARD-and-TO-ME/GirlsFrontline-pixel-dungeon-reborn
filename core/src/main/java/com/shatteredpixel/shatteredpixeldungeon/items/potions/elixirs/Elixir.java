@@ -22,11 +22,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 
 public abstract class Elixir extends Potion {
 	
-	public abstract void apply( Hero hero );
+	public void apply( Hero hero ){
+		Talent.onPotionUsed( hero, mulOnTalentUsed );
+	}
 	
 	@Override
 	public boolean isKnown() {

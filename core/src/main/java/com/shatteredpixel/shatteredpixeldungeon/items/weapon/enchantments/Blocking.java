@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
@@ -34,14 +35,14 @@ import com.watabou.utils.Random;
 
 public class Blocking extends Weapon.Enchantment {
 	
-	private static ItemSprite.Glowing BLUE = new ItemSprite.Glowing( 0x0000FF );
+	private static final ItemSprite.Glowing BLUE = new ItemSprite.Glowing( 0x0000FF );
 	
 	@Override
 	public int proc(Weapon weapon, Char attacker, Char defender, int damage) {
 		
 		int level = Math.max( 0, weapon.buffedLvl() );
 		
-		Buff.prolong(attacker, BlockBuff.class, 2 + level/2).setBlocking(level + 1);
+		Buff.prolong(attacker, BlockBuff.class, 2 + (float) level /2).setBlocking(level + 3);
 		weapon.guessingLevel = weapon.level();
 		return damage;
 	}
@@ -53,14 +54,19 @@ public class Blocking extends Weapon.Enchantment {
 	
 	public static class BlockBuff extends FlavourBuff {
 		
-		private int blocking = 0;
+		private float blocking;
 		
 		public void setBlocking( int blocking ){
-			this.blocking = blocking;
+			if (this.blocking < blocking)
+				this.blocking = blocking;
+			else if (this.blocking < Dungeon.depth / 2F)
+				this.blocking++;
+			else
+				this.blocking += 0.5F;
 		}
 		
 		public int blockingRoll(){
-			return Random.NormalIntRange(0, blocking);
+			return Random.NormalIntRange(0, (int) blocking);
 		}
 		
 		@Override
@@ -80,10 +86,10 @@ public class Blocking extends Weapon.Enchantment {
 
 		@Override
 		public String desc() {
-			return Messages.get(this, "desc", blocking, dispTurns());
+			return Messages.get(this, "desc", (int) blocking, dispTurns());
 		}
 		
-		private static final String BLOCKING = "blocking";
+		private static final String BLOCKING = "blocking_Float";
 		
 		@Override
 		public void storeInBundle(Bundle bundle) {
@@ -94,7 +100,7 @@ public class Blocking extends Weapon.Enchantment {
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			blocking = bundle.getInt(BLOCKING);
+			blocking = bundle.getFloat(BLOCKING);
 		}
 	
 	}

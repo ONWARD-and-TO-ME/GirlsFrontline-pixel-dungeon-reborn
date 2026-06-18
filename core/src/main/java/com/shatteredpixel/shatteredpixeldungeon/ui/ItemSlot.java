@@ -251,7 +251,8 @@ public class ItemSlot extends Button {
 		int trueLvl = item.visiblyUpgraded();
 		int buffedLvl = item.buffedVisiblyUpgraded();
 
-		if (trueLvl != 0 || buffedLvl != 0) {
+		if (item.levelKnown && (trueLvl != 0 || buffedLvl != 0)
+				|| !item.levelKnown && item.hasGuessingLevel()) {
 			String text =  Messages.format( TXT_LEVEL, buffedLvl );
 			if (!item.levelKnown && !Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
 				text += "?";

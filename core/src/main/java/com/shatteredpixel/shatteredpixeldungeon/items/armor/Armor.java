@@ -133,7 +133,6 @@ public class Armor extends EquipableItem {
         Armor armor = (Armor) item;
         broken = armor.broken;
         duration = armor.duration;
-        tier    = armor.tier;
         super.clone(armor);
         inscribe(armor.glyph);
         augment = armor.augment;
@@ -144,6 +143,7 @@ public class Armor extends EquipableItem {
 
     @Override
     public void update(){
+        super.update();
         if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)){
             if (!UpdatedTierToLevel){
                 boolean hasGlyph = glyph != null;
@@ -692,7 +692,7 @@ public class Armor extends EquipableItem {
 	@Override
 	public int buffedLvl() {
         int lvl = super.buffedLvl();
-        if (BuffLevelPoint != 0)
+        if (BuffLevelPoint != Integer.MIN_VALUE)
             return lvl;
 		if (isEquipped( hero ) || hero.belongings.contains(this)) {
             if (hero.buff(EquipLevelUp.class) != null) {
@@ -804,7 +804,8 @@ public class Armor extends EquipableItem {
 				info += " " + Messages.get(Armor.class, "too_heavy");
 			}
 		} else {
-			info += "\n\n" + Messages.get(Armor.class, "avg_absorb", DRMin(guessingLevel()), DRMax(guessingLevel()), STRReq(guessingLevel()));
+            int lvl = TextGuessingLevel();
+			info += "\n\n" + Messages.get(Armor.class, "avg_absorb", DRMin(lvl), DRMax(lvl), STRReq(lvl));
 
 			if (STRReq(0) > Dungeon.hero.STR()) {
 				info += " " + Messages.get(Armor.class, "probably_too_heavy");
@@ -898,7 +899,7 @@ public class Armor extends EquipableItem {
         if (isIdentified() || onUse)
             lvl = level();
         else
-            lvl = guessingLevel();
+            lvl = TextGuessingLevel();
         int req = STRReq(lvl);
         if (masteryPotionBonus){
             req -= 2;
@@ -1095,6 +1096,10 @@ public class Armor extends EquipableItem {
 		
 	}
     public class mixArmor extends Buff {
+
+        {
+            revivePersists = true;
+        }
 
         private static final float recover  = 1F;
         private static final float unEquip  = 2F;

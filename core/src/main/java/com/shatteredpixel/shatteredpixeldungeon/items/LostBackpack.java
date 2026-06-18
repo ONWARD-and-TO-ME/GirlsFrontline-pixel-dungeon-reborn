@@ -56,6 +56,7 @@ public class LostBackpack extends Item {
 			if (i.keptThoughLostInvent){
 				i.keptThoughLostInvent = false; //don't reactivate, was previously activated
 			} else {
+				i.Tracker(hero);
 				if (i instanceof EquipableItem && i.isEquipped(hero)){
 					((EquipableItem) i).activate(hero);
 				} else if ( i instanceof CloakOfShadows && hero.hasTalent(Talent.LIGHT_CLOAK)){

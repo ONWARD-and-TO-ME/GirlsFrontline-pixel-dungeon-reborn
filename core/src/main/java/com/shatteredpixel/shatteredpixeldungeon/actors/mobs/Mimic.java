@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -255,8 +256,16 @@ public class Mimic extends Mob {
 	public static Mimic spawnAt( int pos, Class mimicType ){
 		LinkedList<Item> items = new LinkedList<>();
 		if (Dungeon.level != null && Dungeon.level.heaps.get(pos) != null){
-			items = new LinkedList<>(Dungeon.level.heaps.get(pos).items);
-			Dungeon.level.heaps.get(pos).destroy();
+			Heap heap = Dungeon.level.heaps.get(pos);
+			int i = 0;
+			while ( i < heap.items.size() ){
+				if (!(heap.items.get(i) instanceof Bag) )
+					items.add(heap.items.remove(i));
+				else
+					i++;
+			}
+			if (heap.items.isEmpty())
+				heap.destroy();
 		}
 		return spawnAt( pos, items, mimicType);
 	}

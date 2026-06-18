@@ -51,8 +51,8 @@ public class RingOfEnergy extends Ring {
             return info;
 		} else {
 			return Messages.get(this, "typical_stats",
-					new DecimalFormat("#.##").format(20f),
-					new DecimalFormat("#.##").format(15f));
+					new DecimalFormat("#.##").format(100f * (Math.pow(1.20f, TextGuessingLevel()) - 1f)),
+					new DecimalFormat("#.##").format(100f * (Math.pow(1.15f, TextGuessingLevel()) - 1f)));
 		}
 	}
 	

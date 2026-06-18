@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -40,7 +39,7 @@ public class WndInfoTalent extends Window {
 
 	private static final int WIDTH = 120;
 
-	public WndInfoTalent(Talent talent, int points, TalentButtonCallback buttonCallback){
+	public WndInfoTalent(Talent talent, int points, HeroClass heroClass, TalentButtonCallback buttonCallback){
 		super();
 
 		IconTitle titlebar = new IconTitle();
@@ -54,11 +53,6 @@ public class WndInfoTalent extends Window {
 		titlebar.setRect( 0, 0, WIDTH, 0 );
 		add( titlebar );
 
-        HeroClass heroClass;
-        if (Dungeon.hero != null && Dungeon.hero.heroClass != null)
-            heroClass = Dungeon.hero.heroClass;
-        else
-            heroClass = HeroClass.NONE;
 		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(talent.desc(heroClass), 6);
 		txtInfo.maxWidth(WIDTH);
 		txtInfo.setPos(titlebar.left(), titlebar.bottom() + 2*GAP);

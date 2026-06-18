@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
@@ -78,11 +79,8 @@ public class TestBomb extends Bomb {
             GameScene.updateMap(i);
         }
 
-        for (int j = 0; j < length; j++) {
-            Char target = Actor.findChar(j);
-            if (outMap(j))
-                continue;
-            if (target != null&&target!= Dungeon.hero) {
+        for (Mob target : Dungeon.level.mobs.toArray(new Mob[0])) {
+            if (target != null) {
                 if (target instanceof NPC) {
                     int pos;
                     do {

@@ -12,6 +12,7 @@ public class AN94 extends DesignatedMarksmanRifle {
         RCH = 3;
         dmgBaseDiffer = -1F;
         dmgUpgradeDiffer = -1F;
+        enchantChance = 4F;
     }
 
     @Override

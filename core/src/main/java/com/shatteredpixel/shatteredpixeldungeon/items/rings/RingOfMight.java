@@ -85,7 +85,7 @@ public class RingOfMight extends Ring {
             }
             return info;
         } else {
-			return Messages.get(this, "typical_stats", 1, new DecimalFormat("#.##").format(3.5f));
+			return Messages.get(this, "typical_stats", TextGuessingLevel(), new DecimalFormat("#.##").format(100f * (Math.pow(1.035, TextGuessingLevel()) - 1f)));
 		}
 	}
 

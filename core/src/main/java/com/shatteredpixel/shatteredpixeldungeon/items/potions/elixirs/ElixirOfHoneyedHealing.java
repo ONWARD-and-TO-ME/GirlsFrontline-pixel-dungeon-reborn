@@ -39,13 +39,14 @@ public class ElixirOfHoneyedHealing extends Elixir {
 	
 	{
 		image = ItemSpriteSheet.ELIXIR_HONEY;
+		mulOnTalentUsed = 1.25F;
 	}
 	
 	@Override
 	public void apply(Hero hero) {
+		super.apply(hero);
 		PotionOfHealing.cure(hero);
 		PotionOfHealing.heal(hero);
-		Talent.onPotionUsed( hero, 1.25F );
 		Buff.affect(hero, Hunger.class).satisfy(Hunger.HUNGRY/2f);
 		Talent.onFoodEaten(hero, Hunger.HUNGRY/2f, this);
 	}

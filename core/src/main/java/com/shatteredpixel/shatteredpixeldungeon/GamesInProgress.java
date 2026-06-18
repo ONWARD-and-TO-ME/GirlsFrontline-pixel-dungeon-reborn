@@ -50,7 +50,7 @@ public class GamesInProgress {
 	private static final String GAME_FOLDER = "game%d";
 	private static final String GAME_FILE	= "game.dat";
     private static final String DEPTH_FILE	= "depth%d.dat";
-    private static final String COPY_FILE	= "depth%d_copy%d.dat";
+    private static final String COPY_FILE	= "depth%d_copy.dat";
 	
 	public static boolean gameExists( int slot ){
 		return FileUtils.dirExists(gameFolder(slot))
@@ -65,10 +65,10 @@ public class GamesInProgress {
 		return gameFolder(slot) + "/" + GAME_FILE;
 	}
 
-    public static String depthFile( int slot, int levelId, int copy) {
-        if (copy==0)
+    public static String depthFile( int slot, int levelId, boolean copy) {
+        if (!copy)
             return gameFolder(slot) + "/" + Messages.format(DEPTH_FILE,levelId);
-        else return gameFolder(slot) + "/" + Messages.format(COPY_FILE,levelId,copy);
+        return gameFolder(slot) + "/" + Messages.format(COPY_FILE,levelId);
     }
 	
 	public static int firstEmpty(){

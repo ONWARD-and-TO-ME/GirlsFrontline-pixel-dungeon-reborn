@@ -159,26 +159,22 @@ public class Shopkeeper extends NPC {
 	}
 
 	//shopkeepers are greedy!
-	public static int sellPrice(Item item){
-		float rate=1f;
-
-		if(Dungeon.hero.hasTalent(Talent.Type56Two_FOOD)
-		&& item instanceof Food){
-			rate-=0.2f*Dungeon.hero.pointsInTalent(Talent.Type56Two_FOOD);
-		}
-        int mul;
-        if (Dungeon.depth%5==0) {
-            mul = Dungeon.depth/5+1;
-        }else {
-            mul = (int) Math.ceil(Dungeon.depth * 0.2f);
-        }//乘数等效于下一个boss层的楼层数
-        int pay = Math.max(item.value()*2,(int)(item.value()*rate*(mul*5)));
-
-        if (item.selled) {
+	@SuppressWarnings("SuspiciousIndentation")
+    public static int sellPrice(Item item){
+        if (item.sold)
             return item.value() * 10;
-        }
 
-        return pay;
+		float rate = 1F;
+
+		if(Dungeon.hero.hasTalent(Talent.Type56Two_FOOD) && item instanceof Food)
+			rate -= 0.2F * Dungeon.hero.pointsInTalent(Talent.Type56Two_FOOD);
+        if(Dungeon.hero.hasTalent(Talent.BARGAIN_SKILLS) && item instanceof Food)
+            rate -= 0.2F * Dungeon.hero.pointsInTalent(Talent.BARGAIN_SKILLS);
+
+        int mul = Dungeon.depth/5 + 1;
+        //乘数等效于下一个boss层的楼层数
+
+        return Math.max( item.value() * 2, (int)(item.value() * rate * (mul * 5) ));
     }
 	
 	public static WndBag sell() {

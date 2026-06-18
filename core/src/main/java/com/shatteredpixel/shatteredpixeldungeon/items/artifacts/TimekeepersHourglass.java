@@ -116,12 +116,12 @@ public class TimekeepersHourglass extends Artifact {
 									Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
 									activeBuff = new timeFreeze();
-									Talent.onArtifactUsed(Dungeon.hero);
 									activeBuff.attachTo(Dungeon.hero);
                                     if (hero.hasTalent(Talent.ENHANCED_RINGS_V2) && hero.buff(EnhancedRings.CoolDown.class) == null)
                                         ((timeFreeze)activeBuff).reduceCharge(0f);
                                     else
                                         ((timeFreeze)activeBuff).processTime(0f);
+									Talent.onArtifactUsed(Dungeon.hero);
 								}
 							}
 						}

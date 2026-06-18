@@ -43,7 +43,7 @@ public class RingOfSharpshooting extends Ring {
             }
             return info;
         } else {
-			return Messages.get(this, "typical_stats", 1, new DecimalFormat("#.##").format(20f));
+			return Messages.get(this, "typical_stats", TextGuessingLevel(), new DecimalFormat("#.##").format(100f * (Math.pow(1.2, TextGuessingLevel()) - 1f)));
 		}
 	}
 	

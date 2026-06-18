@@ -174,8 +174,10 @@ public class WandOfTransfusion extends Wand {
 		int selfDMG = Math.round(Dungeon.hero.HT*0.05f);
 		if (levelKnown)
 			return Messages.get(this, "stats_desc", selfDMG, selfDMG + 3*buffedLvl(), 5+buffedLvl(), 3+buffedLvl()/2, 6+ buffedLvl());
-		else
-			return Messages.get(this, "stats_desc", selfDMG, selfDMG, 5, 3, 6);
+		else {
+			int lvl = TextGuessingLevel();
+			return Messages.get(this, "stats_desc", selfDMG, selfDMG + 3*lvl, 5 + lvl, 3 + lvl/2, 6 + lvl);
+		}
 	}
 
 	private static final String FREECHARGE = "freecharge";

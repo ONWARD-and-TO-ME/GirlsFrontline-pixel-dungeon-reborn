@@ -21,28 +21,22 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.stones;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
-
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
@@ -62,14 +56,14 @@ public class StoneOfDisarming extends InventoryStone {
 		pressesCell = false;
 	}
 
-//usableOnItem和onItemSelected为从探魔符石处复制过来
+	//usableOnItem和onItemSelected为从探魔符石处复制过来
     public boolean usableOnItem(Item item) {
         return (item instanceof EquipableItem || item instanceof Wand) && !(item instanceof MissileWeapon) && (!item.isIdentified() || !item.cursedKnown);
     }
     protected void onItemSelected(Item item) {
         item.cursedKnown = true;
-        boolean negativeMagic = false;
-        boolean positiveMagic = false;
+        boolean negativeMagic;
+        boolean positiveMagic;
         useAnimation();
         negativeMagic = item.cursed;
         if (!negativeMagic) {
@@ -90,13 +84,13 @@ public class StoneOfDisarming extends InventoryStone {
         }
 
         if (!positiveMagic && !negativeMagic) {
-            GLog.i(Messages.get(this, "detected_none", new Object[0]), new Object[0]);
+            GLog.i(Messages.get(this, "detected_none"));
         } else if (positiveMagic && negativeMagic) {
-            GLog.h(Messages.get(this, "detected_both", new Object[0]), new Object[0]);
+            GLog.h(Messages.get(this, "detected_both"));
         } else if (positiveMagic) {
-            GLog.p(Messages.get(this, "detected_good", new Object[0]), new Object[0]);
-        } else if (negativeMagic) {
-            GLog.w(Messages.get(this, "detected_bad", new Object[0]), new Object[0]);
+            GLog.p(Messages.get(this, "detected_good"));
+        } else {
+            GLog.w(Messages.get(this, "detected_bad"));
         }
 
 
@@ -142,19 +136,19 @@ public class StoneOfDisarming extends InventoryStone {
 			}
 		}
 
-		Collections.sort(disarmCandidates, new Comparator<Trap>() {
-			@Override
-			public int compare(Trap o1, Trap o2) {
-				float diff = Dungeon.level.trueDistance(cell, o1.pos) - Dungeon.level.trueDistance(cell, o2.pos);
-				if (diff < 0){
-					return -1;
-				} else if (diff == 0){
-					return Random.Int(2) == 0 ? -1 : 1;
-				} else {
-					return 1;
-				}
-			}
-		});
+        Collections.sort(disarmCandidates, new Comparator<Trap>() {
+            @Override
+            public int compare(Trap o1, Trap o2) {
+                float diff = Dungeon.level.trueDistance(cell, o1.pos) - Dungeon.level.trueDistance(cell, o2.pos);
+                if (diff < 0) {
+                    return -1;
+                } else if (diff == 0) {
+                    return Random.Int(2) == 0 ? -1 : 1;
+                } else {
+                    return 1;
+                }
+            }
+        });
 
 		//disarms at most nine traps
 		while (disarmCandidates.size() > 9){

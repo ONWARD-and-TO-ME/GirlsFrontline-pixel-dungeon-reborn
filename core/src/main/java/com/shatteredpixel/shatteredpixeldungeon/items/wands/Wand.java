@@ -343,7 +343,7 @@ public abstract class Wand extends Item {
 	@Override
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
-        if (BuffLevelPoint != 0)
+        if (BuffLevelPoint != Integer.MIN_VALUE)
             return lvl;
 
 		if (charger != null && charger.target != null) {

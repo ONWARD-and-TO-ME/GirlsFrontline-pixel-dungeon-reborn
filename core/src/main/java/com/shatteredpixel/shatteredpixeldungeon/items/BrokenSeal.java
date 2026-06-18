@@ -155,66 +155,64 @@ public class BrokenSeal extends Item {
 
 		@Override
 		public void onSelect( Item item ) {
+			if (!(item instanceof Armor))
+				return;
 			BrokenSeal seal = (BrokenSeal) curItem;
-            boolean ExtractABLE = ExtractABLE();
-			if (item != null && item instanceof Armor) {
-				Armor armor = (Armor)item;
-				if (!armor.levelKnown){
-					GLog.w(Messages.get(BrokenSeal.class, "unknown_armor"));
+			Armor armor = (Armor) item;
+			if (!armor.cursedKnown) {
+				GLog.w(Messages.get(BrokenSeal.class, "unknown_armor"));
 
-				} else if (!ExtractABLE&&(armor.cursed || armor.level() < 0)
-						&& (seal.getGlyph() == null || !seal.getGlyph().curse())){
-					GLog.w(Messages.get(BrokenSeal.class, "degraded_armor"));
+			} else if (!ExtractABLE() && armor.cursed
+					&& (seal.getGlyph() == null || !seal.getGlyph().curse())) {
+				GLog.w(Messages.get(BrokenSeal.class, "degraded_armor"));
 
-				} else if (armor.glyph != null && seal.getGlyph() != null
-						&& armor.glyph.getClass() != seal.getGlyph().getClass()) {
-                    String choose_desc = Messages.get(BrokenSeal.class, "choose_desc");
-                    if(!ExtractABLE){
-                        choose_desc += Messages.get(BrokenSeal.class, "warning");
-                    }
-					GameScene.show(new WndOptions(new ItemSprite(seal),
-							Messages.get(BrokenSeal.class, "choose_title"),
-							choose_desc,
-							armor.glyph.name(),
-							seal.getGlyph().name()){
-						@Override
-						protected void onSelect(int index) {
-                            if( index == 0 ){
-                                //选择使用护甲
-                                if(ExtractABLE){
-                                    seal.setGlyph(armor.glyph);
-                                }else {
-                                    seal.setGlyph(null);
-                                }
-                            }else {
-                                //选择使用袖章时
-                                armor.glyph = seal.getGlyph();
-                            }
-							//if index is 1, then the glyph transfer happens in affixSeal
-
-							GLog.p(Messages.get(BrokenSeal.class, "affix"));
-							Dungeon.hero.sprite.operate(Dungeon.hero.pos);
-							Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
-							armor.affixSeal(seal);
-							seal.detach(Dungeon.hero.belongings.backpack);
-						}
-					});
-
-				}else if (armor.glyph != null && seal.getGlyph() == null){
-                    seal.setGlyph(armor.glyph);
-                    GLog.p(Messages.get(BrokenSeal.class, "affix"));
-                    Dungeon.hero.sprite.operate(Dungeon.hero.pos);
-                    Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
-                    armor.affixSeal(seal);
-                    seal.detach(Dungeon.hero.belongings.backpack);
-                }
-                else {
-					GLog.p(Messages.get(BrokenSeal.class, "affix"));
-					Dungeon.hero.sprite.operate(Dungeon.hero.pos);
-					Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
-					armor.affixSeal((BrokenSeal)curItem);
-					curItem.detach(Dungeon.hero.belongings.backpack);
+			} else if (armor.glyph != null && seal.getGlyph() != null
+					&& armor.glyph.getClass() != seal.getGlyph().getClass()) {
+				String choose_desc = Messages.get(BrokenSeal.class, "choose_desc");
+				if (!ExtractABLE()) {
+					choose_desc += Messages.get(BrokenSeal.class, "warning");
 				}
+				GameScene.show(new WndOptions(new ItemSprite(seal),
+						Messages.get(BrokenSeal.class, "choose_title"),
+						choose_desc,
+						armor.glyph.name(),
+						seal.getGlyph().name()) {
+					@Override
+					protected void onSelect(int index) {
+						if (index == 0) {
+							//选择使用护甲
+							if (ExtractABLE()) {
+								seal.setGlyph(armor.glyph);
+							} else {
+								seal.setGlyph(null);
+							}
+						} else {
+							//选择使用袖章时
+							armor.glyph = seal.getGlyph();
+						}
+						//if index is 1, then the glyph transfer happens in affixSeal
+
+						GLog.p(Messages.get(BrokenSeal.class, "affix"));
+						Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+						Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
+						armor.affixSeal(seal);
+						seal.detach(Dungeon.hero.belongings.backpack);
+					}
+				});
+
+			} else if (armor.glyph != null && seal.getGlyph() == null) {
+				seal.setGlyph(armor.glyph);
+				GLog.p(Messages.get(BrokenSeal.class, "affix"));
+				Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+				Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
+				armor.affixSeal(seal);
+				seal.detach(Dungeon.hero.belongings.backpack);
+			} else {
+				GLog.p(Messages.get(BrokenSeal.class, "affix"));
+				Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+				Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
+				armor.affixSeal((BrokenSeal) curItem);
+				curItem.detach(Dungeon.hero.belongings.backpack);
 			}
 		}
 	};

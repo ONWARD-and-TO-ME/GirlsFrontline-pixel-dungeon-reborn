@@ -96,7 +96,8 @@ public class MeleeWeapon extends Weapon {
 				info += " " + Messages.get(Weapon.class, "excess_str", hero.STR() - STRReq());
 			}
 		} else {
-			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(guessingLevel()), max(guessingLevel()), STRReq(guessingLevel()));
+			int lvl = TextGuessingLevel();
+			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(lvl), max(lvl), STRReq(lvl));
 			if (STRReq(0) > hero.STR()) {
 				info += " " + Messages.get(MeleeWeapon.class, "probably_too_heavy");
 			}
@@ -143,7 +144,8 @@ public class MeleeWeapon extends Weapon {
             if (isIdentified()){
                 defInfo = Messages.get(this, "stats_desc",  Math.max(0,DEF + DEFUPGRADE * buffedLvl() + REM));
             } else{
-                defInfo = Messages.get(this, "typical_stats_desc", Math.max(0,DEF + DEFUPGRADE * guessingLevel() + REM) );
+				int lvl = TextGuessingLevel();
+                defInfo = Messages.get(this, "typical_stats_desc", Math.max(0,DEF + DEFUPGRADE * lvl + REM) );
             }
             if(DEFUPGRADE>0) {
                 defInfo += "通过升级可以使伤害吸收量增长。";

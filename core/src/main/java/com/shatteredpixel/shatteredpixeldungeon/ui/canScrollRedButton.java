@@ -23,13 +23,6 @@ public class canScrollRedButton extends RedButton implements canScrollButton {
         super(String.valueOf(num));
         this.num = num;
     }
-    public boolean onClick(float x, float y){
-        if(!inside(x,y)) return false;
-        onClick();
-
-        return true;
-    }
-
     @Override
     public void onClick(){
         super.onClick();

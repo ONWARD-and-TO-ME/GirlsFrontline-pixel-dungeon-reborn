@@ -61,15 +61,22 @@ public enum Rankings {
 
 	public void submit( boolean win, Class cause ) {
 
-        for (Item i :Dungeon.hero.belongings){
-            if (i.buffedLvl()!=i.level()) {
-                int lvlPoint = i.buffedLvl() - i.level();
-                i.BuffLevelPoint = lvlPoint;
-            }
-        }
-
 		if(Dungeon.isChallenged(Challenges.TEST_MODE)){
 			return;
+		}
+		Notes.addNoteToBag();
+		for (Item i :Dungeon.hero.belongings){
+			if (i.buffedLvl() != i.level()) {
+				i.BuffLevelPoint = i.buffedLvl() - i.level();
+			}
+			Notes.CustomRecord ClassNote = Notes.findCustomRecord(i);
+			if (ClassNote != null && i.ClassNote.isEmpty())
+				i.ClassNote = ClassNote.title();
+			if (i.customNoteID != -1 && i.noted.isEmpty()){
+				Notes.CustomRecord note = Notes.findCustomRecord(i.customNoteID);
+				if (note != null)
+					i.noted = note.title();
+			}
 		}
 
 		if (win) {
@@ -195,10 +202,12 @@ public enum Rankings {
 		rec.gameData.put( GAME_MODE, Dungeon.GameMode);
 	}
 
+	public static boolean restoreInRanking = false;
 	public void loadGameData(Record rec){
 		Bundle data = rec.gameData;
 
 		Actor.clear();
+		restoreInRanking = true;
 		Dungeon.hero  = null;
 		Dungeon.seed  = rec.seed;
 		Dungeon.level = null;
@@ -214,9 +223,8 @@ public enum Rankings {
 
 		Badges.loadLocal(data.getBundle(BADGES));
 
-        Hero.restoreInRanking = true;
 		Dungeon.hero = (Hero)data.get(HERO);
-        Hero.restoreInRanking = false;
+		restoreInRanking = false;
 
 		Statistics.restoreFromBundle(data.getBundle(STATS));
 		
@@ -278,8 +286,7 @@ public enum Rankings {
 				}
 			}
 
-		} catch (IOException e) {
-		}
+		} catch (IOException ignored) {}
 	}
 	
 	public static class Record implements Bundlable {

@@ -74,6 +74,8 @@ public class ArmoredStatue extends Statue {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		armor = (Armor)bundle.get( ARMOR );
+		if (armor == null)
+			armor = Generator.randomArmor();
 	}
 
 	@Override

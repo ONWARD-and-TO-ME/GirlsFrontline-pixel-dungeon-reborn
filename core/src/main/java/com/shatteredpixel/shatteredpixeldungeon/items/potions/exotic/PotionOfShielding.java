@@ -34,6 +34,7 @@ public class PotionOfShielding extends ExoticPotion {
 	
 	{
 		icon = ItemSpriteSheet.Icons.POTION_SHIELDING;
+		mulOnTalentUsed = 1.25F;
 	}
 	
 	@Override
@@ -45,7 +46,7 @@ public class PotionOfShielding extends ExoticPotion {
 		} else {
 			//~75% of a potion of healing
 			Buff.affect(hero, Barrier.class).setShield((int) (0.6f * hero.HT + 10));
-			Talent.onPotionUsed( hero, 1.25F );
+			Talent.onPotionUsed( hero, mulOnTalentUsed );
 		}
 	}
 }

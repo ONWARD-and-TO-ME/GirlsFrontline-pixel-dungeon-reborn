@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.items.rings;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
@@ -96,6 +95,13 @@ public class Ring extends KindofMisc implements ColorItem {
 		super();
 		reset();
 	}
+	@Override
+	public int TextGuessingLevel(){
+		int lvl = super.TextGuessingLevel() + 1;
+		if (cursed && cursedKnown)
+			lvl = Math.min(0, lvl - 3);
+		return lvl;
+	}
 
 	//anonymous rings are always IDed, do not affect ID status,
 	//and their sprite is replaced by a placeholder if they are not known,
@@ -157,7 +163,7 @@ public class Ring extends KindofMisc implements ColorItem {
         if (levelKnown || cursedKnown){
             levelKnown = false;
             cursedKnown = false;
-			guessingLevel = 0;
+			guessingLevel = Integer.MIN_VALUE;
 			Dungeon.guessType.remove(getClass());
         }else if (isKnown()){
             handler.ignore(this);

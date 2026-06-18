@@ -232,8 +232,10 @@ public class WandOfFireblast extends DamageWand {
 	public String statsDesc() {
 		if (levelKnown)
 			return Messages.get(this, "stats_desc", chargesPerCast(), min(), max());
-		else
-			return Messages.get(this, "stats_desc", chargesPerCast(), min(0), max(0));
+		else {
+			int lvl = TextGuessingLevel();
+			return Messages.get(this, "stats_desc", chargesPerCast(), min(lvl), max(lvl));
+		}
 	}
 
 	@Override

@@ -66,9 +66,11 @@ public class RingOfWealth extends Ring {
             if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)) {
                 info = info + "\n\n" + Messages.get(this, "combined_stats", Messages.decimalFormat("#.##", 100.0F * (Math.pow(1.2F, combinedBuffedBonus(Dungeon.hero)) - 1.0F)));
             }
+			if (Dungeon.isChallenged(Challenges.TEST_MODE))
+				info += "\n" + triesToDrop + "\n" + dropsToRare;
             return info;
 		} else {
-			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(20f));
+			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(100f * (Math.pow(1.20f, TextGuessingLevel()) - 1f)));
 		}
 	}
 

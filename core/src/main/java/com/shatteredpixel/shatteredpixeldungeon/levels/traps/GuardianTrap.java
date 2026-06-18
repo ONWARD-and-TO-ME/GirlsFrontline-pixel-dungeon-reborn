@@ -55,7 +55,7 @@ public class GuardianTrap extends Trap {
 		Sample.INSTANCE.play( Assets.Sounds.ALERT );
 
 		for (int i = 0; i < (Dungeon.curDepth() - 5)/5; i++){
-			Guardian guardian = new Guardian();
+			Guardian guardian = new Guardian(false);
 			guardian.state = guardian.WANDERING;
 			guardian.pos = Dungeon.level.randomRespawnCell( guardian );
 			if (guardian.pos != -1) {

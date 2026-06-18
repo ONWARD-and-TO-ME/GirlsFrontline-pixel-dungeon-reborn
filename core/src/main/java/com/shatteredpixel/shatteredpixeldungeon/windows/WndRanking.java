@@ -50,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentsPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.canScrollButton;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.ColorBlock;
@@ -333,21 +334,26 @@ public class WndRanking extends WndTabbed {
 			
 			Belongings stuff = Dungeon.hero.belongings;
 
+			ArrayList<Item> items = new ArrayList<>();
 			if (stuff.weapon != null) {
-				addItem( stuff.weapon );
+				items.add( stuff.weapon );
 			}
-            if (stuff.FirstArmor() != null) {
-                addItem( stuff.FirstArmor() );
-            }
+			if (stuff.FirstArmor() != null) {
+				items.add( stuff.FirstArmor() );
+			}
+			if (stuff.SecondArmor() != null) {
+				items.add( stuff.SecondArmor() );
+			}
 			if (stuff.artifact != null) {
-				addItem( stuff.artifact );
+				items.add( stuff.artifact );
 			}
 			if (stuff.misc != null) {
-				addItem( stuff.misc );
+				items.add( stuff.misc );
 			}
 			if (stuff.ring != null) {
-				addItem( stuff.ring );
+				items.add( stuff.ring );
 			}
+			addEquipment(items);
 
 			pos = 0;
 
@@ -358,18 +364,18 @@ public class WndRanking extends WndTabbed {
 				}
 			}
 
-			if (stuff.SecondArmor() != null) {
-				slotsActive++;
-			}
+//			if (stuff.SecondArmor() != null) {
+//				slotsActive++;
+//			}
 
 			float slotWidth = Math.min(28, ((WIDTH - slotsActive + 1) / (float)slotsActive));
 
-			for (int i = -1; i < QuickSlot.SIZE; i++){
+			for (int i = 0; i < QuickSlot.SIZE; i++){
 				Item item = null;
-				if (i == -1) {
-					item = stuff.secArmor;
-				}
-				else if (Dungeon.quickslot.isNonePlaceholder(i)) {
+//				if (i == -1) {
+//					item = stuff.secArmor;
+//				} else
+				if (Dungeon.quickslot.isNonePlaceholder(i)) {
 					item = Dungeon.quickslot.getItem(i);
 				}
 				if (item != null)
@@ -388,14 +394,17 @@ public class WndRanking extends WndTabbed {
 			pos += slotWidth + 1;
 
 		}
-		private void addItem( Item item ) {
-            item.canNote =false;
-            item.showSelf = true;
-			ItemButton slot = new ItemButton( item );
-			slot.setRect( 0, pos, width, ItemButton.HEIGHT );
-			add( slot );
-			
-			pos += slot.height() + 1;
+		private void addEquipment( ArrayList<Item> items ) {
+			float height = (5F * ItemButton.HEIGHT) / Math.max(5F, items.size());
+			for (Item item : items) {
+            	item.canNote =false;
+            	item.showSelf = true;
+				ItemButton slot = new ItemButton(item);
+				slot.setRect(0, pos, width, height);
+				add(slot);
+
+				pos += slot.height() + 5F / Math.max(5F, items.size());
+			}
 		}
 	}
 	
@@ -417,7 +426,7 @@ public class WndRanking extends WndTabbed {
 		}
 	}
 
-	private class ItemButton extends Button {
+	private static class ItemButton extends Button {
 		
 		public static final int HEIGHT	= 23;
 		
@@ -489,29 +498,25 @@ public class WndRanking extends WndTabbed {
 		
 		@Override
 		protected void onClick() {
-			Game.scene().add( new WndInfoItem( item ) );
+			if (item instanceof Bag && !((Bag) item).items.isEmpty())
+				Game.scene().add(new ItemList((Bag) item));
+			else
+				Game.scene().add(new WndInfoItem(item));
 		}
 	}
-    private class canScrollItemButton extends ItemButton{
-
+    private static class canScrollItemButton extends ItemButton implements canScrollButton {
         public canScrollItemButton( Item item ) {
             super(item);
         }
-        protected boolean onClick(float x, float y){
-            if(!inside(x,y)) return false;
-            onClick();
-
-            return true;
-        }
-        @Override
-        protected void onClick() {
-            super.onClick();
-        }
-        @Override
-        protected void layout(){
-            super.layout();
-            hotArea.width = hotArea.height = 0;
-        }
+		@Override
+		public void onClick() {
+			super.onClick();
+		}
+		@Override
+		protected void layout(){
+			super.layout();
+			hotArea.width = hotArea.height = 0;
+		}
     }
 
 	private class QuickSlotButton extends ItemSlot{
@@ -570,7 +575,7 @@ public class WndRanking extends WndTabbed {
 			    Game.scene().add(new WndInfoItem(item));
 		}
 	}
-    private class ItemList extends Window {
+    private static class ItemList extends Window {
         private ArrayList<canScrollItemButton> Button = new ArrayList<>();
 
         public ItemList(Bag bag) {
@@ -580,24 +585,8 @@ public class WndRanking extends WndTabbed {
             for (Item item : bag.items){
                 item.canNote =false;
                 item.showSelf = true;
-                item.identify();
-                canScrollItemButton button = new canScrollItemButton(item){
-                    protected boolean onClick(float x, float y){
-                        if(!inside(x,y)) return false;
-                        onClick();
-
-                        return true;
-                    }
-                    @Override
-                    protected void onClick() {
-                        super.onClick();
-                    }
-                    @Override
-                    protected void layout(){
-                        super.layout();
-                        hotArea.width = hotArea.height = 0;
-                    }
-                };
+                item.identify(false);
+                canScrollItemButton button = new canScrollItemButton(item);
                 button.setRect( 0, pos, width, ItemButton.HEIGHT );
                 content.add( button );
                 Button.add( button );

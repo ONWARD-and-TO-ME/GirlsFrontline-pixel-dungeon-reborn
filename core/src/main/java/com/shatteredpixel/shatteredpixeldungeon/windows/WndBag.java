@@ -453,7 +453,10 @@ public class WndBag extends WndTabbed {
 		public Placeholder(int image ) {
 			this.image = image;
 		}
-
+		@Override
+		public boolean hasGuessingLevel(){
+			return false;
+		}
 		@Override
 		public String name() {
 			return null;

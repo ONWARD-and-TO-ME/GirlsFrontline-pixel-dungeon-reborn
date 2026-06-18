@@ -43,7 +43,7 @@ public class RingOfTenacity extends Ring {
             }
             return info;
         } else {
-			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(15f));
+			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(100f * (1f - Math.pow(0.85f, TextGuessingLevel()))));
 		}
 	}
 

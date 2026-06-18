@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -202,7 +203,6 @@ public class Hero extends Char {
 	public int attackSkill = 10;
 	public int defenseSkill = 5;
 
-	public static boolean restoreInRanking = false;
 	public boolean ready = false;
 	private boolean damageInterrupt = true;
 	public HeroAction curAction = null;
@@ -356,7 +356,7 @@ public class Hero extends Char {
 		heroClass = bundle.getEnum( CLASS, HeroClass.class, HeroClass.rename );
 		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class, HeroSubClass.rename );
 		armorAbility = (ArmorAbility)bundle.get( ABILITY );
-		Talent.restoreTalentsFromBundle( bundle, this, restoreInRanking );
+		Talent.restoreTalentsFromBundle( bundle, this, Rankings.restoreInRanking );
 		
 		attackSkill = bundle.getInt( ATTACK );
 		defenseSkill = bundle.getInt( DEFENSE );
@@ -502,6 +502,9 @@ public class Hero extends Char {
 	public void live() {
 		for (Buff b : buffs()){
 			if (!b.revivePersists) b.detach();
+		}
+		for (Item i : belongings){
+			if (!i.keptThoughLostInvent) i.stopTrack();
 		}
 		Buff.affect( this, Regeneration.class );
 		Buff.affect( this, Hunger.class ).satisfy(Hunger.minLevel);
@@ -1543,28 +1546,25 @@ public class Hero extends Char {
 		if (reduce != null)
             damage *= reduce.percent();
 
-		if (damage > 0 && subClass == HeroSubClass.BERSERKER){
-			Berserk berserk = Buff.affect(this, Berserk.class);
-			berserk.damage(damage);
-		}
+		if (damage > 0 && subClass == HeroSubClass.BERSERKER)
+			Buff.affect(this, Berserk.class).damage(damage);
 
         if (Dungeon.hero.buff(LloydsBeacon.beaconRecharge.class)!=null
-                && Dungeon.hero.buff(LloydsBeacon.beaconRecharge.class).isCursed()){
+                && Dungeon.hero.buff(LloydsBeacon.beaconRecharge.class).isCursed())
             LloydsBeacon.proc(this);
-        }
-        if (belongings.armor() != null) {
+
+        if (belongings.armor() != null)
             damage = belongings.ArmorProc( enemy, this, damage );
-        }
+
+		damage = Talent.onDefenceProc(this, enemy, damage);
 		
 		Earthroot.Armor armor = buff( Earthroot.Armor.class );
-		if (armor != null) {
+		if (armor != null)
 			damage = armor.absorb( damage );
-		}
 
 		WandOfLivingEarth.RockArmor rockArmor = buff(WandOfLivingEarth.RockArmor.class);
-		if (rockArmor != null) {
+		if (rockArmor != null)
 			damage = rockArmor.absorb(damage);
-		}
 		
 		return damage;
 	}
@@ -2407,7 +2407,12 @@ public class Hero extends Char {
 
 						//unintentional trap detection scales from 40% at floor 0 to 30% at floor 30
 						} else if (Dungeon.level.map[curr] == Terrain.SECRET_TRAP) {
-							chance=0.3f+0.1f*(1f-Dungeon.depth/30f);
+							chance = 0.3F + 0.1F * (1F - Statistics.deepestFloor / 30F);
+							if(hasTalent(Talent.TRAP_EXPERT)){
+								chance *= 1.5F;
+								if(pointsInTalent(Talent.TRAP_EXPERT)>=2)
+									chance *= 2F;
+							}
 						//unintentional door detection scales from 20% at floor 0 to 0% at floor 25
 						} else {
 							chance=     0.2f*(1f-Dungeon.depth/25f);

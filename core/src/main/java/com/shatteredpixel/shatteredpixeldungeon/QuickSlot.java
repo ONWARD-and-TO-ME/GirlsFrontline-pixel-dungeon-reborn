@@ -22,6 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -59,7 +61,53 @@ public class QuickSlot {
 		return slots[slot];
 	}
 
-
+	@SuppressWarnings("unchecked")
+	public <T extends Item> T getItem(Class<T> itemClass){
+		for (int i = 0; i < SIZE; i++) {
+			Item item = getItem(i);
+			if (item == null)
+				continue;
+			if (item.getClass() == itemClass)
+				return (T) getItem(i);
+			if (item instanceof Bag){
+				T it = ((Bag) item).getItem(itemClass, true);
+				if (it != null)
+					return it;
+			}
+		}
+		return null;
+	}
+	public Item getItem( int customNoteID , int ignored ){
+		for (int i = 0; i < SIZE; i++) {
+			Item item = getItem(i);
+			if (item == null)
+				continue;
+			if (customNoteID == item.customNoteID)
+				return item;
+			else if (item instanceof Bag)
+				if (((Bag) item).getItem(customNoteID) != null)
+					return ((Bag) item).getItem(customNoteID);
+		}
+		return null;
+	}
+	public Item getItem(Notes.CustomRecord record){
+		if (record.type() == Notes.CustomType.SPECIFIC_ITEM)
+			return getItem(record.ID(), 0);
+		else if (record.type() == Notes.CustomType.ITEM_TYPE)
+			return getItem(record.itemClass());
+		return null;
+	}
+	public boolean hasItemNote(Bag bag){
+		for (Item item : bag){
+			if (!contains(item))
+				continue;
+			if (item.customNoteID != -1 && Notes.findCustomRecord(item.customNoteID) != null)
+				return true;
+			if (Notes.findCustomRecord(item) != null)
+				return true;
+		}
+		return false;
+	}
 	//utility methods, for easier use of the internal array.
 	public int getSlot(Item item) {
 		for (int i = 0; i < SIZE; i++)

@@ -88,11 +88,11 @@ public class Web extends Blob {
 	@Override
 	public void fullyClear() {
 		super.fullyClear();
-		Dungeon.level.buildFlagMaps();
+		Dungeon.level.buildFlagMaps();//mark
 	}
 
 	@Override
-	public void onBuildFlagMaps(Level l) {
+	public void onBuildFlagMaps(Level l) {//mark
 		if (volume > 0){
 			for (int i=0; i < l.length(); i++) {
 				l.solid[i] = l.solid[i] || cur[i] > 0;

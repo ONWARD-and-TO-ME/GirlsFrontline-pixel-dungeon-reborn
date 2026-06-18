@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic;
 import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -132,11 +131,11 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			top = text.bottom() + 2;
 
 			ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
-			Talent.initClassTalents(Dungeon.hero.heroClass, talents, Dungeon.hero.metamorphedTalents, Dungeon.hero.addTalents);
+			Talent.initClassTalents(hero.heroClass, talents, hero.metamorphedTalents, hero.addTalents);
 
 			for (LinkedHashMap<Talent, Integer> tier : talents){
 				for (Talent talent : tier.keySet()){
-					tier.put(talent, Dungeon.hero.pointsInTalent(talent));
+					tier.put(talent, hero.pointsInTalent(talent));
 				}
 			}
 
@@ -178,6 +177,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 		private static final HashMap<Talent, HeroClass> restrictedTalents = new HashMap<>();
 		static {
             // 从蜕变池子移除以下天赋
+			restrictedTalents.put(Talent.Type56_14, HeroClass.TYPE561);
 		}
 
         private static final ArrayList<ArrayList<Talent>> against = new ArrayList<>();
@@ -190,6 +190,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
             against.add(new ArrayList<>(Arrays.asList(Talent.FAST_RELOAD, Talent.Type56Three_Bomb)));
 			//行窃预知及其变种
 			against.add(new ArrayList<>(Arrays.asList(Talent.ROGUES_FORESIGHT, Talent.ROGUES_FORESIGHT_V2, Talent.ROGUES_FORESIGHT_V3)));
+			against.add(new ArrayList<>(Arrays.asList(Talent.Type56Two_Damage, Talent.SEARCH_ARMY)));
         }
 		public static WndMetamorphReplace INSTANCE;
 
@@ -229,47 +230,61 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			LinkedHashMap<Talent, Integer> options = new LinkedHashMap<>();
 
             for (HeroClass cls : HeroClass.values()){
-				ArrayList<LinkedHashMap<Talent, Integer>> clsTalents = new ArrayList<>();
-                if (cls == HeroClass.NONE)
-                    cls = HeroClass.values()[Random.Int(7)];
-				Talent.initClassTalents(cls, clsTalents);
-
-				Set<Talent> clsTalentsAtTier = clsTalents.get(tier-1).keySet();
-				for (Talent talent : clsTalentsAtTier.toArray(new Talent[0])){
-                    //在池子中移除准备蜕变的天赋，以免污染池子降低概率
-                    //在池子中移除已有的天赋，以免出现重复天赋
-					if (talent == replacing || hero.hasTalentB(talent)){
-                        clsTalentsAtTier.remove(talent);
-					} else {
-						if (restrictedTalents.containsKey(talent)
-								&& restrictedTalents.get(talent) != curUser.heroClass){
-							clsTalentsAtTier.remove(talent);
-						}
-                        for (ArrayList<Talent> array : against){
-                            //新蜕变的天赋属于互斥天赋
-                            if (array.contains(talent)) {
-                                //查找玩家身上可能存在的与新天赋互斥的天赋
-                                Talent againstOne = null;
-                                for (Talent t : array) {
-                                    if (hero.hasTalentB(t)) {
-                                        againstOne = t;
-                                        break;
-                                    }
-                                }
-                                //存在互斥且旧天赋并不为互斥天赋，移除此选项
-                                if (againstOne != null && againstOne != replacing)
-                                    clsTalentsAtTier.remove(talent);
-                            }
-                        }
-					}
+				Talent newTalent = null;
+				for (int i = 0; i < 100; i++){
+					newTalent = newTalent(cls, replacing, tier, options.keySet());
+					if (newTalent != null)
+						break;
 				}
-				if (!clsTalentsAtTier.isEmpty()) {
-					options.put(Random.element(clsTalentsAtTier), Dungeon.hero.pointsInTalent(replacing));
-				}
+				if (newTalent != null)
+					options.put(newTalent, hero.pointsInTalent(replacing));
 			}
 
 			replaceOptions = options;
 			setup(replacing, tier, options);
+		}
+		private Talent newTalent(HeroClass cls, Talent replacing, int tier, Set<Talent> options){
+			ArrayList<LinkedHashMap<Talent, Integer>> clsTalents = new ArrayList<>();
+			while (cls == HeroClass.NONE)
+				cls = Random.element(HeroClass.values());
+			Talent.initClassTalents(cls, clsTalents);
+			Set<Talent> clsTalentsAtTier = clsTalents.get(tier - 1).keySet();
+			for (Talent talent : clsTalentsAtTier.toArray(new Talent[0])) {
+				//在池子中移除准备蜕变的天赋，以免污染池子降低概率
+				//在池子中移除已有的天赋，以免出现重复天赋
+				if (talent == replacing || hero.hasTalentB(talent))
+					clsTalentsAtTier.remove(talent);
+				else {
+					//移除无法使用的天赋且未做蜕变适应的天赋
+					if (restrictedTalents.containsKey(talent) && restrictedTalents.get(talent) != curUser.heroClass)
+						clsTalentsAtTier.remove(talent);
+
+					for (ArrayList<Talent> array : against)
+						//新蜕变的天赋属于互斥天赋
+						if (array.contains(talent)) {
+							//查找玩家身上可能存在的与新天赋互斥的天赋
+							Talent againstOne = null;
+							for (Talent t : array) {
+								if (hero.hasTalentB(t)) {
+									againstOne = t;
+									break;
+								}
+							}
+							//存在互斥且旧天赋并不为互斥天赋，移除此选项
+							if (againstOne != null && againstOne != replacing)
+								clsTalentsAtTier.remove(talent);
+						}
+
+					//移除已经随机出来的天赋
+					for (Talent t : options)
+						clsTalentsAtTier.remove(t);
+				}
+			}
+
+			if (clsTalentsAtTier.isEmpty())
+				return null;
+			else
+				return Random.element(clsTalentsAtTier);
 		}
 
 		private void setup(Talent replacing, int tier, LinkedHashMap<Talent, Integer> replaceOptions){

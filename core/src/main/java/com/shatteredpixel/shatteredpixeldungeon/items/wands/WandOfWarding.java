@@ -189,8 +189,10 @@ public class WandOfWarding extends Wand {
 	public String statsDesc() {
 		if (levelKnown)
 			return Messages.get(this, "stats_desc", level()+2);
-		else
-			return Messages.get(this, "stats_desc", 2);
+		else {
+			int lvl = TextGuessingLevel();
+			return Messages.get(this, "stats_desc", lvl + 2);
+		}
 	}
 
 	public static class Ward extends NPC {

@@ -54,7 +54,7 @@ public class RingOfElements extends Ring {
             }
             return info;
         } else {
-			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(17.5f));
+			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(100f * (1f - Math.pow(0.825f, TextGuessingLevel()))));
 		}
 	}
 	

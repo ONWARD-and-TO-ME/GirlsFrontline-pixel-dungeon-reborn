@@ -26,9 +26,8 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Level.set;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.DeepCaveBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RabbitBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -50,7 +49,8 @@ public class GolyatBomb extends Bomb {
 	@Override
 	public void explode(int cell) {
 		super.explode(cell);
-        if(!(Dungeon.bossLevel())||(Dungeon.level instanceof CavesBossLevel)||(Dungeon.level instanceof SewerBossLevel)||(Dungeon.level instanceof RabbitBossLevel)||(Dungeon.level instanceof DeepCaveBossLevel)){
+        if(Dungeon.level instanceof PrisonBossLevel || Dungeon.level instanceof CityBossLevel);
+        else {
             boolean terrainAffected = false;
             Rect gate = CavesBossLevel.gate;
             for (int i : PathFinder.NEIGHBOURS4){
@@ -58,15 +58,15 @@ public class GolyatBomb extends Bomb {
                 int c = cell + i;
                 if (c >= 0 && c < Dungeon.level.length()-1){
                     if (Dungeon.level.breakable[c]){
+                        if (outMap(c)) {
+                            continue;
+                        }
                         if ((Dungeon.level instanceof CavesBossLevel)&&(Dungeon.level.map[c] == Terrain.WALL || Dungeon.level.map[c] == Terrain.WALL_DECO)){
                             Point p = Dungeon.level.cellToPoint(c);
                             if (p.y < gate.bottom && p.x > gate.left-2 && p.x < gate.right+2){
                                 continue;
                                 //搬运的DM300代码，现在仍然保留对15楼地形的破坏，但是gate周围的墙被禁止破坏，以免以低代价逃课15楼
                             }
-                        }
-                        if (outMap(c)) {
-                            continue;
                         }
                         set(c, Terrain.EMBERS);
                         GameScene.updateMap(c);
@@ -84,7 +84,7 @@ public class GolyatBomb extends Bomb {
                 terrainAffected = true;
             }
             for (int i : PathFinder.NEIGHBOURS9){
-                //对陷阱的破坏提升到3*3范围
+                //对陷阱的破坏提升到 3*3 范围
                 int d = cell + i;
                 if (outMap(d)) {
                     continue;
@@ -96,7 +96,7 @@ public class GolyatBomb extends Bomb {
                 }
             }
             for (int i : PathFinder.NEIGHBOURS25){
-                //对失效陷阱的破坏提升到5*5范围
+                //对失效陷阱的破坏提升到 5*5 范围
                 int e = cell + i;
                 if (outMap(e)) {
                     continue;
@@ -121,6 +121,6 @@ public class GolyatBomb extends Bomb {
 	@Override
 	public int value() {
 		//prices of ingredients
-		return quantity * (20 + 30);
+		return quantity * 50;
 	}
 }

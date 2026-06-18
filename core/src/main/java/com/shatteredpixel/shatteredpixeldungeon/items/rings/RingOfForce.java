@@ -98,7 +98,7 @@ public class RingOfForce extends Ring {
             }
             return info;
 		} else {
-			return Messages.get(this, "typical_stats", min(1, tier), max(1, tier), 1);
+			return Messages.get(this, "typical_stats", min(TextGuessingLevel(), tier), max(TextGuessingLevel(), tier), TextGuessingLevel());
 		}
 	}
 

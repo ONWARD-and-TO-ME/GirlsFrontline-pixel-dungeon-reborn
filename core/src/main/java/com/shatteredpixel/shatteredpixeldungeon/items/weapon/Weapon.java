@@ -85,7 +85,6 @@ abstract public class Weapon extends KindOfWeapon {
 	public Item clone(Item item){
 		Weapon weapon = (Weapon) item;
 		super.clone(weapon);
-		tier    = weapon.tier;
 		enchant(weapon.enchantment);
 		augment = weapon.augment;
 		masteryPotionBonus = weapon.masteryPotionBonus;
@@ -94,6 +93,7 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 	@Override
 	public void update(){
+		super.update();
 		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)){
 			if (!UpdatedTierToLevel){
 				boolean hasEnchant = enchantment != null;
@@ -353,8 +353,9 @@ abstract public class Weapon extends KindOfWeapon {
 		int lvl ;
 		if (isIdentified() || onUse)
 			lvl = level();
-		else
-			lvl = guessingLevel();
+        else {
+			lvl = TextGuessingLevel();
+		}
 		int req = STRReq(lvl);
 		if (masteryPotionBonus){
 			req -= 2;
@@ -382,7 +383,7 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public int buffedLvl() {
         int lvl = super.buffedLvl();
-        if (BuffLevelPoint != 0)
+        if (BuffLevelPoint != Integer.MIN_VALUE)
             return lvl;
 		if (isEquipped( hero ) || hero.belongings.contains( this )){
             if (hero.buff(EquipLevelUp.class) != null)
@@ -424,7 +425,8 @@ abstract public class Weapon extends KindOfWeapon {
 			return enchantment.name( super.name() );
 		return super.name();
 	}
-	
+	protected float enchantChance	= 1F;
+	protected float cursedChance	= 1F;
 	@Override
 	public Item random() {
 		//+0: 75% (3/4)
@@ -442,10 +444,10 @@ abstract public class Weapon extends KindOfWeapon {
 		//30% chance to be cursed
 		//10% chance to be enchanted
 		float effectRoll = Random.Float();
-		if (effectRoll < 0.3f) {
+		if (effectRoll < 0.3F * cursedChance) {
 			enchant(Enchantment.randomCurse());
 			cursed = true;
-		} else if (effectRoll >= 0.9f){
+		} else if (effectRoll >= (1F - 0.1F * enchantChance)){
 			enchant();
 		}
 

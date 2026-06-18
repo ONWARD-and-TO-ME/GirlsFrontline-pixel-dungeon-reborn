@@ -44,7 +44,7 @@ public class RingOfFuror extends Ring {
             }
             return info;
         } else {
-			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(10.5f));
+			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(100f * (Math.pow(1.105f, TextGuessingLevel()) - 1f)));
 		}
 	}
 

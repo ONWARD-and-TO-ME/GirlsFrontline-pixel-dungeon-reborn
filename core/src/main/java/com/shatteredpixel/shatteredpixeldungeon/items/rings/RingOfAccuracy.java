@@ -43,7 +43,7 @@ public class RingOfAccuracy extends Ring {
             }
             return info;
 		} else {
-			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(30f));
+			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(100f * (Math.pow(1.3f, TextGuessingLevel()) - 1f)));
 		}
 	}
 	

@@ -317,13 +317,6 @@ public class SecondTitleScene extends PixelScene {
 			ArrayList<canScrollRedButton> buttons = new ArrayList<>();
 			for (int i = start; i <= end; i++){
 				canScrollRedButton cb = new canScrollRedButton(start == 0? i+1 : i){
-					public boolean onClick(float x, float y){
-						if(!inside(x,y)) return false;
-						onClick();
-
-						return true;
-					}
-
 					@Override
 					public void onClick(){
 						super.onClick();

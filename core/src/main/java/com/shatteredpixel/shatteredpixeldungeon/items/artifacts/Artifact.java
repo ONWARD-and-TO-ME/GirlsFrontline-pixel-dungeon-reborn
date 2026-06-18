@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -205,7 +206,17 @@ public class Artifact extends KindofMisc {
 		}
 		return this;
 	}
-
+	public void resetSpawn(){
+		resetSpawn(1F);
+	}
+	public void resetSpawn(float mul){
+		int i = 0;
+		for (Class<?> cl : Generator.Category.ARTIFACT.classes){
+			if (cl == getClass())
+				Generator.Category.ARTIFACT.probs[i] = Generator.Category.ARTIFACT.defaultProbs[i] * mul;
+			i++;
+		}
+	}
 	@Override
 	public int value() {
 		int price = 100;

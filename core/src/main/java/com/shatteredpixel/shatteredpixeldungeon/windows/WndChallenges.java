@@ -53,6 +53,8 @@ public class WndChallenges extends Window {
 		super();
 
 		this.editable = editable;
+		if(DeviceCompat.isDebug())
+			remove_Last = false;
         this.remove_Last = remove_Last;
 
 		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 12 );
@@ -114,8 +116,8 @@ public class WndChallenges extends Window {
 					value |= Challenges.MASKS[i];
 				}
 			}
-            if ((Dungeon.isChallenged(Challenges.TEST_MODE) || DeviceCompat.isDebug()) && remove_Last) {
-				if (Dungeon.isChallenged(Challenges.TEST_MODE))
+            if (Dungeon.isChallenged(Challenges.TEST_MODE) || DeviceCompat.isDebug()) {
+				if (Dungeon.isChallenged(Challenges.TEST_MODE) && remove_Last)
                 	value += Challenges.TEST_MODE;
                 Dungeon.challenges = value;
 				if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene)
