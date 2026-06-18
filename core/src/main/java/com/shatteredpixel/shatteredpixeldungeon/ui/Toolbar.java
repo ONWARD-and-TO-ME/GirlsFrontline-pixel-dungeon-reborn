@@ -248,7 +248,7 @@ public class Toolbar extends Component {
 
         btnSwap.frame(86, 0, 20, 24);
         int startingSlot;
-        if ( quickslotsToShow < 6){
+        if ( SPDSettings.quickSwapper() && quickslotsToShow < 6 ){
             quickslotsToShow = 3;
             startingSlot = swappedQuickSlots ? 3 : 0;
             btnSwap.visible = true;

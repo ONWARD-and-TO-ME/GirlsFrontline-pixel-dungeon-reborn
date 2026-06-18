@@ -372,6 +372,7 @@ public class WndSettings extends WndTabbed {
 		RenderedTextBlock barDesc;
 		RedButton btnSplit; RedButton btnGrouped; RedButton btnCentered;
 		CheckBox chkFlipToolbar;
+		CheckBox chkQuickSwapper;
 		CheckBox chkFlipTags;
 		ColorBlock sep2;
 		CheckBox chkFont;
@@ -477,7 +478,18 @@ public class WndSettings extends WndTabbed {
 			};
 			chkFlipTags.checked(SPDSettings.flipTags());
 			add(chkFlipTags);
-
+			if (!PixelScene.landscape()){
+				chkQuickSwapper = new CheckBox(Messages.get(WndSettings.UITab.this, "quickslot_swapper")) {
+					@Override
+					protected void onClick() {
+						super.onClick();
+						SPDSettings.quickSwapper(checked());
+						Toolbar.updateLayout();
+					}
+				};
+				chkQuickSwapper.checked(SPDSettings.quickSwapper());
+				add(chkQuickSwapper);
+			}
 			sep2 = new ColorBlock(1, 1, 0xFF000000);
 			add(sep2);
 
@@ -603,6 +615,10 @@ public class WndSettings extends WndTabbed {
 					btnStatusPaneStyle.setRect(0, chkFont.bottom() + 2 + GAP, width, BTN_HEIGHT);
 					height = btnStatusPaneStyle.bottom();
 				}
+			}
+			if (btnStatusPaneStyle != null && chkQuickSwapper != null){
+				chkQuickSwapper.setRect(0, btnStatusPaneStyle.bottom() + 2*GAP, width, BTN_HEIGHT);
+				height = chkQuickSwapper.bottom();
 			}
 		}
 
