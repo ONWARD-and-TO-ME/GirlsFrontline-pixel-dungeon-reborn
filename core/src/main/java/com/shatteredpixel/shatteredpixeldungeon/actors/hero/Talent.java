@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
@@ -43,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ScrollEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TalentSecondSight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
@@ -58,6 +60,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.RedBook;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -186,7 +189,9 @@ public enum Talent {
     Type56_431(137, 4), Type56_432(137, 4),Type56_433(137, 4),
 
     //留作旧版本561天赋的接口
-    NICE_FOOD(128), OLD_SOLDIER(129),  BETTER_FOOD(131), BARGAIN_SKILLS(132),TRAP_EXPERT(133),HOW_DARE_YOU(134),JIEFANGCI(135),NIGHT_EXPERT(136), SEARCH_ARMY(137, 3),
+    NICE_FOOD(128), OLD_SOLDIER(129), BETTER_FOOD(131),
+    BARGAIN_SKILLS(132),TRAP_EXPERT(133),HOW_DARE_YOU(134),JIEFANGCI(135),NIGHT_EXPERT(136),
+    SEARCH_ARMY(137, 3),
 
     //GSH18 T1
 	GSH18_MEAL_TREATMENT(160), GSH18_DOCTOR_INTUITION(161), GSH18_CLOSE_COMBAT(162), GSH18_STAR_SHIELD(163),
@@ -596,22 +601,23 @@ public enum Talent {
 
 	public static float itemIDSpeedFactor( Hero hero, Item item ){
 		// 1.75x/2.5x speed with huntress talent
-		float factor=1f+hero.pointsInTalent(SURVIVALISTS_INTUITION)*0.75f;
-
+		float factor = 1f + hero.pointsInTalent(SURVIVALISTS_INTUITION) * 0.75f;
 		// 2x/instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
-            factor*=1.25f+hero.pointsInTalent(Type56One_Identify)*0.75f;
-			factor*=1f+hero.pointsInTalent(ARMSMASTERS_INTUITION);
+            factor *= 1.25f + hero.pointsInTalent(Type56One_Identify) * 0.75f;
+			factor *= 1f + hero.pointsInTalent(ARMSMASTERS_INTUITION);
 		}
 		// 3x/instant for mage (see Wand.wandUsed())
 		if (item instanceof Wand){
-			factor*=1f+2*hero.pointsInTalent(SCHOLARS_INTUITION);
+			factor *= 1f + 2 * hero.pointsInTalent(SCHOLARS_INTUITION);
 		}
 		// 2x/instant for rogue (see onItemEqupped), also id's type on equip/on pickup
 		if (item instanceof Ring){
-			factor*=1f+hero.pointsInTalent(THIEFS_INTUITION);
+			factor *= 1f + hero.pointsInTalent(THIEFS_INTUITION);
 		}
-
+        if (item instanceof MeleeWeapon){
+            factor *= 1F + 2 * hero.pointsInTalent(OLD_SOLDIER);
+        }
 		return factor;
 	}
 
@@ -709,9 +715,12 @@ public enum Talent {
 	}
 
 	public static void onItemEquipped( Hero hero, Item item ){
-		if(hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 && (item instanceof Weapon || item instanceof Armor)){
+		if(hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 && (item instanceof Weapon || item instanceof Armor))
 			item.identify();
-		}
+
+        if (hero.pointsInTalent(OLD_SOLDIER) == 2 && item instanceof Weapon)
+            item.identify();
+
 		if(hero.hasTalent(THIEFS_INTUITION) && item instanceof Ring){
 			if(hero.pointsInTalent(THIEFS_INTUITION) == 2){
 				item.identify();
@@ -722,14 +731,17 @@ public enum Talent {
 	}
 
 	public static void onItemCollected( Hero hero, Item item ){
-		if(hero.pointsInTalent(THIEFS_INTUITION) == 2){
-			if(item instanceof Ring) ((Ring) item).setKnown();
-		}
-        if(hero.pointsInTalent(Type56One_Identify)==2){
-            if(item instanceof MeleeWeapon||item instanceof Armor){
-                item.cursedKnown=true;
-                Item.updateQuickslot();
-            }
+		if(hero.pointsInTalent(THIEFS_INTUITION) == 2 && item instanceof Ring)
+            ((Ring) item).setKnown();
+
+        if(hero.pointsInTalent(Type56One_Identify) == 2 && (item instanceof MeleeWeapon || item instanceof Armor)) {
+            item.cursedKnown = true;
+            Item.updateQuickslot();
+        }
+
+        if (hero.pointsInTalent(OLD_SOLDIER) == 2 && item instanceof MeleeWeapon) {
+            item.cursedKnown = true;
+            Item.updateQuickslot();
         }
 	}
 
@@ -749,6 +761,11 @@ public enum Talent {
 			ScrollOfRecharging.chargeParticle(hero);
 		}
 	}
+    public static int onDefenceProc(Hero hero, Char enemy, int dmg){
+        if(hero.pointsInTalent(Talent.NIGHT_EXPERT)>=2)
+            Buff.append(enemy, TalismanOfForesight.CharAwareness.class,2f).charID = enemy.id();
+        return dmg;
+    }
 
 	public static int onAttackProc( Hero hero, Char enemy, int dmg ){
 		if(hero.hasTalent(SUCKER_PUNCH)
@@ -855,7 +872,36 @@ public enum Talent {
 			}
 		}
 
-		return dmg;
+        if(hero.hasTalent(HOW_DARE_YOU)){
+            float chance  =0.15f;
+            float duration=5.01f;
+
+            if(hero.pointsInTalent(HOW_DARE_YOU)>=2){
+                float enemyHealthRate = (float) enemy.HP / (float) enemy.HT;
+                chance = 0.1F * enemyHealthRate;
+                duration += 10F * enemyHealthRate;
+            }
+
+            if(Random.Float() < chance)
+                Buff.affect(enemy, Terror.class,duration);
+        }
+
+        if(hero.hasTalent(JIEFANGCI))
+            if(Dungeon.level.adjacent(hero.pos,enemy.pos) && hero.belongings.weapon() instanceof ShootGun){
+                dmg += 1 + 4 * hero.pointsInTalent(JIEFANGCI);
+                float chance = 0.05F + 0.1F * hero.pointsInTalent(JIEFANGCI);
+                if(Random.Float() < chance)
+                    Buff.affect(enemy, Cripple.class,2F);
+            }
+
+        if(hero.hasTalent(SEARCH_ARMY) && enemy instanceof Mob){
+            if(enemy.paralysed>0)
+                dmg = (int) (dmg * (1F + (0.4F / 3F) * hero.pointsInTalent(SEARCH_ARMY)));
+            else if(((Mob) enemy).surprisedBy(hero))
+                dmg = (int) (dmg * (1F + 0.1F * hero.pointsInTalent(SEARCH_ARMY)));
+        }
+
+        return dmg;
 	}
 
 	public static void onShielding(Hero hero){
@@ -919,7 +965,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, GSH18_MEAL_TREATMENT, GSH18_DOCTOR_INTUITION, GSH18_CLOSE_COMBAT, GSH18_STAR_SHIELD);
 				break;
             case PUBLIC_1:
-                Collections.addAll(tierTalents, FAST_RELOAD);
+                Collections.addAll(tierTalents, NICE_FOOD, OLD_SOLDIER, BETTER_FOOD, FAST_RELOAD);
                 break;
         }
         //用一个临时ArrayList记录下t1的原始天赋，Collections.addAll的用法，首个参数是表，后面的是要加入的元素
@@ -953,7 +999,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, Type56Two_FOOD, Type56Two_Armor, Type56_23V4, Type56Two_Sight, Type56Two_Damage);
 				break;
             case PUBLIC_1:
-                Collections.addAll(tierTalents, ROGUES_FORESIGHT_V2, ROGUES_FORESIGHT_V3);
+                Collections.addAll(tierTalents, ROGUES_FORESIGHT_V2, ROGUES_FORESIGHT_V3, BARGAIN_SKILLS, TRAP_EXPERT, HOW_DARE_YOU, JIEFANGCI, NIGHT_EXPERT);
                 break;
             case GSH18:
                 Collections.addAll(tierTalents, GSH18_ENERGIZING_MEAL, GSH18_CHAIN_SHOCK, GSH18_LOGISTICS_SUPPORT, GSH18_COMIC_HEART, GSH18_MEDICAL_COMPATIBILITY);
@@ -985,7 +1031,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, Type56Three_Bomb, Type56Three_Book);
 				break;
             case PUBLIC_1:
-                Collections.addAll(tierTalents, EMPOWERING_SCROLLS_V2, DESPERATE_POWER, ELITE_ARMY, ENHANCED_RINGS_V2);
+                Collections.addAll(tierTalents, EMPOWERING_SCROLLS_V2, DESPERATE_POWER, ELITE_ARMY, ENHANCED_RINGS_V2, SEARCH_ARMY);
                 break;
             case GSH18:
                 Collections.addAll(tierTalents,GSH18_INTELLIGENCE_AWARENESS,GSH18_AGILE_MOVEMENT);

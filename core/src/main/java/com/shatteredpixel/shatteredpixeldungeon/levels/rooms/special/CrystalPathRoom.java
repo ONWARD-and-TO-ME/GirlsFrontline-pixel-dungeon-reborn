@@ -270,31 +270,34 @@ public class CrystalPathRoom extends SpecialRoom {
         for(EmptyRoom room : rooms) {
             Painter.fill(level, room, 14);
         }
-        //药水物品链表
         ArrayList<Item> potions = new ArrayList<>();
-        //磁盘物品链表
         ArrayList<Item> scrolls = new ArrayList<>();
-        //填充药水链表
-        potions.add(Generator.randomUsingDefaults(Generator.Category.POTION));//potion[0]
-        potions.add(Generator.randomUsingDefaults(Generator.Category.POTION));//potion[1]
-        //填充磁盘链表
-        scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));//scroll[0]
-        scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));//scroll[1]
+
+        potions.add(Generator.randomUsingDefaults(Generator.Category.POTION));
+        potions.add(Generator.randomUsingDefaults(Generator.Category.POTION));
+        potions.add(Generator.randomUsingDefaults(Generator.Category.POTION));
+        potions.add(Generator.randomUsingDefaults(Generator.Category.POTION));
+
+        scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));
+        scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));
+        scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));
+        scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));
         Potion p = new PotionOfExperience();
         Scroll s = new ScrollOfTransmutation();
-        boolean isEXP = false;
-        if(p.isKnown()&&s.isKnown()&&!SeedFinder.SeedFinding){
-            potions.add(p);
-            scrolls.add(s);
-        } else {
-            if (Random.Int(2) == 0) {
-                scrolls.add(s);
-                potions.add(Generator.randomUsingDefaults(Generator.Category.POTION));//potion[2]
-                isEXP = false;
+        boolean isEXP = Random.Int(2) == 0;
+        if(p.isKnown() && s.isKnown() && !SeedFinder.SeedFinding){
+            potions.set(2, p);
+            scrolls.set(2, s);
+        }
+        else {
+            if ( isEXP ) {
+                if (s.isKnown() && !(scrolls.get(2) instanceof ScrollOfTransmutation))
+                    scrolls.remove(2);
+                potions.set(2, p);
             } else {
-                potions.add(p);
-                scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));//scroll[2]
-                isEXP = true;
+                if (p.isKnown() && !(potions.get(2) instanceof PotionOfExperience))
+                    potions.remove(2);
+                scrolls.set(2, s);
             }
         }
         if ((p.isKnown() && s.isKnown()) || (!p.isKnown() && !s.isKnown())) {

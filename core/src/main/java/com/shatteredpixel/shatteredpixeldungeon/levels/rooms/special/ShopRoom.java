@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
@@ -47,6 +48,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.FairyItems;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.SaltyZongzi;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SugarZongzi;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Maccol;
@@ -300,36 +302,48 @@ public class ShopRoom extends SpecialRoom {
 					Generator.randomUsingDefaults( Generator.Category.POTION ) :
 					Generator.randomUsingDefaults( Generator.Category.SCROLL ) );
 
-		if(Dungeon.hero.heroClass== HeroClass.TYPE561){
-            switch (Random.Int(3)){
-                case 0:
-                    itemsToSpawn.add(new Maccol());
-                    itemsToSpawn.add(new Maccol());
-                    break;
-                case 1:
-                    itemsToSpawn.add(new SugarZongzi());
-                    itemsToSpawn.add(new Maccol());
-                    break;
-                case 2:
-                    itemsToSpawn.add(new SugarZongzi());
-                    itemsToSpawn.add(new SugarZongzi());
-                    break;
-            }
-        }
-        else {
-			switch(Random.Int(4)){
-				case 0: case 1:
-					itemsToSpawn.add(new Maccol());
-					itemsToSpawn.add(new Maccol());
-					break;
-				case 2:
-					itemsToSpawn.add(new SmallRation());
-					itemsToSpawn.add(new Maccol());
-					break;
-				case 3:
-					itemsToSpawn.add(new SmallRation());
-					itemsToSpawn.add(new SmallRation());
-					break;
+		if (Dungeon.hero.pointsInTalent(Talent.BARGAIN_SKILLS) == 2){
+			itemsToSpawn.add(new SaltyZongzi());
+			itemsToSpawn.add(new SaltyZongzi());
+			itemsToSpawn.add(new SaltyZongzi());
+		}
+		else {
+			if (Dungeon.hero.pointsInTalent(Talent.BARGAIN_SKILLS) == 2){
+				itemsToSpawn.add(new SugarZongzi());
+				itemsToSpawn.add(new SugarZongzi());
+			}
+			if (Dungeon.hero.heroClass == HeroClass.TYPE561) {
+				switch (Random.Int(3)) {
+					case 0:
+						itemsToSpawn.add(new Maccol());
+						itemsToSpawn.add(new Maccol());
+						break;
+					case 1:
+						itemsToSpawn.add(new SugarZongzi());
+						itemsToSpawn.add(new Maccol());
+						break;
+					case 2:
+						itemsToSpawn.add(new SugarZongzi());
+						itemsToSpawn.add(new SugarZongzi());
+						break;
+				}
+			}
+			else {
+				switch (Random.Int(4)) {
+					case 0:
+					case 1:
+						itemsToSpawn.add(new Maccol());
+						itemsToSpawn.add(new Maccol());
+						break;
+					case 2:
+						itemsToSpawn.add(new SmallRation());
+						itemsToSpawn.add(new Maccol());
+						break;
+					case 3:
+						itemsToSpawn.add(new SmallRation());
+						itemsToSpawn.add(new SmallRation());
+						break;
+				}
 			}
 		}
 		

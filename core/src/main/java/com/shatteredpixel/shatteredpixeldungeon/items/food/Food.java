@@ -124,8 +124,10 @@ public class Food extends Item {
 	}
     public float energy(){
         float buffEnergy = energy;
-        if(Dungeon.hero.hasTalent(Talent.Type56Two_FOOD))
-            buffEnergy+=30*Dungeon.hero.pointsInTalent(Talent.Type56Two_FOOD);
+		buffEnergy += 30 * Dungeon.hero.pointsInTalent(Talent.Type56Two_FOOD);
+		Hunger hunger = Dungeon.hero.buff(Hunger.class);
+		if (hunger != null && hunger.isStarving())
+			buffEnergy += 50 * Dungeon.hero.pointsInTalent(Talent.NICE_FOOD);
         return buffEnergy;
     }
 	

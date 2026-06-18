@@ -1258,13 +1258,16 @@ public abstract class Level implements Bundlable {
 			
 			int viewDist = c.viewDistance;
 			if (c instanceof Hero){
+				if(((Hero) c).hasTalent(Talent.NIGHT_EXPERT)
+						&& (Dungeon.level.feeling==Feeling.DARK || Dungeon.isChallenged(Challenges.DARKNESS)))
+					viewDist += 1;
 				viewDist *= 1f + 0.25f*((Hero) c).pointsInTalent(Talent.FARSIGHT);
 			}
 			
 			ShadowCaster.castShadow( cx, cy, fieldOfView, blocking, viewDist );
-		} else {
-			BArray.setFalse(fieldOfView);
 		}
+		else
+			BArray.setFalse(fieldOfView);
 		
 		int sense = 1;
 		//Currently only the hero can get mind vision
