@@ -23,22 +23,19 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
-import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournalElse;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -144,7 +141,7 @@ public class CustomNoteButton extends IconButton {
 
     }
 
-    private WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
+    private final WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
 
         @Override
         public String textPrompt() {
@@ -152,30 +149,23 @@ public class CustomNoteButton extends IconButton {
         }
         @Override
         public boolean itemSelectable(Item item) {
-            if (item instanceof EquipableItem){
-                if (item instanceof Ring && Notes.findCustomRecord(item.getClass()) != null){
-                    return false;
-                }
-                return item.customNoteID == -1
-                        || Notes.findCustomRecord(item.customNoteID) == null;
-            } else {
-                return Notes.findCustomRecord(item.getClass()) == null;
-            }
+            Notes.CustomRecord ClassNote = Notes.findCustomRecord(item);
+            if (item.stackable)
+                return ClassNote == null;
+            if (item instanceof Ring && ClassNote != null)
+                return false;
+            return item.customNoteID == -1 || Notes.findCustomRecord(item.customNoteID) == null;
         }
 
         @Override
         public void onSelect( Item item ) {
             if (item != null){
                 Notes.CustomRecord custom;
-                if (item instanceof EquipableItem || item instanceof Wand) {
-                    custom = new Notes.CustomRecord(item, "", "");
-                    custom.assignID();
-                    item.customNoteID = custom.ID();
-                } else {
+                if (item.stackable)
                     custom = new Notes.CustomRecord(item.getClass(), "", "");
-                    custom.assignID();
-                }
-
+                else
+                    custom = new Notes.CustomRecord(item, "", "");
+                curItem = item;
                 addNote(null, custom,
                         Messages.get(CustomNoteButton.class, "new_inv"),
                         Messages.get(CustomNoteButton.class, "new_item_title", Messages.titleCase(item.name())));
@@ -194,15 +184,12 @@ public class CustomNoteButton extends IconButton {
             int left = 0;
 
             ArrayList<Item> items = new ArrayList<>();
-            for (Class<?> potionCls : Generator.Category.POTION.classes) {
+            for (Class<?> potionCls : Generator.Category.POTION.classes)
                 items.add((Item) Reflection.newInstance(potionCls));
-            }
-            for (Class<?> potionCls : Generator.Category.SCROLL.classes) {
+            for (Class<?> potionCls : Generator.Category.SCROLL.classes)
                 items.add((Item) Reflection.newInstance(potionCls));
-            }
-            for (Class<?> potionCls : Generator.Category.RING.classes) {
+            for (Class<?> potionCls : Generator.Category.RING.classes)
                 items.add((Item) Reflection.newInstance(potionCls));
-            }
             Collections.sort(items, itemVisualcomparator);
             for (Item item : items) {
                 ItemButton itemButton = new ItemButton(){
@@ -217,7 +204,7 @@ public class CustomNoteButton extends IconButton {
                 itemButton.setRect(left, top, 19, 19);
                 add(itemButton);
 
-                if (Notes.findCustomRecord(item.getClass()) != null){
+                if (Notes.findCustomRecord(item) != null){
                     itemButton.slot.enable(false);
                 }
 
@@ -273,13 +260,7 @@ public class CustomNoteButton extends IconButton {
                             if (positive && !text.isEmpty()){
                                 rec.editText(text, rec.desc());
                                 CustomNoteWindow.this.hide();
-                                if (parentWindow instanceof WndUseItem){
-                                    WndUseItem newParent = new WndUseItem(((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item);
-                                    GameScene.show(newParent);
-                                    GameScene.show(new CustomNoteWindow(rec, newParent));
-                                } else {
-                                    GameScene.show(new CustomNoteWindow(rec, parentWindow));
-                                }
+                                GameScene.show(new CustomNoteWindow(rec, WndInfoItem.resetParentWindow(parentWindow)));
                             }
                         }
                     });
@@ -304,6 +285,7 @@ public class CustomNoteButton extends IconButton {
                             if (positive){
                                 rec.editText(rec.title(), text);
                                 CustomNoteWindow.this.hide();
+                                //标签的详细内容，不在parentWindow中显示，不需要重置
                                 GameScene.show(new CustomNoteWindow(rec, parentWindow));
                             }
                         }
@@ -326,11 +308,7 @@ public class CustomNoteButton extends IconButton {
                             if (index == 0){
                                 Notes.remove(rec);
                                 CustomNoteWindow.this.hide();
-                                if (parentWindow instanceof WndJournal || parentWindow == null){
-                                    GirlsFrontlinePixelDungeon.scene().addToFront(new WndJournal());
-                                } else if (parentWindow instanceof WndUseItem){
-                                    GameScene.show(new WndUseItem(((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item));
-                                }
+                                WndInfoItem.resetParentWindow(parentWindow);
                             }
                         }
                     });
@@ -342,10 +320,10 @@ public class CustomNoteButton extends IconButton {
             resize(width, (int)delete.bottom());
         }
     }
-
-    private static void addNote(Window parentWindow, Notes.CustomRecord note, String promptTitle, String prompttext){
+    private static Item curItem;
+    private static void addNote(Window parentWindow, Notes.CustomRecord note, String promptTitle, String promptText){
         GameScene.show(new WndTextInput(promptTitle,
-                prompttext,
+                promptText,
                 "",
                 50,
                 false,
@@ -354,21 +332,18 @@ public class CustomNoteButton extends IconButton {
             @Override
             public void onSelect(boolean positive, String text) {
                 if (positive && !text.isEmpty()){
-                    Notes.add(note);
+                    note.assignID();
+                    if (curItem != null)
+                        curItem.customNoteID = note.ID();
+                    curItem = null;
                     note.editText(text, "");
-                    if (parentWindow != null) {
-                        parentWindow.hide();
-                    }
-                    if (WndBag.INSTANCE != null) {
-                        WndBag.INSTANCE.hide();
-                    }
-                    if (NOTE_SELECT_INSTANCE != null){
-                        NOTE_SELECT_INSTANCE.onBackPressed();
-                    }
+                    Notes.add(note);
                     hide();
-                    WndJournal wnd = new WndJournal();
-                    GirlsFrontlinePixelDungeon.scene().addToFront(wnd);
-                    GirlsFrontlinePixelDungeon.scene().addToFront(new CustomNoteWindow(note, wnd));
+                    if (WndBag.INSTANCE != null)
+                        WndBag.INSTANCE.hide();
+                    if (NOTE_SELECT_INSTANCE != null)
+                        NOTE_SELECT_INSTANCE.onBackPressed();
+                    GirlsFrontlinePixelDungeon.scene().addToFront(new CustomNoteWindow(note, WndInfoItem.resetParentWindow(parentWindow)));
                 }
             }
         });

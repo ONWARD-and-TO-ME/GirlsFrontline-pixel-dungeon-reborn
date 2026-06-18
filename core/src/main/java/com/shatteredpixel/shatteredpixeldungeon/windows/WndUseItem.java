@@ -22,18 +22,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventoryPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextInput;
-import com.watabou.noosa.Game;
 
 import java.util.ArrayList;
 
@@ -43,7 +35,6 @@ public class WndUseItem extends WndInfoItem {
 
 	private static final float GAP	= 2;
     public final Window owner;
-	public Item item;
 
 	public WndUseItem( final Window owner, final Item item ) {
 
@@ -175,42 +166,4 @@ public class WndUseItem extends WndInfoItem {
 
 		return y - 1;
 	}
-    @Override
-    protected IconButton Itemnote(Item item){
-        return new IconButton(Icons.RENAME_ON.get()){
-            @Override
-            protected void onClick() {
-                super.onClick();
-                String note =Item.ClassNoteToItem(item);
-                String noteAdd="";
-                if(item.stackable){
-                    if(item instanceof Scroll ||item instanceof Potion){
-                        noteAdd= Messages.get(Item.class, "noteclassb");
-                    }else {
-                        noteAdd=Messages.get(Item.class, "noteclassa");
-                    }
-                }
-                GirlsFrontlinePixelDungeon.scene().addToFront(
-                        new WndTextInput(
-                                item.name(),
-                                Messages.get(Item.class, "note_desc",noteAdd,note),
-                                note,
-                                40,
-                                false,
-                                Messages.get(Item.class, "set_note_yes"),
-                                Messages.get(Item.class, "set_note_no")
-                        ){
-                            @Override
-                            public void onSelect(boolean check, String text) {
-                                if(check){
-                                    item.notedSet(text);
-                                    hide();
-                                    Game.scene().add(new WndUseItem(owner, item));
-                                }
-                            }
-                        }
-                );
-            }
-        };
-    }
 }

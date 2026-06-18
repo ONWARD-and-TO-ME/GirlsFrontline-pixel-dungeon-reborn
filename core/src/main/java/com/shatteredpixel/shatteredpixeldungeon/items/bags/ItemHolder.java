@@ -49,6 +49,17 @@ public class ItemHolder extends Bag {
 		}
 	}
 
+    public void GradItem( Item item ){
+        for (Bag bag : hero.belongings.getBags()){
+            if (bag.items.contains(item)){
+                item = item.detachAll(bag);
+                item.canHold = true;
+                if (!item.collect(this))
+                    item.doDrop(hero);
+            }
+        }
+    }
+
     private static final String AC_ADD	= "ADD";
     @Override
     public ArrayList<String> actions(Hero hero ) {
@@ -89,8 +100,13 @@ public class ItemHolder extends Bag {
         @Override
         public void onSelect( Item item ) {
             if (item != null) {
-                item.canHold = !item.canHold;
-                item.doDrop(hero);
+                if (item.canHold){
+                    item.canHold = false;
+                    if (!item.detachAll(ItemHolder.this).collect())
+                        item.doDrop(hero);
+                }
+                else
+                    GradItem(item);
             }
         }
     };

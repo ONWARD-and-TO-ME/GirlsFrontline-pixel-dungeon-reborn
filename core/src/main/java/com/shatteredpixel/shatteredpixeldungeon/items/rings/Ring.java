@@ -177,11 +177,11 @@ public class Ring extends KindofMisc implements ColorItem {
 
 	@Override
 	public String info(){
-        String noteA = NoteGet(this);
+        String note = NoteGet();
 
 		String desc = isKnown() ?
                 super.info() :
-                noteA+Messages.get(this, "unknown_desc");
+                note+Messages.get(this, "unknown_desc");
 		
 		if (cursed && isEquipped( Dungeon.hero )) {
 			desc += "\n\n" + Messages.get(Ring.class, "cursed_worn");

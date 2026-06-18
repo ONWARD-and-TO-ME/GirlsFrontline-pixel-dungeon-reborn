@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuickBag;
 import com.watabou.utils.Bundlable;
@@ -46,7 +47,34 @@ public class Bag extends Item implements Iterable<Item> {
 
 		unique = true;
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public<T extends Item> T getItem( Class<T> itemClass, boolean strict ) {
+		for (Item item : this)
+			if ( !strict && itemClass.isInstance( item ) || strict && item.getClass() == itemClass)
+				return (T) item;
+			else if (item instanceof Bag)
+				if (((Bag) item).getItem(itemClass, strict) != null)
+					return ((Bag) item).getItem(itemClass, strict);
+		return null;
+	}
+	public Item getItem( int customNoteID ){
+		for (Item item : this)
+			if (customNoteID == item.customNoteID)
+				return item;
+			else if (item instanceof Bag)
+				if (((Bag) item).getItem(customNoteID) != null)
+					return ((Bag) item).getItem(customNoteID);
+		return null;
+	}
+	public Item getItem(Notes.CustomRecord record){
+		if (record.type() == Notes.CustomType.SPECIFIC_ITEM)
+			return getItem(record.ID());
+		else if (record.type() == Notes.CustomType.ITEM_TYPE)
+			return getItem(record.itemClass(), true);
+		return null;
+	}
+
 	public Char owner;
 	
 	public ArrayList<Item> items = new ArrayList<>();

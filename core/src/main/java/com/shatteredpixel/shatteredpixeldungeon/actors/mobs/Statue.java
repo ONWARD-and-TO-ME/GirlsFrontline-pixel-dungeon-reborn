@@ -81,6 +81,8 @@ public class Statue extends Mob {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		weapon = (Weapon)bundle.get( WEAPON );
+		if (weapon == null)
+			weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
 	}
 	
 	@Override
@@ -160,14 +162,6 @@ public class Statue extends Mob {
 		weapon.identify(false);
 		Dungeon.level.drop( weapon, pos ).sprite.drop();
 		super.die( cause );
-	}
-
-	@Override
-	public void destroy() {
-		if (landmark() != null) {
-			Notes.remove( landmark() );
-		}
-		super.destroy();
 	}
 
 	@Override

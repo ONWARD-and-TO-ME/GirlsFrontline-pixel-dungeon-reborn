@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -33,22 +32,16 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextInput;
-import com.watabou.noosa.Game;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 public class WndTradeItem extends WndInfoItem {
 
@@ -120,6 +113,7 @@ public class WndTradeItem extends WndInfoItem {
 	public WndTradeItem( final Heap heap ) {
 
 		super(heap);
+		this.heap = heap;
 
 		selling = false;
 
@@ -180,45 +174,6 @@ public class WndTradeItem extends WndInfoItem {
 
 		resize(width, (int) pos);
 	}
-    @Override
-    protected IconButton Tradenote(Heap heap){
-        Item item=heap.peek();
-        return new IconButton(Icons.RENAME_ON.get()){
-            @Override
-            protected void onClick() {
-                super.onClick();
-                String note =Item.ClassNoteToItem(item);
-                String noteAdd="";
-                if(item.stackable){
-                    if(item instanceof Scroll ||item instanceof Potion){
-                        noteAdd=Messages.get(Item.class, "noteclassb");
-                    }else {
-                        noteAdd=Messages.get(Item.class, "noteclassa");
-                    }
-                }
-                GirlsFrontlinePixelDungeon.scene().addToFront(
-                        new WndTextInput(
-                                item.name(),
-                                Messages.get(Item.class, "note_desc",noteAdd,note),
-                                note,
-                                40,
-                                false,
-                                Messages.get(Item.class, "set_note_yes"),
-                                Messages.get(Item.class, "set_note_no")
-                        ){
-                            @Override
-                            public void onSelect(boolean check, String text) {
-                                if(check){
-                                    item.notedSet(text);
-                                    hide();
-                                    Game.scene().add(new WndTradeItem(heap));
-                                }
-                            }
-                        }
-                );
-            }
-        };
-    }
 	
 	@Override
 	public void hide() {
@@ -270,11 +225,13 @@ public class WndTradeItem extends WndInfoItem {
             Char target = Actor.findChar(hero.pos + ofs);
             if(target instanceof Shopkeeper)
                 continue;
-            if (!item.selled && !Dungeon.level.solid[hero.pos + ofs] && Dungeon.level.heaps.get(hero.pos + ofs) == null && Dungeon.level.passable[hero.pos + ofs]) {
+            if (!item.sold && !Dungeon.level.solid[hero.pos + ofs] && Dungeon.level.heaps.get(hero.pos + ofs) == null && Dungeon.level.passable[hero.pos + ofs]) {
                 Dungeon.level.drop(item, hero.pos + ofs).type = Heap.Type.FOR_SALE;
-                item.selled = true;
+                item.sold = true;
             }
-        }
+			else if (item instanceof Artifact)
+				((Artifact) item).resetSpawn(0.001F);
+		}
     }
 	
 	private void buy( Heap heap ) {
@@ -285,10 +242,10 @@ public class WndTradeItem extends WndInfoItem {
 		int price = Shopkeeper.sellPrice( item );
 		Dungeon.gold -= price;
 		Catalog.countUses(Gold.class, price);
-		if (!item.selled &&( item instanceof Wand || item instanceof Armor || item instanceof Weapon)){
+		if (!item.sold &&( item instanceof Wand || item instanceof Armor || item instanceof Weapon)){
 			item.identify(false);
 		}
-		item.selled = false;
+		item.sold = false;
 		if (!item.doPickUp( Dungeon.hero )) {
 			Dungeon.level.drop( item, heap.pos ).sprite.drop();
 		}

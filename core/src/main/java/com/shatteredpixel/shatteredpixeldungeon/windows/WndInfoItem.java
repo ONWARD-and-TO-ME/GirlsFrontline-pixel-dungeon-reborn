@@ -24,20 +24,17 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.CustomNoteButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextInput;
-import com.watabou.noosa.Game;
 
 public class WndInfoItem extends Window {
 	
@@ -49,6 +46,8 @@ public class WndInfoItem extends Window {
 
 	//only one WndInfoItem can appear at a time
 	private static WndInfoItem INSTANCE;
+    public Item item = null;
+    public Heap heap = null;
 
 	public WndInfoItem( Heap heap ) {
 
@@ -58,6 +57,9 @@ public class WndInfoItem extends Window {
 			INSTANCE.hide();
 		}
 		INSTANCE = this;
+
+        item = null;
+        this.heap = heap;
 
 		if (heap.type == Heap.Type.HEAP && heap.room == Heap.Room.NONE) {
 			fillFields( heap.peek() );
@@ -75,8 +77,11 @@ public class WndInfoItem extends Window {
 			INSTANCE.hide();
 		}
 		INSTANCE = this;
-		
-		fillFields( item );
+
+        heap = null;
+        this.item = item;
+
+        fillFields( item );
 	}
 
 	@Override
@@ -95,7 +100,7 @@ public class WndInfoItem extends Window {
 		RenderedTextBlock txtInfo = PixelScene.renderTextBlock( heap.info(), 6 );
 
         if(heap.type == Heap.Type.FOR_SALE) {
-            noteButton = Tradenote(heap);
+            noteButton = new ItemNote(heap.peek(), this);
             noteButton.enable(heap.peek().canNote);
             noteButton.visible = heap.peek().canNote;
             layoutFields(titlebar, txtInfo, noteButton);
@@ -125,6 +130,7 @@ public class WndInfoItem extends Window {
         resize( width, (int)(info.bottom() + 2) );
     }
 	private void fillFields( Item item ) {
+        this.item = item;
 		
 		int color = TITLE_COLOR;
 		if (item.levelKnown && item.level() > 0) {
@@ -137,7 +143,7 @@ public class WndInfoItem extends Window {
 		titlebar.color( color );
 		
 		RenderedTextBlock txtInfo = PixelScene.renderTextBlock( item.info(), 6 );
-        noteButton=Itemnote(item);
+        noteButton = new ItemNote(item, this);
         noteButton.enable(item.canNote);
         noteButton.visible=item.canNote;
 		
@@ -168,79 +174,87 @@ public class WndInfoItem extends Window {
 
 		resize( width, (int)(info.bottom() + 2) );
 	}
-    protected IconButton Itemnote(Item item){
-        return new IconButton(Icons.RENAME_ON.get()){
-            @Override
-            protected void onClick() {
-                super.onClick();
-                String note =Item.ClassNoteToItem(item);
-                String noteAdd="";
-                if(item.stackable){
-                    if(item instanceof Scroll||item instanceof Potion){
-                        noteAdd=Messages.get(Item.class, "noteclassb");
-                    }else {
-                        noteAdd=Messages.get(Item.class, "noteclassa");
+    public static class ItemNote extends IconButton {
+        Item item;
+        Window parentWnd;
+
+        public ItemNote(Item item, Window parentWnd){
+            super(Icons.RENAME_ON.get());
+            this.item = item;
+            this.parentWnd = parentWnd;
+        }
+        @Override
+        protected void onClick() {
+            customNote();
+        }
+        private void customNote(){
+            Notes.CustomRecord note;
+            if (item.stackable)
+                note = Notes.findCustomRecord(item);
+            else
+                note = Notes.findCustomRecord(item.customNoteID);
+            if (note == null){
+                if (item.stackable)
+                    note = new Notes.CustomRecord(item.getClass(), "", "");
+                else
+                    note = new Notes.CustomRecord(item, "", "");
+
+                addNote(parentWnd, note, Messages.get(CustomNoteButton.class, "new_inv"),
+                        Messages.get(CustomNoteButton.class, "new_item_title", Messages.titleCase(item.name())), item);
+            }
+            else {
+                GameScene.show(new CustomNoteButton.CustomNoteWindow(note, parentWnd));
+            }
+        }
+        private static void addNote(Window parentWindow, Notes.CustomRecord note, String promptTitle, String promptText, Item curItem){
+            GameScene.show(new WndTextInput(promptTitle,
+                    promptText,
+                    "",
+                    50,
+                    false,
+                    Messages.get(CustomNoteButton.CustomNoteWindow.class, "confirm"),
+                    Messages.get(CustomNoteButton.CustomNoteWindow.class, "cancel")){
+                @Override
+                public void onSelect(boolean positive, String text) {
+                    if (positive && !text.isEmpty()){
+                        note.assignID();
+                        curItem.customNoteID = note.ID();
+                        note.editText(text, "");
+                        Notes.add(note);
+                        hide();
+                        resetParentWindow(parentWindow);
                     }
                 }
-                GirlsFrontlinePixelDungeon.scene().addToFront(
-                        new WndTextInput(
-                                item.name(),
-                                Messages.get(Item.class, "note_desc",noteAdd,note),
-                                note,
-                                40,
-                                false,
-                                Messages.get(Item.class, "set_note_yes"),
-                                Messages.get(Item.class, "set_note_no")
-                        ){
-                            @Override
-                            public void onSelect(boolean check, String text) {
-                                if(check){
-                                    item.notedSet(text);
-                                    hide();
-                                    Game.scene().add(new WndInfoItem(item));
-                                }
-                            }
-                        }
-                );
-            }
-        };
+            });
+        }
     }
-    protected IconButton Tradenote(Heap heap){
-        Item item=heap.peek();
-        return new IconButton(Icons.RENAME_ON.get()){
-            @Override
-            protected void onClick() {
-                super.onClick();
-                String note =Item.ClassNoteToItem(item);
-                String noteAdd="";
-                if(item.stackable){
-                    if(item instanceof Scroll||item instanceof Potion){
-                        noteAdd=Messages.get(Item.class, "noteclassb");
-                    }else {
-                        noteAdd=Messages.get(Item.class, "noteclassa");
-                    }
-                }
-                GirlsFrontlinePixelDungeon.scene().addToFront(
-                        new WndTextInput(
-                                item.name(),
-                                Messages.get(Item.class, "note_desc",noteAdd,note),
-                                note,
-                                40,
-                                false,
-                                Messages.get(Item.class, "set_note_yes"),
-                                Messages.get(Item.class, "set_note_no")
-                        ){
-                            @Override
-                            public void onSelect(boolean check, String text) {
-                                if(check){
-                                    item.notedSet(text);
-                                    hide();
-                                    Game.scene().add(new WndInfoItem(heap));
-                                }
-                            }
-                        }
-                );
+    public static Window resetParentWindow(Window parentWindow){
+        Window newParent = parentWindow;
+        if (parentWindow != null){
+            if (parentWindow.getClass() == WndInfoItem.class) {
+                if (((WndInfoItem) parentWindow).item != null)
+                    newParent = new WndInfoItem(((WndInfoItem) parentWindow).item);
+                else if (((WndInfoItem) parentWindow).heap != null)
+                    newParent = new WndInfoItem(((WndInfoItem) parentWindow).heap);
             }
-        };
+            else if (parentWindow.getClass() == WndUseItem.class)
+                newParent = new WndUseItem(((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item);
+            else if (parentWindow.getClass() == WndSadGhost.RewardWindow.class)
+                newParent = WndSadGhost.INSTANCE. new RewardWindow(((WndSadGhost.RewardWindow) parentWindow).item);
+            else if (parentWindow.getClass() == WndWandmaker.RewardWindow.class)
+                newParent = WndWandmaker.INSTANCE. new RewardWindow(((WndWandmaker.RewardWindow) parentWindow).item);
+            else if (parentWindow.getClass() == WndJournal.class)
+                newParent = new WndJournal();
+            else if (parentWindow.getClass() == WndTradeItem.class)
+                newParent = new WndTradeItem(((WndTradeItem) parentWindow).heap);
+            if (newParent != parentWindow){
+                parentWindow.hide();
+                if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene)
+                    GameScene.show(newParent);
+                else
+                    GirlsFrontlinePixelDungeon.scene().addToFront(newParent);
+            }
+        }
+        return newParent;
     }
 }

@@ -22,15 +22,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -38,15 +34,11 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.FetidRatSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollTricksterSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GreatCrabSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
@@ -59,11 +51,14 @@ public class WndSadGhost extends Window {
 	private static final int GAP		= 2;
 
 	Ghost ghost;
+	public static WndSadGhost INSTANCE;
 
 	public WndSadGhost( final Ghost ghost, final int type ) {
 
 		super();
-
+		if (INSTANCE != null)
+			INSTANCE.hide();
+		INSTANCE = this;
 		this.ghost = ghost;
 
 		IconTitle titlebar = new IconTitle();
@@ -169,10 +164,11 @@ public class WndSadGhost extends Window {
 		}
 	}
 
-	private class RewardWindow extends WndInfoItem {
+	public class RewardWindow extends WndInfoItem {
 
 		public RewardWindow( Item item ) {
 			super(item);
+			this.item = item;
 
 			RedButton btnConfirm = new RedButton(Messages.get(WndSadGhost.class, "confirm")){
 				@Override
@@ -196,43 +192,5 @@ public class WndSadGhost extends Window {
 
 			resize(width, (int)btnCancel.bottom());
 		}
-        @Override
-        protected IconButton Itemnote(Item item){
-            return new IconButton(Icons.RENAME_ON.get()){
-                @Override
-                protected void onClick() {
-                    super.onClick();
-                    String note =Item.ClassNoteToItem(item);
-                    String noteAdd="";
-                    if(item.stackable){
-                        if(item instanceof Scroll ||item instanceof Potion){
-                            noteAdd=Messages.get(Item.class, "noteclassb");
-                        }else {
-                            noteAdd=Messages.get(Item.class, "noteclassa");
-                        }
-                    }
-                    GirlsFrontlinePixelDungeon.scene().addToFront(
-                            new WndTextInput(
-                                    item.name(),
-                                    Messages.get(Item.class, "note_desc",noteAdd,note),
-                                    note,
-                                    40,
-                                    false,
-                                    Messages.get(Item.class, "set_note_yes"),
-                                    Messages.get(Item.class, "set_note_no")
-                            ){
-                                @Override
-                                public void onSelect(boolean check, String text) {
-                                    if(check){
-                                        item.notedSet(text);
-                                        hide();
-                                        Game.scene().add(new RewardWindow(item));
-                                    }
-                                }
-                            }
-                    );
-                }
-            };
-        }
 	}
 }

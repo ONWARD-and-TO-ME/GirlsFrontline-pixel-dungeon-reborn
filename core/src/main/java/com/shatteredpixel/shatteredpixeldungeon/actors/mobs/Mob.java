@@ -692,7 +692,10 @@ public abstract class Mob extends Char {
 	
 	@Override
 	public void destroy() {
-		
+
+		if (landmark() != null) {
+			Notes.remove( landmark() );
+		}
 		super.destroy();
 		
 		Dungeon.level.mobs.remove( this );
@@ -766,7 +769,8 @@ public abstract class Mob extends Char {
 			}
 		}
 	}
-    @Override
+
+	@Override
     public void MustDie( Object cause ){
         this.die(cause);
     }

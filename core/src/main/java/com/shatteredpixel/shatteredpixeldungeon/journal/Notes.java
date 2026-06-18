@@ -50,9 +50,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LostBackpack;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.ItemHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.BeaconOfReturning;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -490,6 +494,12 @@ public class Notes {
 				ID = nextCustomID++;
 			}
 		}
+		public CustomType type(){
+			return type;
+		}
+		public Class<? extends Item> itemClass(){
+			return itemClass;
+		}
 
 		public int ID(){
 			return ID;
@@ -750,7 +760,19 @@ public class Notes {
 		return null;
 	}
 
-	public static CustomRecord findCustomRecord( Class itemClass ){
+	public static CustomRecord findCustomRecord( Item item ){
+		if (item == null)
+			return null;
+		Class<? extends Item> itemClass;
+		if (item instanceof ExoticPotion)
+			itemClass = ExoticPotion.exoToReg.get(item.getClass());
+		else if (item instanceof ExoticScroll)
+			itemClass = ExoticScroll.exoToReg.get(item.getClass());
+		else
+			itemClass = item.getClass();
+		return findCustomRecord(itemClass);
+	}
+	public static CustomRecord findCustomRecord( Class<? extends Item> itemClass ){
 		for (Record rec : records){
 			if (rec instanceof CustomRecord
 					&& ((CustomRecord) rec).type == CustomType.ITEM_TYPE
@@ -760,7 +782,6 @@ public class Notes {
 		}
 		return null;
 	}
-
 	private static final Comparator<Record> comparator = new Comparator<Record>() {
 		@Override
 		public int compare(Record r1, Record r2) {
@@ -768,4 +789,62 @@ public class Notes {
 		}
 	};
 
+	public static void addNoteToBag() {
+		if (Dungeon.hero == null)
+			return;
+		ItemHolder holder = Dungeon.hero.belongings.getItem(ItemHolder.class);
+		if (holder == null)
+			return;
+        for (Record rec : records)
+            if (rec instanceof CustomRecord) {
+				CustomRecord record = (CustomRecord) rec;
+				//排除标签到楼层或者以文本标签
+				if (record.type != CustomType.SPECIFIC_ITEM && record.type != CustomType.ITEM_TYPE)
+					continue;
+				Item curItem;
+				//在Bag的查找和QuickSlot的查找里边进行分类，此处不分类
+
+				//收纳包已经装入了的情况下不重复装入
+				curItem = holder.getItem(record);
+				if (curItem != null)
+					continue;
+
+				//对快捷栏执行相同操作
+				curItem = Dungeon.quickslot.getItem(record);
+				if (curItem != null)
+					continue;
+
+				//从背包内尝试寻找
+				curItem = Dungeon.hero.belongings.getItem(record);
+				//背包有就不通过反射生成加入了
+				if (curItem != null) {
+					//已装备的也会被显示，不需要移动，跳过
+					if (curItem instanceof Bag && Dungeon.quickslot.hasItemNote((Bag) curItem))
+						continue;
+					if (curItem.isEquipped(Dungeon.hero))
+						continue;
+					for (Bag bag : Dungeon.hero.belongings.getBags())
+						//用背包的items执行contains而非背包自身的contains，因为背包自身的已经被重写了，会从主背包检擦到副背包
+						if (bag.items.contains(curItem)) {
+							//从旧背包中移除，前面已经在快捷栏查找过，如果快捷栏是背包会查找背包，仅在快捷栏没找到收纳此物品的背包时会进入这里
+							//那么原本是不会展示的，移除了也无所谓，但还是决定移除，以免后续被从旧背包中修改
+							holder.GradItem(curItem);
+							break;
+						}
+					continue;
+				}
+
+				curItem = Reflection.newInstance(record.itemClass);
+				//如果反射结果是收纳包则不加进去了，否则就会把所有东西再收纳进去了
+				if (curItem == null || curItem instanceof ItemHolder)
+					continue;
+
+				if (record.type == CustomType.SPECIFIC_ITEM)
+					curItem.noted = record.title();
+				else
+					curItem.ClassNote = record.title();
+				curItem.canHold = true;
+				curItem.collect(holder);
+			}
+	}
 }

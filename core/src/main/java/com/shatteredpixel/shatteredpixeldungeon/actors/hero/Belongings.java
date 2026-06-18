@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -266,20 +267,31 @@ public class Belongings implements Iterable<Item> {
 
 		return result;
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	public<T extends Item> T getItem( Class<T> itemClass ) {
-
+		return getItem(itemClass, false);
+	}
+	@SuppressWarnings("unchecked")
+	public<T extends Item> T getItem( Class<T> itemClass, boolean strict ) {
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
-
 		for (Item item : this) {
-			if (itemClass.isInstance( item )) {
+			if ( !strict && itemClass.isInstance( item ) || strict && item.getClass() == itemClass) {
 				if (!lostInvent || item.keptThoughLostInvent) {
 					return (T) item;
 				}
 			}
 		}
-		
+		return null;
+	}
+	public Item getItem(Notes.CustomRecord record) {
+		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
+		for (Item item : this) {
+			if ( item.customNoteID == record.ID() ) {
+				if (!lostInvent || item.keptThoughLostInvent) {
+					return item;
+				}
+			}
+		}
 		return null;
 	}
 

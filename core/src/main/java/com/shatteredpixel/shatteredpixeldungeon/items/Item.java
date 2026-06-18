@@ -26,8 +26,8 @@ import static com.watabou.utils.Reflection.newInstance;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -41,13 +41,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -72,7 +68,6 @@ import com.watabou.utils.Callback;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 
 public class Item implements Bundlable {
 
@@ -101,14 +96,15 @@ public class Item implements Bundlable {
 	
 	public boolean stackable = false;
     public boolean canHold = false;
-    public boolean selled = false;
+    public boolean sold = false;
     protected int quantity = 1;
 	public boolean dropsDownHeap = false;
 	
 	private int level = 0;
-	public int guessingLevel = 0;
-    public int BuffLevelPoint = 0;
+	public int guessingLevel = Integer.MIN_VALUE;
+    public int BuffLevelPoint = Integer.MIN_VALUE;
     public String noted = "";
+	public String ClassNote = "";
 	public int customNoteID	= -1;
     public boolean canNote = true;
     public boolean canShowNote = true;
@@ -138,7 +134,8 @@ public class Item implements Bundlable {
 
 		String name = name();
 
-		if (visiblyUpgraded() != 0) {
+		if (levelKnown && visiblyUpgraded() != 0
+				|| !levelKnown && visiblyUpgraded() != Integer.MIN_VALUE && SPDSettings.isAutoIdentify()) {
 			name = Messages.format(TXT_TO_STRING_LVL, name, visiblyUpgraded());
 			if (!levelKnown)
 				name += " ?";
@@ -256,70 +253,25 @@ public class Item implements Bundlable {
             overLoadLeft = 0;
         }
     }
-    public void notedSet(String text) {
-        if(this instanceof Scroll||(this instanceof Potion&&!(this instanceof Brew)&&!(this instanceof Elixir)&&!(this instanceof AlchemicalCatalyst))){
-            Item changItem = ScrollOfTransmutation.changeItem(this);
-            NoteItem(this,text);
-            NoteItem(changItem,text);
-        }else if(stackable){
-            NoteItem(this,text);
-        }
-        //上面是保存到类，下面是无论如何都对物品本身打标签，用于显示到排行榜
-        noted = text;
+    public String NoteGet(){
+		if(!canShowNote){
+			return  "";
+		}
+		if (showSelf) {
+			if (!noted.isEmpty())
+				return Messages.get(Item.class, "itemNote",noted)+"\n\n";
+			if (!ClassNote.isEmpty())
+				return Messages.get(Item.class, "classNote",ClassNote)+"\n\n";
+			return "";
+		}
+		Notes.CustomRecord note = Notes.findCustomRecord(customNoteID);
+        if(note != null)
+			return Messages.get(Item.class, "itemNote", note.title().replace('_', 'ˍ'))+"\n\n";
+		note = Notes.findCustomRecord(this);
+		if (note != null)
+			return Messages.get(Item.class, "classNote", note.title().replace('_', 'ˍ'))+"\n\n";
+        return "";
     }
-    private void NoteItem(Item item,String text){
-        if(Dungeon.itemAOfSave.contains(item.getClass())){
-            int j=0;
-            for(Class<?> i:Dungeon.itemAOfSave){
-                if(item.getClass()==i){
-                    break;
-                }else {
-                    j++;
-                }
-            }
-            Dungeon.NOTEAOfSave.set(j,text);
-        }else {
-            Dungeon.itemAOfSave.add(item.getClass());
-            Dungeon.NOTEAOfSave.add(text);
-        }
-    }
-    public static String ClassNoteToItem(Item item){
-        String note;
-        if(item.showSelf){
-            note = item.noted;
-        }
-        else if (Dungeon.itemAOfSave!= null && Dungeon.NOTEAOfSave != null && Dungeon.itemAOfSave.contains(item.getClass())) {
-            int j = 0;
-            for (Class<?> i : Dungeon.itemAOfSave) {
-                if (item.getClass() == i) {
-                    break;
-                } else {
-                    j++;
-                }
-            }
-            note = Dungeon.NOTEAOfSave.get(j);
-        }
-        else {
-            note = item.noted;
-        }
-        return note;
-    }
-    public String NoteGet(Item item){
-        String note=ClassNoteToItem(item);
-        String info = "";
-        if(note!=null&& !note.isEmpty()){
-            if(item.stackable){
-                info =Messages.get(Item.class, "classNote",note)+"\n\n";
-            }else {
-                info =Messages.get(Item.class, "itemNote",note)+"\n\n";
-            }
-        }
-        if(!item.canShowNote){
-            info = "";
-        }
-        return info;
-    }
-
 
     protected void onThrow( int cell ) {
 		Heap heap = Dungeon.level.drop( this, cell );
@@ -462,14 +414,13 @@ public class Item implements Bundlable {
             Item detached = split(quantity);
             updateQuickslot();
             if (detached != null) {
-                detached.noted=this.noted;
                 detached.onDetach();
             }
             return detached;
 
         }
     }
-	
+
 	public final Item detachAll( Bag container ) {
 		Dungeon.quickslot.clearItem( this );
 
@@ -517,8 +468,8 @@ public class Item implements Bundlable {
 	//returns the level of the item, after it may have been modified by temporary boosts/reductions
 	//note that not all item properties should care about buffs/debuffs! (e.g. str requirement)
 	public int buffedLvl(){
-        if (BuffLevelPoint!=0)
-            return level()+BuffLevelPoint;
+        if (BuffLevelPoint != Integer.MIN_VALUE)
+            return level() + BuffLevelPoint;
         int lvl = level();
         if (overLoad == OverLoad.RECOVER && overLoadLeft != 0)
             lvl -= (int)(Math.sqrt(8 * Math.ceil(overLoadLeft / 100F) + 1) - 1)/2;
@@ -556,6 +507,8 @@ public class Item implements Bundlable {
 	public Item upgrade() {
 		
 		this.level++;
+		if (guessingLevel == Integer.MIN_VALUE)
+			guessingLevel = 0;
 		guessingLevel++;
 
 		updateQuickslot();
@@ -585,12 +538,21 @@ public class Item implements Bundlable {
 		
 		return this;
 	}
-	public int guessingLevel(){
+	private int guessingLevel(){
 		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
 			return level();
 		if (SPDSettings.isAutoIdentify())
-			return Math.max(0, guessingLevel);
+			return guessingLevel;
 		return 0;
+	}
+	public boolean hasGuessingLevel(){
+		return guessingLevel != Integer.MIN_VALUE;
+	}
+	public int TextGuessingLevel(){
+		int lvl = 0;
+		if (hasGuessingLevel())
+			lvl = guessingLevel();
+		return lvl;
 	}
 	public int visiblyUpgraded() {
 		return levelKnown ? level() : guessingLevel();
@@ -655,9 +617,7 @@ public class Item implements Bundlable {
 	
 	public String info() {
 		update();
-        String info = NoteGet(this);
-        info+=desc();
-		return info;
+		return NoteGet() + desc();
 	}
 	
 	public String desc() {
@@ -724,20 +684,23 @@ public class Item implements Bundlable {
 	private static final String KEPT_LOST       = "kept_lost";
     private static final String UPGRADEUSED     = "UpgradeUSED";
     private static final String NOTED           = "noted";
+	private static final String CLASS_NOTE      = "Class_Note";
 	private static final String NOTE_ID			= "customNOTE_ID";
     private static final String CAN_HOLD        = "canHold";
-    private static final String BUFFLEVELPOINT  = "BUFFLEVELPOINT";
+    private static final String OLD_LEVEL_POINT  = "BUFFLEVELPOINT";
+	private static final String BUFFED_LEVEL_POINT = "BUFFED_LEVEL_POINT";
     private static final String COOLDOWN_LEFT   = "cooldownLeft";
     private static final String OVER_LOAD       = "over_load_mode";
     private static final String OVER_LOAD_LEFT  = "over_load_left";
-    private static final String UPDATE_TIME        = "fixTime";
+    private static final String UPDATE_TIME     = "fixTime";
+	private static final String IS_SOLD			= "IS_SOLD";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		bundle.put( QUANTITY, quantity );
 		bundle.put( LEVEL, level );
 		bundle.put( guessingLEVEL, guessingLevel);
-        bundle.put( BUFFLEVELPOINT, BuffLevelPoint );
+        bundle.put( BUFFED_LEVEL_POINT, BuffLevelPoint );
         bundle.put( UPGRADEUSED, UpgradeUSED );
 		bundle.put( LEVEL_KNOWN, levelKnown );
 		bundle.put( CURSED, cursed );
@@ -748,11 +711,13 @@ public class Item implements Bundlable {
 		bundle.put( KEPT_LOST, keptThoughLostInvent );
 
         bundle.put(NOTED,noted);
+		bundle.put(CLASS_NOTE, ClassNote);
         bundle.put(COOLDOWN_LEFT, coolDownLeft);
         bundle.put(CAN_HOLD, canHold);
         bundle.put(OVER_LOAD, overLoad);
         bundle.put(OVER_LOAD_LEFT, overLoadLeft);
         bundle.put(UPDATE_TIME, updateTime);
+		bundle.put(IS_SOLD, sold);
 		if (customNoteID != -1)
 			bundle.put(NOTE_ID, customNoteID);
 	}
@@ -770,7 +735,12 @@ public class Item implements Bundlable {
 			degrade( -level );
 		}
 		guessingLevel = bundle.getInt(guessingLEVEL);
-		BuffLevelPoint = bundle.getInt(BUFFLEVELPOINT);
+		if (!isUpgradable())
+			guessingLevel = Integer.MIN_VALUE;
+		if (bundle.getInt(OLD_LEVEL_POINT) != 0)
+			BuffLevelPoint = bundle.getInt(OLD_LEVEL_POINT);
+		else
+			BuffLevelPoint = bundle.getInt(BUFFED_LEVEL_POINT);
 		cursed	= bundle.getBoolean( CURSED );
 
 		//only want to populate slot on first load.
@@ -781,8 +751,16 @@ public class Item implements Bundlable {
 		}
 
 		keptThoughLostInvent = bundle.getBoolean( KEPT_LOST );
-
-        noted = bundle.getString(NOTED);
+		if (Rankings.restoreInRanking) {
+			noted = bundle.getString(NOTED);
+			ClassNote = bundle.getString(CLASS_NOTE);
+		}
+		else {
+			String note = bundle.getString(NOTED);
+			if (!note.isEmpty()){
+				addOldNote(note);
+			}
+		}
         coolDownLeft = bundle.getInt(COOLDOWN_LEFT);
         canHold = bundle.getBoolean(CAN_HOLD);
         if (bundle.contains(OVER_LOAD))
@@ -791,8 +769,32 @@ public class Item implements Bundlable {
             overLoad    = OverLoad.NONE;
         overLoadLeft= bundle.getFloat(OVER_LOAD_LEFT);
         updateTime = bundle.getInt(UPDATE_TIME);
+		sold = bundle.getBoolean(IS_SOLD);
 		if (bundle.contains(NOTE_ID))
 			customNoteID = bundle.getInt(NOTE_ID);
+	}
+	public void addOldNote(String title){
+		Notes.CustomRecord note;
+		if (stackable) {
+			Class<? extends Item> itemClass;
+			if(this instanceof ExoticPotion)
+				itemClass = ExoticPotion.exoToReg.get(getClass());
+			else if (this instanceof ExoticScroll)
+				itemClass = ExoticScroll.exoToReg.get(getClass());
+			else
+				itemClass = getClass();
+			if (Notes.findCustomRecord(itemClass) != null)
+				return;
+			note = new Notes.CustomRecord(itemClass, title, "");
+			note.assignID();
+			Notes.add(note);
+		}
+		else {
+			note = new Notes.CustomRecord(this, title, "");
+			note.assignID();
+			customNoteID = note.ID();
+			Notes.add(note);
+		}
 	}
 
 	public int targetingPos( Hero user, int dst ){
@@ -942,6 +944,10 @@ public class Item implements Bundlable {
         }
     }
     public class OverLoadTrack extends Buff{
+
+		{
+			revivePersists = true;
+		}
 
         @Override
         public boolean attachTo( Char target ) {

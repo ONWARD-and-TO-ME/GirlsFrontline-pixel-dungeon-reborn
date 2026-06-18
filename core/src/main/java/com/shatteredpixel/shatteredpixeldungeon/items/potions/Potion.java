@@ -393,10 +393,10 @@ public class Potion extends Item implements ColorItem {
 
     @Override
     public String info() {
-        String noteA = NoteGet(this);
+        String note = NoteGet();
         return isKnown() ?
                 super.info() :
-                noteA+Messages.get(this, "unknown_desc");
+                note+Messages.get(this, "unknown_desc");
     }
 	
 	@Override
