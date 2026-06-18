@@ -4,6 +4,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
@@ -26,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.ColorItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cypros;
@@ -39,10 +41,13 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.canScrollRedButton;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndSelectTalent;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSlider;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndWithCanScrollButton;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.FileUtils;
 import com.watabou.utils.GameMath;
 
 import java.util.ArrayList;
@@ -53,11 +58,12 @@ public class debugBook extends TestItem {
         defaultAction =AC_SetMode;
     }
     private static final String AC_SetMode = "setMode";
+    private static final String AC_COPY     = "copy";
     private static final String AC_APPLY = "apply";
     private static Mode mode = Mode.NONE;
     private static final String AC_SET_NUM = "SET";
     enum Mode{
-        NONE, EXPERIENCE, STRENGTH, LEVEL, IGNORE, MOB, CHARGE, RESET, COMPLETE;
+        NONE, EXPERIENCE, STRENGTH, LEVEL, IGNORE, MOB, CHARGE, RESET, COMPLETE, TALENT, WEALTH;
         public String modeName(){
             return Messages.get(debugBook.class, name());
         }
@@ -90,6 +96,10 @@ public class debugBook extends TestItem {
                 return Messages.get(this, "res");
             case COMPLETE:
                 return Messages.get(this, "comp");
+            case TALENT:
+                return Messages.get(this, "tal");
+            case WEALTH:
+                return Messages.get(this, "wea");
             default:
                 return "";
         }
@@ -115,6 +125,8 @@ public class debugBook extends TestItem {
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
         actions.add(AC_SetMode);
+        if (mode == Mode.RESET)
+            actions.add(AC_COPY);
         if(mode != Mode.NONE)
             actions.add(AC_APPLY);
         switch (mode){
@@ -126,6 +138,7 @@ public class debugBook extends TestItem {
             case LEVEL:
             case MOB:
             case CHARGE:
+            case WEALTH:
                 actions.add(AC_SET_NUM);
                 break;
             default:
@@ -144,52 +157,36 @@ public class debugBook extends TestItem {
                 break;
             case AC_SET_NUM:
                 switch (mode) {
-                    case EXPERIENCE:
-                        setEXP();
-                        break;
-                    case STRENGTH:
-                        setSTR();
-                        break;
-                    case LEVEL:
-                        setLVL();
-                        break;
-                    case MOB:
-                        setMOB();
-                        break;
-                    case CHARGE:
-                        setCHA();
-                        break;
+                    case EXPERIENCE: setEXP();break;
+                    case STRENGTH: setSTR();break;
+                    case LEVEL: setLVL();break;
+                    case MOB: setMOB();break;
+                    case CHARGE: setCHA();break;
+                    case WEALTH: setWealth();break;
                 }
                 break;
             case AC_APPLY:
                 switch (mode) {
-                    case EXPERIENCE:
-                        updateEXP();
-                        break;
-                    case STRENGTH:
-                        updateSTR();
-                        break;
-                    case LEVEL:
-                        GameScene.selectItem(itemLVL);
-                        break;
-                    case IGNORE:
-                        GameScene.selectItem(itemIGN);
-                        break;
-                    case MOB:
-                        mobAPPLY();
-                        break;
-                    case CHARGE:
-                        GameScene.selectItem(itemCHA);
-                        break;
-                    case RESET:
-                        resetLevel();
-                        break;
-                    case COMPLETE:
-                        complete();
-                        break;
-                    case NONE:
-                    default:
-                        break;
+                    case EXPERIENCE: updateEXP();break;
+                    case STRENGTH: updateSTR();break;
+                    case LEVEL: GameScene.selectItem(itemLVL);break;
+                    case IGNORE: GameScene.selectItem(itemIGN);break;
+                    case MOB: mobAPPLY();break;
+                    case CHARGE: GameScene.selectItem(itemCHA);break;
+                    case RESET: resetLevel();break;
+                    case COMPLETE: complete();break;
+                    case TALENT: setTalent();break;
+                    case WEALTH: WealthKill();break;
+                    case NONE: default: break;
+                }
+                break;
+            case AC_COPY:
+                try {
+                    Bundle bundle = new Bundle();
+                    bundle.put( Dungeon.LEVEL, Dungeon.level );
+                    FileUtils.bundleToFile(GamesInProgress.depthFile(GamesInProgress.curSlot , Dungeon.level.levelId, true), bundle);
+                } catch (Exception e) {
+                    GirlsFrontlinePixelDungeon.reportException(e);
                 }
                 break;
         }
@@ -202,13 +199,6 @@ public class debugBook extends TestItem {
         for (Mode e : Mode.values()){
             if (e != Mode.NONE)
                 buttons.add(new canScrollRedButton(e, e.modeName()){
-
-                    public boolean onClick(float x, float y){
-                        if(!inside(x,y)) return false;
-                        onClick();
-
-                        return true;
-                    }
 
                     @Override
                     public void onClick(){
@@ -232,7 +222,7 @@ public class debugBook extends TestItem {
         if (INSTANCE != null)
             INSTANCE.hide();
         switch (mode_){
-            case EXPERIENCE: case STRENGTH: case LEVEL: case MOB: case CHARGE:
+            case EXPERIENCE: case STRENGTH: case LEVEL: case MOB: case CHARGE: case WEALTH:
                 defaultAction = AC_SET_NUM; break;
             default:
                 defaultAction = AC_APPLY; break;
@@ -260,6 +250,9 @@ public class debugBook extends TestItem {
             hero.defenseSkill = 5 + workingNum - 1;
             Sample.INSTANCE.play( Assets.Sounds.READ );
             hero.updateHT( true );
+        }else {
+            defaultAction = AC_SetMode;
+            updateQuickslot();
         }
     }
     private void setSTR(){
@@ -274,18 +267,26 @@ public class debugBook extends TestItem {
         }));
     }
     private void updateSTR(){
-            new PotionOfStrength().apply(hero);
-            hero.STR = workingNum;
-            Sample.INSTANCE.play( Assets.Sounds.READ );
+        new PotionOfStrength().apply(hero);
+        hero.STR = workingNum;
+        Sample.INSTANCE.play( Assets.Sounds.READ );
+        defaultAction = AC_SetMode;
+        updateQuickslot();
     }
     private void setLVL(){
         Game.runOnRenderThread(()-> GameScene.show(new WndSlider(Messages.get(debugBook.class, "lvl_title"), 4){
             @Override
             public void hide(){
                 super.hide();
-                workingNum = num;
-                defaultAction = AC_APPLY;
-                updateQuickslot();
+                if (workingNum == num){
+                    defaultAction = AC_SetMode;
+                    updateQuickslot();
+                }
+                else {
+                    workingNum = num;
+                    defaultAction = AC_APPLY;
+                    updateQuickslot();
+                }
             }
         }));
     }
@@ -326,6 +327,10 @@ public class debugBook extends TestItem {
                 }
                 Sample.INSTANCE.play( Assets.Sounds.READ );
             }
+            else{
+                defaultAction = AC_SET_NUM;
+                updateQuickslot();
+            }
         }
     };
     protected WndBag.ItemSelector itemIGN = new WndBag.ItemSelector() {
@@ -355,8 +360,12 @@ public class debugBook extends TestItem {
                     item.levelKnown = false;
                     item.cursedKnown = false;
                 }
-                item.guessingLevel = 0;
+                item.guessingLevel = Integer.MIN_VALUE;
                 Sample.INSTANCE.play( Assets.Sounds.READ );
+            }
+            else {
+                defaultAction = AC_SetMode;
+                updateQuickslot();
             }
         }
     };
@@ -372,17 +381,13 @@ public class debugBook extends TestItem {
         }));
     }
     private void mobAPPLY(){
-        Dungeon.mobRan=workingNum;
+        GLog.p(Messages.format("已将怪物精英率调整至 %d %%", workingNum));
+        Dungeon.mobRan = workingNum;
+        defaultAction = AC_SetMode;
+        updateQuickslot();
     }
     private void addButton(ArrayList<canScrollRedButton> buttons, String message, int setNum){
         buttons.add(new canScrollRedButton(message, setNum){
-
-            public boolean onClick(float x, float y){
-                if(!inside(x,y)) return false;
-                onClick();
-
-                return true;
-            }
 
             @Override
             public void onClick(){
@@ -406,7 +411,14 @@ public class debugBook extends TestItem {
         addButton(buttons, Messages.get(debugBook.class, "cha_full"), 0);
         addButton(buttons, Messages.get(debugBook.class, "cha_rem"), 1);
         addButton(buttons, Messages.get(debugBook.class, "cha_lock"), 2);
-        INSTANCE = new WndWithCanScrollButton(buttons);
+        INSTANCE = new WndWithCanScrollButton(buttons){
+            @Override
+            public void onBackPressed() {
+                super.onBackPressed();
+                defaultAction = AC_SetMode;
+                updateQuickslot();
+            }
+        };
         GirlsFrontlinePixelDungeon.scene().addToFront(INSTANCE);
     }
     protected WndBag.ItemSelector itemCHA = new WndBag.ItemSelector() {
@@ -442,6 +454,10 @@ public class debugBook extends TestItem {
                         break;
                 }
                 Sample.INSTANCE.play( Assets.Sounds.READ );
+            }
+            else {
+                defaultAction = AC_SET_NUM;
+                updateQuickslot();
             }
         }
     };
@@ -561,6 +577,7 @@ public class debugBook extends TestItem {
     }
     private void resetLevel(){//mark
         defaultAction = AC_SetMode;
+        GLog.p("已重置楼层。");
         InterlevelScene.returnLevel = Dungeon.depth;
         if (Dungeon.level instanceof LastShopLevel)
             Dungeon.RollTimes=0;
@@ -580,5 +597,35 @@ public class debugBook extends TestItem {
         Imp.Quest.complete();
         Imp.Quest.spawned = true;
         GLog.p("NPC任务已全部完成。");
+    }
+    private void setTalent(){
+        GirlsFrontlinePixelDungeon.scene().addToFront(new WndSelectTalent());
+    }
+    private void setWealth(){
+        Game.runOnRenderThread(()-> GameScene.show(new WndSlider(Messages.get(debugBook.class, "wealth_title"), 2, workingNum){
+            @Override
+            public void hide(){
+                super.hide();
+                workingNum = num;
+                defaultAction = AC_APPLY;
+                updateQuickslot();
+            }
+        }));
+    }
+    private void WealthKill(){
+        RingOfWealth.Wealth wealth = hero.buff(RingOfWealth.Wealth.class);
+        if (wealth != null) {
+            GLog.p(Messages.format("已增加 %d 点击杀数", workingNum));
+            ArrayList<Item> items = RingOfWealth.tryForBonusDrop(hero, workingNum, wealth.ring());
+            if (!items.isEmpty())
+                RingOfWealth.showFlareForBonusDrop(hero.sprite, wealth.ring());
+            for (Item item : items) {
+                Dungeon.level.drop(item, hero.pos);
+            }
+        }
+        else {
+            defaultAction = AC_SetMode;
+            setMode();
+        }
     }
 }
