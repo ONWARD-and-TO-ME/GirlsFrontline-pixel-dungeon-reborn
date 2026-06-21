@@ -123,7 +123,7 @@ public class ChangeButton extends Component {
             }
             ImageSrc[i] = img_[i] = new BlacksmithSprite();
         }
-
+        Item.ignoreGuess = true;
         if (maxPage == 1){
             this.icon = buildDisplayImage(img_[0],
                     (this.size = resolveInherit(sizeList, 0, img_, -1F)),
@@ -161,7 +161,7 @@ public class ChangeButton extends Component {
 
             this.icon = pageImage.get(0);
         }
-
+        Item.ignoreGuess = false;
         add(this.icon);
 
         layout();

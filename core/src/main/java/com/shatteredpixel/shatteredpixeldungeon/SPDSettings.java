@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.nlf.calendar.Lunar;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -250,7 +251,7 @@ public class SPDSettings extends GameSettings {
 		put(AutoIdentify, value);
 	}
 	public static boolean isAutoIdentify(){
-		return getBoolean(AutoIdentify, false);
+		return getBoolean(AutoIdentify, false) && !Item.ignoreGuess;
 	}
 	public static void resetSpecialDay_PlayTimes(){
 		put(Special_Day + "PlayTimes", 100);

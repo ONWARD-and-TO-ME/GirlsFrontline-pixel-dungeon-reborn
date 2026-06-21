@@ -128,7 +128,7 @@ public class Item implements Bundlable {
     public int updateTime;
 
 	protected String name = Messages.get(this, "name");
-
+	public static boolean ignoreGuess;
 	@Override
 	public String toString() {
 

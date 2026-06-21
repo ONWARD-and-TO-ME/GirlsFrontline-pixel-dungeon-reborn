@@ -88,8 +88,6 @@ import java.util.Arrays;
 
 public class v0_5_X_Changes {
     public static void addAllChanges(ArrayList<ChangeInfo> changeInfos) {
-        if (SPDSettings.isBirthday())
-            SomethingSaying(changeInfos);
         add_0_5_8_2_Changes(changeInfos);
         add_0_5_7_3_To_0_5_8_1_Changes(changeInfos);
         add_0_5_7_2_Changes(changeInfos);
@@ -139,10 +137,10 @@ public class v0_5_X_Changes {
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
         changes.hardlight(Window.TITLE_COLOR);
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new ScrollOfIdentify(), -2F, null, null, -2, "辅助鉴定", "我加入了一个辅助鉴定功能，当你做出一些对物品或装备产生初步鉴定的操作时，将会把鉴定内容标记出来。" +
+        changes.addButton(new ChangeButton(new ScrollOfIdentify(), "辅助鉴定", "我加入了一个辅助鉴定功能，当你做出一些对物品或装备产生初步鉴定的操作时，将会把鉴定内容标记出来。" +
                 "\n\n目前这个功能尚不完善，仅限猜测未鉴定武器、护甲的等级下限、部分瞄准镜的等级、消耗多充能的HE燃烧弹与DT农药等等。" +
                 "\n\n这个功能的开启要求完成全知挑战。"));
-        changes.addButton(new ChangeButton(new ScrollOfIdentify(), -2F, null, null, -2, "全知挑战", "在返回地表处找德尔(目前暂用波波沙皮肤)，即可开启。" +
+        changes.addButton(new ChangeButton(new ScrollOfIdentify(),"全知挑战", "在返回地表处找德尔(目前暂用波波沙皮肤)，即可开启。" +
                 "\n\n全知挑战将会直接知道磁盘、药水、瞄准镜的真实名称，武器、护甲的真实等级及其附魔、刻印，并且可以透过地上的物品类别(补给箱、墓碑等)直接看出内部物品(只能看最顶上的那个物品)。" +
                 "\n\n全知挑战禁止生成力量药水与升级磁盘(允许初始携带)，而所有的武器与护甲的阶数都会调整到符合当前力量。" +
                 "\n\n武器与护甲首次降阶时将会依据距离1阶的阶数差进行补级。" +
@@ -162,25 +160,25 @@ public class v0_5_X_Changes {
         changeInfos.add(changes);
         changes.addButton(new ChangeButton(new Tengu(), 0.8F, "现在10层衔尾蛇切换阶段时，不在不变动区域的友方单位不再会被移除，而是传送至玩家周围了\n\n不在不变动区域的敌方依旧会被移除，如果有。"));
         changes.addButton(new ChangeButton(new LloydsBeacon(), "上一个版本我改写空降妖精的时候，原计划是在背包也进行冷却来着，但不知道为什么写去必须装备着才冷却了。现在补回来了。"));
-        changes.addButton(new ChangeButton(new ScaleArmor(), -2F, null, null, -2, "外骨骼相关", "修复了外骨骼复合产生的破损度在boss战期间的意外增长"));
+        changes.addButton(new ChangeButton(new ScaleArmor(), "外骨骼相关", "修复了外骨骼复合产生的破损度在boss战期间的意外增长"));
         changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER), "过载", "我稍微调整了一下过载的衰减，现在待机时的过载时间衰减值普遍降低，并且在Boss战期间，待机衰减会进一步降低。" +
                 "\n\n而武器护甲在其生效时，如武器攻击，护甲防御没闪避掉的攻击，这个时候将会加快衰减。"));
-        changes.addButton(new ChangeButton(new ScrollOfIdentify(), -2F, null, null, -2,  "行窃预知", "我很抱歉，在上一个版本中，我将UMP9初始携带的行窃预知的结果判断反转了，导致已寻找变成未寻找，未寻找变成已寻找……" +
+        changes.addButton(new ChangeButton(new ScrollOfIdentify(),  "行窃预知", "我很抱歉，在上一个版本中，我将UMP9初始携带的行窃预知的结果判断反转了，导致已寻找变成未寻找，未寻找变成已寻找……" +
                 "\n\n而现在已经修复好了，可以放心地给行窃预知加点了。"));
         changes.addButton(new ChangeButton(new Gun562Accessories(), "修复56-1升级56-2后获得永久不衰减的过载的bug。"));
-        changes.addButton(new ChangeButton(new PotionOfInvisibility(), -2F, null, null, -2, "升阶秘法", "修复了+2升阶秘法在使用磁盘时令刺客伏击重置的bug。"));
+        changes.addButton(new ChangeButton(new PotionOfInvisibility(), "升阶秘法", "修复了+2升阶秘法在使用磁盘时令刺客伏击重置的bug。"));
         changes.addButton(new ChangeButton(new RotLasher(), "我想应该很多人受到过触手的伏击，以及想要击杀腐莓却无处落脚。" +
                 "\n\n现在腐莓房及其生成的腐莓触手同步了破碎，发现玩家将会先等待一回合，并且腐莓四周必定有格子进行攻击。"));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new GeminiShield(), 0.8F, null, null, -2, "双生妖精(暂用ST-AR15贴图)", "现在双生妖精受到玩家攻击时不再闪避了，以便于使用治疗.50进行治疗。" +
+        changes.addButton(new ChangeButton(new GeminiShield(), 0.8F, "双生妖精(暂用ST-AR15贴图)", "现在双生妖精受到玩家攻击时不再闪避了，以便于使用治疗.50进行治疗。" +
                 "\n\n现在双生妖精在受到远程伤害时也会互相转移仇恨。"));
-        changes.addButton(new ChangeButton(new ScaleArmor(), -2F, null, null, 0x88EEFF,"重甲刻印","现在四种激光怪的攻击可以被重甲抵挡了。" +
+        changes.addButton(new ChangeButton(new ScaleArmor(), 0x88EEFF,"重甲刻印","现在四种激光怪的攻击可以被重甲抵挡了。" +
                 "\n\n并且重甲的防御上限变为等级的平方，下限不做调整。" +
                 "\n\n也不清楚这样的改动到位没有……"));
-        changes.addButton(new ChangeButton(new Blacksmith(), 0.8F, null, null, -2, "装备重铸","现在外骨骼合并只需要同阶即可(针对火控外骨骼及全知挑战)" +
+        changes.addButton(new ChangeButton(new Blacksmith(), 0.8F, "装备重铸","现在外骨骼合并只需要同阶即可(针对火控外骨骼及全知挑战)" +
                 "\n\n放入火控外骨骼则另一个外骨骼无论其等级多少都将作为耗材。" +
                 "\n\n现在可以放入未鉴定等级的无诅咒装备作为消耗材料，倘若放入两个未鉴定装备则会以左边的为主装备。"));
         changes.addButton(new ChangeButton(new TengusMask(), "现在三层通用天赋的解锁条件从12级+心智升级，降低至12级，但专职天赋依旧需要进行心智升级以获取。"));
@@ -188,7 +186,7 @@ public class v0_5_X_Changes {
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
         changes.hardlight( CharSprite.NEGATIVE );
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561), 0.8F, null, null, -2, "电磁增幅", "现在电磁增幅的概率将会受到攻速影响，过快或者过慢的武器会对概率造成影响。"));
+        changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561), 0.8F, "电磁增幅", "现在电磁增幅的概率将会受到攻速影响，过快或者过慢的武器会对概率造成影响。"));
     }
     public static void add_0_5_7_3_To_0_5_8_1_Changes( ArrayList<ChangeInfo> changeInfos ) {
         ChangeInfo changes = new ChangeInfo("v0.5.7v3 ~ 0.5.8v1", true, "");
@@ -302,59 +300,6 @@ public class v0_5_X_Changes {
         changes.addButton(new ChangeButton(new HeroSprite(HeroClass.TYPE561, 6), 0.8F, "56-1式", "修复了56-1式初始饱食度上限少了300点的bug。"));
         changes.addButton(new ChangeButton(new WandmakerSprite(), 0.8F, "未知小彩蛋", "为了方便新玩家尽快玩到想玩的内容，我在某些地方留了点后门，快去找一找吧~awa"));
         changes.addButton(new ChangeButton(new Image(Icons.WARNING.get()), "代码整理", "由于1月底到2月中旬期间的一系列改动与回退，我不经意间把0.5.3前后因修改底层导致在此之前的存档作废这个问题给修好了。(如果还有人保留着0.5.3及以前的存档的话)"));
-    }
-    public static void SomethingSaying( ArrayList<ChangeInfo> changeInfos ){
-        ChangeInfo changes = new ChangeInfo("我有点话想说", true, "");
-        changes.hardlight(Window.TITLE_COLOR);
-        changeInfos.add(changes);
-        ArrayList<String> message = new ArrayList<>();
-        {
-            message.add("也不知道你是先看到那个文本还是先看到这里，这里是对于那个文本的补充，但我担心要是在此做了前后限制，就很少有人看到这里了，所以就不做顺序限制了……");
-            message.add("我没死，也没生病，只是现实很忙，难以腾出时间。现在依旧会继续完成一些小更新，如修复bug、完善某些内容等。");
-            message.add("这次更新还是有点令我不太满意的，毕竟时间比较赶，少做了一些东西……");
-            message.add("接下来基本都是碎碎念了，不想看的可以就此退出了。");
-            message.add("双生妖精的机制是我很满意的，相互传递仇恨，互相拉扯，可惜填写数值的方面我并不擅长……");
-            message.add("56-1的红书、G11的子弹，这两个的充能透支是从一个角色中切割出来的，这个角色就是M16A1。" +
-                    "\n\nM16A1我原本打算做成地牢不生成食物+充能回复减慢，再搭配一些机制，例如与怪物共享饥饿扣血，或者生吃怪物；" +
-                    "\n而充能方面则是，" +
-                    "\n正数充能有三种模式，单发、常规、倾泻，效果如字面意思，" +
-                    "\n负数部分则是，尝试透支充能射击，负数充能越多概率越低。" +
-                    "\n\n可惜了，这个角色将会在很长的一段时间内，就停留在这个空想的阶段了……");
-            message.add("我一点也不会做数值调整。" +
-                    "\n你知道吗，G11的子弹透支其实蛮超模的，只是恰好多写了计入贴膜，莫名其妙平衡了一点。" +
-                    "\n56-1重制的时候，那个割草其实是我拍案做决定的，结果做成写着机制的数值怪了，而当时竟然还有人说重制56-1不能玩……");
-            message.add("德尔的几个订单中，其实过载才是主要内容，其余的都是顺手写的，属于是为了这碟醋包的饺子……");
-            message.add("我其实还想加入丹德莱的来着，就少前1片面回忆里边的丹德莱。" +
-                    "\n\n你知道吗，片面回忆其实有个bug，在33333帧也就是55分33秒的时候界面会消失，" +
-                    "\n在此前未选完卡，然后利用一个未知机制让界面恢复，你就能重新选一套完整的卡，这样子你就带着一套不完整的卡和一套完整的卡，两套卡了。" +
-                    "\n这个机制我推测是要把怪击退出范围，然后让怪重新走进来。" +
-                    "\n\n我正是想要把这个玩法做成一个角色，然后把这个作为彩蛋来着，可惜了……");
-            message.add("你知道吗，全知挑战原本不是辅助鉴定的前置挑战，而是隐藏角色蒂玛或者某个善于改装的人形的前置挑战" +
-                    "\n\n这个角色可以在局内拆解各个武器的模块，自行DIY一款武器。" +
-                    "\n\n甚至将武器带回0层实现局外成长。" +
-                    "\n\n不过……");
-            message.add("其实我还想加几个联动小游戏作为5区商店条件来着，例如荣耀日的音游、少前1的兵棋，" +
-                    "\n\n还差一个但是想不到了……" +
-                    "\n\n三个小游戏，触发掉一个(无论胜败)就会开启5区商店。" +
-                    "\n\n而通关数量觉得商店装备的等级上限。");
-            message.add("其实我挺想对Cat说一声对不起的，那时候我精神状态不好，把我的锅扣到他头上了，还闹了一波退群，这就是我说的，大抵是我咎由自取吧……");
-            message.add("双生妖精如果生成时盾被丢到了一个无视野位置，并且怪物也无法看到盾的时候，导可以无伤单刷怪的，但玩家要尽早撤离以脱离视野，或者让导挡住路径。" +
-                    "\n\n衔尾蛇的切地图对非保留区域的怪也是为此而改的，因为我的双生之盾被吞了……");
-            message.add("你知道吗，过载其实可以被G11内部的子弹模块贪下来的，不要傻乎乎地让过载扣掉等级了。");
-            message.add("这次更新还有好几个通用天赋还没做来着……" +
-                    "\n例如踩陷阱的回收陷阱，以及旧56-1的部分天赋" +
-                    "\n\n所以当时重制我为什么要直接移除掉这部分代码呢……");
-            message.add("到这里，我的话好像说完了，又好像还漏了点什么东西？不管了……" +
-                    "\n\n哦对了，你知道吗，不咎、等待响应、ONWARD、TO ME都是我哦。");
-            message.add("我的git库的地址在下方展示，如果想要开发而又不太想找我说话，可以直接自行下载的" +
-                    "\n\n https://github.com/" +
-                    "\n ONWARD-and-TO-ME/" +
-                    "\n GirlsFrontline-pixel-" +
-                    "\n dungeon-reborn.git");
-            message.add("这个ChangeButton.java其实是我犯病的时候爆改的，把他当作一个状态机来做了，大概能再重制回二百来行代码，但我没空闲时间去仔细研究哩……");
-            message.add("我挺想同步破碎的道具日志的，这样子我就能对查种器进行大刀阔斧的改动了，例如直接从日志上选择道具，而非现在这样的输入文本，试想一下，直接选择道具，是不是比现在的输入文本便捷多了?" );
-        }
-        changes.addButton(new ChangeButton(new HeroSprite(HeroClass.HUNTRESS, 0), "", message));
     }
     public static void add_0_5_7_Changes( ArrayList<ChangeInfo> changeInfos ){
         ChangeInfo changes = new ChangeInfo("v0.5.7", true, "");
@@ -493,32 +438,7 @@ public class v0_5_X_Changes {
                 "0层基地指南", pageMessage1));
 
         changes.addButton( new ChangeButton(Icons.get(Icons.CHALLENGE_ON),"排行榜调整","_-_现在排行榜默认保存30个记录。\n\n_-_新增锁定排行榜记录功能，在对应记录的窗口的右上角，点击其可以将此记录锁定，不再会被清理。\n\n_-_被锁定的记录不会占用默认保存数量的30次。"));
-//        Hero hero = new Hero();
-//        hero.heroClass = HeroClass.TYPE561;
-//        Object[] aaaa = new Object[]{new YogFist.DarkFist(), new Hero(), new Waterskin(),hero,new Amulet(), new Gold(10), new Dewdrop()};
-//        changes.addButton(new ChangeButton("标题","内容",aaaa));
-        //现在加入了自动分拣，所以可以任意缺项、打乱顺序，只需要明确末端是数组（Object[]或者ArrayList）还是值即可
-        //可以接受贴图、生物（包括怪物和玩家）、物品
-        //由于自动分拣过程中，需要对空的标题列表和内容列表按照生物/物品的相关文案填充
-        //现在数组的填充要在new ChangeButton之前（理论上除了贴图/生物/物品、标题、内容的ArrayList可以在之后填充）
-        //这种填充可以加入一对大括号{}，然后就可以在左边收起来了
-        //自动分拣的过程中，内容是按照从末项-次末项-...-次项-首项这样的逆序获取的，标题是按照次末项-首项-次项-...这样的顺序获取的，并且会让出唯一String项给内容
-        //所以请按照左边标题右边内容的顺序输入参数
-        //以及为了避免不必要的性能消耗，最好还是按照以下顺序输入，虽然到目前为止我都没遇到过卡顿
-        //目前可接受参数为 贴图(Image)/生物(Char/Mob/Hero)/物品(Item)、大小(float)、动作(MovieClip.Animation)、修改动作循环逻辑(Boolean)、颜色(int)、标题(String)、内容(String)
-        //输入参数时，缺项会补默认值，依次是波波沙贴图、不改动（非正数）、默认动作（null）、不改动（null）、不闪光/发光（非正数）、生物或物品名称/无文本、生物或物品描述/无文本
-        //请留意末项的使用，末项是数组就会使用翻页窗口，前面是值会填充成数组，长度不够的数组也会补充到足够
-        //末项是值就会使用普通窗口，哪怕前面是数组，只会获取到首位非空项展示，如果得到的是空项则按照上面的来填充
-        //翻页窗口填充的时候，null/空数组/全null数组的时候按照上面的来填充，否则首项为空的情况下会遍历数组找到第一个非空的值复制过来
-        //在补长度或者对null填充的过程中，贴图、标题、内容复制首项，动作、循环逻辑填充null
-        //大小、颜色的逻辑有所变化，如果当前贴图项与首项一致，则复制首项（无论当前贴图项是复制的还是原本就填写的这个，至少复制首项不会出错），否则填充不改动
-        //数组可以填入ArrayList<Object>()或者Object[]，Object可以包含所有，Char可以包含Mob和Hero，Object[]包含除了int[]、float[]、boolean[]这种小写数组（基础数组）以外的所有普通数组
-        //输入ArrayList的时候，float要换成Float，int要换成Integer，boolean要换成Boolean(虽然我要求的参数就是Boolean就是了)，其他的就把其类型复制到<>里边就行了
-        //加入动作基本就是new 对应生物的材质加上“.”+“对应动作”
-        //Boolean对比boolean多个null，false是强制不循环，true是强制循环，对单窗口来说，null是在窗口处不执行动作，对翻页窗口来说，null是不改变循环逻辑
-        //大小、颜色只在正数部分生效，输入非正数的话，就什么改动也没有
-        //大小很好理解，字面意思，颜色的话，对于贴图/物品，是令得到的贴图闪光，对于生物，是令得到的贴图发光
-        //目前闪光和发光不可共存，我在考虑要不要再引入一个参数Long来控制按照哪一种来使用
+
         changes.addButton(new ChangeButton(new AgentSprite(), 0.6F,
                 new AgentSprite().zap,
                 "代理人",
@@ -566,7 +486,7 @@ public class v0_5_X_Changes {
 		changes.hardlight( CharSprite.NEGATIVE );
 		changeInfos.add(changes);
 
-        changes.addButton(new ChangeButton(new CrabSprite(), -1,
+        changes.addButton(new ChangeButton(new CrabSprite(),
                 new CrabSprite().attack, true,
                 0xFF8800,
                 "烈焰精英",
@@ -574,7 +494,7 @@ public class v0_5_X_Changes {
             "_-_ 同时，当_烈焰精英_被击败时，其不再会点燃_周围水格_。"
         ));
 
-        changes.addButton(new ChangeButton(new CyclopsSprite(), -1,
+        changes.addButton(new ChangeButton(new CyclopsSprite(),
                 new CyclopsSprite().attack,
                 "独眼巨人A型",
             "_-_ 较大幅度的削弱了_独眼巨人A型_过于强悍的_闪避与命中_数值。\n"+
