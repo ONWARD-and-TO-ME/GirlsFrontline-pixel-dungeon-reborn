@@ -147,17 +147,13 @@ public class v0_5_X_Changes {
                  "快捷栏切换", "做了旧版快捷栏的切换按钮，现在可以在设置中选择使用4格或6格快捷栏布局。" +
                 "\n\n方便习惯不同快捷栏格数的玩家群体。"));
         changes.addButton(new ChangeButton(Icons.get(Icons.BADGES), 
-                 "图鉴同步", "图鉴系统同步破碎像素地牢，优化了图鉴界面与分类展示。" +
-                "\n\n修复了主菜单的图鉴无法打开怪物页的bug。"));
-        changes.addButton(new ChangeButton(new PotionOfDivineInspiration(), 
-                 "更换天赋", "新增更换天赋功能，可以通过测试书进行天赋更换操作。" +
-                "\n\n同时新增财富击杀数统计。"));
+                 "图鉴同步", "图鉴系统同步破碎像素地牢，优化了图鉴界面与分类展示。"));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new MeatPie(),
-                 "肉桂卷节日", "给肉桂卷的节日加了一周时间。\n\n肉桂卷生效节日大约是5月的第4周至6月的第3周。\n与现实中法国面包节时间相近。"));
+        changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.CINNAMON_ROLL),
+                 "肉桂卷节日", "加回0.4.9的肉桂卷节日。"));
         changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561), 0.8F,
                  "56-1天赋", "加回部分旧版56-1天赋，恢复了之前移除的一些天赋选项。"));
         changes.addButton(new ChangeButton(new LloydsBeacon(),
@@ -176,7 +172,10 @@ public class v0_5_X_Changes {
                     "_-_ 报错记录：令闪退型报错正常记录时间，便于排查问题。\n"
             );
             miscChanges.add(
-                    "_-_ 代码优化：ChangeButton代码优化，让辅助鉴定不影响更新日志的标题和内容。\n"
+                    "_-_ 测试书新增更换天赋功能，可以通过测试书进行天赋更换操作。\n"
+            );
+            miscChanges.add(
+                    "_-_ 测试书新增财富击杀数功能，并且测试模式新增财富击杀数统计。"
             );
         }
         changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER),
