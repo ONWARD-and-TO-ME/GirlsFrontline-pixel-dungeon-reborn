@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Letter;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Peach;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Succor;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.WholeCake;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
@@ -88,6 +89,7 @@ import java.util.Arrays;
 
 public class v0_5_X_Changes {
     public static void addAllChanges(ArrayList<ChangeInfo> changeInfos) {
+        add_0_5_8_3_Changes(changeInfos);
         add_0_5_8_2_Changes(changeInfos);
         add_0_5_7_3_To_0_5_8_1_Changes(changeInfos);
         add_0_5_7_2_Changes(changeInfos);
@@ -129,6 +131,58 @@ public class v0_5_X_Changes {
         changes.hardlight( CharSprite.NEGATIVE );
         changeInfos.add(changes);
     }
+    public static void add_0_5_8_3_Changes( ArrayList<ChangeInfo> changeInfos ) {
+        ChangeInfo changes = new ChangeInfo("v0.5.8v3", true, "");
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+        changes.addButton(new ChangeButton(Icons.get(Icons.WARNING), 
+                 "标签系统重制", "重制了地牢内的日志标签系统，优化了界面布局与交互体验。" +
+                "\n\n新增自定义笔记按钮，可以在地牢内记录自定义内容。" +
+                "\n\n日志现在会记录紫菜头等稀有怪物的出现。"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.MAGNIFY), 
+                 "快捷栏切换", "做了旧版快捷栏的切换按钮，现在可以在设置中选择使用4格或6格快捷栏布局。" +
+                "\n\n方便习惯不同快捷栏格数的玩家群体。"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.BADGES), 
+                 "图鉴同步", "图鉴系统同步破碎像素地牢，优化了图鉴界面与分类展示。" +
+                "\n\n修复了主菜单的图鉴无法打开怪物页的bug。"));
+        changes.addButton(new ChangeButton(new PotionOfDivineInspiration(), 
+                 "更换天赋", "新增更换天赋功能，可以通过测试书进行天赋更换操作。" +
+                "\n\n同时新增财富击杀数统计。"));
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+        changes.hardlight( CharSprite.POSITIVE );
+        changeInfos.add(changes);
+        changes.addButton(new ChangeButton(new MeatPie(),
+                 "肉桂卷节日", "给肉桂卷的节日加了一周时间。\n\n肉桂卷生效节日大约是5月的第4周至6月的第3周。\n与现实中法国面包节时间相近。"));
+        changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561), 0.8F,
+                 "56-1天赋", "加回部分旧版56-1天赋，恢复了之前移除的一些天赋选项。"));
+        changes.addButton(new ChangeButton(new LloydsBeacon(),
+                 "棱晶修复", "修复了转移棱晶和返回棱晶的bug。"));
+        changes.addButton(new ChangeButton(new CrystalKey(), 
+                 "六选三调整", "六选三的第三档奖励，非保底侧如果已鉴定经验/嬗变且未随机到经验/嬗变，会额外随机一次。"));
+        ArrayList<String> miscChanges = new ArrayList<>();
+        {
+            miscChanges.add(
+                    "_-_ 测试书调整：调整了一下测试书的使用手感，优化了操作流程。\n"
+            );
+            miscChanges.add(
+                    "_-_ 21点调整：改了一下21点小游戏，以及部分代码逻辑调整。\n"
+            );
+            miscChanges.add(
+                    "_-_ 报错记录：令闪退型报错正常记录时间，便于排查问题。\n"
+            );
+            miscChanges.add(
+                    "_-_ 代码优化：ChangeButton代码优化，让辅助鉴定不影响更新日志的标题和内容。\n"
+            );
+        }
+        changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER),
+                 "其他调整", miscChanges));
+    }
+
     public static void add_0_5_8_2_Changes( ArrayList<ChangeInfo> changeInfos ) {
         ChangeInfo changes = new ChangeInfo("v0.5.8v2", true, "");
         changes.hardlight(Window.TITLE_COLOR);
@@ -137,7 +191,8 @@ public class v0_5_X_Changes {
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
         changes.hardlight(Window.TITLE_COLOR);
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new ScrollOfIdentify(), "辅助鉴定", "我加入了一个辅助鉴定功能，当你做出一些对物品或装备产生初步鉴定的操作时，将会把鉴定内容标记出来。" +
+        changes.addButton(new ChangeButton(new ScrollOfIdentify(), 
+                 "辅助鉴定", "我加入了一个辅助鉴定功能，当你做出一些对物品或装备产生初步鉴定的操作时，将会把鉴定内容标记出来。" +
                 "\n\n目前这个功能尚不完善，仅限猜测未鉴定武器、护甲的等级下限、部分瞄准镜的等级、消耗多充能的HE燃烧弹与DT农药等等。" +
                 "\n\n这个功能的开启要求完成全知挑战。"));
         changes.addButton(new ChangeButton(new ScrollOfIdentify(),"全知挑战", "在返回地表处找德尔(目前暂用波波沙皮肤)，即可开启。" +
@@ -158,16 +213,21 @@ public class v0_5_X_Changes {
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new Tengu(), 0.8F, "现在10层衔尾蛇切换阶段时，不在不变动区域的友方单位不再会被移除，而是传送至玩家周围了\n\n不在不变动区域的敌方依旧会被移除，如果有。"));
-        changes.addButton(new ChangeButton(new LloydsBeacon(), "上一个版本我改写空降妖精的时候，原计划是在背包也进行冷却来着，但不知道为什么写去必须装备着才冷却了。现在补回来了。"));
+        changes.addButton(new ChangeButton(new Tengu(), 0.8F,
+                "现在10层衔尾蛇切换阶段时，不在不变动区域的友方单位不再会被移除，而是传送至玩家周围了\n\n不在不变动区域的敌方依旧会被移除，如果有。"));
+        changes.addButton(new ChangeButton(new LloydsBeacon(),
+                 "上一个版本我改写空降妖精的时候，原计划是在背包也进行冷却来着，但不知道为什么写去必须装备着才冷却了。现在补回来了。"));
         changes.addButton(new ChangeButton(new ScaleArmor(), "外骨骼相关", "修复了外骨骼复合产生的破损度在boss战期间的意外增长"));
         changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER), "过载", "我稍微调整了一下过载的衰减，现在待机时的过载时间衰减值普遍降低，并且在Boss战期间，待机衰减会进一步降低。" +
                 "\n\n而武器护甲在其生效时，如武器攻击，护甲防御没闪避掉的攻击，这个时候将会加快衰减。"));
         changes.addButton(new ChangeButton(new ScrollOfIdentify(),  "行窃预知", "我很抱歉，在上一个版本中，我将UMP9初始携带的行窃预知的结果判断反转了，导致已寻找变成未寻找，未寻找变成已寻找……" +
                 "\n\n而现在已经修复好了，可以放心地给行窃预知加点了。"));
-        changes.addButton(new ChangeButton(new Gun562Accessories(), "修复56-1升级56-2后获得永久不衰减的过载的bug。"));
-        changes.addButton(new ChangeButton(new PotionOfInvisibility(), "升阶秘法", "修复了+2升阶秘法在使用磁盘时令刺客伏击重置的bug。"));
-        changes.addButton(new ChangeButton(new RotLasher(), "我想应该很多人受到过触手的伏击，以及想要击杀腐莓却无处落脚。" +
+        changes.addButton(new ChangeButton(new Gun562Accessories(), 
+        "修复56-1升级56-2后获得永久不衰减的过载的bug。"));
+        changes.addButton(new ChangeButton(new PotionOfInvisibility(),
+         "升阶秘法", "修复了+2升阶秘法在使用磁盘时令刺客伏击重置的bug。"));
+        changes.addButton(new ChangeButton(new RotLasher(), 
+        "我想应该很多人受到过触手的伏击，以及想要击杀腐莓却无处落脚。" +
                 "\n\n现在腐莓房及其生成的腐莓触手同步了破碎，发现玩家将会先等待一回合，并且腐莓四周必定有格子进行攻击。"));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
@@ -181,12 +241,14 @@ public class v0_5_X_Changes {
         changes.addButton(new ChangeButton(new Blacksmith(), 0.8F, "装备重铸","现在外骨骼合并只需要同阶即可(针对火控外骨骼及全知挑战)" +
                 "\n\n放入火控外骨骼则另一个外骨骼无论其等级多少都将作为耗材。" +
                 "\n\n现在可以放入未鉴定等级的无诅咒装备作为消耗材料，倘若放入两个未鉴定装备则会以左边的为主装备。"));
-        changes.addButton(new ChangeButton(new TengusMask(), "现在三层通用天赋的解锁条件从12级+心智升级，降低至12级，但专职天赋依旧需要进行心智升级以获取。"));
+        changes.addButton(new ChangeButton(new TengusMask(), 
+                "现在三层通用天赋的解锁条件从12级+心智升级，降低至12级，但专职天赋依旧需要进行心智升级以获取。"));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
         changes.hardlight( CharSprite.NEGATIVE );
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561), 0.8F, "电磁增幅", "现在电磁增幅的概率将会受到攻速影响，过快或者过慢的武器会对概率造成影响。"));
+        changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561), 0.8F,
+                "电磁增幅", "现在电磁增幅的概率将会受到攻速影响，过快或者过慢的武器会对概率造成影响。"));
     }
     public static void add_0_5_7_3_To_0_5_8_1_Changes( ArrayList<ChangeInfo> changeInfos ) {
         ChangeInfo changes = new ChangeInfo("v0.5.7v3 ~ 0.5.8v1", true, "");
@@ -197,7 +259,8 @@ public class v0_5_X_Changes {
         changes.hardlight( Window.TITLE_COLOR );
         changeInfos.add(changes);
 
-        changes.addButton(new ChangeButton(new ItemHolder(), "结算前快捷栏放入背包后，可以在排行榜界面点击该背包以显示背包内的物品。" +
+        changes.addButton(new ChangeButton(new ItemHolder(), 
+        "结算前快捷栏放入背包后，可以在排行榜界面点击该背包以显示背包内的物品。" +
                 "\n\n新增一个背包，于31层生成，将其带回1层可使用其主动将物品装入其中以在排行榜上展示。仅允许在1层收纳物品。"));
         changes.addButton(new ChangeButton(new DEL(), 0.8F, "新增NPC德尔(暂时使用波波沙皮肤)与其房间 维修补给站 （其实是废弃的妖精小屋），于每区3~4层必定刷出一个。可以使用钻石向德尔下达任务订单，具体玩法可在游戏内体验。" +
                 "\n\n目前订单列表的内容较少，主要介绍一下超载，可以令一件有正数等级的装备在有限时间内增加1级，这1级可参与装备所需力量、诅咒棱晶等级、子弹配件充能上限的计算。过载自然结束时，此装备永久降低1级。又或者在过载期间内手动结束，则会受到代价比较大的临时降级，此降级不参与装备所需力量、诅咒棱晶等级、子弹配件充能上限的计算。临时降级的消除方法因物品的类型不同而产生差异。"));
@@ -239,13 +302,15 @@ public class v0_5_X_Changes {
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
 
-        changes.addButton(new ChangeButton(new HeroIcon(new Education()), "狂战士", 0.8F, "现在狂战士的怒气在低于1.5倍力量的时候不会衰减。"));
+        changes.addButton(new ChangeButton(new HeroIcon(new Education()), 
+                "狂战士", 0.8F, "现在狂战士的怒气在低于1.5倍力量的时候不会衰减。"));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
         changes.hardlight( CharSprite.NEGATIVE );
         changeInfos.add(changes);
 
-        changes.addButton(new ChangeButton(new RingOfFuror(), "战术瞄准镜对于慢速武器的额外收益这个机制是为了狙击类枪械而加入的，我并不希望常态武器从这个机制中得到收益。因此战术瞄准镜对于慢速武器的额外收益临界点由一回合削弱至二回合。"));
+        changes.addButton(new ChangeButton(new RingOfFuror(), 
+                "战术瞄准镜对于慢速武器的额外收益这个机制是为了狙击类枪械而加入的，我并不希望常态武器从这个机制中得到收益。因此战术瞄准镜对于慢速武器的额外收益临界点由一回合削弱至二回合。"));
     }
     public static void add_0_5_7_2_Changes( ArrayList<ChangeInfo> changeInfos ){
         ChangeInfo changes = new ChangeInfo("v0.5.7v2", true, "");
@@ -256,9 +321,12 @@ public class v0_5_X_Changes {
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
 
-        changes.addButton(new ChangeButton(new CrystalKey(), "六选三", "修复六选三在二者都鉴定情况下，会导致保底奖励两个都不刷出的bug。"));
-        changes.addButton(new ChangeButton(new Swarm(), 0.8F,  "飞行生物异常行动逻辑", "修复飞行生物强行选择可行走陆地的异常行动逻辑。"));
-        changes.addButton(new ChangeButton(new Cypros(), "_-_ 修复镜像使用Cypros会闪退的bug。\n_-_ 修复刚掉落的Cypros不切换模式的情况下护甲不生效的bug。"));
+        changes.addButton(new ChangeButton(new CrystalKey(), 
+                "六选三", "修复六选三在二者都鉴定情况下，会导致保底奖励两个都不刷出的bug。"));
+        changes.addButton(new ChangeButton(new Swarm(), 0.8F, 
+                 "飞行生物异常行动逻辑", "修复飞行生物强行选择可行走陆地的异常行动逻辑。"));
+        changes.addButton(new ChangeButton(new Cypros(), 
+                "_-_ 修复镜像使用Cypros会闪退的bug。\n_-_ 修复刚掉落的Cypros不切换模式的情况下护甲不生效的bug。"));
     }
     public static void add_0_5_7_1_Changes( ArrayList<ChangeInfo> changeInfos ){
         ChangeInfo changes = new ChangeInfo("v0.5.7v1", true, "");
@@ -269,7 +337,9 @@ public class v0_5_X_Changes {
         changes.hardlight( Window.TITLE_COLOR );
         changeInfos.add(changes);
 
-        changes.addButton( new ChangeButton(new BuffIcon(new EquipLevelUp(), true), 0.8F, "临时升级", "现在所有的临时升级都可以保存到排行榜了，那么现在排行榜武器最高等级是多少呢？"));
+        changes.addButton( new ChangeButton(new BuffIcon(new EquipLevelUp(), true), 0.8F, 
+                "临时升级", "现在所有的临时升级都可以保存到排行榜了，那么现在排行榜武器最高等级是多少呢？"
+        ));
         changes.addButton( new ChangeButton(new HeroIcon(new Education()), 0.8F, "高等教育",
                 "_-_ 新增一个通用的四层转职，以放弃护甲技能为代价，将四层天赋点轮流加到前三层。\n\n"+
                 "某人依旧没有考过四级......QAQ"
@@ -293,13 +363,20 @@ public class v0_5_X_Changes {
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
 
-        changes.addButton(new ChangeButton(new Elphelt(), 0.8F, new ElpheltSprite().run, "加回0.4.9及以前的彩蛋触发方式，并且保留当前的开启_ 深入敌腹 _的触发方式。"));
-        changes.addButton(new ChangeButton(new Recycle(), "_-_ 对磁盘、药水使用转换棱晶不再占用楼层物品生成的概率。\n\n_-_ 现在转换棱晶对磁盘和药水使用获得道具的概率与两种催化剂一致"));
-        changes.addButton(new ChangeButton(new Ump45(), "代码整理", "我将Ump45、C96、灵刀的CD相关代码整理了一下，旧版本的这三个武器有可能CD不动了，这种情况下再用一下技能就又能动了。"));
-        changes.addButton(new ChangeButton(new FieldPot(), 0.8F, "修复了行军锅卡死、不消耗护甲充能等的bug。"));
-        changes.addButton(new ChangeButton(new HeroSprite(HeroClass.TYPE561, 6), 0.8F, "56-1式", "修复了56-1式初始饱食度上限少了300点的bug。"));
-        changes.addButton(new ChangeButton(new WandmakerSprite(), 0.8F, "未知小彩蛋", "为了方便新玩家尽快玩到想玩的内容，我在某些地方留了点后门，快去找一找吧~awa"));
-        changes.addButton(new ChangeButton(new Image(Icons.WARNING.get()), "代码整理", "由于1月底到2月中旬期间的一系列改动与回退，我不经意间把0.5.3前后因修改底层导致在此之前的存档作废这个问题给修好了。(如果还有人保留着0.5.3及以前的存档的话)"));
+        changes.addButton(new ChangeButton(new Elphelt(), 0.8F, new ElpheltSprite().run, 
+                "加回0.4.9及以前的彩蛋触发方式，并且保留当前的开启_ 深入敌腹 _的触发方式。"));
+        changes.addButton(new ChangeButton(new Recycle(), 
+                "_-_ 对磁盘、药水使用转换棱晶不再占用楼层物品生成的概率。\n\n_-_ 现在转换棱晶对磁盘和药水使用获得道具的概率与两种催化剂一致"));
+        changes.addButton(new ChangeButton(new Ump45(), 
+                "代码整理", "我将Ump45、C96、灵刀的CD相关代码整理了一下，旧版本的这三个武器有可能CD不动了，这种情况下再用一下技能就又能动了。"));
+        changes.addButton(new ChangeButton(new FieldPot(), 0.8F, 
+                "修复了行军锅卡死、不消耗护甲充能等的bug。"));
+        changes.addButton(new ChangeButton(new HeroSprite(HeroClass.TYPE561, 6), 0.8F, 
+                "56-1式", "修复了56-1式初始饱食度上限少了300点的bug。"));
+        changes.addButton(new ChangeButton(new WandmakerSprite(), 0.8F, 
+                "未知小彩蛋", "为了方便新玩家尽快玩到想玩的内容，我在某些地方留了点后门，快去找一找吧~awa"));
+        changes.addButton(new ChangeButton(new Image(Icons.WARNING.get()), 
+                "代码整理", "由于1月底到2月中旬期间的一系列改动与回退，我不经意间把0.5.3前后因修改底层导致在此之前的存档作废这个问题给修好了。(如果还有人保留着0.5.3及以前的存档的话)"));
     }
     public static void add_0_5_7_Changes( ArrayList<ChangeInfo> changeInfos ){
         ChangeInfo changes = new ChangeInfo("v0.5.7", true, "");
@@ -313,21 +390,21 @@ public class v0_5_X_Changes {
 		changes.addButton( new ChangeButton(new HeroSprite(HeroClass.TYPE561, 5),
                 0.8F,
                 "56-1式",
-        "_-_ 全面重置了角色_56-1式_的基础能力及天赋，以及其他联带道具，以期增强其游戏性与平衡性。\n" +
-        "_-_ 同时，在本次更新中56-1式角色获得了_专属的护甲技能_\n" +
-        "_-_ 这意味着56-1式角色将不再必须回到5层从FNC处获取护甲技能了！\n" +
-        "_-_ 更多角色能力详情请前往游戏内阅读。"
+                "_-_ 全面重置了角色_56-1式_的基础能力及天赋，以及其他联带道具，以期增强其游戏性与平衡性。\n" +
+                "_-_ 同时，在本次更新中56-1式角色获得了_专属的护甲技能_\n" +
+                "_-_ 这意味着56-1式角色将不再必须回到5层从FNC处获取护甲技能了！\n" +
+                "_-_ 更多角色能力详情请前往游戏内阅读。"
          ));
 
         changes.addButton( new ChangeButton(new RingOfFuror(),
                 "战术瞄准镜",
-        "_-_ 增强了_战术瞄准镜_对攻击_速度极慢_的武器的增幅效果。\n" +
-        "_-_ 这意味着，那些需要极长回合才能攻击一次的_狙击枪类武器_会从中获取更高的_攻击速度_收益。"
+                "_-_ 增强了_战术瞄准镜_对攻击_速度极慢_的武器的增幅效果。\n" +
+                "_-_ 这意味着，那些需要极长回合才能攻击一次的_狙击枪类武器_会从中获取更高的_攻击速度_收益。"
         ));
 
         changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.ANKH, null),
                 "快速修复契约",
-        "_-_ 未强化的_快速修复契约_现在可以用以替换被感染的装备。"
+                "_-_ 未强化的_快速修复契约_现在可以用以替换被感染的装备。"
         ));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
@@ -444,7 +521,7 @@ public class v0_5_X_Changes {
                 "代理人",
         "_-_ 加入了敌人_代理人_作为主脑可呼叫护卫的其中之一。\n"+
         "_-_ 代理人替换了_黑暗之拳_，但在未来将获得全新的战斗方式和能力\n\n"+
-        "_-_ 她刚刚是不是_开火_？"
+        "_-_ 她刚刚是不是_开火_了？"
         ));
 
         changes.addButton( new ChangeButton(new TyphoonSprite(), 0.3F,
