@@ -57,6 +57,7 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 import com.watabou.utils.RectF;
+import com.watabou.utils.Reflection;
 
 import java.nio.Buffer;
 import java.util.Arrays;
@@ -133,6 +134,9 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	public CharSprite() {
 		super();
 		listener = this;
+	}
+	public CharSprite newInstance(){
+		return Reflection.newInstance(getClass());
 	}
 	@Override
 	public void play(Animation anim) {

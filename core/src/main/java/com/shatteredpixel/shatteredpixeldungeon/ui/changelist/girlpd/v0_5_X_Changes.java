@@ -566,7 +566,7 @@ public class v0_5_X_Changes {
 		changes.hardlight( CharSprite.NEGATIVE );
 		changeInfos.add(changes);
 
-        changes.addButton(new ChangeButton(new CrabSprite(), 1,
+        changes.addButton(new ChangeButton(new CrabSprite(), -1,
                 new CrabSprite().attack, true,
                 0xFF8800,
                 "烈焰精英",
@@ -574,7 +574,7 @@ public class v0_5_X_Changes {
             "_-_ 同时，当_烈焰精英_被击败时，其不再会点燃_周围水格_。"
         ));
 
-        changes.addButton(new ChangeButton(new CyclopsSprite(), 1,
+        changes.addButton(new ChangeButton(new CyclopsSprite(), -1,
                 new CyclopsSprite().attack,
                 "独眼巨人A型",
             "_-_ 较大幅度的削弱了_独眼巨人A型_过于强悍的_闪避与命中_数值。\n"+

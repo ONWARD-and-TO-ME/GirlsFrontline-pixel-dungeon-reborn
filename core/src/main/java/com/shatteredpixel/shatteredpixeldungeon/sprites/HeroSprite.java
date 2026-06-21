@@ -63,7 +63,10 @@ public class HeroSprite extends CharSprite {
 		else
 			die();
 	}
-
+	@Override
+	public CharSprite newInstance(){
+		return new HeroSprite(heroClass, armorTier);
+	}
     public HeroSprite(HeroClass heroClass, int armorTier){
         super();
         this.heroClass = heroClass;
