@@ -1,7 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.ui.changelist.girlpd;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -38,12 +37,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Letter;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Peach;
 import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.Succor;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.WholeCake;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Recycle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cypros;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.Ump45;
@@ -154,8 +153,8 @@ public class v0_5_X_Changes {
         changeInfos.add(changes);
         changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.CINNAMON_ROLL),
                  "肉桂卷节日", "加回0.4.9的肉桂卷节日。"));
-        changes.addButton(new ChangeButton(new Hero(HeroClass.TYPE561), 0.8F,
-                 "56-1天赋", "加回部分旧版56-1天赋，恢复了之前移除的一些天赋选项。"));
+        changes.addButton(new ChangeButton(new ScrollOfMetamorphosis(),
+                 "天赋", "加回部分旧版56-1天赋到公共蜕变池，恢复了之前移除的一些天赋选项。"));
         changes.addButton(new ChangeButton(new LloydsBeacon(),
                  "棱晶修复", "修复了转移棱晶和返回棱晶的bug。"));
         changes.addButton(new ChangeButton(new CrystalKey(), 
@@ -173,14 +172,14 @@ public class v0_5_X_Changes {
                     + "_-_ 测试模式0挑也会显示挑战的贴图，以便局内修改，测试模式局内修改挑战后即时重置贴图。\n"
             );
             miscChanges.add(
-                    "_-_ 波波沙重铸处，G11本体可以与填充子弹同类的子弹进行重铸。\n"
-                    + "_-_ 所有的种子荚都将触发，即便开启了荒芜模式。\n"
+                    "_-_ 波波沙的装备重铸，G11本体可以与填充子弹同类的子弹进行重铸。\n"
+                    + "_-_ 在荒芜挑战下，所有的种子荚与无味果花都将直接触发，而不是被原本的不种植。\n"
                     + "_-_ 修复敌法没有正常生效的bug。\n"
             );
             miscChanges.add(
                     "_-_ 护盾的贴图在切换楼层后保留。\n"
                     + "_-_ AN94砍了伤害，如果有附魔会判定两次。\n"
-                    + "_-_ 双生妖精拥有二次判定，护盾判定减伤，导弹判定闪避，但是那部分逻辑很难描述。\n"
+                    + "_-_ 双生妖精拥有二次判定，护盾判定减伤，导弹判定闪避。\n"
             );
             miscChanges.add(
                     "_-_ 草鞋同步破碎。\n"

@@ -231,11 +231,9 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
             for (HeroClass cls : HeroClass.values()){
 				Talent newTalent = null;
-				for (int i = 0; i < 100; i++){
-					newTalent = newTalent(cls, replacing, tier, options.keySet());
-					if (newTalent != null)
+				for (int i = 0; i < 100; i++)
+					if ((newTalent = newTalent(cls, replacing, tier, options.keySet())) != null)
 						break;
-				}
 				if (newTalent != null)
 					options.put(newTalent, hero.pointsInTalent(replacing));
 			}

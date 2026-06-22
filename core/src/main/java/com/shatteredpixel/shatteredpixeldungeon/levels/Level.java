@@ -75,6 +75,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.triggers.Trigger;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.BlandfruitBush;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -167,7 +168,7 @@ public abstract class Level implements Bundlable {
 	public SparseArray<Trigger> triggers;
 	public HashSet<CustomTilemap> customTiles;
 	public HashSet<CustomTilemap> customWalls;
-	public HashMap<Integer, ArrayList<Plant>> triggersPlant = new HashMap<>();
+	public HashMap<Integer, ArrayList<Plant>> triggeredPlant = new HashMap<>();
 	
 	protected ArrayList<Item> itemsToSpawn = new ArrayList<>();
 
@@ -202,10 +203,11 @@ public abstract class Level implements Bundlable {
     private static final String SECONDSIGHT   = "SECONDSIGHT";
     private static final String SHARED_VISION = "SHARED_VISION";
     private static final String PREVENT         = "prevent";
-
+	public boolean creating;
 	public void create(int levelDepth,int levelId){
 		this.levelDepth=levelDepth;
         this.levelId   =levelId;
+		creating = true;
 		Random.pushGenerator( Dungeon.seedToCreate() );
 		
 		if (!(Dungeon.bossLevel())) {
@@ -283,7 +285,7 @@ public abstract class Level implements Bundlable {
 			triggers = new SparseArray<>();
 			customTiles = new HashSet<>();
 			customWalls = new HashSet<>();
-			triggersPlant = new HashMap<>();
+			triggeredPlant = new HashMap<>();
 			
 		} while (!build());
 		
@@ -294,13 +296,15 @@ public abstract class Level implements Bundlable {
 		createItems();
 
 		Random.popGenerator();
-		for (Integer pos : triggersPlant.keySet()){
-			for (Plant plant : triggersPlant.get(pos)) {
+		creating = false;
+
+		for (Integer pos : triggeredPlant.keySet()){
+			for (Plant plant : triggeredPlant.get(pos)) {
 				Plant.level = this;
 				plant.activate(pos);
 			}
 		}
-		triggersPlant = new HashMap<>();
+		triggeredPlant = new HashMap<>();
 	}
 	
 	public void setSize(int w, int h){
@@ -948,11 +952,19 @@ public abstract class Level implements Bundlable {
 	public void removeTrigger(Trigger trigger){
 		triggers.remove(trigger.pos);
 	}
-	public void addTriggerPlant(int pos, Plant plant){
-		if (triggersPlant.containsKey(pos))
-			triggersPlant.get(pos).add(plant);
-		else
-			triggersPlant.put(pos, new ArrayList<>(Arrays.asList(plant)));
+	private void addTriggerPlant(int pos, Plant plant){
+		if (!(plant instanceof BlandfruitBush) && !(plant instanceof WandOfRegrowth.Seedpod))
+			return;
+
+		if (creating) {
+			if (triggeredPlant.containsKey(pos))
+				triggeredPlant.get(pos).add(plant);
+			else
+				triggeredPlant.put(pos, new ArrayList<>(Arrays.asList(plant)));
+			return;
+		}
+
+		plant.activate(pos);
 	}
 	public void throwPath(ArrayList<Item> items, int pos){
 		ArrayList<Integer> dropPlace = new ArrayList<>();
@@ -979,6 +991,7 @@ public abstract class Level implements Bundlable {
 	public Plant plant( Plant.Seed seed, int pos ) {
 		
 		if (Dungeon.isChallenged(Challenges.NO_HERBALISM)){
+			addTriggerPlant(pos, seed.plant());
 			return null;
 		}
 

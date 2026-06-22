@@ -74,6 +74,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.FncSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.NoelShopKeeperSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.P7Sprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ShopkeeperSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SpawnerSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SpinnerCatSprite;
@@ -215,7 +216,7 @@ public class Notes {
 
 				case SHOP:
 					if (levelId % 1000 == 25)								return new NoelShopKeeperSprite();
-					else if (levelId % 1000 == 20)    						return new ImpSprite();
+					else if (levelId % 1000 == 20)    						return new P7Sprite();
 					else if (Statistics.deepestFloor % 1000 > levelId % 1000 + 5)	return new ShopkeeperSprite.MirrorShopkeeper();
 					else 											return new ShopkeeperSprite();
 				case ALCHEMY:

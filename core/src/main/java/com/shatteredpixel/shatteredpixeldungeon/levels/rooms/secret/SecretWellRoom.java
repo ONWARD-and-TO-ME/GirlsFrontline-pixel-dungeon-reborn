@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfAwareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfHealth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
@@ -67,6 +66,6 @@ public class SecretWellRoom extends SecretRoom {
 		
 		WellWater.seed(well.x + level.width() * well.y, 1, waterClass, level, false);
 
-		entrance().setHidden(Dungeon.hero);
+		entrance().setHidden();
 	}
 }

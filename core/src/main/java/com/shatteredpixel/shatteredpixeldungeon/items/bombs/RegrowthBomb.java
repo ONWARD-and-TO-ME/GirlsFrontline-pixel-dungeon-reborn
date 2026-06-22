@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.bombs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -107,10 +106,7 @@ public class RegrowthBomb extends Bomb {
 					plant = new Starflower();
 					break;
 			}
-			if (plant instanceof WandOfRegrowth.Seedpod && Dungeon.isChallenged(Challenges.NO_HERBALISM))
-				plant.activate(plantPos);
-			else
-				Dungeon.level.plant( plant.seed(), plantPos);
+			Dungeon.level.plant( plant.seed(), plantPos);
 		}
 	}
 	

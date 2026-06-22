@@ -112,6 +112,6 @@ public class SecretChestChasmRoom extends SecretRoom {
 		
 		level.addItemToSpawn(new PotionOfLevitation());
 
-		entrance().setHidden(Dungeon.hero);
+		entrance().setHidden();
 	}
 }

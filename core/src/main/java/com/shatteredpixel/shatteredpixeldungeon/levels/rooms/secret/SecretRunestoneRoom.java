@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
@@ -82,7 +81,7 @@ public class SecretRunestoneRoom extends SecretRoom {
 		} while (level.map[dropPos] != Terrain.EMPTY_SP);
 		level.drop( new StoneOfEnchantment(), dropPos).setRoom(Heap.Room.Secret_Runestone);
 		
-		entrance.setHidden(Dungeon.hero);
+		entrance.setHidden();
 	}
 	
 	@Override

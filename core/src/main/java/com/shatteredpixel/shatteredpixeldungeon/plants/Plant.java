@@ -86,7 +86,7 @@ public abstract class Plant implements Bundlable {
 		this.pos = pos;
 		Char ch = Actor.findChar(pos);
 		activate(ch);
-	};
+	}
 	
 	public void wither() {
 		Dungeon.level.uproot( pos );
@@ -149,7 +149,9 @@ public abstract class Plant implements Bundlable {
 		}
 		
 		protected Class<? extends Plant> plantClass;
-		
+		public Plant plant(){
+			return Reflection.newInstance(plantClass);
+		}
 		@Override
 		public ArrayList<String> actions( Hero hero ) {
 			ArrayList<String> actions = super.actions( hero );
@@ -201,7 +203,7 @@ public abstract class Plant implements Bundlable {
 			if (level != null && level.heroFOV != null && level.heroFOV[pos]) {
 				Sample.INSTANCE.play(Assets.Sounds.PLANT);
 			}
-			Plant plant = Reflection.newInstance(plantClass);
+			Plant plant = plant();
 			plant.pos = pos;
 			return plant;
 		}

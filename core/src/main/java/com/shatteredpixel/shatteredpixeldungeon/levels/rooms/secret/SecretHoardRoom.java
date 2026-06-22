@@ -73,7 +73,7 @@ public class SecretHoardRoom extends SecretRoom {
 			}
 		}
 
-		entrance().setHidden(Dungeon.hero);
+		entrance().setHidden();
 	}
 	
 	@Override

@@ -58,7 +58,7 @@ public class SecretHoneypotRoom extends SecretRoom {
 		
 		placeItem( new Bomb().random(), level);
 
-		entrance().setHidden(Dungeon.hero);
+		entrance().setHidden();
 	}
 	
 	private void placeItem(Item item, Level level){

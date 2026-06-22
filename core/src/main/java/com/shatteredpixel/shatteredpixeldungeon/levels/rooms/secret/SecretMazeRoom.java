@@ -113,6 +113,6 @@ public class SecretMazeRoom extends SecretRoom {
 		
 		PathFinder.setMapSize(level.width(), level.height());
 
-		entrance().setHidden(Dungeon.hero);
+		entrance().setHidden();
 	}
 }

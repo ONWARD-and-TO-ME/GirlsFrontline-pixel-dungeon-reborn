@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -51,6 +50,6 @@ public class SecretArtilleryRoom extends SecretRoom {
 			}
 		}
 
-		entrance().setHidden(Dungeon.hero);
+		entrance().setHidden();
 	}
 }
