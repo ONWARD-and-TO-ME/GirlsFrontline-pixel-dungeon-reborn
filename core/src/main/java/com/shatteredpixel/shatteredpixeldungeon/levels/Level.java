@@ -535,9 +535,8 @@ public abstract class Level implements Bundlable {
         if(Dungeon.isXMAS() && Random.Int(100)<8&&Dungeon.depth<=5)
             m = Reflection.newInstance(RatXMAS.class);
         //打开圣诞开关，满足概率，并且楼层是5层以内，直接替换成RatXMAS
-		if (Dungeon.isChallenged(Challenges.CHAMPION_ENEMIES)){
+		if (Dungeon.isChallenged(Challenges.CHAMPION_ENEMIES))
 			ChampionEnemy.rollForChampion(m);
-		}
 		return m;
 	}
 
@@ -965,6 +964,15 @@ public abstract class Level implements Bundlable {
 		}
 
 		plant.activate(pos);
+	}
+	public void throwCenter(Item item, int pos) {
+		ItemSprite sprite = drop(item, pos).sprite;
+		if (sprite != null)
+			sprite.drop(pos);
+	}
+	public void throwCenter(ArrayList<Item> items, int pos){
+		for (Item item : items)
+			throwCenter(item, pos);
 	}
 	public void throwPath(ArrayList<Item> items, int pos){
 		ArrayList<Integer> dropPlace = new ArrayList<>();

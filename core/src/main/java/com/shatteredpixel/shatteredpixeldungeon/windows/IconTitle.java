@@ -83,6 +83,18 @@ public class IconTitle extends Component {
 		add( health );
 	}
 
+	public float alpha(){
+		return imIcon.alpha();
+	}
+
+	public void alpha( float value ){
+		tfLabel.alpha(value);
+		imIcon.alpha(value);
+	}
+	public float reqWidth(){
+		return imIcon.width() + tfLabel.width() + GAP;
+	}
+
 	@Override
 	protected void layout() {
 

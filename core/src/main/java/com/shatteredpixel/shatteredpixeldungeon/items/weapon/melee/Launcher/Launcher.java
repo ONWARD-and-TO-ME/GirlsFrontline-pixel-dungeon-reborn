@@ -6,7 +6,7 @@ public abstract class Launcher extends MeleeWeapon {
 
     {
         dmgBaseMul = 4;
-        dmgUpgradeDiffer = -1;
+        dmgUpgradeDiffer = -0.5F;
     }
 
 }

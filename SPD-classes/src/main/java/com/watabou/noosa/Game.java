@@ -290,7 +290,7 @@ public class Game implements ApplicationListener {
 	
 	public static void reportException( Throwable tr ) {
 		if (instance != null && Gdx.app != null) {
-			instance.saveCrashReport(instance.generateCrashReport(tr));
+			saveCrashReport(tr);
 			Gdx.app.exit();
 		} else {
 			//fallback if error happened in initialization
@@ -326,6 +326,9 @@ public class Game implements ApplicationListener {
 		pw.flush();
 		Gdx.app.error("GAME", sw.toString());
 		return sw.toString();
+	}
+	public static void saveCrashReport( Throwable tr ){
+		instance.saveCrashReport(instance.generateCrashReport(tr));
 	}
 	public void saveCrashReport(String crashReport) {
 		try {

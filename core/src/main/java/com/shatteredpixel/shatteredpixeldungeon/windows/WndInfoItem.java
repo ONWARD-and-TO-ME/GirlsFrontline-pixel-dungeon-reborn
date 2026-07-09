@@ -61,13 +61,10 @@ public class WndInfoItem extends Window {
         item = null;
         this.heap = heap;
 
-		if (heap.type == Heap.Type.HEAP && heap.room == Heap.Room.NONE) {
+		if (heap.type == Heap.Type.HEAP && heap.room == Heap.Room.NONE)
 			fillFields( heap.peek() );
-
-		} else {
+        else
 			fillFields( heap );
-
-		}
 	}
 	
 	public WndInfoItem( Item item ) {

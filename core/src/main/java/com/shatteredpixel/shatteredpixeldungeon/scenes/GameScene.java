@@ -115,6 +115,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoPlant;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoTrap;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndRanking;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
@@ -138,6 +139,8 @@ import com.watabou.utils.RectF;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Locale;
 
 public class GameScene extends PixelScene {
@@ -1478,7 +1481,11 @@ public class GameScene extends PixelScene {
 				GameScene.flashForDocument(Document.GUIDE_SURPRISE_ATKS);
 			}
 		} else if ( o instanceof Heap ){
-			GameScene.show(new WndInfoItem((Heap)o));
+			Heap heap = (Heap) o;
+			if (heap.items.size() != 1 && heap.type == Heap.Type.HEAP)
+				GameScene.show(new WndRanking.ItemList(heap.items, false));
+			else
+				GameScene.show(new WndInfoItem(heap));
 		} else if ( o instanceof Plant ){
 			GameScene.show( new WndInfoPlant((Plant) o) );
 			Bestiary.setSeen(o.getClass());

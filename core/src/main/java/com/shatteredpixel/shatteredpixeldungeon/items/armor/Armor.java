@@ -635,8 +635,13 @@ public class Armor extends EquipableItem {
                 speed /= Math.pow(1.2, aEnc);
             }
             int str = Math.max(0, baseSTRReq() - ((Hero) owner).STR());
-            if ((owner.wholeTime() || aEnc <=0) && guessingLevel < guessLevel(str - Math.max(0, aEnc)))
-                guessingLevel = guessLevel(str - Math.max(0, aEnc));
+            String cause = "";
+            if (owner.wholeTime())
+                cause = "以完整回合盘初步判断护甲等级。";
+            else if (aEnc <= 0)
+                cause = "以没有超力惩罚初步判断护甲等级。";
+            if (owner.wholeTime() || aEnc <=0)
+                guessLevel(STRNeed(str - Math.max(0, aEnc)), cause);
 		}else {
             if (hasGlyph(Swiftness.class, owner)) {
                 boolean enemyNear = false;
@@ -688,7 +693,7 @@ public class Armor extends EquipableItem {
 		return level;
 	}
 	
-	//other things can equip these, for now we assume only the hero can be affected by levelling debuffs
+	//other things can equip these, for now we assume only the hero can be affected by leveling debuffs
 	@Override
 	public int buffedLvl() {
         int lvl = super.buffedLvl();
@@ -918,7 +923,7 @@ public class Armor extends EquipableItem {
 		return (8 + tier * 2) - (int)(Math.sqrt(8 * lvl + 1) - 1)/2;
 	}
 
-    public int guessLevel(int extraSTR){
+    public int STRNeed(int extraSTR){
         return extraSTR * (extraSTR + 1) / 2;
     }
 

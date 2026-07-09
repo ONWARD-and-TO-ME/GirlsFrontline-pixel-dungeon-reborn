@@ -79,13 +79,11 @@ public class Challenges {
 
 	public static boolean isItemBlocked( Item item ){
 
-		if (Dungeon.isChallenged(NO_HERBALISM) && item instanceof Dewdrop){
+		if (Dungeon.isChallenged(NO_HERBALISM) && item instanceof Dewdrop)
 			return true;
-		}
 
-		if (Dungeon.isChallenged(INFLATION) && item instanceof Ankh){
+		if (Dungeon.isChallenged(INFLATION) && item instanceof Ankh)
             return true;
-		}
 
 		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY) &&( item instanceof ScrollOfUpgrade || item instanceof PotionOfStrength))
 			return true;

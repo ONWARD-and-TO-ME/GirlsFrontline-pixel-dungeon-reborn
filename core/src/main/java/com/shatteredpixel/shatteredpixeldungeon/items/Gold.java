@@ -51,12 +51,7 @@ public class Gold extends Item {
 	public Gold( int value ) {
 		this.quantity = value;
 	}
-	
-	@Override
-	public ArrayList<String> actions( Hero hero ) {
-		return new ArrayList<>();
-	}
-	
+
 	@Override
 	public boolean doPickUp(Hero hero, int pos) {
 		Catalog.setSeen(getClass());

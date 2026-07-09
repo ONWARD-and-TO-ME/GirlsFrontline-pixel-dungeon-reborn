@@ -59,17 +59,15 @@ public abstract class Actor implements Bundlable {
 		this.time += time;
 		//if time is very close to a whole number, round to a whole number to fix errors
 		float ex = Math.abs(this.time % 1f);
-		if (ex < .001f){
+		if (ex <= 0.001F)
 			this.time = Math.round(this.time);
-		}
 	}
     protected void spendStrict( float time ){
         this.time += time;
         //if time is very close to a whole number, round to a whole number to fix errors
         float ex = Math.abs(this.time % 1f);
-        if (ex < .001f){
+        if (ex <= 0.001F)
             this.time = Math.round(this.time);
-        }
     }
 
 	public void spendToWhole(){
@@ -84,9 +82,8 @@ public abstract class Actor implements Bundlable {
 			this.time = now + time;
 			//if time is very close to a whole number, round to a whole number to fix errors
 			float ex = Math.abs(this.time % 1f);
-			if (ex <= .001f){
+			if (ex <= 0.001F)
 				this.time = Math.round(this.time);
-			}
 		}
 	}
 	
@@ -102,7 +99,7 @@ public abstract class Actor implements Bundlable {
 		time = now;
 	}
 	
-	protected void diactivate() {
+	protected void deactivate() {
 		time = Float.MAX_VALUE;
 	}
 	

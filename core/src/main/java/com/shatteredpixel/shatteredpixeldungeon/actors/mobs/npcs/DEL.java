@@ -350,12 +350,11 @@ public class DEL extends NPC {
                 desc += "\n" + item.name();
                 int time = times.get(i);
                 if (time != 0)
-                    desc += time;
+                    desc += " 剩余时间：" + time;
                 i++;
             }
-            for (Item item : drops){
+            for (Item item : drops)
                 desc += "\n" + item.name();
-            }
             return desc;
         }
         private static final String ITEM	= "item";

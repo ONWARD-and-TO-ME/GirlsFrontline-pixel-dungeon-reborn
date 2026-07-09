@@ -71,7 +71,7 @@ public class Regeneration extends Buff {
 			
 		} else {
 			
-			diactivate();
+			deactivate();
 			
 		}
 		

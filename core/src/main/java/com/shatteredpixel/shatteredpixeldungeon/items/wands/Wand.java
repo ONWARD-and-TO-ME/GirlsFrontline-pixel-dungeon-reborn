@@ -392,7 +392,16 @@ public abstract class Wand extends Item {
             return 1;
         }
         //consumes 30% of current charges, rounded up, with a min of 1 and a max of 3.
-        return (int) GameMath.gate(1, (int)Math.ceil((curCharges-minCharges())*0.3f), 3);
+        int cast = (int) GameMath.gate(1, (int)Math.ceil((curCharges-minCharges())*0.3f), 3);
+		if (Dungeon.hero.pointsInTalent(Talent.ENERGIZING_UPGRADE) != 2){
+			if (cast == 2)
+				guessLevel(2, "规模为消耗2点充能，当前要求至少4点充能上限，即+2。");
+			else if (cast == 3)
+				guessLevel(5, "规模为消耗3点充能，当前要求至少7点充能上限，即+5。");
+		}
+		else if (cast == 3)
+			guessLevel(3, "规模为消耗3点充能，当前要求至少5点充能上限，即+3。");
+		return cast;
     }
 	
 	public void fx(Ballistica bolt, Callback callback) {
@@ -421,18 +430,6 @@ public abstract class Wand extends Item {
 				identify();
 				GLog.p( Messages.get(Wand.class,"identify",toString()) );
 				Badges.validateItemLevelAquired( this );
-			}
-		}
-		if (Dungeon.hero.pointsInTalent(Talent.ENERGIZING_UPGRADE) != 2){
-			if (chargesPerCast() == 2 && guessingLevel < 2)
-				guessingLevel = 2;
-			else if (chargesPerCast() == 3 && guessingLevel < 5) {
-				guessingLevel = 5;
-			}
-		}
-		else {
-			if (chargesPerCast() == 3 && guessingLevel < 3) {
-				guessingLevel = 3;
 			}
 		}
 		curCharges -= cursed ? 1 : chargesPerCast();
@@ -639,6 +636,7 @@ public abstract class Wand extends Item {
 						float shield = curUser.HT * (0.04f*(curWand.curCharges-curWand.minCharges()));
 						if (curUser.pointsInTalent(Talent.SHIELD_BATTERY) == 2) shield *= 1.5f;
 						Buff.affect(curUser, Barrier.class).setShield(Math.round(shield));
+						curWand.guessLevel(curWand.curCharges - curWand.initialCharges(), Messages.format("以大于+0的充能上限的充能数判断等级为 +%d 。" , curWand.curCharges - curWand.initialCharges()));
 						curWand.curCharges = curWand.minCharges();
 						curUser.sprite.operate(curUser.pos);
 						Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);

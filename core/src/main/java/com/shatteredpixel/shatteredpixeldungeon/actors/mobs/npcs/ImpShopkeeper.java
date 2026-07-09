@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.P7Sprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
@@ -70,7 +69,6 @@ public class ImpShopkeeper extends Shopkeeper {
                 else {
                     ImpShopkeeper impShopkeeper = new ImpShopkeeper();
                     String[] options = new String[2];
-                    int maxLen = PixelScene.landscape() ? 30 : 25;
                     int i = 0;
                     options[i++] = Messages.get(impShopkeeper, "sell");
                     options[i++] = Messages.get(impShopkeeper, "roll", RollNeed *(Dungeon.RollTimes +1));

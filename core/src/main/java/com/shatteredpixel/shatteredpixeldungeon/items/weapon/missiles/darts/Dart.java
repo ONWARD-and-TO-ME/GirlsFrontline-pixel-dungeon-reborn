@@ -51,7 +51,8 @@ public class Dart extends MissileWeapon {
 		hitSoundPitch = 1.3f;
 		
 		tier = 1;
-		
+
+		unique = true;
 		//infinite, even with penalties
 		baseUses = 1000;
 	}

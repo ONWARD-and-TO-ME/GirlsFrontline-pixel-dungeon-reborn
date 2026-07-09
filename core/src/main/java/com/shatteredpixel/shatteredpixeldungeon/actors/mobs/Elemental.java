@@ -245,7 +245,7 @@ public abstract class Elemental extends Mob {
 			
 			properties.add(Property.MINIBOSS);
 
-			//newborn elementals do not have ranged attacks
+			//newborn elemental do not have ranged attacks
 			rangedCooldown = Integer.MAX_VALUE;
 		}
 
@@ -385,10 +385,6 @@ public abstract class Elemental extends Mob {
 	}
 	
 	public static Class<? extends Elemental> random(){
-		if (Random.Int( 50 ) == 0){
-			return ChaosElemental.class;
-		}
-		
 		float roll = Random.Float();
 		if (roll < 0.4f){
 			return FireElemental.class;

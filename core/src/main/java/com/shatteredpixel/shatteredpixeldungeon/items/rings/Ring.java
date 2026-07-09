@@ -163,7 +163,7 @@ public class Ring extends KindofMisc implements ColorItem {
         if (levelKnown || cursedKnown){
             levelKnown = false;
             cursedKnown = false;
-			guessingLevel = Integer.MIN_VALUE;
+			resetGuessingLevel();
 			Dungeon.guessType.remove(getClass());
         }else if (isKnown()){
             handler.ignore(this);
@@ -265,10 +265,17 @@ public class Ring extends KindofMisc implements ColorItem {
 			else
 				other = Dungeon.hero.belongings.ring();
 			if (other != null && other.getClass() == getClass()){
-				if (other.cursed)
-					other.guessingLevel = Math.min(2, other.level());
-				else
-					other.guessingLevel = other.level();
+				String cause;
+				int lvl;
+				if (other.cursed) {
+					cause = "装备两个同类瞄准镜后，以已鉴定的瞄准镜的文案判断。";
+					lvl = Math.min(2, other.level());
+				}
+				else {
+					cause = "装备两个同类瞄准镜后，以已鉴定的瞄准镜的文案精准判断。";
+					lvl = other.level();
+				}
+				other.guessLevel(lvl, cause);
 			}
 		}
 		return "";
@@ -288,14 +295,19 @@ public class Ring extends KindofMisc implements ColorItem {
 		if (ring == null)
 			return;
 
+		String cause = null;
+		int lvl		 = Integer.MIN_VALUE;
 		if (!guessByTime || hero.wholeTime()){
 			if (!ring.cursed || ring.level() < 2) {
-				ring.guessingLevel = ring.level();
-				ring.guessType();
+				cause = "以瞄准镜有实际生效等级精准判断。";
+				lvl = ring.level();
+				ring.guessType(guessByTime ? "在回合盘完整的情况下对回合盘造成影响，从而判断瞄准镜类别。" : "以信息获取判断瞄准镜类别。");
 			}
 			else if ( ring.isKnown() || ring.isGuess() ) {
-				ring.guessingLevel = Math.min(2, ring.level());
+				cause = "以知道瞄准镜类别而粗略判断。";
+				lvl = Math.min(2, ring.level());
 			}
+			ring.guessLevel(lvl, cause);
 		}
 	}
 	@Override

@@ -256,12 +256,12 @@ public class PixelScene extends Scene {
 	}
 
 
-	public static RenderedTextBlock renderTextBlock(int size ){
+	public static RenderedTextBlock renderTextBlock(float size ){
 		return renderTextBlock("", size);
 	}
 
-	public static RenderedTextBlock renderTextBlock(String text, int size ){
-		RenderedTextBlock result = new RenderedTextBlock( text, size*defaultZoom);
+	public static RenderedTextBlock renderTextBlock(String text, float size ){
+		RenderedTextBlock result = new RenderedTextBlock( text, (int) (size*defaultZoom));
 		result.zoom(1/(float)defaultZoom);
 		return result;
 	}

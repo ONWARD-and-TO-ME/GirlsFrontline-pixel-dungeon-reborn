@@ -68,7 +68,7 @@ public class WandOfDisintegration extends DamageWand {
 		boolean terrainAffected = false;
 		
 		int level = buffedLvl();
-		
+		guessLevel(level(), "以弹道长度精准判断等级。");
 		int maxDistance = Math.min(distance(), beam.dist);
 		
 		ArrayList<Char> chars = new ArrayList<>();

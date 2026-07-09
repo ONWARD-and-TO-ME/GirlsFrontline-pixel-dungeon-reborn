@@ -21,53 +21,13 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-
-public class LockButton extends RedButton {
-
-	public boolean checked = false;
-
-	public LockButton(String label ) {
-		super( label );
-
-		icon( Icons.get( Icons.UNLOCK ) );
-	}
-
-	public LockButton(String label, int size ) {
-		super( label,size );
-
-		icon( Icons.get( Icons.UNLOCK ) );
-	}
+public class LockButton extends CheckBox {
 	@Override
-	protected void layout() {
-		super.layout();
-		
-		float margin = (height - text.height()) / 2;
-		
-		text.setPos( x + margin, y + margin);
-		PixelScene.align(text);
-
-		margin = (height - icon.height) / 2;
-
-		icon.x = x + width - margin - icon.width;
-		icon.y = y + margin;
-		PixelScene.align(icon);
+	protected void resetIcons(){
+		UNCHECKED	= Icons.UNLOCK;
+		CHECKED		= Icons.LOCK;
 	}
-	
-	public boolean checked() {
-		return checked;
-	}
-	
-	public void checked( boolean value ) {
-		if (checked != value) {
-			checked = value;
-			icon.copy( Icons.get( checked ? Icons.LOCK : Icons.UNLOCK ) );
-		}
-	}
-	
-	@Override
-	protected void onClick() {
-		super.onClick();
-		checked( !checked );
+	public LockButton() {
+		super("");
 	}
 }

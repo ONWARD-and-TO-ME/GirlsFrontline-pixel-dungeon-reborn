@@ -182,8 +182,9 @@ public class TalentButton extends Button {
 								for (Talent t : tier.keySet()) {
 									if (t == replacing) {
 										//将旧天赋的加点记录
-										point = tier.get(replacing);
+										point = tier.get(replacing) - 1;
 										//暂时加入加点为0的天赋，我希望蜕变是获取天赋然后重新加点，从而获得那些在加点过程中获得的收益
+										//返回一点自由天赋点（如果有），倘若point变为0及以下，不会进入for循环，所以不会出现负数加点
 										newTier.put(talent, 0);
 										//被蜕变的是额外天赋，则直接修改额外天赋表，而非记录蜕变关系
 										//蜕变的替换在生成初始表时，而额外天赋的加入是在生成完成后，时机滞后了，以蜕变逻辑实行，在读档的时候无法复原

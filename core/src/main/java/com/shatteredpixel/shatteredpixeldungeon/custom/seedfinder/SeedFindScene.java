@@ -149,6 +149,7 @@ public class SeedFindScene extends PixelScene {
                                 });
                             }
                         } catch (Exception e) {
+                            GirlsFrontlinePixelDungeon.saveCrashReport(e);
                             e.printStackTrace();
                             GirlsFrontlinePixelDungeon.runOnRenderThread(() -> {
                                 currentSeedText.text("查找失败：" + e.getMessage());

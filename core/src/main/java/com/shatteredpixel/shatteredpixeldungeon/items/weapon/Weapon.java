@@ -298,8 +298,13 @@ abstract public class Weapon extends KindOfWeapon {
 				delay *= Math.pow( 1.2, encumbrance );
 			}
 			int str = Math.max(0, baseSTRReq() - ((Hero) owner).STR());
-			if ((owner.wholeTime() || encumbrance <=0) && guessingLevel < guessLevel(str - Math.max(0, encumbrance)))
-				guessingLevel = guessLevel(str - Math.max(0, encumbrance));
+			String cause = "";
+			if (owner.wholeTime())
+				cause = "以完整回合盘初步判断武器等级。";
+			else if (encumbrance <= 0)
+				cause = "以没有超力惩罚初步判断武器等级。";
+			if (owner.wholeTime() || encumbrance <=0)
+				guessLevel(STRNeed(str - Math.max(0, encumbrance)), cause);
 		}
 
 		return delay;
@@ -308,11 +313,15 @@ abstract public class Weapon extends KindOfWeapon {
 	protected float speedMultiplier(Char owner ){
 		return RingOfFuror.attackSpeedMultiplier(owner);
 	}
-
+	public int reach(Char owner){
+		int reach = RCH;
+		if (hasEnchant(Projecting.class, owner))
+			reach++;
+		return reach;
+	}
 	@Override
 	public int reachFactor(Char owner) {
-		int reach = hasEnchant(Projecting.class, owner) ? RCH+1 : RCH;
-		
+		int reach = reach(owner);
 		// GSH18天赋：漫画之心 - 根据武器等级增加攻击距离
 		if (owner instanceof Hero) {
 			Hero hero = (Hero) owner;

@@ -69,7 +69,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.DELSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GhostSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSWAPSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GolyatPlusSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ImpSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.FncSprite;
@@ -248,7 +247,7 @@ public class Notes {
 				case TROLL:
 					return new BlacksmithSprite();
 				case IMP:
-					return new ImpSprite();
+					return new P7Sprite();
 				case DEL:
 					return new DELSprite();
 

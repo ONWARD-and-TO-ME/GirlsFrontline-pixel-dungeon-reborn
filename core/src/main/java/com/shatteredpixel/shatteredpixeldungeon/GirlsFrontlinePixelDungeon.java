@@ -54,7 +54,19 @@ public class GirlsFrontlinePixelDungeon extends Game {
 				com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff.class,
 				"com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.G11" );
 	}
-	
+	public static void reportException( Throwable tr ) {
+		Game.GameMode = Dungeon.GameMode;
+		Game.versionCode = Dungeon.version;
+		Game.Challenges = Dungeon.challenges;
+		Game.reportException(tr);
+	}
+	public static void saveCrashReport( Throwable tr ){
+		Game.GameMode = Dungeon.GameMode;
+		Game.versionCode = Dungeon.version;
+		Game.Challenges = Dungeon.challenges;
+		if (instance != null)
+			Game.saveCrashReport(tr);
+	}
 	@Override
 	public void create() {
 		super.create();

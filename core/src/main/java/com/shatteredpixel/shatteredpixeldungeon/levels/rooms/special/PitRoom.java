@@ -64,8 +64,7 @@ public class PitRoom extends SpecialRoom {
 		Painter.set( level, well, Terrain.EMPTY_WELL );
 		
 		int remains = level.pointToCell(center());
-		
-		level.drop( new CrystalKey( Dungeon.depth ), remains ).setType(Heap.Type.SKELETON);
+
 		Item mainLoot = null;
 		do {
 			switch (Random.Int(3)){
@@ -85,9 +84,9 @@ public class PitRoom extends SpecialRoom {
 		level.drop(mainLoot, remains).setHauntedIfCursed().setRoom(Heap.Room.Pit);
 		
 		int n = Random.IntRange( 1, 2 );
-		for (int i=0; i < n; i++) {
+		for (int i=0; i < n; i++)
 			level.drop( prize( level ), remains ).setHauntedIfCursed().setRoom(Heap.Room.Pit);
-		}
+		level.drop( new CrystalKey( Dungeon.depth ), remains ).setType(Heap.Type.SKELETON).setRoom(Heap.Room.Pit);
 	}
 	
 	private static Item prize( Level level ) {

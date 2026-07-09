@@ -50,11 +50,6 @@ public class EnergyCrystal extends Item {
 	}
 
 	@Override
-	public ArrayList<String> actions(Hero hero ) {
-		return new ArrayList<>();
-	}
-
-	@Override
 	public boolean doPickUp(Hero hero, int pos) {
 
 		Catalog.setSeen(getClass());

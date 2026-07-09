@@ -132,7 +132,7 @@ public class RingOfWealth extends Ring {
 				if (ring == null)
 					ring = target.buff(Wealth.class).ring();
 				if (ring.canGuessType())
-					ring.guessType();
+					ring.guessType("以闪光掉落蓝底装备判断为财富瞄准镜。");
                 int equipBonus = 0;
 
                 for(Wealth w : target.buffs(Wealth.class)) {
@@ -152,7 +152,7 @@ public class RingOfWealth extends Ring {
 			} else {
 				Item i;
 				do {
-					i = genConsumableDrop(bonus - 1, ring);
+					i = genConsumableDrop(bonus - 1);
 				} while (Challenges.isItemBlocked(i));
 				drops.add(i);
 				dropsToEquip--;
@@ -174,9 +174,9 @@ public class RingOfWealth extends Ring {
 	// 3 used for +0-1 equips, 4 used for +2 or higher equips
 	private static int latestDropTier = 0;
 
-	public static void showFlareForBonusDrop( Visual vis, Ring wealth ){
+	public static void showFlareForBonusDrop( Visual vis, Ring wealth, String guessCause ){
 		if (wealth != null && wealth.canGuessType())
-			wealth.guessType();
+			wealth.guessType(guessCause);
 
 		if (vis == null || vis.parent == null) return;
 		switch (latestDropTier){
@@ -198,9 +198,7 @@ public class RingOfWealth extends Ring {
 		latestDropTier = 0;
 	}
 	
-	public static Item genConsumableDrop(int level, Ring ring) {
-		if (ring != null && ring.canGuessType())
-			ring.guessType();
+	public static Item genConsumableDrop(int level) {
 		float roll = Random.Float();
 		//60% chance - 4% per level. Starting from +15: 0%
 		if (roll < (0.6f - 0.04f * level)) {
@@ -254,7 +252,7 @@ public class RingOfWealth extends Ring {
 
 	private static Item genHighValueConsumable(){
 		if (Dungeon.hero.buff(Wealth.class).ring().canGuessType())
-			Dungeon.hero.buff(Wealth.class).ring().guessType();
+			Dungeon.hero.buff(Wealth.class).ring().guessType("以HighValue判断为财富瞄准镜。");
 		switch (Random.Int(4)){
 			case 0: default:
 				Item i = genMidValueConsumable();

@@ -324,13 +324,7 @@ public class WandOfRegrowth extends Wand {
 			for (int i = 0; i < nDrops; i++){
 				items.add(new Dewdrop());
 			}
-			Level level;
-			if (Dungeon.level == null)
-				level = Plant.level;
-			else
-				level = Dungeon.level;
-			level.throwPath(items, pos);
-			Plant.level = null;
+			activateLevel().throwPath(items, pos);
 		}
 
 		@Override
@@ -360,13 +354,7 @@ public class WandOfRegrowth extends Wand {
 			for (int i = 0; i < nSeeds; i++){
 				items.add(Generator.random(Generator.Category.SEED));
 			}
-			Level level;
-			if (Dungeon.level == null)
-				level = Plant.level;
-			else
-				level = Dungeon.level;
-			level.throwPath(items, pos);
-			Plant.level = null;
+			activateLevel().throwPath(items, pos);
 
 		}
 

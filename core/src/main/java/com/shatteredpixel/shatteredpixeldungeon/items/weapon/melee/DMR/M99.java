@@ -31,7 +31,6 @@ public class M99 extends DesignatedMarksmanRifle {
 		image = ItemSpriteSheet.GLAIVE;
 
 		tier = 5;
-		DLY = 1.5f;	// 攻击延迟设置为1.5f
         dmgBaseMul = 20/3F;
         dmgUpgradeMul = 4/3F;
 	}

@@ -117,26 +117,28 @@ public class ItemSlot extends Button {
 	@Override
 	protected void layout() {
 		super.layout();
-		
-		sprite.x = x + margin.left + (width - sprite.width - (margin.left + margin.right)) / 2f;
-		sprite.y = y + margin.top + (height - sprite.height - (margin.top + margin.bottom)) / 2f;
+
+		sprite.x = x + margin.left + (width - sprite.width - (margin.left + margin.right)) / 2f * size;
+		sprite.y = y + margin.top + (height - sprite.height - (margin.top + margin.bottom)) / 2f * size;
 		PixelScene.align(sprite);
 		
 		if (status != null) {
+			status.scale.set(size);
 			status.measure();
 			if (status.width > width - (margin.left + margin.right)){
 				status.scale.set(PixelScene.align(0.8f));
 			} else {
 				status.scale.set(1f);
 			}
-			status.x = x + margin.left;
-			status.y = y + margin.top;
+			status.x = x + margin.left * size;
+			status.y = y + margin.top * size;
 			PixelScene.align(status);
 		}
 		
 		if (extra != null) {
-			extra.x = x + (width - extra.width()) - margin.right;
-			extra.y = y + margin.top;
+			extra.scale.set(size);
+			extra.x = x + ((width - extra.width()) - margin.right) * size;
+			extra.y = y + margin.top * size;
 			PixelScene.align(extra);
 
 			if ((status.width() + extra.width()) > width){
@@ -147,14 +149,16 @@ public class ItemSlot extends Button {
 		}
 
 		if (itemIcon != null){
-			itemIcon.x = x + width - (ItemSpriteSheet.Icons.SIZE + itemIcon.width())/2f - margin.right;
-			itemIcon.y = y + (ItemSpriteSheet.Icons.SIZE - itemIcon.height)/2f + margin.top;
+			itemIcon.scale.set(size);
+			itemIcon.x = x + (width - (ItemSpriteSheet.Icons.SIZE + itemIcon.width())/2f - margin.right) * size;
+			itemIcon.y = y + ((ItemSpriteSheet.Icons.SIZE - itemIcon.height)/2f + margin.top) * size;
 			PixelScene.align(itemIcon);
 		}
 		
 		if (level != null) {
-			level.x = x + (width - level.width()) - margin.right;
-			level.y = y + (height - level.baseLine() - 1) - margin.bottom;
+			level.scale.set(size);
+			level.x = x + ((width - level.width()) - margin.right) * size;
+			level.y = y + ((height - level.baseLine() - 1) - margin.bottom) * size;
 			PixelScene.align(level);
 		}
 
@@ -174,6 +178,7 @@ public class ItemSlot extends Button {
 		if (this.item == item) {
 			if (item != null) {
 				sprite.view( item );
+				sprite.scale.set(size);
 			}
 			updateText();
 			return;
@@ -194,6 +199,7 @@ public class ItemSlot extends Button {
 			sprite.visible(true);
 
 			sprite.view( item );
+			sprite.scale.set(size);
 			updateText();
 		}
 	}

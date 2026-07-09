@@ -43,7 +43,7 @@ public class Blocking extends Weapon.Enchantment {
 		int level = Math.max( 0, weapon.buffedLvl() );
 		
 		Buff.prolong(attacker, BlockBuff.class, 2 + (float) level /2).setBlocking(level + 3);
-		weapon.guessingLevel = weapon.level();
+		weapon.guessLevel(weapon.level(), "以招架附魔触发的数值精确判断武器等级。");
 		return damage;
 	}
 	

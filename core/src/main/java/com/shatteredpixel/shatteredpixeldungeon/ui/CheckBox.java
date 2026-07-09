@@ -26,17 +26,26 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 public class CheckBox extends RedButton {
 
 	public boolean checked = false;
+	protected Icons CHECKED;
+	protected Icons UNCHECKED;
+	{
+		resetIcons();
+	}
+	protected void resetIcons(){
+		UNCHECKED	= Icons.UNCHECKED;
+		CHECKED		= Icons.CHECKED;
+	}
 	
 	public CheckBox( String label ) {
 		super( label );
 		
-		icon( Icons.get( Icons.UNCHECKED ) );
+		icon( Icons.get( UNCHECKED ) );
 	}
 
 	public CheckBox( String label,int size ) {
 		super( label,size );
 
-		icon( Icons.get( Icons.UNCHECKED ) );
+		icon( Icons.get( UNCHECKED ) );
 	}
 	@Override
 	protected void layout() {
@@ -61,7 +70,7 @@ public class CheckBox extends RedButton {
 	public void checked( boolean value ) {
 		if (checked != value) {
 			checked = value;
-			icon.copy( Icons.get( checked ? Icons.CHECKED : Icons.UNCHECKED ) );
+			icon.copy( Icons.get( checked ? CHECKED : UNCHECKED ) );
 		}
 	}
 	

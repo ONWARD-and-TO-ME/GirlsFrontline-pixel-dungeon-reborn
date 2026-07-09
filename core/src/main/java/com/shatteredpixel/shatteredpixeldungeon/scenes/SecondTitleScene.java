@@ -19,9 +19,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.ui.canScrollRedButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
@@ -31,7 +29,6 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Music;
-import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 
 import java.io.IOException;
@@ -124,12 +121,14 @@ public class SecondTitleScene extends PixelScene {
 					GirlsFrontlinePixelDungeon.scene().addToFront(
 							new WndOptions(Messages.get(SecondTitleScene.class, "AutoIdentify_title"),
 									Messages.get(SecondTitleScene.class, "AutoIdentify_body"),
+									Messages.get(SecondTitleScene.class, "AutoIdentify_both"),
 									Messages.get(SecondTitleScene.class, "AutoIdentify_yes"),
 									Messages.get(SecondTitleScene.class, "AutoIdentify_no")) {
 
 								protected void onSelect(int index) {
 									super.onSelect(index);
-                                    SPDSettings.AutoIdentify(index == 0);
+                                    SPDSettings.AutoIdentify(index == 0 || index == 1);
+									SPDSettings.AutoGuessingText(index == 0);
 								}
 							});
 				}

@@ -388,8 +388,8 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			paused = true;
 		} else {
 			synchronized (State.class) {
-				stateRemovals.remove(state);
-				stateAdditions.add(state);
+				if(!stateRemovals.remove(state))
+					stateAdditions.add(state);
 			}
 		}
 	}
@@ -459,8 +459,8 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			paused = false;
 		} else {
 			synchronized (State.class) {
-				stateAdditions.remove(state);
-				stateRemovals.add(state);
+				if(!stateAdditions.remove(state))
+					stateRemovals.add(state);
 			}
 		}
 	}

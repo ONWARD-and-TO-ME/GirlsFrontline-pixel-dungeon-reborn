@@ -32,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfGenoise;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -98,16 +97,13 @@ public class Cypros extends MeleeWeapon {
     public float surpriseMultiplier;
 
     public Cypros(){
-        Wand wand = new RabbitWeaponGenoise();
-        Wand wandold = new WandOfGenoise();
+        wand = new RabbitWeaponGenoise();
 
         setMode(Mode.TRAVAILLER, false);
         wand.cursed = false;
-        wand.maxCharges = 1;
-        wand.curCharges = wand.maxCharges;
+        wand.curCharges = wand.maxCharges = 1;
         wand.identify(false);
-        
-        this.wand = wand;
+
         DEF = 5;
         DEFUPGRADE = 2;
     }
@@ -145,7 +141,7 @@ public class Cypros extends MeleeWeapon {
                 DEF = DEFUPGRADE = 0;
                 dmgBaseMul = 6;
                 dmgUpgradeMul = 2.5F;
-                surpriseMultiplier = 0.5F;
+                surpriseMultiplier = 0.333F;
                 ACC = 1.5f;
                 timeChange += 1f;
                 break;
@@ -156,7 +152,7 @@ public class Cypros extends MeleeWeapon {
                 DEF = DEFUPGRADE = 0;
                 dmgBaseMul = 4.5F;
                 dmgUpgradeMul = 2;
-                surpriseMultiplier = 0.85F;
+                surpriseMultiplier = 0.667F;
                 timeChange = 1f;
                 ACC = 1.25f;
                 timeChange += 0.5f;
@@ -170,8 +166,6 @@ public class Cypros extends MeleeWeapon {
             curUser.next();
         }
     }
-
-    public final static int CHARMCHANCE = 30;
 
     @Override
     public int damageRoll(Char owner) {
@@ -190,7 +184,7 @@ public class Cypros extends MeleeWeapon {
         if (owner != null && enemy != null) {
             switch (mode) {
                 case MAGNUM:
-                    if (Random.Int( CHARMCHANCE ) == 0) {
+                    if (Random.Int( 30 ) == 0) {
                         Buff.affect( enemy, Charm.class, Random.IntRange( 3, 7 ) ).object = owner.id();
                         enemy.sprite.centerEmitter().start( Speck.factory( Speck.HEART ), 0.2f, 5 );
                         Sample.INSTANCE.play( Assets.Sounds.CHARMS );
@@ -250,9 +244,9 @@ public class Cypros extends MeleeWeapon {
     public float maxBaseDmg(int mode){
         switch (mode) {
             case 0: default:
-                return  2*(tier+1);// 6 base
+                return  2*(tier+2);// 8 base
             case 1:
-                return  6*(tier+1);// 18 base
+                return  8*(tier+1);// 24 base
             case 2:
                 return  4.5f*(tier+1);// 14 base
         }
@@ -262,9 +256,9 @@ public class Cypros extends MeleeWeapon {
             case 0: default:
                 return  lvl* 1.1f*(tier+1);    //+3(3.3) per level
             case 1:
-                return  lvl* 2.5f*(tier+1);    //+8(7.5)= per level
+                return  lvl* 2.5f*(tier+1);    //+8(7.5) per level
             case 2:
-                return  lvl* 3.0f*(tier);    //+6 per level
+                return  lvl* 2.0f*(tier);       //+4 per level
         }
     }
 
@@ -365,7 +359,7 @@ public class Cypros extends MeleeWeapon {
         // 모드 별 설명 추가
             info += "\n\n" + mode.desc();
         else
-            info += "\n\n" + DEFGAIN();
+            info += "\n\n" + DEF_GAIN();
 
         if(Dungeon.WandLock||wand.lockcharge)
             info += "\n";
@@ -376,13 +370,13 @@ public class Cypros extends MeleeWeapon {
 
         return info;
     }
-    private String DEFGAIN(){
+    private String DEF_GAIN(){
         int DEF = 5;
-        int DEFUPGRADE = 2;
-        int baseDEF=DEF+DEFUPGRADE*buffedLvl();
+        int DEF_UPGRADE = 2;
+        int baseDEF=DEF+DEF_UPGRADE*buffedLvl();
         int REM=-2*Math.max(0,STRReq()-hero.STR);
-        int DEFGAIN=Math.max(0,baseDEF+REM);
-        return Messages.get(Cypros.class,"DEF",DEFGAIN);
+        int DEF_GAIN=Math.max(0,baseDEF+REM);
+        return Messages.get(Cypros.class,"DEF",DEF_GAIN);
     }
 
     @Override
@@ -390,35 +384,29 @@ public class Cypros extends MeleeWeapon {
         return 0;
     }
 
-    private static final String WAND        = "wand";
-    private static final String MODE        = "mode";
-    private static final String GETBADGE        = "getbadge";
+    private static final String MODE        = "mode_";
+    private static final String GET_BADGE        = "getBadge";
+    private static final String WAND_CHARGE = "wand_curCharge";
+    private static final String WAND_partialCHARGE = "wand_partialCharge";
 
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
-        bundle.put(WAND, wand);
+        bundle.put(WAND_CHARGE, wand.curCharges);
+        bundle.put(WAND_partialCHARGE, wand.partialCharge);
         bundle.put(MODE, mode.ordinal());
-        bundle.put(GETBADGE, GetBadge);
+        bundle.put(GET_BADGE, GetBadge);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
-        wand = (Wand) bundle.get(WAND);
-        GetBadge = bundle.getBoolean(GETBADGE);
-        Mode newMode;
-        switch (bundle.getInt(MODE)) {
-            case 0: default:
-                newMode = Mode.TRAVAILLER;
-                break;
-            case 1:
-                newMode = Mode.CONFIRE;
-                break;
-            case 2:
-                newMode = Mode.MAGNUM;
-                break;
-        }
+        wand.curCharges = bundle.getInt(WAND_CHARGE);
+        wand.partialCharge = bundle.getFloat(WAND_partialCHARGE);
+        GetBadge = bundle.getBoolean(GET_BADGE);
+        Mode newMode = Mode.TRAVAILLER;
+        if (bundle.contains(MODE))
+            newMode = bundle.getEnum(MODE, Mode.class);
         setMode(newMode,false);
     }
 

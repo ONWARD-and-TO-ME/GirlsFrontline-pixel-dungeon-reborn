@@ -140,7 +140,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 		return 1f;
 	}
 
-	public int guessLevel(int extraSTR){
+	public int STRNeed(int extraSTR){
 		return extraSTR * (extraSTR + 1) / 2;
 	}
 	public int reachFactor( Char owner ){

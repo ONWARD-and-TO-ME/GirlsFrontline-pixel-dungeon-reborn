@@ -352,6 +352,8 @@ public class Ghost extends NPC {
 				}
 				weapon.upgrade(itemLevel);
 				armor.upgrade(itemLevel);
+				weapon.resetGuessingLevel();
+				armor.resetGuessingLevel();
 
 				//10% to be enchanted. We store it separately so enchant status isn't revealed early
 				if (Random.Int(10) == 0){

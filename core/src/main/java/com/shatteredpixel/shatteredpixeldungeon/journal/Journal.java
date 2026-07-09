@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.journal;
 
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 
@@ -47,6 +48,7 @@ public class Journal {
 		}
 		
 		Catalog.restore( bundle );
+		Bestiary.restore( bundle );
 		Document.restore( bundle );
 		
 		loaded = true;
@@ -63,6 +65,7 @@ public class Journal {
 		Bundle bundle = new Bundle();
 		
 		Catalog.store(bundle);
+		Bestiary.store(bundle);
 		Document.store(bundle);
 		
 		try {

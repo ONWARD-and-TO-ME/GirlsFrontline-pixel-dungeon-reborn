@@ -199,17 +199,10 @@ public class debugBook extends TestItem {
         for (Mode e : Mode.values()){
             if (e != Mode.NONE)
                 buttons.add(new canScrollRedButton(e, e.modeName()){
-
                     @Override
                     public void onClick(){
                         super.onClick();
                         modeChange((Mode) anEnum);
-                    }
-
-                    @Override
-                    public void layout(){
-                        super.layout();
-                        hotArea.width = hotArea.height = 0;
                     }
                 });
         }
@@ -360,7 +353,7 @@ public class debugBook extends TestItem {
                     item.levelKnown = false;
                     item.cursedKnown = false;
                 }
-                item.guessingLevel = Integer.MIN_VALUE;
+                item.resetGuessingLevel();
                 Sample.INSTANCE.play( Assets.Sounds.READ );
             }
             else {
@@ -618,7 +611,7 @@ public class debugBook extends TestItem {
             GLog.p(Messages.format("已增加 %d 点击杀数", workingNum));
             ArrayList<Item> items = RingOfWealth.tryForBonusDrop(hero, workingNum, wealth.ring());
             if (!items.isEmpty())
-                RingOfWealth.showFlareForBonusDrop(hero.sprite, wealth.ring());
+                RingOfWealth.showFlareForBonusDrop(hero.sprite, wealth.ring(), "");
             for (Item item : items) {
                 Dungeon.level.drop(item, hero.pos);
             }

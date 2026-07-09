@@ -55,7 +55,6 @@ public class Fadeleaf extends Plant {
 				if (Dungeon.level.locked) {
 					GLog.w( Messages.get(ScrollOfTeleportation.class, "no_tele") );
 					return;
-					
 				}
 
 				TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
@@ -64,27 +63,22 @@ public class Fadeleaf extends Plant {
 				if (timeBubble != null) timeBubble.disarmPressedTraps();
 				
 				InterlevelScene.mode = InterlevelScene.Mode.RETURN;
-                if (Dungeon.levelId%1000!=Dungeon.levelId)
-                    InterlevelScene.returnLevel=Dungeon.depth;
-                else {
+                if (Dungeon.levelId%1000 != Dungeon.levelId)
+                    InterlevelScene.returnLevel = Dungeon.depth;
+                else
                     InterlevelScene.returnLevel = Math.max(1, (Dungeon.depth - 1));
-                }
 				InterlevelScene.returnPos = -2;
 				Game.switchScene( InterlevelScene.class );
 				
-			} else {
-				ScrollOfTeleportation.teleportChar((Hero) ch);
 			}
-			
-		} else if (ch instanceof Mob && !ch.properties().contains(Char.Property.IMMOVABLE)) {
-
+			else
+				ScrollOfTeleportation.teleportChar(ch);
+		}
+		else if (ch instanceof Mob && !ch.properties().contains(Char.Property.IMMOVABLE))
 			ScrollOfTeleportation.teleportChar(ch);
-
-		}
 		
-		if (Dungeon.level.heroFOV[pos]) {
+		if (Dungeon.level.heroFOV[pos])
 			CellEmitter.get( pos ).start( Speck.factory( Speck.LIGHT ), 0.2f, 3 );
-		}
 	}
 	
 	public static class Seed extends Plant.Seed {

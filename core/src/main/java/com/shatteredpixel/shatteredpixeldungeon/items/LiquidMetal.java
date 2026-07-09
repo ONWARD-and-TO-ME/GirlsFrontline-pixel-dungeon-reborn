@@ -69,9 +69,13 @@ public class LiquidMetal extends Item {
 	public void execute( Hero hero, String action ) {
 
 		super.execute( hero, action );
-
-		if (action.equals(AC_APPLY)) {
-
+		if (action.equals(AC_THROW)) {
+			defaultAction = AC_THROW;
+			updateQuickslot();
+		}
+		else if (action.equals(AC_APPLY)) {
+			defaultAction = AC_APPLY;
+			updateQuickslot();
 			curUser = hero;
 			GameScene.selectItem( itemSelector );
 
@@ -131,6 +135,7 @@ public class LiquidMetal extends Item {
 		@Override
 		public void onSelect( Item item ) {
 			if (item instanceof MissileWeapon) {
+				defaultAction = AC_APPLY;
 				MissileWeapon m = (MissileWeapon)item;
 
 				int maxToUse = 5*(m.tier+1);

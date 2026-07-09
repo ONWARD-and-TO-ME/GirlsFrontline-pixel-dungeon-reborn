@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Camouflage;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
@@ -150,26 +151,32 @@ public class Belongings implements Iterable<Item> {
         return lvl;
     }
 
-	public void guessArmorByGlyph(Class<?extends Armor.Glyph> type, boolean grass){
+	private void guessArmorByGlyph(Class<?extends Armor.Glyph> type, boolean grass){
 		if (armor() == null)
 			return;
 		if (FirstArmor().glyph != null && FirstArmor().glyph.getClass() == type
 				&& FirstArmor().buffedLvl() == GlyphLevel(type)) {
 			int lvl = FirstArmor().level();
-			if (grass && lvl % 2 == 1)
+			if (grass && lvl % 2 == 1) {
 				lvl--;
-			FirstArmor().guessingLevel = lvl;
+				FirstArmor().guessLevel(lvl, "主护甲触发迷彩刻印，以隐身回合数判断。");
+			}
+			else
+				FirstArmor().guessLevel(lvl, "主护甲刻印影响回合盘，以完整回合盘触发，精准判断。");
 		}
-		else if (SecondArmor().glyph != null && SecondArmor().glyph.getClass() == type
+		if (SecondArmor() != null && SecondArmor().glyph != null && SecondArmor().glyph.getClass() == type
 				&& SecondArmor().buffedLvl() == GlyphLevel(type)) {
 			int lvl = SecondArmor().level();
-			if (grass && lvl % 2 == 1)
+			if (grass && lvl % 2 == 1) {
 				lvl--;
-			SecondArmor().guessingLevel = lvl;
+				SecondArmor().guessLevel(lvl, "副护甲触发迷彩刻印，以隐身回合数判断。");
+			}
+			else
+				SecondArmor().guessLevel(lvl, "副护甲刻印影响回合盘，以完整回合盘触发，精准判断。");
 		}
 	}
 	public void guessArmorByGlyph(Class<?extends Armor.Glyph> type){
-		guessArmorByGlyph(type, false);
+		guessArmorByGlyph(type, type == Camouflage.class);
 	}
 
     public Artifact artifact(){

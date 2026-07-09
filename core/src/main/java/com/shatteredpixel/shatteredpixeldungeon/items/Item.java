@@ -56,6 +56,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.noosa.Game;
@@ -64,6 +65,7 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,7 +103,7 @@ public class Item implements Bundlable {
 	public boolean dropsDownHeap = false;
 	
 	private int level = 0;
-	public int guessingLevel = Integer.MIN_VALUE;
+	private int guessingLevel = Integer.MIN_VALUE;
     public int BuffLevelPoint = Integer.MIN_VALUE;
     public String noted = "";
 	public String ClassNote = "";
@@ -230,17 +232,15 @@ public class Item implements Bundlable {
 		
 		if (action.equals( AC_DROP )) {
 			
-			if (hero.belongings.backpack.contains(this) || isEquipped(hero)) {
+			if (hero.belongings.backpack.contains(this) || isEquipped(hero))
 				doDrop(hero);
-			}
 			
 		} else if (action.equals( AC_THROW )) {
 			
-			if (hero.belongings.backpack.contains(this) || isEquipped(hero)) {
+			if (hero.belongings.backpack.contains(this) || isEquipped(hero))
 				doThrow(hero);
-			}
 			
-		} else if (action.equals( AC_SKILL )&&coolDownLeft>0) {
+		} else if (action.equals( AC_SKILL ) && coolDownLeft > 0) {
             if (Dungeon.hero.buff(CooldownTracker.class) == null)
                 Buff.affect(Dungeon.hero, CooldownTracker.class);
         } else if (action.equals( AC_CHOOSE )){
@@ -538,12 +538,24 @@ public class Item implements Bundlable {
 		
 		return this;
 	}
+	public void guessLevel(int guess, String cause){
+		if (guessingLevel < guess){
+			guessingLevel = guess;
+			if (cause != null && !cause.isEmpty() && SPDSettings.isAutoIdentify() && SPDSettings.showAutoGuessingText() && !levelKnown) {
+				GLog.newLine();
+				GLog.i(cause);
+			}
+		}
+	}
 	private int guessingLevel(){
 		if (Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
 			return level();
 		if (SPDSettings.isAutoIdentify())
 			return guessingLevel;
 		return 0;
+	}
+	public void resetGuessingLevel(){
+		guessingLevel = Integer.MIN_VALUE;
 	}
 	public boolean hasGuessingLevel(){
 		return guessingLevel != Integer.MIN_VALUE;
@@ -886,7 +898,19 @@ public class Item implements Bundlable {
 			return Messages.get(Item.class, "prompt");
 		}
 	};
-    public static class CooldownTracker extends Buff {
+
+	public Item duplicate(){
+		Item dupe = Reflection.newInstance(getClass());
+		if (dupe == null){
+			return null;
+		}
+		Bundle copy = new Bundle();
+		this.storeInBundle(copy);
+		dupe.restoreFromBundle(copy);
+		return dupe;
+	}
+
+	public static class CooldownTracker extends Buff {
         {
             type = buffType.POSITIVE;
             revivePersists = true;

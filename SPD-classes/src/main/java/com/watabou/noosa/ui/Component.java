@@ -29,11 +29,14 @@ public class Component extends Group {
 	public float y;
 	protected float width;
 	public float height;
+	public float size = 1F;
 	
 	public Component() {
 		super();
+		resetScale();
 		createChildren();
 	}
+	protected void resetScale(){}
 	
 	public Component setPos( float x, float y ) {
 		this.x = x;

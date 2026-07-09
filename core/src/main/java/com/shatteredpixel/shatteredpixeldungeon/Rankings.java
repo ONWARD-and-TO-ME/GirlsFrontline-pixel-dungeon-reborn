@@ -239,7 +239,7 @@ public enum Rankings {
 	private static final String LATEST	= "latest";
 	private static final String TOTAL	= "total";
 	private static final String WON     = "won";
-    private static final String LOCKNUM     = "locknum";
+    private static final String LOCK_NUM     = "locknum";
 
 	public void save() {
 		Bundle bundle = new Bundle();
@@ -247,7 +247,7 @@ public enum Rankings {
 		bundle.put( LATEST, lastRecord );
 		bundle.put( TOTAL, totalNumber );
 		bundle.put( WON, wonNumber );
-        bundle.put( LOCKNUM, LockNumber );
+        bundle.put( LOCK_NUM, LockNumber );
 		try {
 			FileUtils.bundleToFile( RANKINGS_FILE, bundle);
 		} catch (IOException e) {
@@ -271,7 +271,7 @@ public enum Rankings {
 				records.add( (Record)record );
 			}
 			lastRecord = bundle.getInt( LATEST );
-			LockNumber = bundle.getInt( LOCKNUM );
+			LockNumber = bundle.getInt( LOCK_NUM );
 			totalNumber = bundle.getInt( TOTAL );
 			if (totalNumber == 0) {
 				totalNumber = records.size();
@@ -355,8 +355,8 @@ public enum Rankings {
 			
 			if (gameID == null) gameID = UUID.randomUUID().toString();
 
-			seed=bundle.getLong(SEED);
-			customSeed = bundle.contains(CUSTOM_SEED) ? bundle.getBoolean(CUSTOM_SEED) : false;
+			seed = bundle.getLong(SEED);
+			customSeed = bundle.contains(CUSTOM_SEED) && bundle.getBoolean(CUSTOM_SEED);
 			depth = bundle.getInt( DEPTH );
 			herolevel = bundle.getInt( LEVEL );
 

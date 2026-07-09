@@ -59,7 +59,7 @@ public class RingOfForce extends Ring {
 		if (hero.buff(Force.class) != null) {
 			Ring ring = hero.buff(Force.class).ring();
 			if (ring.canGuessType())
-				ring.guessType();
+				ring.guessType("以空手伤害判断为武力瞄准镜。");
 			int level = getBuffedBonus(hero, Force.class);
 			float tier = tier(hero.STR());
 			return Random.NormalIntRange(min(level, tier), max(level, tier));

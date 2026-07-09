@@ -139,7 +139,7 @@ public class Heap implements Bundlable {
             ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(hero, 1, wealth.ring());
             if (!bonus.isEmpty()) {
                 items.addAll(0, bonus);
-                RingOfWealth.showFlareForBonusDrop(sprite, wealth.ring());
+                RingOfWealth.showFlareForBonusDrop(sprite, wealth.ring(), "以从箱子等地图上的物品容器爆闪光判断为财富瞄准镜。");
             }
         }
 		sprite.link();

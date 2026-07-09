@@ -87,6 +87,15 @@ public abstract class Plant implements Bundlable {
 		Char ch = Actor.findChar(pos);
 		activate(ch);
 	}
+	public Level activateLevel(){
+		if (Dungeon.level == null) {
+			Level level = Plant.level;
+			Plant.level = null;
+			return level;
+		}
+
+		return Dungeon.level;
+	}
 	
 	public void wither() {
 		Dungeon.level.uproot( pos );

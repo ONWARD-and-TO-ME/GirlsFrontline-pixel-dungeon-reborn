@@ -203,6 +203,7 @@ public class SPDSettings extends GameSettings {
 
 	public static final String KEY_SUPPORT_NAGGED= "support_nagged";
 	public static final String AutoIdentify		= "Auto_Identify";
+	public static final String AutoIdentifyText	= "Auto_Guessing_Cause";
 	public static final String Special_Day		= "Special_Day_";
 
 	public static void seedCode(String value) {
@@ -252,6 +253,12 @@ public class SPDSettings extends GameSettings {
 	}
 	public static boolean isAutoIdentify(){
 		return getBoolean(AutoIdentify, false) && !Item.ignoreGuess;
+	}
+	public static void AutoGuessingText(boolean value){
+		put(AutoIdentifyText, value);
+	}
+	public static boolean showAutoGuessingText(){
+		return getBoolean(AutoIdentifyText, false) && !Item.ignoreGuess;
 	}
 	public static void resetSpecialDay_PlayTimes(){
 		put(Special_Day + "PlayTimes", 100);
