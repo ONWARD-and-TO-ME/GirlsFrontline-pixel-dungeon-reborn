@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMet
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoTalent;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndReplaceTalent;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSelectTalent;
@@ -60,6 +61,17 @@ public class TalentButton extends Button {
 	Image bg;
 
 	ColorBlock fill;
+
+	public static String getTalentButtonAsset() {
+		switch (SPDSettings.statusPaneStyle()) {
+			case 1:
+				return Assets.Interfaces.TALENT_BUTTON_1;
+			case 2:
+				return Assets.Interfaces.TALENT_BUTTON_2;
+			default:
+				return Assets.Interfaces.TALENT_BUTTON;
+		}
+	}
 
 
 	public enum Mode {
@@ -93,7 +105,7 @@ public class TalentButton extends Button {
 		fill = new ColorBlock(0, 4, 0xFFFFFF44);
 		add(fill);
 
-		bg = new Image(Assets.Interfaces.TALENT_BUTTON);
+		bg = new Image(getTalentButtonAsset());
 		add(bg);
 	}
 

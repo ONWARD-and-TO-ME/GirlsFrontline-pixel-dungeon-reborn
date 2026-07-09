@@ -291,6 +291,13 @@ public class SPDSettings extends GameSettings {
 	public static String getSpecialDay_Message(){
 		return getString(Special_Day + "Message", "");
 	}
+	// 蛋糕款式：0=WHOLECAKE, 1=WHOLECAKE2, 2=WHOLECAKE3, 3=WHOLECAKE4
+	public static void setSpecialDay_CakeStyle(int value){
+		put(Special_Day + "CakeStyle", value);
+	}
+	public static int getSpecialDay_CakeStyle(){
+		return getInt(Special_Day + "CakeStyle", 0);
+	}
 	public static boolean isSpecialDay(){
 		Calendar calendar = Calendar.getInstance();
 		return calendar.get(Calendar.MONTH) == getSpecialDay_Month() && calendar.get(Calendar.DAY_OF_MONTH) == getSpecialDay_Day();

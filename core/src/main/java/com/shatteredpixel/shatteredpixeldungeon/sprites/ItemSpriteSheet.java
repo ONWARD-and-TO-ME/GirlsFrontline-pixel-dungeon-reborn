@@ -148,10 +148,10 @@ public class ItemSpriteSheet {
 	public static final int MASTERY         = MISC_CONSUMABLE +14;
 	public static final int KIT             = MISC_CONSUMABLE +15;
 	static{
-		assignItemRect(ANKH,            10, 16);
+		assignItemRect(ANKH,            10, 12);
 		assignItemRect(STYLUS,          12, 13);
 
-		assignItemRect(SEAL,            9,  15);
+		assignItemRect(SEAL,            10,  15);
 		assignItemRect(TORCH,           15, 15);
 		assignItemRect(BEACON,          16, 15);
 
@@ -161,12 +161,12 @@ public class ItemSpriteSheet {
 		assignItemRect(SKELETON_KEY,    8,  14);
 
 		assignItemRect(MASK,            11,  14);
-		assignItemRect(CROWN,           14,  15);
+		assignItemRect(CROWN,           12,  13);
 		assignItemRect(AMULET,          16, 16);
 		assignItemRect(MASTERY,         13, 16);
 		assignItemRect(KIT,             16, 15);
 	}
-	
+	//炸弹行
 	private static final int BOMBS          =                               xy(1, 5);   //16 slots
 	public static final int BOMB            = BOMBS+0;
 	public static final int DBL_BOMB        = BOMBS+1;
@@ -359,6 +359,7 @@ public class ItemSpriteSheet {
 	public static final int ARMOR_ROGUE     = ARMOR+7;
 	public static final int ARMOR_HUNTRESS  = ARMOR+8;
 	public static final int ARMOR_TYPE561   = ARMOR+9;
+	public static final int ARMOR_GSH18      = ARMOR+10;
 	static{
 		assignItemRect(ARMOR_CLOTH,     15, 12);
 		assignItemRect(ARMOR_LEATHER,   14, 13);
@@ -370,6 +371,7 @@ public class ItemSpriteSheet {
 		assignItemRect(ARMOR_ROGUE,     16, 16);
 		assignItemRect(ARMOR_HUNTRESS,  16, 16);
 		assignItemRect(ARMOR_TYPE561,   16, 16);
+		assignItemRect(ARMOR_GSH18,      16, 16);
 	}
 
 	     //16 free slots
@@ -449,6 +451,9 @@ public class ItemSpriteSheet {
 	public static final int REDBOOK             = ARTIFACTS+26;
 	public static final int REDBOOK2            = ARTIFACTS+27;
 	public static final int REDBOOK3            = ARTIFACTS+28;
+	public static final int FAIRY_COMMANDER     = ARTIFACTS+29; // 指挥妖精
+	public static final int FAIRY_GEMINI        = ARTIFACTS+30; // 双生妖精
+	public static final int FAIRY_SUCCOR        = ARTIFACTS+31; // 增援妖精
 	static{
 		assignItemRect(ARTIFACT_CLOAK,      16,  14);
 		assignItemRect(ARTIFACT_ARMBAND,    16, 13);
@@ -476,6 +481,9 @@ public class ItemSpriteSheet {
 		assignItemRect(REDBOOK,             13, 16);
 		assignItemRect(REDBOOK2,            13, 16);
 		assignItemRect(REDBOOK3,            13, 16);
+		assignItemRect(FAIRY_COMMANDER,     16, 16);
+		assignItemRect(FAIRY_GEMINI,        16, 16);
+		assignItemRect(FAIRY_SUCCOR,        16, 16);
 	}
 
 	                                                                                    //16 free slots
@@ -739,8 +747,14 @@ public class ItemSpriteSheet {
 	public static final int VIAL        = BAGS+6;
 	public static final int WATER_POUCH = BAGS+7;
 	public static final int FOOD_POUCH  = BAGS+8;
-	public static final int CHESTHANGIN = BAGS+9;
+	public static final int CHESTHANGIN = BAGS+9;//TODO 这个背包需要重新绘制
 	public static final int TACBACKPACK = BAGS+10;
+	public static final int MEAT2     	= BAGS+11;
+	public static final int WHOLECAKE2  = BAGS+12;
+	public static final int WHOLECAKE3  = BAGS+13;
+	public static final int WHOLECAKE4  = BAGS+14;
+	public static final int FISHMEAT	= BAGS+15;
+		
 	static{
 		assignItemRect(WATERSKIN,   12, 12);
 		assignItemRect(BACKPACK,    16, 16);
@@ -792,7 +806,7 @@ public class ItemSpriteSheet {
 		assignItemRect(SHURIKEN,        12, 12);
 		assignItemRect(THROWING_CLUB,   12, 12);
 
-		assignItemRect(THROWING_SPEAR,  15, 13);
+		assignItemRect(THROWING_SPEAR,  16, 14);
 		assignItemRect(BOLAS,           15, 14);
 		assignItemRect(KUNAI,           15, 15);
 
@@ -801,22 +815,29 @@ public class ItemSpriteSheet {
 		assignItemRect(BOOMERANG,       14, 14);
 
 		assignItemRect(TRIDENT,         16, 16);
-		assignItemRect(THROWING_HAMMER, 12, 12);
-		assignItemRect(FORCE_CUBE,      11, 12);
+		assignItemRect(THROWING_HAMMER, 16, 16);
+		assignItemRect(FORCE_CUBE,      12, 12);
 	}
 	//这是新添加的武器行，从561开始
-	private static final int GUN561_NUKE      =xy(1, 38);
-	public static final  int GUN561           =GUN561_NUKE+2;
-	public static final  int GUN562    	      =GUN561_NUKE+3;
-	public static final  int GUN562ACCESSORIES=GUN561_NUKE+4;
-	public static final  int GSH18            =GUN561_NUKE+5;
-	public static final  int GUN64            =GUN561_NUKE+7;
+	private static final int GUN561_NUKE       =xy(1, 38);
+	public static final  int GUN561            =GUN561_NUKE+2;
+	public static final  int GUN562    	       =GUN561_NUKE+3;
+	public static final  int GUN562ACCESSORIES =GUN561_NUKE+4;
+	public static final  int GSH18             =GUN561_NUKE+5;
+	public static final  int GUN64             =GUN561_NUKE+7;
+	public static final  int NIGHTVISIONHELMET =GUN561_NUKE+8;
+	public static final  int NIGHTVISIONHELMET2=GUN561_NUKE+9;
+	public static final  int UMP9              =GUN561_NUKE+11;
+		
 	static {
 		assignItemRect(GUN561,            14, 16);
 		assignItemRect(GUN562,            16, 15);
 		assignItemRect(GUN562ACCESSORIES, 16, 15);
 		assignItemRect(GSH18,             16, 16);
 		assignItemRect(GUN64,             12, 16);
+		assignItemRect(NIGHTVISIONHELMET, 16, 16);
+		assignItemRect(NIGHTVISIONHELMET2, 16, 16);
+		assignItemRect(UMP9,              16, 16);
 	}                                                               
 	//16 free slots
 

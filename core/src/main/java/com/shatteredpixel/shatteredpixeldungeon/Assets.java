@@ -151,6 +151,8 @@ public class Assets {
 
 		public static final String TALENT_ICONS  = "interfaces/talent_icons.png";
 		public static final String TALENT_BUTTON = "interfaces/talent_button.png";
+		public static final String TALENT_BUTTON_1 = "interfaces/talent_button_1.png";
+		public static final String TALENT_BUTTON_2 = "interfaces/talent_button_2.png";
 
 		public static final String HERO_ICONS   = "interfaces/hero_icons.png";
 

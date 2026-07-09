@@ -124,6 +124,11 @@ public class WndOptions extends Window {
 			}
 		}
 
+		//最后一行按钮数量不足 btnPerRow 时，仍需计入高度
+		if (btnCurRow > 0) {
+			pos += BUTTON_HEIGHT + MARGIN;
+		}
+
 		resize( width, (int)(pos - MARGIN) );
 	}
 

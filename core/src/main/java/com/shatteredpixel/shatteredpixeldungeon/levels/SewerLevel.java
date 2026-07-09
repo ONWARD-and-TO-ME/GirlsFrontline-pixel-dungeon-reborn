@@ -128,7 +128,7 @@ public class SewerLevel extends RegularLevel {
 			if (SPDSettings.isBirthday())
 				itemsToSpawn.add(new WholeCake(Messages.get(WholeCake.class, "ONWARD"), Messages.get(WholeCake.class, "TO_ME")));
 			if (SPDSettings.isSpecialDay())
-				itemsToSpawn.add(new WholeCake(SPDSettings.getSpecialDay_Message()));
+				itemsToSpawn.add(new WholeCake("节日蛋糕", SPDSettings.getSpecialDay_Message(), SPDSettings.getSpecialDay_CakeStyle()));
 		}
 		super.createItems();
 	}

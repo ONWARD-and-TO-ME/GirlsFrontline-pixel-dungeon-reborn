@@ -34,6 +34,8 @@ public class WholeCake extends Food {
 	}
 	private String title;
 	private String body;
+	// 蛋糕款式：0=WHOLECAKE, 1=WHOLECAKE2, 2=WHOLECAKE3, 3=WHOLECAKE4
+	private int cakeStyle;
 	public WholeCake(){
 		this("某人的蛋糕", "0.5.8v2版本纯粹是为了这个私货而加急制作的。但是令人遗憾的是，没有多少人发现这个私货……\n\n或者说，没有人按照我预设的剧本进行演出……");
 	}
@@ -44,19 +46,50 @@ public class WholeCake extends Food {
 		this.title = title;
 		this.body = body;
 	}
+	public WholeCake(String title, String body, int cakeStyle){
+		this.title = title;
+		this.body = body;
+		this.cakeStyle = cakeStyle;
+		image = getCakeImage(cakeStyle);
+	}
+	// 根据款式返回对应的贴图常量
+	public static int getCakeImage(int style){
+		switch (style){
+			case 1: return ItemSpriteSheet.WHOLECAKE2;
+			case 2: return ItemSpriteSheet.WHOLECAKE3;
+			case 3: return ItemSpriteSheet.WHOLECAKE4;
+			default: return ItemSpriteSheet.WHOLECAKE;
+		}
+	}
+	// 根据款式返回对应的蛋糕名字
+	public static String getCakeName(int style){
+		switch (style){
+			case 1: return "草莓奶油";
+			case 2: return "烘焙可可";
+			case 3: return "抹茶青苹果";
+			default: return "薄荷巧克力";
+		}
+	}
+	public int getCakeStyle(){
+		return cakeStyle;
+	}
 	private static final String TITLE = "CAKE_TITLE";
 	private static final String BODY  = "CAKE_BODY";
+	private static final String STYLE = "CAKE_STYLE";
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle(bundle);
 		bundle.put(TITLE, title);
 		bundle.put(BODY, body);
+		bundle.put(STYLE, cakeStyle);
 	}
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		title = bundle.getString(TITLE);
 		body = bundle.getString(BODY);
+		cakeStyle = bundle.getInt(STYLE);
+		image = getCakeImage(cakeStyle);
 	}
 	@Override
 	public String name(){

@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.custom.seedfinder.SeedFindScene;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Fireball;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.WholeCake;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -217,29 +218,33 @@ public class SecondTitleScene extends PixelScene {
 		public int month;
 		public int day;
 		public String message;
+		public int cakeStyle;
 		public WndCake(){
-			this(SPDSettings.getSpecialDay_Month(), SPDSettings.getSpecialDay_Day(), SPDSettings.getSpecialDay_Message());
+			this(SPDSettings.getSpecialDay_Month(), SPDSettings.getSpecialDay_Day(), SPDSettings.getSpecialDay_Message(), SPDSettings.getSpecialDay_CakeStyle());
 		}
 
-		public WndCake(int month, int day, String message) {
-			super(new ItemSprite(ItemSpriteSheet.WHOLECAKE),
+		public WndCake(int month, int day, String message, int cakeStyle) {
+			super(new ItemSprite(WholeCake.getCakeImage(cakeStyle)),
 					Messages.titleCase("节日蛋糕"),
 					Messages.format("当前节日日期为： %d 月 %d 日", month+1, day)
 							+Messages.format("\n还需要完成 %d 次对局以修改节日日期", Math.max(0, SPDSettings.getSpecialDay_PlayTimesNeed()))
+							+Messages.format("\n蛋糕款式：%s", WholeCake.getCakeName(cakeStyle))
 							+Messages.format("\n节日文本为：\n" +
 							"%s", message),
 					2,
 					Messages.titleCase("修改月份"),
 					Messages.titleCase("修改日期"),
 					Messages.titleCase("修改文本"),
+					Messages.titleCase("选择蛋糕款式"),
 					Messages.titleCase("保存"));
 			this.month = month;
 			this.day = day;
 			this.message = message;
+			this.cakeStyle = cakeStyle;
 		}
 
 		public WndCake(WndCake wndCake) {
-			this(wndCake.month, wndCake.day, wndCake.message);
+			this(wndCake.month, wndCake.day, wndCake.message, wndCake.cakeStyle);
 			wndCake.hide();
 		}
 
@@ -252,6 +257,19 @@ public class SecondTitleScene extends PixelScene {
 
 		@Override
 		protected void onClickButton() {
+		}
+
+		@Override
+		protected boolean hasIcon(int index) {
+			return index == 3;
+		}
+
+		@Override
+		protected Image getIcon(int index) {
+			if (index == 3) {
+				return new ItemSprite(WholeCake.getCakeImage(cakeStyle));
+			}
+			return null;
 		}
 
 		@Override
@@ -296,6 +314,9 @@ public class SecondTitleScene extends PixelScene {
 							}
 					);
 				} else if (index == 3) {
+					//选择蛋糕款式
+					GirlsFrontlinePixelDungeon.scene().addToFront(new WndCakeStyle(WndCake.this));
+				} else if (index == 4) {
 					hide();
 					if (month != SPDSettings.getSpecialDay_Month() || day != SPDSettings.getSpecialDay_Day()) {
 						SPDSettings.setSpecialDay_Month(month);
@@ -303,6 +324,7 @@ public class SecondTitleScene extends PixelScene {
 						SPDSettings.resetSpecialDay_PlayTimes();
 					}
 					SPDSettings.setSpecialDay_Message(message);
+					SPDSettings.setSpecialDay_CakeStyle(cakeStyle);
 				}
 			}
 		}
@@ -338,6 +360,52 @@ public class SecondTitleScene extends PixelScene {
 				buttons.add(cb);
 			}
 			return buttons;
+		}
+	}
+
+	// 蛋糕款式选择窗口
+	private static class WndCakeStyle extends WndOptions {
+		public WndCakeStyle(WndCake wndCake){
+			super(new ItemSprite(WholeCake.getCakeImage(wndCake.cakeStyle)),
+					Messages.titleCase("选择蛋糕款式"),
+					Messages.format("当前款式：%s\n请选择想要的蛋糕款式", WholeCake.getCakeName(wndCake.cakeStyle)),
+					2,
+					Messages.titleCase(WholeCake.getCakeName(0)),
+					Messages.titleCase(WholeCake.getCakeName(1)),
+					Messages.titleCase(WholeCake.getCakeName(2)),
+					Messages.titleCase(WholeCake.getCakeName(3)),
+					Messages.titleCase("返回"));
+			this.wndCake = wndCake;
+		}
+		public final WndCake wndCake;
+
+		@Override
+		protected boolean hasIcon(int index) {
+			return index <= 3;
+		}
+
+		@Override
+		protected Image getIcon(int index) {
+			if (index <= 3) {
+				return new ItemSprite(WholeCake.getCakeImage(index));
+			}
+			return null;
+		}
+
+		@Override
+		protected void onSelect(int index) {
+			super.onSelect(index);
+			if (index >= 0 && index <= 3){
+				wndCake.cakeStyle = index;
+			}
+			// 无论选款式还是返回，都重新打开 WndCake 以刷新显示
+			GirlsFrontlinePixelDungeon.scene().addToFront(new WndCake(wndCake));
+		}
+
+		@Override
+		public void onBackPressed() {
+			hide();
+			GirlsFrontlinePixelDungeon.scene().addToFront(new WndCake(wndCake));
 		}
 	}
 }

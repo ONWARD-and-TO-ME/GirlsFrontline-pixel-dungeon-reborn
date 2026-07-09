@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Bolas;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.CZ75Axe;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.FishingSpear;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ForceCube;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
@@ -131,12 +132,14 @@ public class TestMissile extends TestGenerator {
                 return Trident.class;
             case 14:
                 return ForceCube.class;
+            case 15:
+                return CZ75Axe.class;
         }
     }
 
     private void buildList() {
         if (missileList.isEmpty()) {
-            for (int i = 0; i < 15; ++i) {
+            for (int i = 0; i < 16; ++i) {
                 missileList.add(idToMissile(i));
             }
         }
@@ -217,7 +220,7 @@ public class TestMissile extends TestGenerator {
                 IconButton btn = new IconButton() {
                     @Override
                     protected void onClick() {
-                        selected = Math.min(j, 15);
+                        selected = Math.min(j, 16);
                         super.onClick();
                         updateText();
                     }
