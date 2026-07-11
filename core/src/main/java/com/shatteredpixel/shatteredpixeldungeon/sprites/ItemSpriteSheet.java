@@ -481,9 +481,9 @@ public class ItemSpriteSheet {
 		assignItemRect(REDBOOK,             13, 16);
 		assignItemRect(REDBOOK2,            13, 16);
 		assignItemRect(REDBOOK3,            13, 16);
-		assignItemRect(FAIRY_COMMANDER,     16, 16);
-		assignItemRect(FAIRY_GEMINI,        16, 16);
-		assignItemRect(FAIRY_SUCCOR,        16, 16);
+		assignItemRect(FAIRY_COMMANDER,     16, 14);
+		assignItemRect(FAIRY_GEMINI,        16, 11);
+		assignItemRect(FAIRY_SUCCOR,        16, 11);
 	}
 
 	                                                                                    //16 free slots
@@ -773,7 +773,7 @@ public class ItemSpriteSheet {
 	
 	//武器行
 	private static final int MISSILE_WEP    =                               xy(1, 33);  //16 slots. 3 per tier + boomerang
-	public static final int SPIRIT_BOW      = MISSILE_WEP+0;
+	public static final int SPIRIT_BOW      = MISSILE_WEP;
 
 	public static final int DART            = MISSILE_WEP+1;
 	public static final int THROWING_KNIFE  = MISSILE_WEP+2;
@@ -810,12 +810,12 @@ public class ItemSpriteSheet {
 		assignItemRect(BOLAS,           15, 14);
 		assignItemRect(KUNAI,           15, 15);
 
-		assignItemRect(JAVELIN,         16, 16);
+		assignItemRect(JAVELIN,         14, 14);
 		assignItemRect(TOMAHAWK,        13, 13);
 		assignItemRect(BOOMERANG,       14, 14);
 
 		assignItemRect(TRIDENT,         16, 16);
-		assignItemRect(THROWING_HAMMER, 16, 16);
+		assignItemRect(THROWING_HAMMER, 13, 13);
 		assignItemRect(FORCE_CUBE,      12, 12);
 	}
 	//这是新添加的武器行，从561开始

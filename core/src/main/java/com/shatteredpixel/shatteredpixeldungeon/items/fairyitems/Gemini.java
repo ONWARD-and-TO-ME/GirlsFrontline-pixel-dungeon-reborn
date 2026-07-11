@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Geminis;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
@@ -20,6 +21,10 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 public class Gemini extends FairyItems {
+
+    {
+        image = ItemSpriteSheet.FAIRY_GEMINI;
+    }
 
     @Override
     public void effect(Hero hero) {

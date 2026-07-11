@@ -5,10 +5,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 
 public class Commander extends FairyItems {
 
+    {
+        image = ItemSpriteSheet.FAIRY_COMMANDER;
+    }
     @Override
     public void effect(Hero hero) {
         Dungeon.LimitedDrops.DropLevel.used();

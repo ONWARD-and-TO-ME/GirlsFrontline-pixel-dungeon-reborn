@@ -136,10 +136,10 @@ public class Item implements Bundlable {
 
 		String name = name();
 
-		if (levelKnown && visiblyUpgraded() != 0
+		if (levelKnown && visiblyUpgraded() != 0 && !Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)
 				|| !levelKnown && visiblyUpgraded() != Integer.MIN_VALUE && SPDSettings.isAutoIdentify()) {
 			name = Messages.format(TXT_TO_STRING_LVL, name, visiblyUpgraded());
-			if (!levelKnown)
+			if (!levelKnown && !Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
 				name += " ?";
 		}
 
