@@ -158,7 +158,7 @@ public class TitleScene extends PixelScene {
         NextTitle.icon(Icons.get(Icons.ENTER));
         add(NextTitle);
 
-		StyledButton btnChanges = new GDChangesButton(TOAST_TR,"更改");
+		StyledButton btnChanges = new GDChangesButton(GREY_BUTTON,"更改");
 		btnChanges.icon(new Image(Icons.get(Icons.CHANGESLOG)));
 		btnChanges.setRect(0, h - 20, 50, 20);
 		add(btnChanges);
@@ -375,9 +375,6 @@ public class TitleScene extends PixelScene {
 						break;
 					case GSH18:
 						order = 6;
-						break;
-					case HK416:
-						order = 3;
 						break;
 					default:
 						order = 0;

@@ -46,6 +46,7 @@ public class Assets {
 	public static final String GARM			= "sprites/garm.png";
 	public static final String DREAMER		= "sprites/dreamer.png";
     public static final String AGENT		= "sprites/boss/Agent.png";
+	public static final String ALCHEMIST	= "sprites/boss/Alchemist.png";
 	public static final String AEGIS		= "sprites/aegis.png";
 	public static final String FNC			= "sprites/girlpd/fnc.png";
 	public static final String PROWLER		= "sprites/girlpd/prowler.png";

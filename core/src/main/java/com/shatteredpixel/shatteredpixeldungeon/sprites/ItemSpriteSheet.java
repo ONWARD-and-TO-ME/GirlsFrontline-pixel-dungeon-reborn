@@ -117,7 +117,7 @@ public class ItemSpriteSheet {
 	public static final int CHEST           = CONTAINERS+4;
 	public static final int LOCKED_CHEST    = CONTAINERS+5;
 	public static final int CRYSTAL_CHEST   = CONTAINERS+6;
-	public static final int MISSION_CHEST     = CONTAINERS+7;
+	public static final int MISSION_CHEST   = CONTAINERS+7;
 	static{
 		assignItemRect(BONES,           14, 11);
 		assignItemRect(REMAINS,         14, 11);
@@ -130,23 +130,23 @@ public class ItemSpriteSheet {
 	}
 		
 	//快修行
-	private static final int MISC_CONSUMABLE =                              xy(1, 4);   //16 slots
-	public static final int ANKH            = MISC_CONSUMABLE +0;
-	public static final int STYLUS          = MISC_CONSUMABLE +1;
-	public static final int SEAL            = MISC_CONSUMABLE +2;
-	public static final int TORCH           = MISC_CONSUMABLE +3;
-	public static final int BEACON          = MISC_CONSUMABLE +4;
-	public static final int HONEYPOT        = MISC_CONSUMABLE +5;
-	public static final int SHATTPOT        = MISC_CONSUMABLE +6;
-	public static final int IRON_KEY        = MISC_CONSUMABLE +7;
-	public static final int GOLDEN_KEY      = MISC_CONSUMABLE +8;
-	public static final int CRYSTAL_KEY     = MISC_CONSUMABLE +9;
-	public static final int SKELETON_KEY    = MISC_CONSUMABLE +10;
-	public static final int MASK            = MISC_CONSUMABLE +11;
-	public static final int CROWN           = MISC_CONSUMABLE +12;
-	public static final int AMULET          = MISC_CONSUMABLE +13;
-	public static final int MASTERY         = MISC_CONSUMABLE +14;
-	public static final int KIT             = MISC_CONSUMABLE +15;
+	private static final int MISC_CONSUMABLE	=                              xy(1, 4);   //16 slots
+	public static final int ANKH            	= MISC_CONSUMABLE +0;
+	public static final int STYLUS          	= MISC_CONSUMABLE +1;
+	public static final int SEAL            	= MISC_CONSUMABLE +2;
+	public static final int TORCH           	= MISC_CONSUMABLE +3;
+	public static final int BEACON          	= MISC_CONSUMABLE +4;
+	public static final int HONEYPOT        	= MISC_CONSUMABLE +5;
+	public static final int SHATTPOT        	= MISC_CONSUMABLE +6;
+	public static final int IRON_KEY        	= MISC_CONSUMABLE +7;
+	public static final int GOLDEN_KEY      	= MISC_CONSUMABLE +8;
+	public static final int CRYSTAL_KEY     	= MISC_CONSUMABLE +9;
+	public static final int SKELETON_KEY    	= MISC_CONSUMABLE +10;
+	public static final int MASK            	= MISC_CONSUMABLE +11;
+	public static final int CROWN           	= MISC_CONSUMABLE +12;
+	public static final int AMULET          	= MISC_CONSUMABLE +13;
+	public static final int MASTERY         	= MISC_CONSUMABLE +14;
+	public static final int KIT            		= MISC_CONSUMABLE +15;
 	static{
 		assignItemRect(ANKH,            10, 12);
 		assignItemRect(STYLUS,          12, 13);
@@ -313,8 +313,8 @@ public class ItemSpriteSheet {
 	public static final int MG42			= WEP_TIER6+1;
 	public static final int NAGANT			= WEP_TIER6+2;
 	public static final int NTW20			= WEP_TIER6+3;
-	public static final int GROZA            = WEP_TIER6+5;
-	public static final int MOSINNAGANT			= WEP_TIER6+6;
+	public static final int GROZA           = WEP_TIER6+5;
+	public static final int MOSINNAGANT		= WEP_TIER6+6;
 	public static final int cz75axe			= WEP_TIER6+7;
 	static{
 		assignItemRect(GROZA,    		 16, 17);
@@ -341,7 +341,7 @@ public class ItemSpriteSheet {
 	public static final int POISON_DART     = TIPPED_DARTS+10;
 	public static final int ROT_DART        = TIPPED_DARTS+11;
 	public static final int SHOCKING_DART   = TIPPED_DARTS+12;
-	public static final int SMOKEUmp45   = TIPPED_DARTS+13;
+	public static final int SMOKEUmp45      = TIPPED_DARTS+13;
 	static {
 		for (int i = TIPPED_DARTS; i < TIPPED_DARTS+14; i++)
 			assignItemRect(i, 15, 15);
@@ -489,7 +489,7 @@ public class ItemSpriteSheet {
 	                                                                                    //16 free slots
 		
 	//卷轴行
-	public static final int SCROLLS        =                               xy(1, 19);  //16 slots
+	public static final int SCROLLS         =                               xy(1, 19);  //16 slots
 	public static final int SCROLL_KAUNAN   = SCROLLS+0;
 	public static final int SCROLL_SOWILO   = SCROLLS+1;
 	public static final int SCROLL_LAGUZ    = SCROLLS+2;

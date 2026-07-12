@@ -50,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.AgentSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.AlchemistSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CrabSprite;
@@ -88,6 +89,7 @@ import java.util.Arrays;
 
 public class v0_5_X_Changes {
     public static void addAllChanges(ArrayList<ChangeInfo> changeInfos) {
+        add_0_5_9_Changes(changeInfos);
         add_0_5_8_3_Changes(changeInfos);
         add_0_5_8_2_Changes(changeInfos);
         add_0_5_7_3_To_0_5_8_1_Changes(changeInfos);
@@ -130,6 +132,47 @@ public class v0_5_X_Changes {
         changes.hardlight( CharSprite.NEGATIVE );
         changeInfos.add(changes);
     }
+    public static void add_0_5_9_Changes( ArrayList<ChangeInfo> changeInfos ) {
+        ChangeInfo changes = new ChangeInfo("v0.5.9", true, "");
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+        changes.hardlight( Window.TITLE_COLOR );
+        changeInfos.add(changes);
+        changes.addButton(new ChangeButton(new AlchemistSprite(), 0.8F,
+                new AlchemistSprite().idle,
+                "炼金术士",
+        "_-_ 为_明亮之拳_(BrightFist)替换了全新的_炼金术士_贴图。\n"+
+        "_-_ 新贴图每帧尺寸为20×23像素，拥有完整的待机、移动、近战攻击、远程施法、死亡动画。\n\n"+
+        "_-_ 她的药剂似乎_散发着彩虹般的光芒_……！？光光？！AI写的啥阴？"
+        ));
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+        changes.hardlight( CharSprite.POSITIVE );
+        changeInfos.add(changes);
+        ArrayList<String> miscChanges = new ArrayList<>();
+        {
+            miscChanges.add(
+                    "_-_ _生日蛋糕_:新增四种蛋糕款式可选：薄荷巧克力、草莓奶油、烘焙可可、抹茶青苹果，在节日蛋糕设置界面中可以选择喜欢的款式。\n"
+                    +"_-_ _重置天赋图标_:以统一图标风格为少前地牢风格。我们拥有了更贴合少前世界观的图标。\n"
+                    + "_-_ _新增边框UI_：更新符合少前地牢风格的天赋边框并入状态面板风格切换机制。\n"
+                    + "_-_ _生日蛋糕设置窗口_:增加蛋糕款式选择功能，窗口大小自适应调整。_这个是ai帮忙写的没啥用可以删掉。_\n"
+            );
+            miscChanges.add(
+                    "_-_ 修复了WndOptions窗口在按钮数量不是整行倍数时按钮超出窗口边界的问题。\n"
+                    + "_-_ 指挥妖精、双生妖精、增员妖精新增独立物品图标。\n"
+                    + "_-_ 新增投掷武器：_CZ75投掷斧_，1阶、力量需求9、无限耐久、回旋镖机制、可升级附魔，但当前仅在测试道具中可获取。（是的它回来了）\n"
+                    +"_-_ 修复了CZ75投掷斧从快捷栏投掷后不返回快捷栏的问题，投掷后会自动回到原快捷栏位置。_这个也可以删掉。_\n"
+            );
+            miscChanges.add(
+                    "_-_ 等待编辑...\n"
+            );
+        }
+        changes.addButton(new ChangeButton(new BlacksmithSprite(), 0.8F,
+                "其他调整", miscChanges));
+    }
+
     public static void add_0_5_8_3_Changes( ArrayList<ChangeInfo> changeInfos ) {
         ChangeInfo changes = new ChangeInfo("v0.5.8v3", true, "");
         changes.hardlight(Window.TITLE_COLOR);
@@ -1471,7 +1514,7 @@ public class v0_5_X_Changes {
                 new TyphoonSprite().zap, true,
                 "难度调整",
 			"由于现在的少前地牢难度太低了，现决定对 _提丰/钢狮/九头蛇/木星_ 这四个敌人进行调整，以期平衡难度。" +
-				"\n\n现在这四个敌人将会_ 见面送十炮 _。")
+				"\n\n现在这四个敌人将会_ 见面送十炮 _。\n\n开个玩笑，是修复了蓄力怪物攒着激光的问题。")
         );
     }
 }
