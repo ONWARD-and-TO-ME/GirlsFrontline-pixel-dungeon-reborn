@@ -55,6 +55,7 @@ public class Badges {
 		MASTERY_HUNTRESS,
 		MASTERY_TYPE561,
 		MASTERY_GSH18,
+		MASTERY_HK416,
 		FOUND_RATMOGRIFY,
 
 		//bronze
@@ -64,6 +65,7 @@ public class Badges {
 		UNLOCK_HUNTRESS             ( 3 ),
 		UNLOCK_TYPE561              ( 20 ),
 		UNLOCK_GSH18       	 	    ( 21 ),
+		UNLOCK_HK416                ( 22 ),
         //silver
 		MONSTERS_SLAIN_1            ( 4 ),
 		MONSTERS_SLAIN_2            ( 5 ),
@@ -110,6 +112,7 @@ public class Badges {
 		BOSS_SLAIN_1_HUNTRESS,
 		BOSS_SLAIN_1_TYPE561,
 		BOSS_SLAIN_1_GSH18,
+		BOSS_SLAIN_1_HK416,
 		BOSS_SLAIN_1_ALL_CLASSES    ( 53, true ),
 		GAMES_PLAYED_2              ( 54, true ),
 
@@ -166,6 +169,7 @@ public class Badges {
 		VICTORY_HUNTRESS,
 		VICTORY_TYPE561,
 		VICTORY_GSH18,
+		VICTORY_HK416,
 		VICTORY_ALL_CLASSES         ( 98, true ),
 		GAMES_PLAYED_4              ( 99, true ),
 		CHAMPION_1                  ( 100 ),
@@ -684,6 +688,10 @@ public class Badges {
 			if (badge == Badge.BOSS_SLAIN_2 && !isUnlocked(Badge.UNLOCK_GSH18)) {
 				displayBadge(Badge.UNLOCK_GSH18);
 			}
+			// 击败10层BOSS时同时解锁HK416角色（占位解锁条件）
+			if (badge == Badge.BOSS_SLAIN_2 && !isUnlocked(Badge.UNLOCK_HK416)) {
+				displayBadge(Badge.UNLOCK_HK416);
+			}
 			
 			if (badge == Badge.BOSS_SLAIN_1) {
 				switch (Dungeon.hero.heroClass) {
@@ -705,16 +713,20 @@ public class Badges {
 				case GSH18:
 					badge = Badge.BOSS_SLAIN_1_GSH18;
 					break;
+				case HK416:
+					badge = Badge.BOSS_SLAIN_1_HK416;
+					break;
 				}
 				local.add( badge );
 				addGlobal(badge);
-				
+
 				if (isUnlocked( Badge.BOSS_SLAIN_1_WARRIOR ) &&
 					isUnlocked( Badge.BOSS_SLAIN_1_MAGE ) &&
 					isUnlocked( Badge.BOSS_SLAIN_1_ROGUE ) &&
 					isUnlocked( Badge.BOSS_SLAIN_1_HUNTRESS) &&
 					isUnlocked( Badge.BOSS_SLAIN_1_TYPE561) &&
-					isUnlocked( Badge.BOSS_SLAIN_1_GSH18)
+					isUnlocked( Badge.BOSS_SLAIN_1_GSH18) &&
+					isUnlocked( Badge.BOSS_SLAIN_1_HK416)
 				) {
 					
 					badge = Badge.BOSS_SLAIN_1_ALL_CLASSES;
@@ -795,6 +807,9 @@ public class Badges {
 		case GSH18:
 			badge = Badge.MASTERY_GSH18;
 			break;
+		case HK416:
+			badge = Badge.MASTERY_HK416;
+			break;
 		}
 		
 		addGlobal(badge);
@@ -810,6 +825,7 @@ public class Badges {
         displayBadge( Badge.UNLOCK_HUNTRESS);
         displayBadge( Badge.UNLOCK_TYPE561);
         displayBadge( Badge.UNLOCK_GSH18);
+        displayBadge( Badge.UNLOCK_HK416);
     }
 	public static void validateMageUnlock(){
 		if (Statistics.upgradesUsed >= 1 && !isUnlocked(Badge.UNLOCK_MAGE)){
@@ -870,15 +886,20 @@ public class Badges {
 		case TYPE561:
 			badge = Badge.VICTORY_TYPE561;
 			break;
+		case HK416:
+			badge = Badge.VICTORY_HK416;
+			break;
 		}
 		local.add( badge );
 		addGlobal(badge);
-		
+
 		if (isUnlocked( Badge.VICTORY_WARRIOR ) &&
 			isUnlocked( Badge.VICTORY_MAGE )    &&
 			isUnlocked( Badge.VICTORY_ROGUE )   &&
 			isUnlocked( Badge.VICTORY_TYPE561 ) &&
-			isUnlocked( Badge.VICTORY_HUNTRESS )) {
+			isUnlocked( Badge.VICTORY_HUNTRESS ) &&
+			isUnlocked( Badge.VICTORY_GSH18 ) &&
+			isUnlocked( Badge.VICTORY_HK416 )) {
 			
 			badge = Badge.VICTORY_ALL_CLASSES;
 			displayBadge( badge );

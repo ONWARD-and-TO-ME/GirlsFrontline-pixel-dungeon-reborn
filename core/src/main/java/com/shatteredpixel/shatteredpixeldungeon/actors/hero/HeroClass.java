@@ -120,6 +120,7 @@ public enum HeroClass {
 	HUNTRESS( HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
 	TYPE561(HeroSubClass.EMP_BOMB, HeroSubClass.GUN_MASTER),
 	GSH18(HeroSubClass.FUTURE_STAR, HeroSubClass.MOBILE_MEDICALTABLE),
+	HK416(HeroSubClass.NONE, HeroSubClass.NONE),
     PUBLIC_1(  HeroSubClass.NONE ),
     NONE(  HeroSubClass.NONE );
 	private final HeroSubClass[] subClasses;
@@ -236,6 +237,10 @@ public enum HeroClass {
 				initGSH18( hero );
 				break;
 
+			case HK416:
+				initHK416( hero );
+				break;
+
         }
 
         if (Game.isDebug)
@@ -270,6 +275,8 @@ public enum HeroClass {
 				return Badges.Badge.MASTERY_TYPE561;
 			case GSH18:
 				return Badges.Badge.MASTERY_GSH18;
+			case HK416:
+				return Badges.Badge.MASTERY_HK416;
 	}
 		return null;
 	}
@@ -359,6 +366,12 @@ public enum HeroClass {
 		Dungeon.quickslot.setSlot(0, hero.belongings.getItem(ScrollOfRemoveCurse.class));
 	}
 
+	private static void initHK416( Hero hero ) {
+		// 占位：初始武器暂用M9
+		(hero.belongings.weapon = new M9()).identify();
+		new PotionOfHealing().identify().collect();
+	}
+
 	public String title() {
 		return Messages.get(HeroClass.class, name());
 	}
@@ -389,6 +402,9 @@ public enum HeroClass {
 			case GSH18:
 				person= new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()}; // 使用战士的技能
                 break;
+			case HK416:
+				person= new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()}; // 占位：暂用战士的技能
+				break;
             case WARRIOR: default:
                 person= new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()};
                 break;
@@ -416,7 +432,9 @@ public enum HeroClass {
 			case TYPE561:
 				return Assets.Sprites.TYPE561;
 			case GSH18:
-				return Assets.Sprites.GSH18; 
+				return Assets.Sprites.GSH18;
+			case HK416:
+				return Assets.Sprites.HK416;
 		}
 	}
 
@@ -464,13 +482,21 @@ public enum HeroClass {
 					Messages.get(HeroClass.class, "type561_perk5"),
 			};
 		case GSH18:
-			return new String[]{
-					Messages.get(HeroClass.class, "warrior_perk1"),
-					Messages.get(HeroClass.class, "warrior_perk2"),
-					Messages.get(HeroClass.class, "warrior_perk3"),
-					Messages.get(HeroClass.class, "warrior_perk4"),
-					"初始获得两瓶治疗药水", // 天赋效果
-			};
+		return new String[]{
+				Messages.get(HeroClass.class, "warrior_perk1"),
+				Messages.get(HeroClass.class, "warrior_perk2"),
+				Messages.get(HeroClass.class, "warrior_perk3"),
+				Messages.get(HeroClass.class, "warrior_perk4"),
+				"初始获得两瓶治疗药水", // 天赋效果
+		};
+	case HK416:
+		return new String[]{
+				Messages.get(HeroClass.class, "warrior_perk1"),
+				Messages.get(HeroClass.class, "warrior_perk2"),
+				Messages.get(HeroClass.class, "warrior_perk3"),
+				Messages.get(HeroClass.class, "warrior_perk4"),
+				Messages.get(HeroClass.class, "warrior_perk5"),
+		};
 	}
 	}
 	
@@ -491,7 +517,9 @@ public enum HeroClass {
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_TYPE561);
 			case GSH18:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_GSH18);
-	}
+			case HK416:
+				return Badges.isUnlocked(Badges.Badge.UNLOCK_HK416);
+		}
 	}
 	
 	public String unlockMsg() {
@@ -508,6 +536,8 @@ public enum HeroClass {
 				return Messages.get(HeroClass.class, "type561_unlock");
 			case GSH18:
 				return Messages.get(HeroClass.class, "gsh18_unlock");
-	}
+			case HK416:
+				return Messages.get(HeroClass.class, "hk416_unlock");
+		}
 	}
 }

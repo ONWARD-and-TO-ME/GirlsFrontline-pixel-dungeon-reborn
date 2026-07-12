@@ -116,6 +116,8 @@ public class WndStartGame extends Window {
 		visibleClasses = new ArrayList<>();
 		for (HeroClass cl : HeroClass.values()) {
 			if (cl != HeroClass.NONE && cl != HeroClass.PUBLIC_1) {
+				// HK416仅在debug版本显示
+				if (cl == HeroClass.HK416 && !DeviceCompat.isDebug()) continue;
 				visibleClasses.add(cl);
 			}
 		}
@@ -507,11 +509,16 @@ public class WndStartGame extends Window {
 							heroMisc.icon(new ItemSprite(ItemSpriteSheet.SEED_SUNGRASS, null));
 							break;
 						case TYPE561:
-							heroItem.icon(new ItemSprite(ItemSpriteSheet.SALTYZONGZI, null));
-							heroLoadout.icon(new ItemSprite(ItemSpriteSheet.GUN561, null));
-							heroMisc.icon(new ItemSprite(ItemSpriteSheet.REDBOOK, null));
-							break;
-					}
+						heroItem.icon(new ItemSprite(ItemSpriteSheet.SALTYZONGZI, null));
+						heroLoadout.icon(new ItemSprite(ItemSpriteSheet.GUN561, null));
+						heroMisc.icon(new ItemSprite(ItemSpriteSheet.REDBOOK, null));
+						break;
+					case HK416:
+						heroItem.icon(new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null));
+						heroLoadout.icon(new ItemSprite(ItemSpriteSheet.M9, null));
+						heroMisc.icon(new ItemSprite(ItemSpriteSheet.SEED_SUNGRASS, null));
+						break;
+				}
 
 					layout();
 

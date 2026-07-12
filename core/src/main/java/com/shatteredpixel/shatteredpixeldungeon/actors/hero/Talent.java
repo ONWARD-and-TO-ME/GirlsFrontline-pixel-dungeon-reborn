@@ -964,6 +964,10 @@ public enum Talent {
 			case GSH18:
 				Collections.addAll(tierTalents, GSH18_MEAL_TREATMENT, GSH18_DOCTOR_INTUITION, GSH18_CLOSE_COMBAT, GSH18_STAR_SHIELD);
 				break;
+			case HK416:
+				// 占位天赋：暂用战士的基础天赋
+				Collections.addAll(tierTalents, HEARTY_MEAL, ARMSMASTERS_INTUITION, TEST_SUBJECT, IRON_WILL);
+				break;
             case PUBLIC_1:
                 Collections.addAll(tierTalents, NICE_FOOD, OLD_SOLDIER, BETTER_FOOD, FAST_RELOAD);
                 break;
@@ -1004,6 +1008,10 @@ public enum Talent {
             case GSH18:
                 Collections.addAll(tierTalents, GSH18_ENERGIZING_MEAL, GSH18_CHAIN_SHOCK, GSH18_LOGISTICS_SUPPORT, GSH18_COMIC_HEART, GSH18_MEDICAL_COMPATIBILITY);
                 break;
+			case HK416:
+				// 占位天赋：暂用战士的T2天赋
+				Collections.addAll(tierTalents, IRON_STOMACH, RESTORED_WILLPOWER, RUNIC_TRANSFERENCE, LETHAL_MOMENTUM, IMPROVISED_PROJECTILES);
+				break;
 		}
 		for (Talent talent : tierTalents){
 			if (replacements.containsKey(talent)){
@@ -1036,6 +1044,10 @@ public enum Talent {
             case GSH18:
                 Collections.addAll(tierTalents,GSH18_INTELLIGENCE_AWARENESS,GSH18_AGILE_MOVEMENT);
                 break;
+			case HK416:
+				// 占位天赋：暂用战士的T3天赋
+				Collections.addAll(tierTalents, HOLD_FAST, STRONGMAN);
+				break;
 		}
 		for (Talent talent : tierTalents){
 			if (replacements.containsKey(talent)){

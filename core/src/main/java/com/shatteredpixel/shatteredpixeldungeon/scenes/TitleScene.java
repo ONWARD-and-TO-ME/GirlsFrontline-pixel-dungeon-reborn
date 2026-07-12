@@ -376,6 +376,9 @@ public class TitleScene extends PixelScene {
 					case GSH18:
 						order = 6;
 						break;
+					case HK416:
+						order = 3;
+						break;
 					default:
 						order = 0;
 						break;
