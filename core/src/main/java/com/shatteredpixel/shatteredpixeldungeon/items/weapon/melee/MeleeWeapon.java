@@ -54,10 +54,10 @@ public class MeleeWeapon extends Weapon {
 				Math.round(maxUpgrade(lvl));   //level scaling
 	}
     public float maxBaseDmg(){
-        return Math.round(dmgBaseMul *(tier+1+ dmgBaseDiffer));
+        return Math.round(dmgBaseMul * (tier+1 + dmgBaseDiffer));
     }
     public float maxUpgrade(int lvl){
-        return lvl* dmgUpgradeMul *(tier+1+ dmgUpgradeDiffer);
+        return lvl* dmgUpgradeMul * (tier+1 + dmgUpgradeDiffer);
     }
 	public int STRReq(int lvl){
 		return STRReq(tier, lvl);

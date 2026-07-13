@@ -48,8 +48,8 @@ public class WndResurrect extends Window {
 
 	public static Object instance;
 
-	private WndBlacksmith.ItemButton btnItem1;
-	private WndBlacksmith.ItemButton btnItem2;
+	private final WndBlacksmith.ItemButton btnItem1;
+	private final WndBlacksmith.ItemButton btnItem2;
 	private WndBlacksmith.ItemButton btnPressed;
 
 	RedButton btnContinue;

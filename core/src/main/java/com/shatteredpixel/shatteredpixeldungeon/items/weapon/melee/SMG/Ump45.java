@@ -93,9 +93,7 @@ public class Ump45 extends SubMachineGun {
         @Override
         public void onSelect(Integer target) {
             if (target != null) {
-                //使用SMOKEB中的cast操作，Potion的cast不会保留掉落物
-                Smoke smoke = new Smoke();
-                smoke.cast(curUser, target);
+                new Smoke().cast(curUser, target);
                 coolDownLeft = BASE_COOLDOWN_TURNS;
                 // 更新快捷栏显示
                 updateQuickslot();
@@ -108,11 +106,9 @@ public class Ump45 extends SubMachineGun {
         }
     };
     private static class Smoke extends Item {
-
         {
             image = ItemSpriteSheet.SMOKEUmp45;
         }
-
         public void explore( int cell ) {
             //气体音效
             if (Dungeon.level.heroFOV[cell]) {

@@ -63,11 +63,6 @@ public class Cypros extends MeleeWeapon {
         name = Messages.get(this, "name", mode.title());
     }
 
-    @Override
-    public String name() {
-        return Messages.get(this, "name", mode.title());
-    }
-
     public Wand wand;
 
     public Boolean GetBadge = false;
@@ -118,9 +113,7 @@ public class Cypros extends MeleeWeapon {
                             mode == Mode.MAGNUM     ? 0.5f :
                             0f);
 
-        mode = newMode;
-
-        switch (mode) {
+        switch (mode = newMode) {
             case TRAVAILLER: default:
                 image = ItemSpriteSheet.TRAVAILLER;
                 RCH = 1;
@@ -165,6 +158,7 @@ public class Cypros extends MeleeWeapon {
             curUser.sprite.operate( curUser.pos );
             curUser.next();
         }
+        name = Messages.get(this, "name", mode.title());
     }
 
     @Override

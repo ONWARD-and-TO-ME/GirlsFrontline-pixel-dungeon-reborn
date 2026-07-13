@@ -339,8 +339,8 @@ public enum HeroClass {
 
 	private static void initType561( Hero hero ) {
         Hunger.minLevel = -150;
-		Gun561 gun561=new Gun561();
-		(hero.belongings.weapon=gun561).identify();
+		Gun561 gun561 = new Gun561();
+		(hero.belongings.weapon = gun561).identify();
 		hero.belongings.weapon.activate(hero);
 
 		RedBook redBook = new RedBook();
@@ -387,34 +387,37 @@ public enum HeroClass {
 	public ArmorAbility[] armorAbilities(){
         ArmorAbility[] person;
 		switch (this) {
+			case WARRIOR: default:
+				person = new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()};
+				break;
 			case MAGE:
-                person= new ArmorAbility[]{new ElementalBlast(), new WildMagic(), new WarpBeacon()};
+                person = new ArmorAbility[]{new ElementalBlast(), new WildMagic(), new WarpBeacon()};
                 break;
 			case ROGUE:
-                person= new ArmorAbility[]{new SmokeBomb(), new DeathMark(), new ShadowClone()};
+                person = new ArmorAbility[]{new SmokeBomb(), new DeathMark(), new ShadowClone()};
                 break;
 			case HUNTRESS:
-                person= new ArmorAbility[]{new SpectralBlades(), new NaturesPower(), new SpiritHawk()};
+                person = new ArmorAbility[]{new SpectralBlades(), new NaturesPower(), new SpiritHawk()};
                 break;
 			case TYPE561:
-                person= new ArmorAbility[]{new Type56FourOne(), new Type56FourTwo(), new Type56FourThree()};
+                person = new ArmorAbility[]{new Type56FourOne(), new Type56FourTwo(), new Type56FourThree()};
                 break;
 			case GSH18:
-				person= new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()}; // 使用战士的技能
+				person = new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()}; // 使用战士的技能
                 break;
 			case HK416:
-				person= new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()}; // 占位：暂用战士的技能
+				person = new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()}; // 占位：暂用战士的技能
 				break;
             case WARRIOR: default:
                 person= new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()};
                 break;
         }
-        person=add(person,new Education());
+        person = add(person, new Education());
         return person;
 	}
     private ArmorAbility[] add(ArmorAbility[] list,ArmorAbility ability){
-        list = Arrays.copyOf(list,list.length+1);
-        list[list.length-1]=ability;
+        list = Arrays.copyOf(list, list.length + 1);
+        list[list.length-1] = ability;
         return list;
     }
 

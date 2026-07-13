@@ -209,7 +209,7 @@ public class debugBook extends TestItem {
         INSTANCE = new WndWithCanScrollButton(buttons);
         GirlsFrontlinePixelDungeon.scene().addToFront(INSTANCE);
     }
-    private WndWithCanScrollButton INSTANCE = null;
+    private static WndWithCanScrollButton INSTANCE = null;
     private void modeChange(Mode mode_){
         mode = mode_;
         if (INSTANCE != null)

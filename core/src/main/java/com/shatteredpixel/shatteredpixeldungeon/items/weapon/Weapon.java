@@ -291,7 +291,7 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 
 	protected float baseDelay( Char owner ){
-		float delay = augment.delayFactor(this.DLY);
+		float delay = augment.delayFactor(DLY);
 		if (owner instanceof Hero) {
 			int encumbrance = STRReq() - ((Hero)owner).STR();
 			if (encumbrance > 0){

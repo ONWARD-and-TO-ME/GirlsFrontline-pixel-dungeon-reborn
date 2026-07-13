@@ -701,7 +701,7 @@ public class Item implements Bundlable {
     private static final String CAN_HOLD        = "canHold";
     private static final String OLD_LEVEL_POINT  = "BUFFLEVELPOINT";
 	private static final String BUFFED_LEVEL_POINT = "BUFFED_LEVEL_POINT";
-    private static final String COOLDOWN_LEFT   = "cooldownLeft";
+    private static final String COOLDOWN_LEFT   = "cooldownLeft_Item";
     private static final String OVER_LOAD       = "over_load_mode";
     private static final String OVER_LOAD_LEFT  = "over_load_left";
     private static final String UPDATE_TIME     = "fixTime";
@@ -769,9 +769,8 @@ public class Item implements Bundlable {
 		}
 		else {
 			String note = bundle.getString(NOTED);
-			if (!note.isEmpty()){
+			if (!note.isEmpty())
 				addOldNote(note);
-			}
 		}
         coolDownLeft = bundle.getInt(COOLDOWN_LEFT);
         canHold = bundle.getBoolean(CAN_HOLD);

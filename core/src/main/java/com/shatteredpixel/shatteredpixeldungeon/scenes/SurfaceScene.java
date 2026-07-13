@@ -397,11 +397,19 @@ public class SurfaceScene extends PixelScene {
 		}
 	}
 
+	public static final int NONE		= 0;
+	public static final int UMP45		= 0;
+	public static final int G11			= 1;
+	public static final int UMP9		= 2;
+	public static final int HK416		= 3;
+	public static final int TYPE56		= 4;
+	public static final int GSH18		= 5;
+	public static final int HK416_		= 6;
+	public static final int Dandelion	= 7;
 	private static class Avatar extends Image {
 		
 		private static final int WIDTH	= 24;
 		private static final int HEIGHT	= 32;
-		
 		public Avatar( HeroClass cl ) {
 			super( Assets.Sprites.AVATARS );
 			//frame( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );

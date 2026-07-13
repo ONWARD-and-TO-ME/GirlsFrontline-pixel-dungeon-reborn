@@ -134,4 +134,3 @@ public class GenoiseWarn extends Blob {
 		bundle.put(FUSE_TIME, fuse);
 	}
 }
-
