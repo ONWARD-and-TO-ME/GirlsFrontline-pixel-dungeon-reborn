@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Pixel Dungeon
  * Copyright (C) 2012-2015 Oleg Dolya
  *
@@ -492,7 +492,7 @@ public class Heap implements Bundlable {
             case Fire: desc += "火墙房";break;
             case Pit: desc += "井房";break;
             case Pool: desc += "鱼池房";break;
-            case Runestone: desc += "符石房";break;
+            case Runestone: desc += "模块房";break;
             case Sacrifice: desc += "献祭房";break;
             case Sentry: desc += "井盖房";break;
             case Storage: desc += "路障房";break;
