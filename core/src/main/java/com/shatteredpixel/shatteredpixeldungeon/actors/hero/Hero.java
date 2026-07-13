@@ -397,17 +397,17 @@ public class Hero extends Char {
     }
 
     public boolean hasTalentA( Talent talent ){
-        if (TierOfTalent.Tier(talent)>=3 && Dungeon.hero.subClass == HeroSubClass.NONE){
+        if (TierOfTalent.Tier(talent) >= 3 && Dungeon.hero.subClass == HeroSubClass.NONE)
             return false;
-        }
-        if (TierOfTalent.Tier(talent)>=4 && Dungeon.hero.armorAbility == null){
+
+        if (TierOfTalent.Tier(talent) >= 4 && Dungeon.hero.armorAbility == null)
             return false;
-        }
-        int need = Talent.tierLevelThresholds[TierOfTalent.Tier(talent)]-1;
-        return Dungeon.hero.lvl>=need && pointsInTalentA(talent) >= 0;
+
+        int need = Talent.tierLevelThresholds[TierOfTalent.Tier(talent)] - 1;
+        return Dungeon.hero.lvl >= need && pointsInTalentA(talent) >= 0;
     }
     public boolean hasTalentB( Talent talent){
-        return pointsInTalentA(talent)>=0;
+        return pointsInTalentA(talent) >= 0;
     }
 
     public int pointsInTalentA( Talent talent ){

@@ -26,7 +26,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.TierOfTalent;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -39,6 +42,10 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class PotionOfDivineInspiration extends ExoticPotion {
 	
@@ -59,7 +66,7 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 		DivineInspirationTracker tracker = hero.buff(DivineInspirationTracker.class);
 
 		if (tracker != null){
-			boolean allBoosted = true;
+			boolean allBoosted = hero.heroClass != HeroClass.Dandelion;
 			for (int i = 1; i <= 4; i++){
 				if (tracker.isBoosted(i)){
 					enabled[i] = false;
@@ -89,7 +96,12 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 		){
 			@Override
 			protected boolean enabled(int index) {
-				return enabled[index+1];
+				switch (index){
+					case 0: case 1: case 2:
+						return enabled(index + 1) || hero.heroClass == HeroClass.Dandelion;
+					case 3: default:
+						return enabled[index + 1];
+				}
 			}
 
 			@Override
@@ -102,7 +114,8 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 					if (isIdentified()) {
 						curItem.detach(curUser.belongings.backpack);
 					}
-
+					if (hero.heroClass == HeroClass.Dandelion && index < 3)
+						addTalent(hero, index);
 					identify();
 					curUser.busy();
 					curUser.sprite.operate(curUser.pos);
@@ -142,7 +155,22 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 		});
 
 	}
-
+	private static void addTalent( Hero hero, int tier ){
+		ArrayList<Talent> talents = new ArrayList<>(Arrays.asList(TierOfTalent.TierTalent(tier)));
+		if (!talents.isEmpty()) {
+			Talent add;
+			do {
+				add = talents.remove(Random.Int(talents.size()));
+			}
+			while ((add == null || hero.hasTalentB(add)
+					|| ScrollOfMetamorphosis.WndMetamorphReplace.isIgnoreTalent(add)
+					|| ScrollOfMetamorphosis.WndMetamorphReplace.hasAgainstTalent(add)) && !talents.isEmpty());
+			if (add == null)
+				return;
+			hero.talents.get(tier).put(add, 0);
+			hero.addTalents.put(add, tier);
+		}
+	}
 	@Override
 	public void shatter( int cell ) {
 		super.shatter( cell );

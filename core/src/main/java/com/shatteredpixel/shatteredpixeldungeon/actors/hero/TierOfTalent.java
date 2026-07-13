@@ -37,6 +37,17 @@ public class TierOfTalent {
         }
     }
 
+    public static Talent[] TierTalent( int tier ){
+        if (tier == 0)
+            return One.keySet().toArray(new Talent[0]);
+        if (tier == 1)
+            return Two.keySet().toArray(new Talent[0]);
+        if (tier == 2)
+            return Three.keySet().toArray(new Talent[0]);
+        if (tier == 3)
+            return Four.keySet().toArray(new Talent[0]);
+        return new Talent[0];
+    }
     public static int Tier(Talent talent){
         if (One.containsKey(talent)){
             return 1;

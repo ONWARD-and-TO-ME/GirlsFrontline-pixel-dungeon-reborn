@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic;
 import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -174,13 +175,13 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 		//talents that can only be used by one hero class
 		//TODO could some of these be made more generic?
-		private static final HashMap<Talent, HeroClass> restrictedTalents = new HashMap<>();
+		public static final HashMap<Talent, HeroClass> restrictedTalents = new HashMap<>();
 		static {
             // 从蜕变池子移除以下天赋
 			restrictedTalents.put(Talent.Type56_14, HeroClass.TYPE561);
 		}
 
-        private static final ArrayList<ArrayList<Talent>> against = new ArrayList<>();
+        public static final ArrayList<ArrayList<Talent>> against = new ArrayList<>();
         static {
             //旧回流、新回流、绝境迫能
             against.add(new ArrayList<>(Arrays.asList(Talent.EMPOWERING_SCROLLS, Talent.EMPOWERING_SCROLLS_V2, Talent.DESPERATE_POWER)));
@@ -241,6 +242,27 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			replaceOptions = options;
 			setup(replacing, tier, options);
 		}
+		public static boolean hasAgainstTalent( Talent talent ){
+			for (ArrayList<Talent> array : against)
+				//新蜕变的天赋属于互斥天赋
+				if (array.contains(talent)) {
+					//查找玩家身上可能存在的与新天赋互斥的天赋
+					Talent againstOne = null;
+					for (Talent t : array) {
+						if (Dungeon.hero.hasTalentB(t)) {
+							againstOne = t;
+							break;
+						}
+					}
+					//新天赋与旧天赋组存在互斥关系对
+					if (againstOne != null && againstOne != talent)
+						return true;
+				}
+			return false;
+		}
+		public static boolean isIgnoreTalent( Talent talent ){
+			return restrictedTalents.containsKey(talent) && restrictedTalents.get(talent) != curUser.heroClass;
+		}
 		private Talent newTalent(HeroClass cls, Talent replacing, int tier, Set<Talent> options){
 			ArrayList<LinkedHashMap<Talent, Integer>> clsTalents = new ArrayList<>();
 			while (cls == HeroClass.NONE)
@@ -254,24 +276,12 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 					clsTalentsAtTier.remove(talent);
 				else {
 					//移除无法使用的天赋且未做蜕变适应的天赋
-					if (restrictedTalents.containsKey(talent) && restrictedTalents.get(talent) != curUser.heroClass)
+					if (isIgnoreTalent(talent))
 						clsTalentsAtTier.remove(talent);
 
-					for (ArrayList<Talent> array : against)
-						//新蜕变的天赋属于互斥天赋
-						if (array.contains(talent)) {
-							//查找玩家身上可能存在的与新天赋互斥的天赋
-							Talent againstOne = null;
-							for (Talent t : array) {
-								if (hero.hasTalentB(t)) {
-									againstOne = t;
-									break;
-								}
-							}
-							//存在互斥且旧天赋并不为互斥天赋，移除此选项
-							if (againstOne != null && againstOne != replacing)
-								clsTalentsAtTier.remove(talent);
-						}
+					//移除互斥天赋
+					if (hasAgainstTalent(talent))
+						clsTalentsAtTier.remove(talent);
 
 					//移除已经随机出来的天赋
 					for (Talent t : options)
@@ -284,7 +294,6 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			else
 				return Random.element(clsTalentsAtTier);
 		}
-
 		private void setup(Talent replacing, int tier, LinkedHashMap<Talent, Integer> replaceOptions){
 
 			float top = 0;
