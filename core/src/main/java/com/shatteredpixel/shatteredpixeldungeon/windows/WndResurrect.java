@@ -23,10 +23,15 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.IntensifySkill;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.ThrowingSkill;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
@@ -120,6 +125,19 @@ public class WndResurrect extends Window {
                         armor.keptThoughLostInvent = false;
                     }
                 }
+
+				if (Dungeon.hero.heroClass == HeroClass.Dandelion){
+					Item item;
+					if ((item = Dungeon.hero.belongings.getItem(CardSelector.class)) != null)
+						item.keptThoughLostInvent = true;
+					if ((item = Dungeon.hero.belongings.getItem(IntensifySkill.class)) != null)
+						item.keptThoughLostInvent = true;
+					if ((item = Dungeon.hero.belongings.getItem(ThrowingSkill.class)) != null)
+						item.keptThoughLostInvent = true;
+					if ((item = Dungeon.hero.belongings.getItem(M4A1.class)) != null)
+						item.keptThoughLostInvent = true;
+				}
+
 				InterlevelScene.mode = InterlevelScene.Mode.RESURRECT;
 				Game.switchScene( InterlevelScene.class );
 			}
@@ -140,7 +158,21 @@ public class WndResurrect extends Window {
 		@Override
 		public boolean itemSelectable(Item item) {
 			//cannot select ankhs or bags
-			return !(item instanceof Ankh || item instanceof Bag);
+			if (item instanceof Ankh)
+				return false;
+			if (item instanceof Bag)
+				return false;
+
+			//丹德莱相关道具
+			if (item instanceof CardSelector)
+				return false;
+			if (item instanceof IntensifySkill)
+				return false;
+			if (item instanceof ThrowingSkill)
+				return false;
+			if (item instanceof M4A1)
+				return false;
+			return true;
 		}
 
 		@Override

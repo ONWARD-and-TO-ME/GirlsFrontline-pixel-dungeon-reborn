@@ -968,6 +968,7 @@ public enum Talent {
 				// 占位天赋：暂用战士的基础天赋
 				Collections.addAll(tierTalents, HEARTY_MEAL, ARMSMASTERS_INTUITION, TEST_SUBJECT, IRON_WILL);
 				break;
+            case Dandelion: break;
             case PUBLIC_1:
                 Collections.addAll(tierTalents, NICE_FOOD, OLD_SOLDIER, BETTER_FOOD, FAST_RELOAD);
                 break;
@@ -1002,16 +1003,17 @@ public enum Talent {
 			case TYPE561:
 				Collections.addAll(tierTalents, Type56Two_FOOD, Type56Two_Armor, Type56_23V4, Type56Two_Sight, Type56Two_Damage);
 				break;
-            case PUBLIC_1:
-                Collections.addAll(tierTalents, ROGUES_FORESIGHT_V2, ROGUES_FORESIGHT_V3, BARGAIN_SKILLS, TRAP_EXPERT, HOW_DARE_YOU, JIEFANGCI, NIGHT_EXPERT);
-                break;
             case GSH18:
                 Collections.addAll(tierTalents, GSH18_ENERGIZING_MEAL, GSH18_CHAIN_SHOCK, GSH18_LOGISTICS_SUPPORT, GSH18_COMIC_HEART, GSH18_MEDICAL_COMPATIBILITY);
                 break;
-			case HK416:
-				// 占位天赋：暂用战士的T2天赋
-				Collections.addAll(tierTalents, IRON_STOMACH, RESTORED_WILLPOWER, RUNIC_TRANSFERENCE, LETHAL_MOMENTUM, IMPROVISED_PROJECTILES);
-				break;
+            case HK416:
+                // 占位天赋：暂用战士的T2天赋
+                Collections.addAll(tierTalents, IRON_STOMACH, RESTORED_WILLPOWER, RUNIC_TRANSFERENCE, LETHAL_MOMENTUM, IMPROVISED_PROJECTILES);
+                break;
+            case Dandelion: break;
+            case PUBLIC_1:
+                Collections.addAll(tierTalents, ROGUES_FORESIGHT_V2, ROGUES_FORESIGHT_V3, BARGAIN_SKILLS, TRAP_EXPERT, HOW_DARE_YOU, JIEFANGCI, NIGHT_EXPERT);
+                break;
 		}
 		for (Talent talent : tierTalents){
 			if (replacements.containsKey(talent)){
@@ -1038,16 +1040,17 @@ public enum Talent {
 			case TYPE561:
 				Collections.addAll(tierTalents, Type56Three_Bomb, Type56Three_Book);
 				break;
-            case PUBLIC_1:
-                Collections.addAll(tierTalents, EMPOWERING_SCROLLS_V2, DESPERATE_POWER, ELITE_ARMY, ENHANCED_RINGS_V2, SEARCH_ARMY);
-                break;
             case GSH18:
                 Collections.addAll(tierTalents,GSH18_INTELLIGENCE_AWARENESS,GSH18_AGILE_MOVEMENT);
                 break;
-			case HK416:
-				// 占位天赋：暂用战士的T3天赋
-				Collections.addAll(tierTalents, HOLD_FAST, STRONGMAN);
-				break;
+            case HK416:
+                // 占位天赋：暂用战士的T3天赋
+                Collections.addAll(tierTalents, HOLD_FAST, STRONGMAN);
+                break;
+            case Dandelion: break;
+            case PUBLIC_1:
+                Collections.addAll(tierTalents, EMPOWERING_SCROLLS_V2, DESPERATE_POWER, ELITE_ARMY, ENHANCED_RINGS_V2, SEARCH_ARMY);
+                break;
 		}
 		for (Talent talent : tierTalents){
 			if (replacements.containsKey(talent)){
@@ -1116,6 +1119,7 @@ public enum Talent {
 			case MOBILE_MEDICALTABLE:
 				Collections.addAll(tierTalents, GSH18_AGILE_MOVEMENT);
 				break;
+            case EMPTY: break;
 		}
 		for (Talent talent : tierTalents){
 			talents.get(2).put(talent, 0);

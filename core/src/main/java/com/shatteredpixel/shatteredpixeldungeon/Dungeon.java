@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -329,6 +330,7 @@ public class Dungeon {
 		portedItems = new SparseArray<>();
 
 		LimitedDrops.reset();
+		Card.CardPoint.reset();
 		
 		chapters = new HashSet<>();
 		
@@ -677,6 +679,7 @@ public class Dungeon {
 			Bundle limDrops = new Bundle();
 			LimitedDrops.store( limDrops );
 			bundle.put ( LIMDROPS, limDrops );
+			Card.CardPoint.store( bundle );
 			
 			int count = 0;
 			int ids[] = new int[chapters.size()];
@@ -779,6 +782,7 @@ public class Dungeon {
 		Potion.restore( bundle );
 		Ring.restore( bundle );
 
+		Card.CardPoint.restore( bundle );
 		quickslot.restorePlaceholders( bundle );
 
         Statistics.restoreFromBundle( bundle );

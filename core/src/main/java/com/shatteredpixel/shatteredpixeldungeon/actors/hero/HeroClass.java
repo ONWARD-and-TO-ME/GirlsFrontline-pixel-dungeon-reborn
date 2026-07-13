@@ -94,6 +94,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gun561;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SA.Welrod;
@@ -105,6 +106,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKn
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
 import com.watabou.utils.DeviceCompat;
@@ -114,22 +116,34 @@ import java.util.HashMap;
 
 public enum HeroClass {
 
-	WARRIOR( HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR ),
-	MAGE( HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
-	ROGUE( HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
-	HUNTRESS( HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
-	TYPE561(HeroSubClass.EMP_BOMB, HeroSubClass.GUN_MASTER),
-	GSH18(HeroSubClass.FUTURE_STAR, HeroSubClass.MOBILE_MEDICALTABLE),
-	HK416(HeroSubClass.NONE, HeroSubClass.NONE),
-    PUBLIC_1(  HeroSubClass.NONE ),
-    NONE(  HeroSubClass.NONE );
+	WARRIOR( SurfaceScene.UMP45,
+			HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR ),
+	MAGE( SurfaceScene.G11,
+			HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
+	ROGUE( SurfaceScene.UMP9,
+			HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
+	HUNTRESS( SurfaceScene.HK416,
+			HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
+	TYPE561( SurfaceScene.TYPE56,
+			HeroSubClass.EMP_BOMB, HeroSubClass.GUN_MASTER ),
+	GSH18( SurfaceScene.GSH18,
+			HeroSubClass.FUTURE_STAR, HeroSubClass.MOBILE_MEDICALTABLE ),
+	HK416( SurfaceScene.HK416_,
+			HeroSubClass.NONE, HeroSubClass.NONE ),
+	Dandelion( SurfaceScene.Dandelion ),
+	PUBLIC_1( SurfaceScene.NONE,
+			HeroSubClass.NONE ),
+    NONE( SurfaceScene.NONE,
+			HeroSubClass.NONE );
 	private final HeroSubClass[] subClasses;
+	public final int AvatarCode;
     public static final HashMap<String, String> rename = new HashMap<>();
     static {
 
     }
 
-	HeroClass( HeroSubClass...subClasses ) {
+	HeroClass( int AvatarCode, HeroSubClass...subClasses ) {
+		this.AvatarCode = AvatarCode;
 		this.subClasses = subClasses;
 	}
 
@@ -275,8 +289,6 @@ public enum HeroClass {
 				return Badges.Badge.MASTERY_TYPE561;
 			case GSH18:
 				return Badges.Badge.MASTERY_GSH18;
-			case HK416:
-				return Badges.Badge.MASTERY_HK416;
 	}
 		return null;
 	}
@@ -371,7 +383,9 @@ public enum HeroClass {
 		(hero.belongings.weapon = new M9()).identify();
 		new PotionOfHealing().identify().collect();
 	}
-
+	private static void initDandelion( Hero hero ){
+		(hero.belongings.weapon = new M4A1()).identify();
+	}
 	public String title() {
 		return Messages.get(HeroClass.class, name());
 	}
@@ -408,9 +422,8 @@ public enum HeroClass {
 			case HK416:
 				person = new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()}; // 占位：暂用战士的技能
 				break;
-            case WARRIOR: default:
-                person= new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()};
-                break;
+			case Dandelion:
+				person = new ArmorAbility[0];
         }
         person = add(person, new Education());
         return person;

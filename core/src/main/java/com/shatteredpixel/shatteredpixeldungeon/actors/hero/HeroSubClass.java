@@ -48,7 +48,8 @@ public enum HeroSubClass {
     GUN_MASTER(HeroIcon.GUN_MASTER),
 	// GSH18子职业
 	FUTURE_STAR(HeroIcon.BERSERKER), // 未来之星
-	MOBILE_MEDICALTABLE(HeroIcon.GLADIATOR); // 行走手术台
+	MOBILE_MEDICALTABLE(HeroIcon.GLADIATOR), // 行走手术台
+	EMPTY(HeroIcon.NONE);
 
     public static final HashMap<String, String> rename = new HashMap<>();
     static {
