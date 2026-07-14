@@ -1,4 +1,4 @@
-﻿package com.shatteredpixel.shatteredpixeldungeon.ui.changelist.girlpd;
+package com.shatteredpixel.shatteredpixeldungeon.ui.changelist.girlpd;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;

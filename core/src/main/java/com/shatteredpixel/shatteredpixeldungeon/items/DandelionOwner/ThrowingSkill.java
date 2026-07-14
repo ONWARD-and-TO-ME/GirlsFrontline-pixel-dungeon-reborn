@@ -20,31 +20,12 @@ import com.watabou.utils.Point;
 
 import java.util.ArrayList;
 
-public class ThrowingSkill extends Item {
-
-    {
-        unique = true;
-        defaultAction = Throwing;
-    }
-    public int coolDownLeft;
-    private static final String Throwing = "Throwing";
+public class ThrowingSkill extends SkillItem {
     @Override
-    public ArrayList<String> actions(Hero hero ){
-        ArrayList<String> actions = super.actions(hero);
-        actions.add(Throwing);
-        return actions;
-    }
-
-    @Override
-    public void execute( Hero hero, String action ) {
-        super.execute(hero, action);
-        if (action.equals(Throwing)) {
-            if (coolDownLeft > 0)
-                GLog.w(Messages.get(this, "CoolDown"));
-            else if (!isSnipe())
-                GameScene.selectCell(ThrowingSelector);
-            else ;
-        }
+    public void onSkill( Hero hero ){
+        if (!isSnipe())
+            GameScene.selectCell(ThrowingSelector);
+        else ;
     }
     private static boolean isSnipe(){
         return CardSelector.INSTANCE(Dungeon.hero).hasCard(RareCard.WA2000.NTW_20);
@@ -84,55 +65,6 @@ public class ThrowingSkill extends Item {
             return ThrowingSelector_INSTANCE.prompt();
         }
     };
-    protected CoolDownTracker coolDownTracker;
-    @Override
-    public void Tracker( Char owner ){
-        super.Tracker(owner);
-        if (coolDownTracker == null){
-            coolDownTracker = new CoolDownTracker();
-            coolDownTracker.attachTo(owner);
-        }
-    }
-    @Override
-    public void stopTrack(){
-        super.stopTrack();
-        if (coolDownTracker != null){
-            coolDownTracker.detach();
-            coolDownTracker = null;
-        }
-    }
-    private static final String CoolDownLeft_Throwing = "CoolDownLeft_Throwing";
-    @Override
-    public void restoreFromBundle( Bundle bundle ){
-        super.restoreFromBundle(bundle);
-        coolDownLeft    = bundle.getInt(CoolDownLeft_Throwing);
-    }
-    @Override
-    public void storeInBundle( Bundle bundle ){
-        super.storeInBundle(bundle);
-        bundle.put(CoolDownLeft_Throwing, coolDownLeft);
-    }
-
-    @Override
-    public boolean isUpgradable() {
-        return false;
-    }
-    @Override
-    public boolean isIdentified() {
-        return true;
-    }
-    public class CoolDownTracker extends Buff {
-        {
-            revivePersists = true;
-        }
-        @Override
-        public boolean act() {
-            if (coolDownLeft > 0)
-                coolDownLeft--;
-            spend(TICK);
-            return true;
-        }
-    }
     protected abstract static class Throwing extends Item{
         {
             image = ItemSpriteSheet.SMOKEUmp45;

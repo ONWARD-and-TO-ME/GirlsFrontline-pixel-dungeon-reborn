@@ -18,9 +18,9 @@ public class CardSelector extends Item {
     {
         image = ItemSpriteSheet.SOMETHING;
         unique = true;
+        defaultAction = AC_CHOOSE;
     }
     public int bugCoolDownLeft;
-    public int coolDownLeft;
     public int curCardNum;
     public ArrayList<FirstCard> FirstCards      = new ArrayList<>();
     public ArrayList<CommonCard> CommonCards    = new ArrayList<>();
@@ -187,18 +187,6 @@ public class CardSelector extends Item {
         }
     }
     @Override
-    public void restoreFromBundle( Bundle bundle ){
-        super.restoreFromBundle(bundle);
-        bugCoolDownLeft = bundle.getInt(storeString.Bug_CoolDown.name());
-        coolDownLeft    = bundle.getInt(storeString.CoolDownLeft_Card.name());
-        curCardNum      = bundle.getInt(storeString.CurCardNum.name());
-        FirstCards      = storeString.First.restore(bundle, FirstCard.class);
-        CommonCards     = storeString.Common.restore(bundle, CommonCard.class);
-        RareCards       = storeString.Rare.restore(bundle, RareCard.class);
-        FinalCards      = storeString.Final.restore(bundle, FinalCard.class);
-        curCards        = storeString.cur.restore(bundle, Card.class);
-    }
-    @Override
     public void storeInBundle( Bundle bundle ){
         super.storeInBundle(bundle);
         bundle.put(storeString.Bug_CoolDown.name(), bugCoolDownLeft);
@@ -209,6 +197,18 @@ public class CardSelector extends Item {
         storeString.Rare.store(bundle, RareCards);
         storeString.Final.store(bundle, FinalCards);
         storeString.cur.store(bundle, curCards);
+    }
+    @Override
+    public void restoreFromBundle( Bundle bundle ){
+        super.restoreFromBundle(bundle);
+        bugCoolDownLeft = bundle.getInt(storeString.Bug_CoolDown.name());
+        coolDownLeft    = bundle.getInt(storeString.CoolDownLeft_Card.name());
+        curCardNum      = bundle.getInt(storeString.CurCardNum.name());
+        FirstCards      = storeString.First.restore(bundle, FirstCard.class);
+        CommonCards     = storeString.Common.restore(bundle, CommonCard.class);
+        RareCards       = storeString.Rare.restore(bundle, RareCard.class);
+        FinalCards      = storeString.Final.restore(bundle, FinalCard.class);
+        curCards        = storeString.cur.restore(bundle, Card.class);
     }
 
     @Override

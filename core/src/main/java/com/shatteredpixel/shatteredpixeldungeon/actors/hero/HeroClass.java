@@ -64,6 +64,9 @@ import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator.TestPo
 import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator.TestRing;
 import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator.debugBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.IntensifySkill;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.ThrowingSkill;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
@@ -255,6 +258,9 @@ public enum HeroClass {
 				initHK416( hero );
 				break;
 
+			case Dandelion:
+				initDandelion( hero );
+				break;
         }
 
         if (Game.isDebug)
@@ -385,6 +391,13 @@ public enum HeroClass {
 	}
 	private static void initDandelion( Hero hero ){
 		(hero.belongings.weapon = new M4A1()).identify();
+		new CardSelector().collect();
+		IntensifySkill intensify = new IntensifySkill();
+		intensify.collect();
+		ThrowingSkill throwing = new ThrowingSkill();
+		throwing.collect();
+		Dungeon.quickslot.setSlot(0, intensify);
+		Dungeon.quickslot.setSlot(1, throwing);
 	}
 	public String title() {
 		return Messages.get(HeroClass.class, name());
