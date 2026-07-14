@@ -6,9 +6,12 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundle;
 
 public interface Card {
-    Enum<? extends Card> getCard();
+    @SuppressWarnings("unchecked")
+    default Enum<? extends Card> getCard(){
+        return (Enum<? extends Card>) this;
+    }
     default String title(){
-        return EnumString(getCard(), ".name");
+        return EnumString(this, ".name");
     }
     default String info(){
         String desc = desc();
@@ -18,24 +21,23 @@ public interface Card {
         return desc;
     }
     default String desc(){
-        return EnumString(getCard(), ".desc");
+        return EnumString(this, ".desc");
     }
     default String extra(){
         return null;
     }
     static Hero hero(){
-        assert Dungeon.hero != null;
         return Dungeon.hero;
     }
     String extraKey = ".extra";
-    static String extraByTime(Enum<? extends Card> card, int mul){
+    static String extraByTime(Card card, int mul){
         CardSelector selector = CardSelector.INSTANCE(hero());
         int i = selector.UpgradeTime() / 1000;
         return EnumString(card, extraKey, i * mul);
     }
     Class<? extends Card> getCardClass();
-    static String EnumString(Enum<? extends Card> card, String key, Object... args){
-        return Messages.get(((Card) card).getCardClass(), card.name() + key, args);
+    static String EnumString(Card card, String key, Object... args){
+        return Messages.get(card.getCardClass(), card.getCard().name() + key, args);
     }
     enum CardPoint{
         General_Liu_KillingTimes;

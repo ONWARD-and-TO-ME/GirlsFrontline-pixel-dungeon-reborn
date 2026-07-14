@@ -42,69 +42,21 @@ public interface FinalCard extends Card {
         return FinalCard.class;
     }
     enum HS2000 implements FinalCard{
-        CAWS, S_A_T_8, Webley;
-        final Enum<? extends Card> card;
-        HS2000(){
-            card = this;
-        }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
+        CAWS, S_A_T_8, Webley
     }
     enum Vector implements FinalCard{
-        G36, KSVK;
-        final Enum<? extends Card> card;
-        Vector(){
-            card = this;
-        }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
+        G36, KSVK
     }
     enum VHS implements FinalCard{
-        AUG, PA_15;
-        final Enum<? extends Card> card;
-        VHS(){
-            card = this;
-        }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
+        AUG, PA_15
     }
     enum WA2000 implements FinalCard{
-        FAL, Python;
-        final Enum<? extends Card> card;
-        WA2000(){
-            card = this;
-        }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
+        FAL, Python
     }
     enum General_Liu implements FinalCard{
-        Savage_99, VP1915, VSK_94, Kolibri_Pistole;
-        final Enum<? extends Card> card;
-        General_Liu(){
-            card = this;
-        }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
+        Savage_99, VP1915, VSK_94, Kolibri_Pistole
     }
     enum UNIVERSAL implements FinalCard{
-        Kar98k, LTLX7000, MG5;
-        final Enum<? extends Card> card;
-        UNIVERSAL(){
-            card = this;
-        }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
+        Kar98k, LTLX7000, MG5
     }
 }

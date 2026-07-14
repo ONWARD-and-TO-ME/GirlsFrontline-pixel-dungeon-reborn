@@ -47,10 +47,6 @@ public interface RareCard extends Card {
     }
     enum HS2000 implements RareCard{
         Type_64_Auto, AA_12, KSG, DESERT_EAGLE;
-        final Enum<? extends Card> card;
-        HS2000(){
-            card = this;
-        }
         @Override
         public String extra(){
             if (this == Type_64_Auto){
@@ -69,70 +65,26 @@ public interface RareCard extends Card {
             }
             return null;
         }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
     }
     enum Vector implements RareCard{
-        Type_79, AK_74U, HP_35, K2, PP_19;
-        final Enum<? extends Card> card;
-        Vector(){
-            card = this;
-        }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
+        Type_79, AK_74U, HP_35, K2, PP_19
     }
     enum VHS implements RareCard{
         M82A1, MDR, P90, PM_06, RFB, TAC_50, Zas_M21;
-        final Enum<? extends Card> card;
-        VHS(){
-            card = this;
-        }
         @Override
         public String extra(){
             if (this == P90)
                 return EnumString(this, extraKey, FirstCard.VHS_HitTime());
             return null;
         }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
     }
     enum WA2000 implements RareCard{
-        K11, NTW_20, PKP, Px4, R93, MOSIN_NAGANT;
-        final Enum<? extends Card> card;
-        WA2000(){
-            card = this;
-        }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
+        K11, NTW_20, PKP, Px4, R93, MOSIN_NAGANT
     }
     enum General_Liu implements RareCard{
-        C_93, CZ75, M26_ASW, QBU_88, X95, Contender, COLT_SAA, STECHKIN, DiMer;
-        final Enum<? extends Card> card;
-        General_Liu(){
-            card = this;
-        }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
+        C_93, CZ75, M26_ASW, QBU_88, X95, Contender, COLT_SAA, STECHKIN, DiMer
     }
     enum UNIVERSAL implements RareCard{
-        Type_97_SHOTGUN, FP_6, M1887, DP_12,;
-        final Enum<? extends Card> card;
-        UNIVERSAL(){
-            card = this;
-        }
-        @Override
-        public Enum<? extends Card> getCard(){
-            return card;
-        }
+        Type_97_SHOTGUN, FP_6, M1887, DP_12
     }
 }

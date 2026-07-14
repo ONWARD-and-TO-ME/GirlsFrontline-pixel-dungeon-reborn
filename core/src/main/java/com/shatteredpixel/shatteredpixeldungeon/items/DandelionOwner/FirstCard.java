@@ -8,14 +8,6 @@ import java.util.ArrayList;
 
 public enum FirstCard implements Card {
     HS2000, Vector, VHS, WA2000, General_Liu;
-    final FirstCard card;
-    FirstCard(){
-        card = this;
-    }
-    @Override
-    public Enum<? extends Card> getCard() {
-        return card;
-    }
     @Override
     public Class<? extends Card> getCardClass(){
         return FirstCard.class;
