@@ -33,8 +33,9 @@ public interface Card {
         int i = selector.UpgradeTime() / 1000;
         return EnumString(card, extraKey, i * mul);
     }
+    Class<? extends Card> getCardClass();
     static String EnumString(Enum<? extends Card> card, String key, Object... args){
-        return Messages.get(Card.class, card.name() + key, args);
+        return Messages.get(((Card) card).getCardClass(), card.name() + key, args);
     }
     enum CardPoint{
         General_Liu_KillingTimes;

@@ -41,6 +41,10 @@ public interface RareCard extends Card {
     static void addAll(ArrayList<RareCard> list, RareCard[] array){
         list.addAll(Arrays.asList(array));
     }
+    @Override
+    default Class<? extends Card> getCardClass(){
+        return RareCard.class;
+    }
     enum HS2000 implements RareCard{
         Type_64_Auto, AA_12, KSG, DESERT_EAGLE;
         final Enum<? extends Card> card;

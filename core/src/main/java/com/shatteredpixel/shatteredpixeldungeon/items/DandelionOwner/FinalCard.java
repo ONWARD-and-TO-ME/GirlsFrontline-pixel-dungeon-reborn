@@ -37,6 +37,10 @@ public interface FinalCard extends Card {
     static void addAll(ArrayList<FinalCard> list, FinalCard[] array){
         list.addAll(Arrays.asList(array));
     }
+    @Override
+    default Class<? extends Card> getCardClass(){
+        return FinalCard.class;
+    }
     enum HS2000 implements FinalCard{
         CAWS, S_A_T_8, Webley;
         final Enum<? extends Card> card;

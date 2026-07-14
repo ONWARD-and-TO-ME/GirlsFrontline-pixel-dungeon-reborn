@@ -16,6 +16,10 @@ public enum FirstCard implements Card {
     public Enum<? extends Card> getCard() {
         return card;
     }
+    @Override
+    public Class<? extends Card> getCardClass(){
+        return FirstCard.class;
+    }
     public static ArrayList<FirstCard> random( ArrayList<FirstCard> firstCards ){
         ArrayList<FirstCard> cards = new ArrayList<>();
 

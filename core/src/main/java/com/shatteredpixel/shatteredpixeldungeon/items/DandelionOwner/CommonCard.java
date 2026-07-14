@@ -42,6 +42,10 @@ public interface CommonCard extends Card {
     static void addAll(ArrayList<CommonCard> list, CommonCard[] array){
         list.addAll(Arrays.asList(array));
     }
+    @Override
+    default Class<? extends Card> getCardClass(){
+        return CommonCard.class;
+    }
     enum HS2000 implements CommonCard{
         Sten_II;
         final Enum<? extends Card> card;
