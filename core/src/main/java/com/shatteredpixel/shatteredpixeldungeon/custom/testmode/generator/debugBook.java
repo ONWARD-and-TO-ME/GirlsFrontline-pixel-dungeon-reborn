@@ -63,7 +63,7 @@ public class debugBook extends TestItem {
     private static Mode mode = Mode.NONE;
     private static final String AC_SET_NUM = "SET";
     enum Mode{
-        NONE, EXPERIENCE, STRENGTH, LEVEL, IGNORE, MOB, CHARGE, RESET, COMPLETE, TALENT, WEALTH;
+        NONE, EXPERIENCE, STRENGTH, LEVEL, IGNORE, MOB, CHARGE, RESET, COMPLETE, TALENT, WEALTH, COOLDOWN;
         public String modeName(){
             return Messages.get(debugBook.class, name());
         }
@@ -167,16 +167,17 @@ public class debugBook extends TestItem {
                 break;
             case AC_APPLY:
                 switch (mode) {
-                    case EXPERIENCE: updateEXP();break;
-                    case STRENGTH: updateSTR();break;
-                    case LEVEL: GameScene.selectItem(itemLVL);break;
-                    case IGNORE: GameScene.selectItem(itemIGN);break;
-                    case MOB: mobAPPLY();break;
-                    case CHARGE: GameScene.selectItem(itemCHA);break;
-                    case RESET: resetLevel();break;
-                    case COMPLETE: complete();break;
-                    case TALENT: setTalent();break;
-                    case WEALTH: WealthKill();break;
+                    case EXPERIENCE: updateEXP(); break;
+                    case STRENGTH: updateSTR(); break;
+                    case LEVEL: GameScene.selectItem(itemLVL); break;
+                    case IGNORE: GameScene.selectItem(itemIGN); break;
+                    case MOB: mobAPPLY(); break;
+                    case CHARGE: GameScene.selectItem(itemCHA); break;
+                    case RESET: resetLevel(); break;
+                    case COMPLETE: complete(); break;
+                    case TALENT: setTalent(); break;
+                    case WEALTH: WealthKill(); break;
+                    case COOLDOWN: GameScene.selectItem(itemCoolDown); break;
                     case NONE: default: break;
                 }
                 break;
@@ -621,4 +622,34 @@ public class debugBook extends TestItem {
             setMode();
         }
     }
+    protected WndBag.ItemSelector itemCoolDown = new WndBag.ItemSelector() {
+
+        @Override
+        public String textPrompt() {
+            return Messages.get(debugBook.class, "coolDown_select");
+        }
+
+        @Override
+        public Class<? extends Bag> preferredBag() {
+            return Belongings.Backpack.class;
+        }
+
+        @Override
+        public boolean itemSelectable(Item item) {
+            return item.coolDownLeft > 0;
+        }
+
+        @Override
+        public void onSelect( Item item ) {
+
+            if(item != null){
+                item.coolDownLeft = 0;
+                Sample.INSTANCE.play( Assets.Sounds.READ );
+            }
+            else {
+                defaultAction = AC_SetMode;
+                updateQuickslot();
+            }
+        }
+    };
 }

@@ -97,25 +97,6 @@ public class CardSelector extends Item {
         }
     }
     private static WndWithCanScrollButton INSTANCE = null;
-    private void checkCards(){
-        ArrayList<canScrollRedButton> buttons = new ArrayList<>();
-        addCheckCardsBtn(FirstCards, buttons);
-        addCheckCardsBtn(CommonCards, buttons);
-        addCheckCardsBtn(RareCards, buttons);
-        addCheckCardsBtn(FinalCards, buttons);
-        INSTANCE = new WndWithCanScrollButton(buttons);
-        GirlsFrontlinePixelDungeon.scene().addToFront(INSTANCE);
-    }
-    private void addCheckCardsBtn(ArrayList<? extends Card> list, ArrayList<canScrollRedButton> buttons){
-        for (Card c : list)
-            buttons.add(new canScrollRedButton(c.getCard(), c.title()){
-                @Override
-                public void onClick(){
-                    super.onClick();
-                    GirlsFrontlinePixelDungeon.scene().addToFront(new WndOptions(c.title(), c.info()));
-                }
-            });
-    }
     private void selectCards(){
         ArrayList<canScrollRedButton> buttons = new ArrayList<>();
         for (Card c : curCards)
@@ -138,14 +119,18 @@ public class CardSelector extends Item {
                                             RareCards.add((RareCard) c);
                                         else if (c instanceof FinalCard)
                                             FinalCards.add((FinalCard) c);
-                                        if (curCardNum++ < 8)
-                                            coolDownLeft = 1500 + 500 * (curCardNum + bugCoolDownLeft > 33333 ? 8 : 0);
+                                        if (curCardNum++ < 8) {
+                                            coolDownLeft = 1500 + 500 * curCardNum;
+                                            if (bugCoolDownLeft >= 33333)
+                                                coolDownLeft += 5500;
+                                        }
                                         curCards.clear();
                                         if (INSTANCE != null) {
                                             INSTANCE.hide();
                                             INSTANCE = null;
                                         }
                                         hide();
+                                        updateQuickslot();
                                     }
                                     else if (index == 1)
                                         hide();
@@ -156,6 +141,25 @@ public class CardSelector extends Item {
             });
         INSTANCE = new WndWithCanScrollButton(buttons);
         GirlsFrontlinePixelDungeon.scene().addToFront(INSTANCE);
+    }
+    private void checkCards(){
+        ArrayList<canScrollRedButton> buttons = new ArrayList<>();
+        addCheckCardsBtn(FirstCards, buttons);
+        addCheckCardsBtn(CommonCards, buttons);
+        addCheckCardsBtn(RareCards, buttons);
+        addCheckCardsBtn(FinalCards, buttons);
+        INSTANCE = new WndWithCanScrollButton(buttons);
+        GirlsFrontlinePixelDungeon.scene().addToFront(INSTANCE);
+    }
+    private void addCheckCardsBtn(ArrayList<? extends Card> list, ArrayList<canScrollRedButton> buttons){
+        for (Card c : list)
+            buttons.add(new canScrollRedButton(c.getCard(), c.title()){
+                @Override
+                public void onClick(){
+                    super.onClick();
+                    GirlsFrontlinePixelDungeon.scene().addToFront(new WndOptions(c.title(), c.info()));
+                }
+            });
     }
     enum storeString{
         Bug_CoolDown, CoolDownLeft_Card, CurCardNum,

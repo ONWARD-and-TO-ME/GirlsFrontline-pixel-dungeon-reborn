@@ -6,7 +6,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 
@@ -32,17 +31,6 @@ public abstract class SkillItem extends Item {
         }
     }
     public abstract void onSkill( Hero hero );
-    private static final String CoolDownLeft_SkillItem = "CoolDownLeft_SkillItem";
-    @Override
-    public void restoreFromBundle( Bundle bundle ){
-        super.restoreFromBundle(bundle);
-        coolDownLeft    = bundle.getInt(CoolDownLeft_SkillItem);
-    }
-    @Override
-    public void storeInBundle( Bundle bundle ){
-        super.storeInBundle(bundle);
-        bundle.put(CoolDownLeft_SkillItem, coolDownLeft);
-    }
     protected CoolDownTracker coolDownTracker;
     @Override
     public void Tracker( Char owner ){

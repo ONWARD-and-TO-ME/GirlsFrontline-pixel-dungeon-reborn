@@ -34,14 +34,21 @@ public class ThrowingSkill extends SkillItem {
         @Override
         public void onSelect(Integer target) {
             if (target != null) {
+                Dungeon.hero.spend(-TIME_TO_THROW);
                 new ThrowingBomb().cast(Dungeon.hero, target);
                 CardSelector selector = CardSelector.INSTANCE(Dungeon.hero);
-                if (selector.hasCard(CommonCard.Vector.Beretta_38))
+                if (selector.hasCard(CommonCard.Vector.Beretta_38)) {
+                    Dungeon.hero.spend(-TIME_TO_THROW);
                     new FireBomb(4).cast(Dungeon.hero, target);
-                if (selector.hasCard(CommonCard.Vector.Uzi))
+                }
+                if (selector.hasCard(CommonCard.Vector.Uzi)) {
+                    Dungeon.hero.spend(-TIME_TO_THROW);
                     new FireBomb(4).cast(Dungeon.hero, target);
-                if (selector.hasCard(RareCard.Vector.PP_19))
+                }
+                if (selector.hasCard(RareCard.Vector.PP_19)) {
+                    Dungeon.hero.spend(-TIME_TO_THROW);
                     new FireBomb(8).cast(Dungeon.hero, target);
+                }
                 updateQuickslot();
             }
         }
@@ -56,7 +63,7 @@ public class ThrowingSkill extends SkillItem {
             if (target != null) {
                 ThrowingSelector_INSTANCE.onSelect(target);
                 coolDownLeft = 50;
-                Dungeon.hero.spendAndNext( Actor.TICK );
+                Dungeon.hero.spendAndNext( 1F );
                 updateQuickslot();
             }
         }
