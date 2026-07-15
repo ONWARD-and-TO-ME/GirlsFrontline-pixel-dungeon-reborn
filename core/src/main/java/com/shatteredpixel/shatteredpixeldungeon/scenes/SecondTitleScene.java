@@ -9,7 +9,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.custom.seedfinder.SeedFindScene;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Fireball;
@@ -25,6 +24,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.ui.canScrollRedButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndWithCanScrollButton;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndZeroLevelHeroSelect;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -201,18 +201,20 @@ public class SecondTitleScene extends PixelScene {
         Dungeon.hero=null;
         ActionIndicator.action  = null;
         GamesInProgress.curSlot = 0;
-        GamesInProgress.selectedClass = HeroClass.TYPE561;
         GamesInProgress.Info gameInfo = GamesInProgress.check(GamesInProgress.curSlot);
         if(gameInfo == null){
-            InterlevelScene.start();
+            // 0层存档未创建，弹出角色选择窗口
+            GamesInProgress.selectedClass = null;
+            GirlsFrontlinePixelDungeon.scene().addToFront(new WndZeroLevelHeroSelect());
         }else if(gameInfo.version < Game.versionCode){
             Dungeon.deleteGame(GamesInProgress.curSlot, true);
-            InterlevelScene.start();
+            GamesInProgress.selectedClass = null;
+            GirlsFrontlinePixelDungeon.scene().addToFront(new WndZeroLevelHeroSelect());
         }else{
             try{InterlevelScene.restore();}
             catch(IOException e){Game.reportException(e);}
+            Game.switchScene(GameScene.class);
         }
-        Game.switchScene(GameScene.class);
     }
 	private static class WndCake extends WndOptions {
 		public int month;

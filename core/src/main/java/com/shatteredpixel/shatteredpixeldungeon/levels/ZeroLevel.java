@@ -223,8 +223,8 @@ public class ZeroLevel extends Level {
     public static class DecontaminationCorridor extends WindowTrigger {
         @Override
         public boolean canInteract(Char ch) {
-            //仅在左边才能触发
-            return Dungeon.hero == ch && Dungeon.level.adjacent(pos, ch.pos) && (ch.pos + 1) == pos;
+            //相邻格子均可触发
+            return Dungeon.hero == ch && Dungeon.level.adjacent(pos, ch.pos);
         }
 
         public class WndDecontaminationCorridor extends Window {
