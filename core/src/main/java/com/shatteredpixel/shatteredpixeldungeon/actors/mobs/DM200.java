@@ -115,7 +115,7 @@ public class DM200 extends Mob {
 	}
 
 	private void zap( ){
-		spend( TICK );
+		spendAttack( TICK );
 		ventCooldown = 30;
 
 		Ballistica trajectory = new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET);
@@ -159,7 +159,7 @@ public class DM200 extends Mob {
 					}
 
 				} else if (getCloser( target )) {
-					spend( 1 / speed() );
+					spendMove( 1 / speed() );
 					return moveSprite( oldPos,  pos );
 
 				} else if (canVent(target)) {

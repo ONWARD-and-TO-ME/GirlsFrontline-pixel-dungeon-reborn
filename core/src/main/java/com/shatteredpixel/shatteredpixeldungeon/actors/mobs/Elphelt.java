@@ -227,7 +227,7 @@ public class Elphelt extends Mob {
 			case 1:
 				if (enemy == null) {
 					onGenoise = false;
-					spend( TICK );
+					spendAttack( TICK );
 					return true;
 				}
 
@@ -245,7 +245,7 @@ public class Elphelt extends Mob {
 					} else {
 						fireGenoise( genoiseDst );
 					}
-					spend( attackDelay() );
+					spendAttack( attackDelay() );
 					if (genoiseDst == Dungeon.hero.pos) {
 						Dungeon.hero.interrupt();
 					}
@@ -256,13 +256,13 @@ public class Elphelt extends Mob {
 			case 2:
 				if (enemy == null)
 				{
-					spend( TICK );
+					spendWait( TICK );
 					return true;
 				}
 				if (canRush) {
 					if (onRush) {
 						// 브라이들 러시 발동
-						spend( bridleExpressDelay() );
+						spendAttack( bridleExpressDelay() );
 						bridleExpress();
 						return true;
 					} else {
@@ -272,12 +272,12 @@ public class Elphelt extends Mob {
 						}
 						// 경고 궤적 표시
 						onRush = true;
-						spend( warnDelay() );
+						spendAttack( warnDelay() );
 						warnExpress();
 						return true;
 					}
 				} else {
-					spend( magnumDelay() );
+					spendAttack( magnumDelay() );
 					if ( Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[enemy.pos] ) {
 						sprite.zap( enemy.pos );
 					} else {
@@ -449,7 +449,7 @@ public class Elphelt extends Mob {
 					if (dist == 0 || ch.properties().contains(Char.Property.IMMOVABLE)) {
 						int oldPos = pos;
 						if (getFurther( ch.pos )) {
-							spend( 1 / speed() );
+							spendMove( 1 / speed() );
 							moveSprite( oldPos, pos );
 						} else {
 							if ( Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[ch.pos] ) {
@@ -494,7 +494,7 @@ public class Elphelt extends Mob {
 			}
 		}
 		curGenoiseStack = Math.max(curGenoiseStack-1, 0);
-		spend(attackDelay());
+		spendAttack(attackDelay());
 		next();
 	}
 
@@ -745,7 +745,7 @@ public class Elphelt extends Mob {
 				case 0: default:
 					state = SLEEPING;
 
-					spend( TICK );
+					spendWait( TICK );
 
 					if (justAlerted) {
 						notice();
@@ -755,7 +755,7 @@ public class Elphelt extends Mob {
 					return true;
 				case 1:
 					if (enemy == null) {
-						spend( TICK );
+						spendMove( TICK );
 						state = WANDERING;
 						target = Dungeon.level.randomDestination(Elphelt.this);
 						return true;
@@ -780,10 +780,10 @@ public class Elphelt extends Mob {
 						// 제누와즈 중이 아니거나 근접공격 불가능한 경우
 						int oldPos = pos;
 						if (target != -1 && getCloser( target )) {
-							spend( 1 / speed() );
+							spendMove( 1 / speed() );
 							return moveSprite( oldPos, pos );
 						} else {
-							spend( TICK );
+							spendMove( TICK );
 							if (!enemyInFOV) {
 								sprite.showLost();
 								state = WANDERING;
@@ -810,10 +810,10 @@ public class Elphelt extends Mob {
 					} else {
 						int oldPos = pos;
 						if (target != -1 && getCloser( target )) {
-							spend( 1 / speed() );
+							spendMove( 1 / speed() );
 							return moveSprite( oldPos, pos );
 						} else {
-							spend( TICK );
+							spendMove( TICK );
 							if (!enemyInFOV) {
 								state = WANDERING;
 								target = Dungeon.level.randomDestination(Elphelt.this);

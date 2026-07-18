@@ -157,7 +157,7 @@ public class DwarfKing extends Mob {
 			}
 
 			if (paralysed > 0){
-				spend(TICK);
+				spendAll(TICK);
 				return true;
 			}
 
@@ -176,12 +176,12 @@ public class DwarfKing extends Mob {
 
 				if (lastAbility == LINK && lifeLinkSubject()){
 					abilityCooldown += Random.NormalIntRange(MIN_COOLDOWN, MAX_COOLDOWN);
-					spend(TICK);
+					spendAll(TICK);
 					return true;
 				} else if (teleportSubject()) {
 					lastAbility = TELE;
 					abilityCooldown += Random.NormalIntRange(MIN_COOLDOWN, MAX_COOLDOWN);
-					spend(TICK);
+					spendAll(TICK);
 					return true;
 				}
 
@@ -201,7 +201,7 @@ public class DwarfKing extends Mob {
 					}
 					summonSubject(3, DKGhoul.class);
 					summonSubject(3, DKGhoul.class);
-					spend(3 * TICK);
+					spendAll(3 * TICK);
 					summonsMade += 2;
 					return true;
 				} else if (shielding() <= 300 && summonsMade < 12){
@@ -218,7 +218,7 @@ public class DwarfKing extends Mob {
 						summonSubject(3, DKWarlock.class);
 					}
 					summonsMade += 3;
-					spend(3*TICK);
+					spendAll(3*TICK);
 					return true;
 				} else if (shielding() <= 150 && summonsMade < 18) {
 					if (summonsMade == 12) {
@@ -230,16 +230,16 @@ public class DwarfKing extends Mob {
 						summonSubject(3, DKGhoul.class);
 						summonSubject(3, DKGhoul.class);
 						summonsMade += 4;
-						spend(3*TICK);
+						spendAll(3*TICK);
 					} else {
 						summonSubject(3, DKGolem.class);
 						summonSubject(3, DKGolem.class);
 						summonsMade += 2;
-						spend(TICK);
+						spendAll(TICK);
 					}
 					return true;
 				} else {
-					spend(TICK);
+					spendAll(TICK);
 					return true;
 				}
 			} else {
@@ -251,7 +251,7 @@ public class DwarfKing extends Mob {
 						yell(Messages.get(this, "wave_1"));
 					}
 					summonSubject(3, DKGhoul.class);
-					spend(3 * TICK);
+					spendAll(3 * TICK);
 					summonsMade++;
 					return true;
 				} else if (shielding() <= 200 && summonsMade < 8) {
@@ -266,7 +266,7 @@ public class DwarfKing extends Mob {
 						summonSubject(3, DKGhoul.class);
 					}
 					summonsMade++;
-					spend(TICK);
+					spendAll(TICK);
 					return true;
 				} else if (shielding() <= 100 && summonsMade < 12) {
 					sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
@@ -277,10 +277,10 @@ public class DwarfKing extends Mob {
 					summonSubject(4, DKGhoul.class);
 					summonSubject(4, DKGhoul.class);
 					summonsMade = 12;
-					spend(TICK);
+					spendAll(TICK);
 					return true;
 				} else {
-					spend(TICK);
+					spendAll(TICK);
 					return true;
 				}
 			}

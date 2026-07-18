@@ -90,11 +90,30 @@ public class Monk extends Mob {
 	}
 	
 	@Override
-	protected void spend( float time ) {
+    public void spend( float time) {
 		focusCooldown -= time;
 		super.spend( time );
 	}
-	
+	@Override
+	public void spendAttack(float time) {
+		focusCooldown -= time;
+		super.spendAttack(time);
+	}
+	@Override
+	public void spendWait(float time){
+		focusCooldown -= time;
+		super.spendWait(time);
+	}
+	@Override
+	public void spendMove(float time) {
+		focusCooldown -= time;
+		super.spendMove(time);
+	}
+	@Override
+	public void spendAll(float time) {
+		focusCooldown -= time;
+		super.spendAll(time);
+	}
 	@Override
 	public void move( int step, boolean travelling) {
 		// moving reduces cooldown by an additional 0.67, giving a total reduction of 1.67f.

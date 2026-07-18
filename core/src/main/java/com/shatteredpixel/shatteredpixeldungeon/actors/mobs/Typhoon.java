@@ -102,7 +102,7 @@ public class Typhoon extends Hydra {
             beamCooldown--;
         if (beamCharged &&beamTime>0){
             beamTime--;
-            spend(TICK);
+            spendAttack(TICK);
             updateTNT();
             return true;
         }
@@ -113,19 +113,19 @@ public class Typhoon extends Hydra {
     protected boolean doAttack( Char enemy ) {
 
         if (beamTime>0){
-            spend(attackDelay());
+            spendAttack(attackDelay());
             return true;
         }else if (!beamCharged){
             ((TyphoonSprite)sprite).charge( enemy.pos );
             TNTFindHero( enemy.pos );
             Dungeon.hero.interrupt();
             beamTime = attackDelay()*14f;
-            spend( attackDelay() );
+            spendAttack( attackDelay() );
             beamCharged = true;
             return true;
         } else {
 
-            spend( attackDelay() );
+            spendAttack( attackDelay() );
 
             beam = new Ballistica(pos, beamTarget, Ballistica.STOP_SOLID);
             if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[beam.collisionPos] ) {

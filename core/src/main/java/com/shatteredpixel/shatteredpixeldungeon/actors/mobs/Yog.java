@@ -314,7 +314,7 @@ public class Yog extends Mob {
 		public boolean attack( Char enemy ) {
 			
 			if (!Dungeon.level.adjacent( pos, enemy.pos )) {
-				spend( attackDelay() );
+				spendAttack( attackDelay() );
 				
 				if (hit( this, enemy, true )) {
 					

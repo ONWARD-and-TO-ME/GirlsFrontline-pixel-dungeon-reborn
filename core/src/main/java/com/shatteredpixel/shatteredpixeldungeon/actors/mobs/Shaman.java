@@ -106,7 +106,7 @@ public abstract class Shaman extends Mob {
 	public static class EarthenBolt{}
 	
 	private void zap() {
-		spend( 1f );
+		spendAttack( 1f );
 		
 		if (hit( this, enemy, true )) {
 			

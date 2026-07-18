@@ -204,7 +204,7 @@ public class GolyatFactory extends Mob {
 					blocker.damage( Random.NormalIntRange(2, 10), this, this );
 				}
 
-				spend(TICK);
+				spendAll(TICK);
 				return;
 			}
 		}
@@ -291,10 +291,10 @@ public class GolyatFactory extends Mob {
 					summoning = true;
 					sprite.zap( summoningPos );
 					
-					spend( firstSummon ? TICK : 2*TICK );
+					spendAll( firstSummon ? TICK : 2*TICK );
 				} else {
 					//wait for a turn
-					spend(TICK);
+					spendWait(TICK);
 				}
 				
 				return true;
@@ -302,7 +302,7 @@ public class GolyatFactory extends Mob {
 			} else if (enemySeen && myGolyat != null){
 				
 				target = enemy.pos;
-				spend(TICK);
+				spendAll(TICK);
 				
 				if (!fieldOfView[myGolyat.pos]){
 					
@@ -378,7 +378,7 @@ public class GolyatFactory extends Mob {
 		}
 
 		private void teleportSpend(){
-			spend(TICK);
+			spendAll(TICK);
 		}
 		
 		public static class FactoryGolyatSprite extends GolyatSprite{

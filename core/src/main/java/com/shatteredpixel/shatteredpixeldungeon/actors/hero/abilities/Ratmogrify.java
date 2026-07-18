@@ -34,7 +34,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -214,11 +213,30 @@ public class Ratmogrify extends ArmorAbility {
 		}
 
 		@Override
-		protected void spend(float time) {
+        public void spend(float time) {
 			if (!allied) timeLeft -= time;
 			super.spend(time);
 		}
-
+		@Override
+		public void spendAttack(float time) {
+			if (!allied) timeLeft -= time;
+			super.spendAttack(time);
+		}
+		@Override
+		public void spendWait(float time){
+			if (!allied) timeLeft -= time;
+			super.spendWait(time);
+		}
+		@Override
+		public void spendMove(float time) {
+			if (!allied) timeLeft -= time;
+			super.spendMove(time);
+		}
+		@Override
+		public void spendAll(float time) {
+			if (!allied) timeLeft -= time;
+			super.spendAll(time);
+		}
 		public void makeAlly() {
 			allied = true;
 			alignment = Alignment.ALLY;

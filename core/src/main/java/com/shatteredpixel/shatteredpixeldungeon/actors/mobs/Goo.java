@@ -175,7 +175,7 @@ public class Goo extends Mob {
 			pumpedUp++;
 			((GooSprite)sprite).pumpUp( pumpedUp );
 
-			spend( attackDelay() );
+			spendAttack( attackDelay() );
 
 			return true;
 		} else if (pumpedUp >= 2 || Random.Int( (HP*2 <= HT) ? 2 : 5 ) > 0) {
@@ -193,7 +193,7 @@ public class Goo extends Mob {
 					((GooSprite)sprite).triggerEmitters();
 				}
 				attack( enemy );
-				spend( attackDelay() );
+				spendAttack( attackDelay() );
 			}
 
 			return !visible;
@@ -212,7 +212,7 @@ public class Goo extends Mob {
 				GLog.n( Messages.get(this, "pumpup") );
 			}
 
-			spend( attackDelay() );
+			spendAttack( attackDelay() );
 
 			return true;
 		}

@@ -99,7 +99,7 @@ public class Warlock extends Mob implements Callback {
 	public static class DarkBolt{}
 	
 	private void zap() {
-		spend( TIME_TO_ZAP );
+		spendAttack( TIME_TO_ZAP );
 		
 		if (hit( this, enemy, true )) {
 			//TODO would be nice for this to work on ghost/statues too

@@ -203,7 +203,7 @@ public class Necromancer extends Mob {
 					blocker.damage( Random.NormalIntRange(2, 10), this, this );
 				}
 
-				spend(TICK);
+				spendAll(TICK);
 				return;
 			}
 		}
@@ -268,10 +268,10 @@ public class Necromancer extends Mob {
 					summoning = true;
 					sprite.zap( summoningPos );
 					
-					spend( firstSummon ? TICK : 2*TICK );
+					spendAll( firstSummon ? TICK : 2*TICK );
 				} else {
 					//wait for a turn
-					spend(TICK);
+					spendWait(TICK);
 				}
 				
 				return true;
@@ -279,7 +279,7 @@ public class Necromancer extends Mob {
 			} else if (enemySeen && mySkeleton != null){
 				
 				target = enemy.pos;
-				spend(TICK);
+				spendAll(TICK);
 				
 				if (!fieldOfView[mySkeleton.pos]){
 					
@@ -355,7 +355,7 @@ public class Necromancer extends Mob {
 		}
 
 		private void teleportSpend(){
-			spend(TICK);
+			spendAll(TICK);
 		}
 		
 		public static class NecroSkeletonSprite extends SkeletonSprite{

@@ -122,12 +122,12 @@ public class Eye extends Mob {
 			return super.doAttack(enemy);
 		} else if (!beamCharged){
 			((EyeSprite)sprite).charge( enemy.pos );
-			spend( attackDelay()*2f );
+			spendAttack( attackDelay()*2 );
 			beamCharged = true;
 			return true;
 		} else {
 
-			spend( attackDelay() );
+			spendAttack( attackDelay() );
 			
 			beam = new Ballistica(pos, beamTarget, Ballistica.STOP_SOLID);
 			if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[beam.collisionPos] ) {

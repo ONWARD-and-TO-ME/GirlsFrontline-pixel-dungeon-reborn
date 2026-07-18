@@ -56,7 +56,7 @@ public class Jaguar extends Mob {
 
         boolean visible = Dungeon.level.heroFOV[pos];
 
-        spend( attackDelay() );
+        spendAttack( attackDelay() );
 
         if (visible) {
             sprite.attack(enemy.pos);

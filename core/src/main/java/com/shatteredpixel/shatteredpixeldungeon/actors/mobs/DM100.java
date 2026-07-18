@@ -86,7 +86,7 @@ public class DM100 extends Mob implements Callback {
 			
 		} else {
 			
-			spend( TIME_TO_ZAP );
+			spendAttack( TIME_TO_ZAP );
 			
 			if (hit( this, enemy, true )) {
 				int dmg = Random.NormalIntRange(3, 10);

@@ -229,7 +229,7 @@ public abstract class YogFist extends Mob {
 
 		@Override
 		protected void zap() {
-			spend( 1f );
+			spendAttack( 1f );
 
 			if (Dungeon.level.map[enemy.pos] == Terrain.WATER){
 				Level.set( enemy.pos, Terrain.EMPTY);
@@ -313,7 +313,7 @@ public abstract class YogFist extends Mob {
 
 		@Override
 		protected void zap() {
-			spend( 1f );
+			spendAttack( 1f );
 
 			if (hit( this, enemy, true )) {
 
@@ -392,7 +392,7 @@ public abstract class YogFist extends Mob {
 
 		@Override
 		protected void zap() {
-			spend( 1f );
+			spendAttack( 1f );
 			GameScene.add(Blob.seed(enemy.pos, 100, ToxicGas.class));
 		}
 
@@ -443,7 +443,7 @@ public abstract class YogFist extends Mob {
 
 		@Override
 		protected void zap() {
-			spend( 1f );
+			spendAttack( 1f );
 			Buff.affect(enemy, Cripple.class, 4f);
 		}
 
@@ -469,7 +469,7 @@ public abstract class YogFist extends Mob {
 
 		@Override
 		protected void zap() {
-			spend( 1f );
+			spendAttack( 1f );
 
 			if (hit( this, enemy, true )) {
 
@@ -532,7 +532,7 @@ public abstract class YogFist extends Mob {
 
 		@Override
 		protected void zap() {
-			spend( 1f );
+			spendAttack( 1f );
 
 			if (hit( this, enemy, true )) {
 

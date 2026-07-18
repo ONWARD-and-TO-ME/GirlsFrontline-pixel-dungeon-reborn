@@ -123,12 +123,12 @@ public class Hydra extends Mob {
             return super.doAttack(enemy);
         } else if (!beamCharged){
             ((HydraSprite)sprite).charge( enemy.pos );
-            spend( attackDelay()*4f );
+            spendAttack( attackDelay()*4f );
             beamCharged = true;
             return true;
         } else {
 
-            spend( attackDelay() );
+            spendAttack( attackDelay() );
 
             beam = new Ballistica(pos, beamTarget, Ballistica.STOP_TARGET);
             if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[beam.collisionPos] ) {

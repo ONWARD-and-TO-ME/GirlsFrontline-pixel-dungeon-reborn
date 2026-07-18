@@ -127,12 +127,12 @@ public class Jupiter extends Mob {
                     break;
             }
             Dungeon.hero.interrupt();
-            spend( attackDelay()*6f );
+            spendAttack( attackDelay()*6f );
             beamCharged = true;
             return true;
         } else {
 
-            spend( attackDelay() );
+            spendAttack( attackDelay() );
 
             beam = new Ballistica(pos, beamTarget, Ballistica.STOP_SOLID);
             if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[beam.collisionPos] ) {

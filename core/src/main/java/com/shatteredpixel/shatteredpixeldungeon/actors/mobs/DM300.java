@@ -255,7 +255,7 @@ public class DM300 extends Mob {
 
 						//doesn't spend a turn if enemy is at a distance
 						if (Dungeon.level.adjacent(pos, enemy.pos)){
-							spend(TICK);
+							spendAll(TICK);
 						}
 
 						turnsSinceLastAbility = 0;
@@ -497,7 +497,7 @@ public class DM300 extends Mob {
 		((CavesBossLevel)Dungeon.level).activatePylon();
 		pylonsActivated++;
 
-		spend(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2f : 3f);
+		spendAll(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2f : 3f);
 		yell(Messages.get(this, "charging"));
 		sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
 		((DM300Sprite)sprite).updateChargeState(true);
@@ -581,7 +581,7 @@ public class DM300 extends Mob {
 				}
 				Dungeon.level.cleanWalls();
 				Dungeon.observe();
-				spend(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2f : 3f);
+				spendAll(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2f : 3f);
 
 				bestpos = pos;
 				for (int i : PathFinder.NEIGHBOURS8){

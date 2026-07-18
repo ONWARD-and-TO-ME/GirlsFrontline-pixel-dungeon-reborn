@@ -145,7 +145,7 @@ public abstract class Elemental extends Mob {
 	}
 	
 	private void zap() {
-		spend( 1f );
+		spendAttack( 1f );
 		
 		if (hit( this, enemy, true )) {
 			

@@ -125,7 +125,7 @@ public class SpectralNecromancer extends Necromancer {
 					blocker.damage( Random.NormalIntRange(2, 10), this, this );
 				}
 
-				spend(TICK);
+				spendAll(TICK);
 				return;
 			}
 		}

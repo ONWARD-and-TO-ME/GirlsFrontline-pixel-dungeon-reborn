@@ -107,12 +107,12 @@ public class Nemeum extends Mob {
                     break;
             }
             Dungeon.hero.interrupt();
-            spend( attackDelay()*4f );
+            spendAttack( attackDelay()*4f );
             beamCharged = true;
             return true;
         } else {
 
-            spend( attackDelay() );
+            spendAttack( attackDelay() );
 
             beam = new Ballistica(pos, beamTarget, Ballistica.STOP_SOLID);
             if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[beam.collisionPos] ) {

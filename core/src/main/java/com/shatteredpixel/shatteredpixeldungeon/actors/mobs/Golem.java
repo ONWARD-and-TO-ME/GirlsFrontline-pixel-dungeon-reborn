@@ -137,7 +137,7 @@ public class Golem extends Mob {
 				target = Dungeon.level.randomDestination(this);
 			}
 			teleporting = false;
-			spend(TICK);
+			spendAll(TICK);
 			return true;
 		}
 		return super.act();
@@ -149,7 +149,7 @@ public class Golem extends Mob {
 	}
 
 	public void teleportEnemy(){
-		spend(TICK);
+		spendAll(TICK);
 
 		int bestPos = enemy.pos;
 		for (int i : PathFinder.NEIGHBOURS8){
@@ -193,15 +193,15 @@ public class Golem extends Mob {
 
 			int oldPos = pos;
 			if (target != -1 && getCloser( target )) {
-				spend( 1 / speed() );
+				spendMove( 1 / speed() );
 				return moveSprite( oldPos, pos );
 			} else if (!Dungeon.bossLevel() && target != -1 && target != pos && selfTeleCooldown <= 0) {
 				((GolemSprite)sprite).teleParticles(true);
 				teleporting = true;
-				spend( 2*TICK );
+				spendMove( 2*TICK );
 			} else {
 				target = Dungeon.level.randomDestination( Golem.this );
-				spend( TICK );
+				spendAll( TICK );
 			}
 
 			return true;
@@ -231,7 +231,7 @@ public class Golem extends Mob {
 					}
 
 				} else if (getCloser( target )) {
-					spend( 1 / speed() );
+					spendMove( 1 / speed() );
 					return moveSprite( oldPos,  pos );
 
 				} else if (!Char.hasProp(enemy, Property.IMMOVABLE) && canTele(target)) {
@@ -244,7 +244,7 @@ public class Golem extends Mob {
 					}
 
 				} else {
-					spend( TICK );
+					spendMove( TICK );
 					return true;
 				}
 

@@ -407,7 +407,7 @@ public class Tengu extends Mob {
 					return useAbility();
 				}
 				
-				spend( TICK );
+				spendWait( TICK );
 				return true;
 				
 			}
@@ -527,13 +527,13 @@ public class Tengu extends Mob {
 			if (targetAbilityUses() - abilitiesUsed >= 4) {
 				//spend no time
 			} else {
-				spend(TICK);
+				spendAttack(TICK);
 			}
 		} else {
 			if (targetAbilityUses() - abilitiesUsed >= 4) {
-				spend(TICK);
+				spendAttack(TICK);
 			} else {
-				spend(2 * TICK);
+				spendAttack(2 * TICK);
 			}
 		}
 		

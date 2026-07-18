@@ -76,7 +76,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.DeathMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.Endure;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.ImmortalShieldAffecter;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
@@ -269,12 +268,20 @@ public abstract class Char extends Actor {
 	public boolean blockSound( float pitch ) {
 		return false;
 	}
+	public enum actionType{
+		NONE, MOVE, ATTACK, WAIT, ALL
+	}
+	private actionType actType = actionType.NONE;
+	public actionType actionType(){
+		return actType;
+	}
 
-	protected static  String POS       = "pos";
-	protected static  String TAG_HP    = "HP";
-	protected static  String TAG_HT    = "HT";
-	protected static  String TAG_SHLD  = "SHLD";
-	protected static  String BUFFS	    = "buffs";
+	protected static  String POS			= "pos";
+	protected static  String TAG_HP			= "HP";
+	protected static  String TAG_HT			= "HT";
+	protected static  String TAG_SHLD		= "SHLD";
+	protected static  String BUFFS	    	= "buffs";
+	protected static  String ACTION_TYPE	= "ACTION_TYPE";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -285,6 +292,7 @@ public abstract class Char extends Actor {
 		bundle.put( TAG_HP, HP );
 		bundle.put( TAG_HT, HT );
 		bundle.put( BUFFS, buffs );
+		bundle.put( ACTION_TYPE, actType );
 	}
 
 	@Override
@@ -295,6 +303,9 @@ public abstract class Char extends Actor {
 		pos = bundle.getInt( POS );
 		HP = bundle.getInt( TAG_HP );
 		HT = bundle.getInt( TAG_HT );
+		actType = bundle.contains( ACTION_TYPE )
+				? bundle.getEnum( ACTION_TYPE, actionType.class )
+				: actionType.NONE;
 
 		for (Bundlable b : bundle.getCollection( BUFFS )) {
 			if (b != null) {
@@ -720,10 +731,7 @@ public abstract class Char extends Actor {
 	public boolean isAlive() {
 		return HP > 0 || deathMarked;
 	}
-
-	@Override
-	protected void spend( float time ) {
-
+	public void spendKeepType(float time){
 		float timeScale = 1f;
 		if (buff( Slow.class ) != null) {
 			timeScale *= 0.5f;
@@ -740,7 +748,26 @@ public abstract class Char extends Actor {
 
 		super.spend( time / timeScale );
 	}
-
+	private void spend(float time, actionType type){
+		actType = type;
+		spendKeepType(time);
+	}
+	@Override
+    public void spend(float time) {
+		spend(time, actionType.NONE);
+	}
+	public void spendAttack(float time) {
+		spend(time, actionType.ATTACK);
+	}
+	public void spendWait(float time){
+		spend(time, actionType.WAIT);
+	}
+	public void spendMove(float time) {
+		spend(time, actionType.MOVE);
+	}
+	public void spendAll(float time) {
+		spend(time, actionType.ALL);
+	}
 	public synchronized HashSet<Buff> buffs() {
 		return new HashSet<>(buffs);
 	}

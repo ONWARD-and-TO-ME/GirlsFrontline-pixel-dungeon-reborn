@@ -89,7 +89,7 @@ public class DM201 extends DM200 {
 
 	private void zap( ){
 		threatened = false;
-		spend(TICK);
+		spendAttack(TICK);
 
 		GameScene.add(Blob.seed(enemy.pos, 15, CorrosiveGas.class).setStrength(8));
 		for (int i : PathFinder.NEIGHBOURS8){

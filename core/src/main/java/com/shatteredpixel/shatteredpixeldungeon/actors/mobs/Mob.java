@@ -196,7 +196,7 @@ public abstract class Mob extends Char {
 		
 		if (paralysed > 0) {
 			enemySeen = false;
-			spend( TICK );
+			spendWait( TICK );
 			return true;
 		}
 
@@ -565,7 +565,7 @@ public abstract class Mob extends Char {
 			
 		} else {
 			attack( enemy );
-			spend( attackDelay() );
+			spendAttack( attackDelay() );
 			return true;
 		}
 	}
@@ -573,7 +573,7 @@ public abstract class Mob extends Char {
 	@Override
 	public void onAttackComplete() {
 		attack( enemy );
-		spend( attackDelay() );
+		spendAttack( attackDelay() );
 		super.onAttackComplete();
 	}
 	
@@ -1029,11 +1029,11 @@ public abstract class Mob extends Char {
 			
 			int oldPos = pos;
 			if (target != -1 && getCloser( target )) {
-				spend( 1 / speed() );
+				spendMove( 1 / speed() );
 				return moveSprite( oldPos, pos );
 			} else {
 				target = Dungeon.level.randomDestination( Mob.this );
-				spend( TICK );
+				spendMove( TICK );
 			}
 			
 			return true;
@@ -1064,14 +1064,14 @@ public abstract class Mob extends Char {
 					sprite.showLost();
 					state = WANDERING;
 					target = Dungeon.level.randomDestination( Mob.this );
-					spend( TICK );
+					spendMove( TICK );
 					return true;
 				}
 				
 				int oldPos = pos;
 				if (target != -1 && getCloser( target )) {
 					
-					spend( 1 / speed() );
+					spendMove( 1 / speed() );
 					return moveSprite( oldPos,  pos );
 
 				} else {
@@ -1090,7 +1090,7 @@ public abstract class Mob extends Char {
 						}
 					}
 
-					spend( TICK );
+					spendAll( TICK );
 					if (!enemyInFOV) {
 						sprite.showLost();
 						state = WANDERING;
@@ -1122,12 +1122,12 @@ public abstract class Mob extends Char {
 			int oldPos = pos;
 			if (target != -1 && getFurther( target )) {
 
-				spend( 1 / speed() );
+				spendMove( 1 / speed() );
 				return moveSprite( oldPos, pos );
 
 			} else {
 
-				spend( TICK );
+				spendMove( TICK );
 				nowhereToRun();
 
 				return true;
@@ -1145,7 +1145,7 @@ public abstract class Mob extends Char {
 		@Override
 		public boolean act( boolean enemyInFOV, boolean justAlerted ) {
 			enemySeen = enemyInFOV;
-			spend( TICK );
+			spendMove( TICK );
 			return true;
 		}
 	}
