@@ -27,6 +27,7 @@ public class CardSelector extends Item {
     public ArrayList<RareCard> RareCards        = new ArrayList<>();
     public ArrayList<FinalCard> FinalCards      = new ArrayList<>();
     public ArrayList<? extends Card> curCards   = new ArrayList<>();
+    public ArrayList<? extends Card> failureCards   = new ArrayList<>();
     private static final String SELECT  = "SELECT_CARD";
     private static final String CHECK   = "CHECK_CARD";
     public static CardSelector INSTANCE( Hero hero ){
@@ -39,6 +40,9 @@ public class CardSelector extends Item {
         return bugCoolDownLeft;
     }
     public boolean hasCard( Card card ){
+        if (failureCards.contains(card))
+            return false;
+
         if (card instanceof FirstCard)
             return FirstCards.contains(card);
         else if (card instanceof CommonCard)
@@ -47,6 +51,7 @@ public class CardSelector extends Item {
             return RareCards.contains(card);
         else if (card instanceof FinalCard)
             return FinalCards.contains(card);
+
         return false;
     }
     @Override
@@ -163,7 +168,7 @@ public class CardSelector extends Item {
     }
     enum storeString{
         Bug_CoolDown, CoolDownLeft_Card, CurCardNum,
-        First, Common, Rare, Final, cur;
+        First, Common, Rare, Final, cur, failure;
         private static final String cardNum = "_CardsNum_";
         private static final String cardName = "Cards_Name";
         private static final String cardClass = "Cards_CLASS_";
@@ -201,6 +206,7 @@ public class CardSelector extends Item {
         storeString.Rare.store(bundle, RareCards);
         storeString.Final.store(bundle, FinalCards);
         storeString.cur.store(bundle, curCards);
+        storeString.failure.store(bundle, failureCards);
     }
     @Override
     public void restoreFromBundle( Bundle bundle ){
@@ -213,6 +219,7 @@ public class CardSelector extends Item {
         RareCards       = storeString.Rare.restore(bundle, RareCard.class);
         FinalCards      = storeString.Final.restore(bundle, FinalCard.class);
         curCards        = storeString.cur.restore(bundle, Card.class);
+        failureCards    = storeString.failure.restore(bundle, Card.class);
     }
 
     @Override
@@ -237,6 +244,7 @@ public class CardSelector extends Item {
                 int i = curCards.isEmpty() ? 0 : -1;
                 if (curCardNum - i < 8)
                     curCardNum = i;
+                updateQuickslot();
             }
             spend(TICK);
             return true;
