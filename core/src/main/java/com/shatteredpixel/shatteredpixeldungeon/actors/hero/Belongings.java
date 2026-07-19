@@ -37,10 +37,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
-import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -296,6 +294,18 @@ public class Belongings implements Iterable<Item> {
 			if ( item.customNoteID == record.ID() ) {
 				if (!lostInvent || item.keptThoughLostInvent) {
 					return item;
+				}
+			}
+		}
+		return null;
+	}
+	@SuppressWarnings("unchecked")
+	public <T extends Item> T findItem(int customID, Class<T> ignore){
+		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
+		for (Item item : this) {
+			if ( item.customNoteID == customID ) {
+				if (!lostInvent || item.keptThoughLostInvent) {
+					return (T) item;
 				}
 			}
 		}

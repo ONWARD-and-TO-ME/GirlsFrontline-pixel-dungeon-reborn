@@ -488,10 +488,12 @@ public class Notes {
 			this.title = title;
 			body = desc;
 		}
-
+		public static int nextCustomID(){
+			return nextCustomID++;
+		}
 		public void assignID(){
 			if (ID == -1) {
-				ID = nextCustomID++;
+				ID = nextCustomID();
 			}
 		}
 		public CustomType type(){

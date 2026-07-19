@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile.WardParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -121,11 +122,14 @@ public class WandOfWarding extends Wand {
 			
 		} else if (ch != null){
 			if (ch instanceof Ward){
-				if (wardAvailable) {
-					((Ward) ch).upgrade( buffedLvl() );
-				} else {
-					((Ward) ch).wandHeal( buffedLvl() );
-				}
+				Ward ward = (Ward) ch;
+				if (wardAvailable)
+					ward.upgrade( buffedLvl() );
+				else
+					ward.wandHeal( buffedLvl() );
+				if (customNoteID == -1)
+					customNoteID = Notes.CustomRecord.nextCustomID();
+				ward.noteWand(customNoteID);
 				ch.sprite.emitter().burst(WardParticle.UP, ((Ward) ch).tier);
 			} else {
 				GLog.w( Messages.get(this, "bad_location"));
@@ -198,6 +202,7 @@ public class WandOfWarding extends Wand {
 	public static class Ward extends NPC {
 
 		public int tier = 1;
+		public int wand_owner_ID = -1;
 		private int wandLevel = 1;
 
 		public int totalZaps = 0;
@@ -209,6 +214,7 @@ public class WandOfWarding extends Wand {
 
 			properties.add(Property.IMMOVABLE);
 			properties.add(Property.INORGANIC);
+			immunities.add(AllyBuff.class);
 
 			viewDistance = 4;
 			state = WANDERING;
@@ -261,7 +267,7 @@ public class WandOfWarding extends Wand {
 		}
 
 		//this class is used so that wards and sentries can have two entries in the Bestiary
-		public static class WardSentry extends Ward{};
+		public static class WardSentry extends Ward{}
 		public void wandHeal( int wandLevel ){
 			wandHeal( wandLevel, 1f );
 		}
@@ -289,6 +295,9 @@ public class WandOfWarding extends Wand {
 			HP = Math.min(HT, HP+heal);
 			if (sprite != null) sprite.showStatus(CharSprite.POSITIVE, Integer.toString(heal));
 
+		}
+		public void noteWand( int wand_ID ){
+			wand_owner_ID = wand_ID;
 		}
 
 		@Override
@@ -398,7 +407,33 @@ public class WandOfWarding extends Wand {
 		public boolean canInteract(Char c) {
 			return true;
 		}
+		private void onDismiss(){
+			if (wand_owner_ID == -1)
+				return;
+			WandOfWarding wand = Dungeon.hero.belongings.findItem(wand_owner_ID, WandOfWarding.class);
+			if (wand == null)
+				wand = Dungeon.hero.belongings.getItem(WandOfWarding.class);
+			if (wand == null){
+				MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+				if (staff != null && staff.wand instanceof WandOfWarding)
+					wand = (WandOfWarding) staff.wand;
+			}
+			if (wand == null)
+				return;
+			float charge;
 
+			switch(tier){
+				case 1: case 2: case 3: default:
+					charge = 1 - totalZaps /(2F*tier-1F);
+					break;
+				case 4: case 5: case 6:
+					charge = HP / (float) HT * tier;
+					if (charge > 1)
+						charge = (float) Math.floor(charge);
+					break;
+			}
+			wand.gainCharge(charge / 3F);
+		}
 		@Override
 		public boolean interact( Char c ) {
 			if (c != Dungeon.hero){
@@ -415,6 +450,7 @@ public class WandOfWarding extends Wand {
 						@Override
 						protected void onSelect(int index) {
 							if (index == 0){
+								onDismiss();
 								die(null);
 							}
 						}
@@ -428,14 +464,10 @@ public class WandOfWarding extends Wand {
 		public String description() {
 			return Messages.get(this, "desc_" + tier, 2+wandLevel, 8 + 4*wandLevel, tier );
 		}
-		
-		{
-			immunities.add( AllyBuff.class );
-		}
-
 		private static final String TIER = "tier";
 		private static final String WAND_LEVEL = "wand_level";
 		private static final String TOTAL_ZAPS = "total_zaps";
+		private static final String WAND_OWNER = "wand_owner";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
@@ -443,6 +475,7 @@ public class WandOfWarding extends Wand {
 			bundle.put(TIER, tier);
 			bundle.put(WAND_LEVEL, wandLevel);
 			bundle.put(TOTAL_ZAPS, totalZaps);
+			bundle.put(WAND_OWNER, wand_owner_ID);
 		}
 
 		@Override
@@ -452,10 +485,9 @@ public class WandOfWarding extends Wand {
 			viewDistance = 3 + tier;
 			wandLevel = bundle.getInt(WAND_LEVEL);
 			totalZaps = bundle.getInt(TOTAL_ZAPS);
-		}
-		
-		{
-			properties.add(Property.IMMOVABLE);
+			wand_owner_ID = bundle.contains(WAND_OWNER)
+					? bundle.getInt(WAND_OWNER)
+					: -1;
 		}
 	}
 }
