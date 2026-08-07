@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.GenoiseWarn;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
@@ -17,21 +18,21 @@ public class Genoise implements Bundlable {
     protected int target;
     private int minDmg;
     private int maxDmg;
-
+    public float fuseTime;
     public Genoise(){
-        target = -1;
-        minDmg = 0;
-        maxDmg = 0;
+        this(-1, 0 ,0, 0);
     }
-    public Genoise(int cell, int min, int max) {
+    public Genoise(int cell, int min, int max, float time) {
         target = cell;
         minDmg = min;
         maxDmg = max;
+        fuseTime = time;
     }
 
     private static final String TARGET = "target";
     private static final String MIN_DMG = "minDmg";
     private static final String MAX_DMG = "maxDmg";
+    private static final String FUSE_TIME = "fuseTime";
 
     public final int getTarget() { return target; }
 
@@ -90,11 +91,19 @@ public class Genoise implements Bundlable {
         }
     }
 
+    public void act(GenoiseWarn warn){
+        fuseTime--;
+        if (fuseTime <= 0) {
+            explore();
+            warn.remove(this);
+        }
+    }
     @Override
     public void storeInBundle(Bundle bundle) {
         bundle.put(TARGET, target);
         bundle.put(MIN_DMG, minDmg);
         bundle.put(MAX_DMG, maxDmg);
+        bundle.put(FUSE_TIME, fuseTime);
     }
 
     @Override
@@ -102,5 +111,6 @@ public class Genoise implements Bundlable {
         target = bundle.getInt(TARGET);
         minDmg = bundle.getInt(MIN_DMG);
         maxDmg = bundle.getInt(MAX_DMG);
+        fuseTime = bundle.getFloat(FUSE_TIME);
     }
 }

@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.fairyitems.FairyItems;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
@@ -98,6 +99,8 @@ public class Challenges {
 			if (item instanceof PotionOfStrength)
 				return Generator.random(Generator.Category.POTION);
 		}
+		if (item instanceof Ankh)
+			return FairyItems.RandomFairy();
 		return null;
 	}
 }

@@ -474,7 +474,7 @@ public class InterlevelScene extends PixelScene {
     }
     private void reset() throws IOException {
         Actor.fixTime();
-        Level copyLevel = Dungeon.tryLoadLevel(Dungeon.depth,true);
+        Level copyLevel = Dungeon.tryLoadLevel(Dungeon.levelId,true);
         //重置楼层，所以以当前楼层子标签读取
         if (copyLevel == null) {
             GLog.n("未读取到复制存档，即将重新保存");
@@ -508,9 +508,9 @@ public class InterlevelScene extends PixelScene {
 		Mob.clearHeldAllies();
 
 		GameLog.wipe();
-        Dungeon.loadGame( GamesInProgress.curSlot );
+        Dungeon.loadGame( GamesInProgress.curSlot, true );
         Level level = Dungeon.tryLoadLevel(Dungeon.levelId,false);
-        if (level==null)
+        if (level == null)
             level = Dungeon.tryLoadLevel(Dungeon.depth,false);
         //读档
 		Dungeon.switchLevel(level,Dungeon.hero.pos);

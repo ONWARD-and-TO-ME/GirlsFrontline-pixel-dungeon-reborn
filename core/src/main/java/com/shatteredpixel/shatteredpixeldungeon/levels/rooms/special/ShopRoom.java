@@ -124,32 +124,29 @@ public class ShopRoom extends SpecialRoom {
 
 	protected void placeItems( Level level ){
 
-		if (itemsToSpawn == null){
+		if (itemsToSpawn == null)
 			itemsToSpawn = generateItems();
-		}
 
 		Point itemPlacement = new Point(entrance());
-		if (itemPlacement.y == top){
+		if (itemPlacement.y == top)
 			itemPlacement.y++;
-		} else if (itemPlacement.y == bottom) {
+		else if (itemPlacement.y == bottom)
 			itemPlacement.y--;
-		} else if (itemPlacement.x == left){
+		else if (itemPlacement.x == left)
 			itemPlacement.x++;
-		} else {
+		else
 			itemPlacement.x--;
-		}
 
 		for (Item item : itemsToSpawn) {
 
-			if (itemPlacement.x == left+1 && itemPlacement.y != top+1){
+			if (itemPlacement.x == left+1 && itemPlacement.y != top+1)
 				itemPlacement.y--;
-			} else if (itemPlacement.y == top+1 && itemPlacement.x != right-1){
+			else if (itemPlacement.y == top+1 && itemPlacement.x != right-1)
 				itemPlacement.x++;
-			} else if (itemPlacement.x == right-1 && itemPlacement.y != bottom-1){
+			else if (itemPlacement.x == right-1 && itemPlacement.y != bottom-1)
 				itemPlacement.y++;
-			} else {
+			else
 				itemPlacement.x--;
-			}
 
 			int cell = level.pointToCell(itemPlacement);
 
@@ -360,11 +357,7 @@ public class ShopRoom extends SpecialRoom {
 				break;
 		}
 
-        if (Challenges.isItemBlocked(new Ankh())) {
-			itemsToSpawn.add(FairyItems.RandomFairy(false));
-        }
-        else
-		    itemsToSpawn.add( new Ankh() );
+		itemsToSpawn.add( new Ankh() );
 		itemsToSpawn.add( new StoneOfAugmentation() );
 
 		TimekeepersHourglass hourglass = Dungeon.hero.belongings.getItem(TimekeepersHourglass.class);

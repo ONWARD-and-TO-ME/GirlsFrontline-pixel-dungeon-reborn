@@ -35,12 +35,9 @@ public class RabbitWeaponGenoise extends Wand {
             }
         }
 
-        if (beam.collisionPos >= 0) {
-            GenoiseWarn.genoise = new Genoise( beam.collisionPos, min(level()), max(level()) );
-            GenoiseWarn.fuseTime = TIME_TO_EXPLODE;
-            GameScene.add( Blob.seedStrict( beam.collisionPos, Math.round(1 + TIME_TO_EXPLODE), GenoiseWarn.class ) );
-        }
-
+        if (beam.collisionPos >= 0)
+            GameScene.add( Blob.seedStrict( beam.collisionPos, Math.round(1 + TIME_TO_EXPLODE), GenoiseWarn.class )
+                    .add(new Genoise( beam.collisionPos, min(level()), max(level()), TIME_TO_EXPLODE )) );
     }
 
     @Override
@@ -83,7 +80,8 @@ public class RabbitWeaponGenoise extends Wand {
 
         private static final float TURNS_TO_CHARGE = 50f;
 
-        protected void recharge(){
+        @Override
+        public void recharge(){
 
             LockedFloor lock = target.buff(LockedFloor.class);
             if (lock == null || lock.regenOn())

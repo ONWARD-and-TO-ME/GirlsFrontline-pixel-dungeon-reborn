@@ -622,15 +622,16 @@ public class Hero extends Char {
 		}
 
 
-		if (belongings.armor() != null) {
+		if (belongings.armor() != null)
             // Use the only or first
 			evasion = belongings.armor().evasionFactor(this, evasion, false);
-		}
-        if (belongings.SecondArmor() != null) {
+
+        if (belongings.SecondArmor() != null)
             evasion = belongings.SecondArmor().evasionFactor(this, evasion, true);
-        }
-        if (belongings.hasGlyph(Stone.class, this))
-            evasion = 0;
+
+//        if (belongings.hasGlyph(Stone.class, this) && !((Stone)glyph).testingEvasion())
+//            evasion = 0;
+		//仅生效副护甲的闪避，似乎可接受？
 
 		return Math.round(evasion);
 	}

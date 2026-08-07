@@ -740,12 +740,7 @@ public class Dungeon {
 			GamesInProgress.set( GamesInProgress.curSlot, depth, challenges, hero );
 		}
 	}
-	
-	public static void loadGame( int save ) throws IOException {
-        resetTest();
-		loadGame( save, true );
-	}
-	
+
 	public static void loadGame( int save, boolean fullLoad ) throws IOException {
         resetTest();
 		Bundle bundle = FileUtils.bundleFromFile( GamesInProgress.gameFile( save ) );
@@ -791,7 +786,7 @@ public class Dungeon {
 			LimitedDrops.restore( bundle.getBundle(LIMDROPS) );
 
 			chapters = new HashSet<>();
-			int ids[] = bundle.getIntArray( CHAPTERS );
+			int[] ids = bundle.getIntArray( CHAPTERS );
 			if (ids != null) {
 				for (int id : ids) {
 					chapters.add( id );
@@ -816,11 +811,10 @@ public class Dungeon {
 		}
 		
 		Bundle badges = bundle.getBundle(BADGES);
-		if (!badges.isNull()) {
+		if (!badges.isNull())
 			Badges.loadLocal( badges );
-		} else {
+		else
 			Badges.reset();
-		}
 		
 		Notes.restoreFromBundle( bundle );
 		if (bundle.contains(NOTESAVEA) && bundle.contains(NOTESAVEB)) {
@@ -924,7 +918,7 @@ public class Dungeon {
 
         Bundle bundle = FileUtils.bundleFromFile( GamesInProgress.depthFile(save,levelId, copy));
 
-        Level level = (Level)bundle.get( LEVEL );
+        Level level = (Level) bundle.get( LEVEL );
 		if (level == null){
 			throw new IOException();
 		} else {

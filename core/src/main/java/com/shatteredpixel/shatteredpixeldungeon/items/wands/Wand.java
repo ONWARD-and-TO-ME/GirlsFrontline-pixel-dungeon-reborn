@@ -733,7 +733,7 @@ public abstract class Wand extends Item {
 			return true;
 		}
 
-		private void recharge(){
+		protected void recharge(){
 			int missingCharges = maxCharges - curCharges;
 			missingCharges = Math.max(0, missingCharges);
 
@@ -741,7 +741,7 @@ public abstract class Wand extends Item {
 					+ (SCALING_CHARGE_ADDITION * Math.pow(scalingFactor, missingCharges)));
 
             if (curCharges < 0)
-                turnsToCharge = 50-10*curCharges;
+                turnsToCharge = 50 - 5*curCharges;
 			LockedFloor lock = target.buff(LockedFloor.class);
 			if (lock == null || lock.regenOn())
 				partialCharge += (1f/turnsToCharge) * RingOfEnergy.wandChargeMultiplier(target);

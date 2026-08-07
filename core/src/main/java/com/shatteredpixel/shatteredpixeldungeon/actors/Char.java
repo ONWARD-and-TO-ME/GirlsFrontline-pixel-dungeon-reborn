@@ -249,17 +249,16 @@ public abstract class Char extends Actor {
 		return true;
 	}
 
-	protected boolean moveSprite( int from, int to ) {
+	public boolean moveSprite( int from, int to ) {
 
-		if (sprite.isVisible() && (Dungeon.level.heroFOV[from] || Dungeon.level.heroFOV[to])) {
+		if (sprite.isVisible() && (Dungeon.level.heroFOV[from] || Dungeon.level.heroFOV[to]))
 			sprite.move( from, to );
-			return true;
-		} else {
+        else {
 			sprite.turnTo(from, to);
 			sprite.place( to );
-			return true;
-		}
-	}
+        }
+        return true;
+    }
 
 	public void hitSound( float pitch ){
 		Sample.INSTANCE.play(Assets.Sounds.HIT, 1, pitch);

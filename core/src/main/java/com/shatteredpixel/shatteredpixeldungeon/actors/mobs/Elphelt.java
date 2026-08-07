@@ -73,14 +73,21 @@ public class Elphelt extends Mob {
 		maxLvl = 20;
 
 		HUNTING = new Hunting();
-
-		properties.add(Property.BOSS);
 	}
-	
-	
+	{
+		properties.add(Property.BOSS);
+
+		resistances.add( ScrollOfPsionicBlast.class );
+		resistances.add( Vampiric.class );
+
+		immunities.add( Grim.class );
+		immunities.add( Charm.class );
+		immunities.add( Terror.class );
+		immunities.add( Corruption.class );
+	}
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange(20,45);
+		return Random.NormalIntRange(15, 30);
 	}
 
 	@Override
@@ -96,18 +103,13 @@ public class Elphelt extends Mob {
 	private float warnDelay() { return 1f; }
 	private float bridleExpressDelay() { return  1.5f; }
 	private float magnumDelay() { return 2f; }
-
-
-	@Override
-	public int drRoll() {
-		return Random.NormalIntRange(0, 0);
-	}
-
 	private Ballistica traceGenoise;
 	private Ballistica traceMagnum;
 	private Ballistica traceRush;
 
-	public final Ballistica getTraceGenoise()   { return traceGenoise; }
+	public final Ballistica getTraceGenoise()   {
+		return traceGenoise;
+	}
 
     public boolean onGenoise = false;
 	private final int maxGenoiseStack = 5;
@@ -121,8 +123,6 @@ public class Elphelt extends Mob {
 	public boolean onRush = false;
 
 	public int dstRush = -1;
-
-	public boolean canBlast = false;
 
 	public int phase = 0;
 
@@ -148,20 +148,15 @@ public class Elphelt extends Mob {
 				break;
 			case 1:
 				if (!onGenoise && curGenoiseStack < maxGenoiseStack)
-				{
-					curGenoiseStack += REGEN_OF_GENOISE;
-					if (curGenoiseStack >= maxGenoiseStack) {
+					//未处于释放状态且当前蛋糕炸弹数量未满时进行充能
+					if ((curGenoiseStack += REGEN_OF_GENOISE) >= maxGenoiseStack)
+						//每一次act()充能2点，大于5点则设置为5点
 						curGenoiseStack = maxGenoiseStack;
-					}
-				}
 				break;
 			case 2:
-				if (!onRush && !canRush) {
-					timerRush += 1;
-					if (timerRush >= COOLDOWN_RUSH) {
+				if (!onRush && !canRush)
+					if ((timerRush += 1) >= COOLDOWN_RUSH)
 						timerRush = COOLDOWN_RUSH;
-					}
-				}
 				break;
 		}
 		return super.act();
@@ -169,50 +164,51 @@ public class Elphelt extends Mob {
 
 	@Override
 	protected boolean canAttack( Char enemy ) {
-		if (enemy == null) {
+		if (enemy == null)
 			return false;
-		}
 
 		switch (phase) {
 			case 0: default:
 				return super.canAttack(enemy);
 			case 1:
 				// check genoise stack
-				if (curGenoiseStack <= 0)
-				{
-					curGenoiseStack = 0;
-					onGenoise = false;
-				} else if (curGenoiseStack >= maxGenoiseStack) {
+				if (curGenoiseStack >= maxGenoiseStack) {
+					//充能已满则开始释放
 					curGenoiseStack = maxGenoiseStack;
 					onGenoise = true;
+				} else if (curGenoiseStack <= 0) {
+					//充能用尽则停止释放
+					curGenoiseStack = 0;
+					onGenoise = false;
 				}
+				//其余状况保持原状(即已释放则继续释放，未释放则继续充能)
 				return onGenoise || super.canAttack( enemy );
 			case 2:
 				// rush and magnum wedding
-				if (onRush) {
+				if (onRush)
 					return true;
-				}
+
 				if (timerRush >= COOLDOWN_RUSH) {
 					timerRush = COOLDOWN_RUSH;
-					traceRush = new Ballistica( pos, target,Ballistica.MAGIC_BOLT);
+					traceRush = new Ballistica( pos, target, Ballistica.MAGIC_BOLT);
 					//canRush = findChar(traceRush.collisionPos) != null;
 					canRush = traceRush.dist >= 1;
                     if(canRush){
-                        //能Rush的时候，注魂幅值null
+                        //能Rush的时候，此弹道幅值null
                         traceMagnum = null;
-                        return canRush;
+                        return true;
                     }else{
                         //Rush的cd结束却不能Rush，说明Rush的距离小于1，即贴脸了
                         //而玩家与大兔子贴脸的时候，大兔子会优先触发以4格的力度击退
-                        //在这种情况下依旧贴脸了，那么根据choco修大兔子贴脸踢人进墙的代码，大兔子会优先移动以远离玩家
+                        //在这种情况下依旧贴脸了，大兔子会优先移动以远离玩家
                         //由以上三点得出，仍进入了这里的就是在无敌点
-                        traceMagnum = new Ballistica(pos, enemy.pos, Ballistica.BigRabbitOnly);
-                        boolean see = fieldOfView[enemy.pos]&&!Invisibility.isInvisibility(enemy);
+                        traceMagnum = new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET | Ballistica.STOP_CHARS);
+                        boolean see = fieldOfView[enemy.pos] && !Invisibility.isInvisibility(enemy);
                         return ( see && (Dungeon.level.distance(pos, enemy.pos) <= RANGE_MAGNUM) );
                     }
 				} else {
-                    traceMagnum = new Ballistica(pos, enemy.pos, Ballistica.BigRabbitOnly);
-                    boolean see = fieldOfView[enemy.pos]&&!Invisibility.isInvisibility(enemy);
+                    traceMagnum = new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET | Ballistica.STOP_CHARS);
+                    boolean see = fieldOfView[enemy.pos] && !Invisibility.isInvisibility(enemy);
                     return ( timerRush < 2 && see && (Dungeon.level.distance(pos, enemy.pos) <= RANGE_MAGNUM) );
                 }
 		}
@@ -226,34 +222,36 @@ public class Elphelt extends Mob {
 			case 0: default:
 			case 1:
 				if (enemy == null) {
+					//一阶段时没有敌人，强制停止释放
 					onGenoise = false;
-					spendAttack( TICK );
+					spendWait( TICK );
 					return true;
 				}
 
 				traceGenoise = new Ballistica(pos, target, Ballistica.PROJECTILE);
+				//由于建立弹道中，末端为空、通道为空，则会把来源加上去，而来源是int必定非空，所以解包
 
-				if (null!=traceGenoise.collisionPos) {
-					genoiseDst = traceGenoise.collisionPos;
+                genoiseDst = traceGenoise.collisionPos;
 
-					if (Dungeon.level.adjacent(pos, enemy.pos) && fieldOfView[enemy.pos]) {
-						Blast();
-						return true;
-					}
-					if ( Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[genoiseDst] ) {
-						((ElpheltSprite)sprite).genoise( genoiseDst );
-					} else {
-						fireGenoise( genoiseDst );
-					}
-					spendAttack( attackDelay() );
-					if (genoiseDst == Dungeon.hero.pos) {
-						Dungeon.hero.interrupt();
-					}
-					return true;
-				} else {
-					return super.doAttack( enemy );
-				}
-			case 2:
+                if (Dungeon.level.adjacent(pos, enemy.pos) && fieldOfView[enemy.pos]) {
+					//与敌人相邻且敌人在视野内时，将其踢开
+                    Blast();
+                    return true;
+                }
+
+                //在视野内由贴图调用释放蛋糕炸弹
+                //在视野外则由本实例调用释放
+                if ( Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[genoiseDst] )
+                    ((ElpheltSprite) sprite).genoise( genoiseDst );
+                else
+                    fireGenoise( genoiseDst );
+
+                spendAttack( attackDelay() );
+                if (genoiseDst == Dungeon.hero.pos)
+                    Dungeon.hero.interrupt();
+
+                return true;
+            case 2:
 				if (enemy == null)
 				{
 					spendWait( TICK );
@@ -264,8 +262,7 @@ public class Elphelt extends Mob {
 						// 브라이들 러시 발동
 						spendAttack( bridleExpressDelay() );
 						bridleExpress();
-						return true;
-					} else {
+                    } else {
 						if (Dungeon.level.adjacent(pos, enemy.pos) && fieldOfView[enemy.pos]) {
 							Blast();
 							return true;
@@ -274,56 +271,47 @@ public class Elphelt extends Mob {
 						onRush = true;
 						spendAttack( warnDelay() );
 						warnExpress();
-						return true;
-					}
-				} else {
+                    }
+                } else {
 					spendAttack( magnumDelay() );
-					if ( Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[enemy.pos] ) {
-						sprite.zap( enemy.pos );
-					} else {
+					if ( Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[enemy.pos] )
+						((ElpheltSprite) sprite).magnumZap( enemy.pos );
+					else
 						magnumWedding();
-					}
-					return true;
-				}
-		}
+                }
+                return true;
+        }
 	}
 
 	@Override
 	public void damage(int dmg, Object src) {
-		if (dmg < 0){
+		if (dmg < 0)
 			dmg = 0;
-		}
 
-		if (this.buff(Frost.class) != null){
+		if (buff(Frost.class) != null)
 			Buff.detach( this, Frost.class );
-		}
-		if (this.buff(MagicalSleep.class) != null){
+		if (buff(MagicalSleep.class) != null)
 			Buff.detach(this, MagicalSleep.class);
-		}
-		if (this.buff(Doom.class) != null){
+		if (buff(Doom.class) != null)
 			dmg *= 2;
-		}
 
 		Class<?> srcClass = src.getClass();
-		if (isImmune( srcClass )) {
+		if (isImmune( srcClass ))
 			dmg = 0;
-		} else {
+		else
 			dmg = Math.round( dmg * resist( srcClass ));
-		}
 
 		if (dmg > 0) {
 			alerted = true;
-			if (src instanceof Char) {
+			if (src instanceof Char)
 				beckon( ((Char)src).pos );
-			}
-			if (src instanceof DamageWand) {
+
+			if (src instanceof DamageWand)
 				beckon( Dungeon.hero.pos );
-			}
 		}
 
-		if (buff( Paralysis.class ) != null) {
+		if (buff( Paralysis.class ) != null)
 			buff( Paralysis.class ).processDamage(dmg);
-		}
 
 		int newHP = HP - dmg;
 		int newDmg = dmg;
@@ -335,7 +323,7 @@ public class Elphelt extends Mob {
 				{
 					actPriority = VFX_PRIO;
 				}
-				
+
 				@Override
 				protected boolean act() {
 					Actor.remove(this);
@@ -343,7 +331,7 @@ public class Elphelt extends Mob {
 					return true;
 				}
 			});
-			
+
 			phase = 3;// see isAlive
 			return;
 		}
@@ -359,7 +347,7 @@ public class Elphelt extends Mob {
 		}
 
 		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
-		if (lock != null) lock.addTime(dmg*2);
+		if (lock != null) lock.addTime(dmg * 2);
 
 		HP -= newDmg;
 
@@ -403,24 +391,20 @@ public class Elphelt extends Mob {
 			}
 		}
 
+		if (terrainAffected)
+			Dungeon.observe();
+
 		for (int n : PathFinder.NEIGHBOURS8) {
 			int c = pos + n;
-			if ( c >= 0 ) {
+			if ( c >= 0 )
 				GameScene.add( Blob.seedStrict( c, Math.round(1 + TIME_TO_EXPLODE), GooWarn.class ) );
-			}
 		}
 
-		if (pos >= 0) {
-			GenoiseWarn.fuseTime = TIME_TO_EXPLODE;
-			GenoiseWarn.genoise = new Elphelt_Genoise( pos );
-			GameScene.add( Blob.seedStrict( pos, Math.round(1 + TIME_TO_EXPLODE), GenoiseWarn.class ) );
-		}
+		if (pos >= 0)
+			GameScene.add( Blob.seedStrict( pos, Math.round(1 + TIME_TO_EXPLODE), GenoiseWarn.class )
+					.add(new Elphelt_Genoise( pos, TIME_TO_EXPLODE )) );
 
-		curGenoiseStack = Math.max(curGenoiseStack-1, 0);
-
-		if (terrainAffected) {
-			Dungeon.observe();
-		}
+		curGenoiseStack--;
 	}
 
 	@Override
@@ -452,11 +436,12 @@ public class Elphelt extends Mob {
 							spendMove( 1 / speed() );
 							moveSprite( oldPos, pos );
 						} else {
-							if ( Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[ch.pos] ) {
+							//在视野内由贴图调用释放蛋糕炸弹
+							//在视野外则由本实例调用释放
+							if ( Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[ch.pos] )
 								((ElpheltSprite)sprite).genoise( ch.pos );
-							} else {
+							else
 								fireGenoise( ch.pos );
-							}
 						}
 						continue;
 					}
@@ -488,12 +473,11 @@ public class Elphelt extends Mob {
 					}), -1);
 				}
 				ch.next();
-				if (ch == Dungeon.hero) {
+				if (ch == Dungeon.hero)
 					Dungeon.hero.interrupt();
-				}
 			}
 		}
-		curGenoiseStack = Math.max(curGenoiseStack-1, 0);
+		curGenoiseStack--;
 		spendAttack(attackDelay());
 		next();
 	}
@@ -510,11 +494,9 @@ public class Elphelt extends Mob {
 			return;
 		}
 
-		for (int c : bridlePath) {
-			if ( Blob.volumeAt( c, GenoiseWarn.class ) == 0 ) {
+		for (int c : bridlePath)
+			if ( Blob.volumeAt( c, GenoiseWarn.class ) == 0 )
 				GameScene.add(Blob.seed(c, 2, GenoiseWarn.class));
-			}
-		}
 
 		dstRush = traceRush.collisionPos;
 		((ElpheltSprite)sprite).charge(dstRush);
@@ -534,11 +516,10 @@ public class Elphelt extends Mob {
 		}
 
 		if (traceRush == null) {
-			if ( enemy != null && enemy.isAlive() && fieldOfView[enemy.pos] && enemy.invisible <= 0 ) {
+			if ( enemy != null && enemy.isAlive() && fieldOfView[enemy.pos] && enemy.invisible <= 0 )
 				traceRush = new Ballistica( pos, dstRush, Ballistica.MAGIC_BOLT);
-			} else {
+			else
 				traceRush = new Ballistica( pos, Dungeon.level.randomDestination(this), Ballistica.MAGIC_BOLT);
-			}
 			bridlePath = traceRush.subPath(1, traceRush.dist);
 		}
 
@@ -559,11 +540,10 @@ public class Elphelt extends Mob {
 				int collideTag = 0;
 
 				if ( traceChar.dist <= POWER_OF_BLAST ) {
-					if ( collideChar != null && collideChar != ch && Dungeon.level.distance(ch.pos, collideChar.pos) == traceChar.dist ) {
+					if ( collideChar != null && collideChar != ch && Dungeon.level.distance(ch.pos, collideChar.pos) == traceChar.dist )
 						collideTag = 2;
-					} else {
+					else
 						collideTag = 1;
-					}
 				}
 
 				// 벽에 부딪힌 경우는 충돌 위치까지
@@ -587,16 +567,14 @@ public class Elphelt extends Mob {
 						ch.pos = newPos;
 
 						// 2테마 보스에 맞는 데미지
-						ch.damage( Random.NormalIntRange(30,50) - ch.drRoll(), Elphelt.this, Elphelt.this );
+						ch.damage( Random.NormalIntRange(20,50) - ch.drRoll() - ch.drRoll(), Elphelt.this, Elphelt.this );
 
-						if (traceChar.collisionPos == newPos) {
+						if (traceChar.collisionPos == newPos)
 							Paralysis.prolong(ch, Paralysis.class, 2f);
-						}
 
 						Dungeon.level.occupyCell(ch);
-						if (ch == Dungeon.hero) {
+						if (ch == Dungeon.hero)
 							Dungeon.observe();
-						}
 					}
 				}), 0f );
 
@@ -611,13 +589,13 @@ public class Elphelt extends Mob {
 		Actor.addDelayed( new Pushing(Elphelt.this, pos, finalPos, new Callback() {
 			@Override
 			public void call() {
-				if (Dungeon.level.map[pos] == Terrain.OPEN_DOOR) {
+				if (Dungeon.level.map[pos] == Terrain.OPEN_DOOR)
 					Door.leave( pos );
-				}
+
 				pos = finalPos;
-				if (Dungeon.level.map[pos] == Terrain.DOOR) {
+				if (Dungeon.level.map[pos] == Terrain.DOOR)
 					Door.enter( pos );
-				}
+
 				canRush = false;
 				onRush = false;
 				timerRush = 0;
@@ -625,7 +603,7 @@ public class Elphelt extends Mob {
 				dstRush = -1;
 				bridlePath.clear();
 
-				yell( Messages.get(Elphelt.this, "bridleexpress") );
+				yell( Messages.get(Elphelt.this, "bridleExpress") );
 			}
 		}), -1f);
 
@@ -633,9 +611,10 @@ public class Elphelt extends Mob {
 
 	public void magnumWedding() {
 
-		if (traceMagnum == null) { return; }
+		if (traceMagnum == null)
+			return;
 
-		int damage = Random.NormalIntRange(25,35) / traceMagnum.dist;
+		int damage = Random.NormalIntRange(15,25) / traceMagnum.dist;
 
 		Sample.INSTANCE.play(Assets.Sounds.ZAP);
 
@@ -665,8 +644,6 @@ public class Elphelt extends Mob {
 	private static final String CURGENOISE      = "curGenoise";
 	private static final String ONGENOISE       = "onGenoise";
 
-	private static final String CANBLAST        = "canBlast";
-
 	private static final String CANBRIDLE       = "canBridle";
 	private static final String ONBRIDLE        = "onBridle";
 	private static final String BRIDLETIME      = "BridleTime";
@@ -680,8 +657,6 @@ public class Elphelt extends Mob {
 		bundle.put( PHASE, phase );
 		bundle.put( CURGENOISE, curGenoiseStack);
 		bundle.put( ONGENOISE, onGenoise);
-
-		bundle.put( CANBLAST, canBlast );
 
 		bundle.put( BRIDLETIME, timerRush );
 		bundle.put( CANBRIDLE, canRush );
@@ -703,8 +678,6 @@ public class Elphelt extends Mob {
 		onGenoise = bundle.getBoolean( ONGENOISE );
 		curGenoiseStack = bundle.getInt( CURGENOISE );
 
-		canBlast = bundle.getBoolean( CANBLAST );
-
 		timerRush = bundle.getInt( BRIDLETIME );
 		canRush = bundle.getBoolean( CANBRIDLE );
 		onRush = bundle.getBoolean( ONBRIDLE );
@@ -723,20 +696,7 @@ public class Elphelt extends Mob {
 		Elphelt_Genoise.INSTANCE = this;
 	}
 
-	{
-		resistances.add( ScrollOfPsionicBlast.class );
-		resistances.add( Vampiric.class );
-	}
-
-	{
-		immunities.add( Grim.class );
-		immunities.add( Charm.class );
-		immunities.add( Terror.class );
-		immunities.add( Corruption.class );
-	}
-
-
-	private class Hunting extends Mob.Hunting{
+	protected class Hunting extends Mob.Hunting{
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 
@@ -763,9 +723,8 @@ public class Elphelt extends Mob {
 
 					if (canAttack( enemy )) {
 						if (enemyInFOV && enemy != null)
-						{
 							target = enemy.pos;
-						} else {
+						else {
 							if (onGenoise) {
 								int cell;
 								do {
@@ -834,26 +793,24 @@ public class Elphelt extends Mob {
 	public static class Elphelt_Genoise extends Genoise {
 		public Elphelt_Genoise(){}
 		public static Elphelt INSTANCE;
-		Elphelt_Genoise(int cell) {
+		public Elphelt_Genoise(int cell, float time) {
 			target = cell;
+			fuseTime = time;
 		}
 
 		@Override
 		public void explore() {
-
 			Sample.INSTANCE.play( Assets.Sounds.BLAST );
 
-			if (target >= 0 && Dungeon.level.heroFOV[target]) {
+			if (target >= 0 && Dungeon.level.heroFOV[target])
 				CellEmitter.center( target ).burst( BlastParticle.FACTORY, 30 );
-			}
 
 			boolean terrainAffected = false;
 			for (int n : PathFinder.NEIGHBOURS9) {
 				int c = target + n;
 				if (c >= 0 && c < Dungeon.level.length()) {
-					if (Dungeon.level.heroFOV[c]) {
+					if (Dungeon.level.heroFOV[c])
 						CellEmitter.get( c ).burst( SmokeParticle.FACTORY, 4 );
-					}
 
 					if (Dungeon.level.flammable[c]) {
 						Dungeon.level.destroy( c );
@@ -891,9 +848,8 @@ public class Elphelt extends Mob {
 				}
 			}
 
-			if (terrainAffected) {
+			if (terrainAffected)
 				Dungeon.observe();
-			}
 
 		}
 	}

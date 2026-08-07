@@ -50,8 +50,6 @@ public class Ballistica {
     //参考对象：魔弹
 	public static final int WONT_STOP =     0;
     //参考对象：解离
-    public static final int BigRabbitOnly = STOP_TARGET	| STOP_CHARS;
-    //仅供大兔子使用的弹道，会被最近目标或最终目标阻挡，而不再被固体阻挡【避免二阶段无敌点】
 
 	public Ballistica( int from, int to, int params ){
 		sourcePos = from;

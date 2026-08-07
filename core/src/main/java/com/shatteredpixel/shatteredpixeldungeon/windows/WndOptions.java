@@ -57,9 +57,12 @@ public class WndOptions extends Window {
 		layoutBody(pos, message, btnPerRow, options);
 	}
 	public WndOptions( String title, String message, String... options ) {
-		this(title, message, 1, options);
+		this(title, message, true, options);
 	}
-	public WndOptions( String title, String message, int btnPerRow, String... options ) {
+	public WndOptions( String title, String message, boolean titleHighlighting, String... options ) {
+		this(title, message, titleHighlighting, 1, options);
+	}
+	public WndOptions( String title, String message, boolean titleHighlighting, int btnPerRow, String... options ) {
 		super();
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
@@ -67,6 +70,7 @@ public class WndOptions extends Window {
 		float pos = MARGIN;
 		if (title != null) {
 			RenderedTextBlock tfTitle = PixelScene.renderTextBlock(title, 9);
+			tfTitle.setHightlighting(titleHighlighting);
 			tfTitle.hardlight(TITLE_COLOR);
 			tfTitle.setPos(MARGIN, pos);
 			tfTitle.maxWidth(width - MARGIN * 2);

@@ -378,7 +378,7 @@ public class Cypros extends MeleeWeapon {
         return 0;
     }
 
-    private static final String MODE        = "mode_";
+    private static final String MODE        = "Mode_";
     private static final String GET_BADGE        = "getBadge";
     private static final String WAND_CHARGE = "wand_curCharge";
     private static final String WAND_partialCHARGE = "wand_partialCharge";
@@ -388,7 +388,7 @@ public class Cypros extends MeleeWeapon {
         super.storeInBundle(bundle);
         bundle.put(WAND_CHARGE, wand.curCharges);
         bundle.put(WAND_partialCHARGE, wand.partialCharge);
-        bundle.put(MODE, mode.ordinal());
+        bundle.put(MODE, mode);
         bundle.put(GET_BADGE, GetBadge);
     }
 

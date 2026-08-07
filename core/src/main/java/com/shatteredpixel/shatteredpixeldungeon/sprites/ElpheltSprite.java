@@ -14,8 +14,6 @@ import com.watabou.utils.Random;
 
 public class ElpheltSprite extends MobSprite {
 
-    private int zapPos;
-
     public Animation charging;
     private Animation genoise;
 
@@ -110,30 +108,26 @@ public class ElpheltSprite extends MobSprite {
         super.play(anim);
     }
 
-    @Override
-    public void zap( int pos ) {
-        zapPos = pos;
+    public void magnumZap( int pos ) {
         if (((Elphelt)ch).phase == 2) {
             ((Elphelt)ch).magnumWedding();
         }
-        super.zap( zapPos );
+        super.zap(pos);
     }
 
     @Override
     public void onComplete( Animation anim ) {
         super.onComplete( anim );
 
-        if (anim == zap) {
+        if (anim == zap)
             idle();
-        } else if (anim == die){
+        else if (anim == die)
             chargeParticles.killAndErase();
-        } else if (anim == genoise && ((Elphelt)ch).getTraceGenoise() != null) {
+        else if (anim == genoise && ((Elphelt)ch).getTraceGenoise() != null)
             charge( ((Elphelt)ch).genoiseDst );
-        }
 
-        if (ch != null) {
+        if (ch != null)
             ch.next();
-        }
 
         super.onComplete( anim );
     }

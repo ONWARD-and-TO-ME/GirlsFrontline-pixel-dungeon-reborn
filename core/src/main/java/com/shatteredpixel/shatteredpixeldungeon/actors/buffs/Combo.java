@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -175,9 +174,9 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	public Image actionIcon() {
 		Image icon;
 		if (((Hero)target).belongings.weapon() != null){
-			icon = new ItemSprite(((Hero)target).belongings.weapon().image, null);
+			icon = new ItemSprite(((Hero) target).belongings.weapon().image, null);
 		} else {
-			icon = new ItemSprite(new Item(){ {image = ItemSpriteSheet.WEAPON_HOLDER; }});
+			icon = new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER);
 		}
 
 		icon.tint(getHighestMove().tintColor);
@@ -196,7 +195,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		CRUSH  (8, 0xFFFFCC00),
 		FURY   (10, 0xFFFF0000);
 
-		public int comboReq, tintColor;
+		public final int comboReq, tintColor;
 
 		ComboMove(int comboReq, int tintColor){
 			this.comboReq = comboReq;

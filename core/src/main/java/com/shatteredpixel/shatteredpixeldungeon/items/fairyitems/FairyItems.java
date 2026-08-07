@@ -24,41 +24,7 @@ public class FairyItems extends Item {
         unique = true;
         defaultAction = AC_CHOOSE;
     }
-    public static FairyItems RandomFairy(boolean useful){
-        if (!useful)
-            return RandomFairy();
-        float random = Random.Float();
-        if (Dungeon.hero == null || Dungeon.hero.belongings == null)
-            return new Succor();
-        int cursed = 0;
-        if (Dungeon.hero.belongings.weapon() != null && Dungeon.hero.belongings.weapon().cursed)
-            cursed++;
-        if (Dungeon.hero.belongings.armor() != null && Dungeon.hero.belongings.armor().cursed)
-            cursed++;
-        if (Dungeon.hero.belongings.artifact() != null && Dungeon.hero.belongings.artifact().cursed)
-            cursed++;
-        if (Dungeon.hero.belongings.ring() != null && Dungeon.hero.belongings.ring().cursed)
-            cursed++;
-        if (Dungeon.hero.belongings.misc() != null && Dungeon.hero.belongings.misc().cursed)
-            cursed++;
-        if (random * 10 < cursed)
-            return new Succor();
-        Hunger hunger = Dungeon.hero.buff(Hunger.class);
-        if (random *5 < 0.2F && hunger.isStarving()) {
-            if (Random.Float() < Dungeon.hero.HP / (float)Dungeon.hero.HT)
-                return new Peach();
-            else
-                return new Letter();
-        }
-        if (random *2 < 0.5F){
-            if (Random.Float() < Dungeon.hero.HP / (float)Dungeon.hero.HT)
-                return new Commander();
-            else
-                return new Gemini();
-        }
-        return RandomFairy();
-    }
-    private static FairyItems RandomFairy(){
+    public static FairyItems RandomFairy(){
         switch(Random.Int(5)){
             case 0: return new Commander();
             case 1: return new Gemini();
