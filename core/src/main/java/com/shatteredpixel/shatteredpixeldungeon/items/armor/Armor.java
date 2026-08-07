@@ -321,9 +321,7 @@ public class Armor extends EquipableItem {
 			return true;
 		}
         //新旧护甲都不适用于调整至副护甲时，按旧逻辑处理
-        if (hero.belongings.armor().tier() > hero.pointsInTalent(Talent.HOLD_FAST) &&
-                this.tier() > hero.pointsInTalent(Talent.HOLD_FAST) ||
-                hero.belongings.armor().tier() == this.tier()){
+        if (hero.belongings.armor().tier() <= tier()){
             //因为加入了副护甲自动调整至主护甲的机制，所以旧逻辑不方便直接调用doUnequip，把原doUnequip的代码复制一份出来使用
             if (hero.belongings.armor.unEquipable(hero)) {
                 changeFirst(hero);
@@ -362,12 +360,10 @@ public class Armor extends EquipableItem {
             }
             else {
                 //主护甲红底，新护甲高阶，无副护甲，主护甲可移动至副护甲，则允许移动，否则不允许
-                if (this.tier() > hero.belongings.armor.tier() &&
-                        hero.belongings.SecondArmor() == null &&
-                        hero.belongings.armor.tier() <= hero.pointsInTalent(Talent.HOLD_FAST)){
-                    if (hero.belongings.secArmor!=null) {
+                if (tier() > hero.belongings.armor.tier() &&
+                        hero.belongings.SecondArmor() == null){
+                    if (hero.belongings.secArmor!=null)
                         hero.belongings.secArmor.doDrop(hero);
-                    }
                     hero.belongings.secArmor = hero.belongings.armor;
                     hero.belongings.armor = this;
                     onEquip(hero);
@@ -616,13 +612,13 @@ public class Armor extends EquipableItem {
 			if (aEnc > 0) evasion /= Math.pow(1.5, aEnc);
 			
 			Momentum momentum = owner.buff(Momentum.class);
-			if (momentum != null){
+			if (momentum != null)
 				evasion += momentum.evasionBonus(((Hero) owner).lvl, Math.max(0, -aEnc));
-			}
 		}
-		int add = augment.evasionFactor(buffedLvl());
+		float add = augment.evasionFactor(buffedLvl());
         if ( isSecond ){
-            add = Math.min( tier * (1 + hero.pointsInTalent(Talent.HOLD_FAST)), add);
+            int talent = hero.pointsInTalent(Talent.HOLD_FAST);
+            add = Math.min( (tier + talent) * (1 + talent) / 2F, add);
         }
 		return evasion + add;
 	}

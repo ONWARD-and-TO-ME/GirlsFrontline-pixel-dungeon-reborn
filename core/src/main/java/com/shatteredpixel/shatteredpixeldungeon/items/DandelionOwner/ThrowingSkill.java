@@ -3,6 +3,9 @@ package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Vector_FireBomb;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Vector_FireBomb_Warning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -12,6 +15,8 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 
@@ -20,47 +25,53 @@ import java.util.ArrayList;
 public class ThrowingSkill extends SkillItem {
     @Override
     public void onSkill( Hero hero ){
-        if (!isSnipe())
-            GameScene.selectCell(ThrowingSelector);
-        else ;
+        INSTANCE(ThrowingSelector, SnipeSelector);
     }
     private static boolean isSnipe(){
-        return CardSelector.INSTANCE(Dungeon.hero).hasCard(RareCard.WA2000.NTW_20);
+        return hasCard(RareCard.WA2000.NTW_20);
     }
-    public static final CellSelector.Listener ThrowingSelector_INSTANCE = new CellSelector.Listener() {
-        @Override
-        public void onSelect(Integer target) {
-            if (target != null) {
-                //无法使用hero.spend(-hero.cooldown());
-                //因为cast中已经spendAndNext了
-                Dungeon.hero.spend(-TIME_TO_THROW);
-                new ThrowingBomb().cast(Dungeon.hero, target);
-                CardSelector selector = CardSelector.INSTANCE(Dungeon.hero);
-                if (selector.hasCard(CommonCard.Vector.Beretta_38)) {
-                    Dungeon.hero.spend(-TIME_TO_THROW);
-                    new FireBomb(4).cast(Dungeon.hero, target);
-                }
-                if (selector.hasCard(CommonCard.Vector.Uzi)) {
-                    Dungeon.hero.spend(-TIME_TO_THROW);
-                    new FireBomb(4).cast(Dungeon.hero, target);
-                }
-                if (selector.hasCard(RareCard.Vector.PP_19)) {
-                    Dungeon.hero.spend(-TIME_TO_THROW);
-                    new FireBomb(8).cast(Dungeon.hero, target);
-                }
-                updateQuickslot();
-            }
+    private static boolean hasCard( Card card ){
+        return CardSelector.INSTANCE().hasCard(card);
+    }
+    public static boolean Throwing_INSTANCE( int target ) {
+        //无法使用hero.spend(-hero.cooldown());
+        //因为cast中已经spendAndNext了
+        Dungeon.hero.spend(-TIME_TO_THROW);
+        new ThrowingBomb().cast(Dungeon.hero, target);
+        if (hasCard(CommonCard.Vector.Beretta_38)) {
+            Dungeon.hero.spend(-TIME_TO_THROW);
+            new FireBomb(4).cast(Dungeon.hero, target);
         }
-        @Override
-        public String prompt() {
-            return Messages.get(ThrowingSkill.class, "select_target");
+        if (hasCard(CommonCard.Vector.Uzi)) {
+            Dungeon.hero.spend(-TIME_TO_THROW);
+            new FireBomb(4).cast(Dungeon.hero, target);
         }
-    };
+        if (hasCard(RareCard.Vector.PP_19)) {
+            Dungeon.hero.spend(-TIME_TO_THROW);
+            new FireBomb(8).cast(Dungeon.hero, target);
+        }
+        CardAffect.onThrowing();
+        updateQuickslot();
+        return true;
+    }
+    public static boolean Snipe_INSTANCE( int target ) {
+        Char ch = Actor.findChar(target);
+        if (ch == null || ch.alignment == Char.Alignment.ALLY || ch instanceof NPC) {
+            GLog.n(Messages.get(ThrowingSkill.class, "no_enemy"));
+            return false;
+        }
+        ch.damage(Math.round(new ThrowingBomb().allDamage(target) * 2), ThrowingSkill.class);
+        CardAffect.onThrowing();
+        updateQuickslot();
+        return true;
+    }
+    public static String prompt = Messages.get(ThrowingSkill.class, "select_target");
     private final CellSelector.Listener ThrowingSelector = new CellSelector.Listener() {
         @Override
         public void onSelect(Integer target) {
             if (target != null) {
-                ThrowingSelector_INSTANCE.onSelect(target);
+                if (!Throwing_INSTANCE(target))
+                    return;
                 coolDownLeft = 50;
                 Dungeon.hero.spendAndNext( 1F );
                 updateQuickslot();
@@ -68,10 +79,31 @@ public class ThrowingSkill extends SkillItem {
         }
         @Override
         public String prompt() {
-            return ThrowingSelector_INSTANCE.prompt();
+            return prompt;
         }
     };
-    protected abstract static class Throwing extends Item{
+    private final CellSelector.Listener SnipeSelector = new CellSelector.Listener() {
+        @Override
+        public void onSelect(Integer target) {
+            if (target != null) {
+                if (!Snipe_INSTANCE(target))
+                    return;
+                Dungeon.hero.spendAndNext( 1F );
+                coolDownLeft = 50;
+            }
+        }
+        @Override
+        public String prompt() {
+            return prompt;
+        }
+    };
+    public static void INSTANCE( CellSelector.Listener Throwing, CellSelector.Listener Snipe ){
+        if (isSnipe())
+            GameScene.selectCell(Snipe);
+        else
+            GameScene.selectCell(Throwing);
+    }
+    public abstract static class Throwing extends Item{
         {
             image = ItemSpriteSheet.SMOKEUmp45;
         }
@@ -79,8 +111,8 @@ public class ThrowingSkill extends SkillItem {
             Point p = Dungeon.level.cellToPoint(cell);
             return p.x <= 0 || p.y <= 0 || p.x >= Dungeon.level.width() - 1 || p.y >= Dungeon.level.height() - 1;
         }
-        protected int[] throwingPos(){
-            return CardSelector.INSTANCE(Dungeon.hero).hasCard(CommonCard.UNIVERSAL.FAMAS) ?
+        protected static int[] throwingPos(){
+            return hasCard(CommonCard.UNIVERSAL.FAMAS) ?
                     PathFinder.NEIGHBOURS25 :
                     PathFinder.NEIGHBOURS9;
         }
@@ -88,18 +120,29 @@ public class ThrowingSkill extends SkillItem {
         public int throwPos( Hero user, int dst){
             return new Ballistica( user.pos, dst, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET ).collisionPos;
         }
-        public abstract void explore( int target );
         @Override
-        public void onThrow( int cell ){
-            explore(cell);
-        }
+        public abstract void onThrow( int center );
     }
     private static class ThrowingBomb extends Throwing {
+        public float allDamage( int center ){
+            float dmg = 0;
+            int size = 0;
+            for (int i : throwingPos()){
+                int cell = center + i;
+                if (outMap(cell))
+                    continue;
+                if (Actor.findChar(cell) != null)
+                    size++;
+            }
+            for (int i = 0; i < size; i++)
+                dmg += M4A1.damageRoll( 1 - (Math.min(5, size - 1)) * 0.1F );
+            return dmg;
+        }
         @Override
-        public void explore( int target ) {
+        public void onThrow( int center ) {
             ArrayList<Char> list = new ArrayList<>();
             for (int i : throwingPos()){
-                int cell = target + i;
+                int cell = center + i;
                 if (outMap(cell))
                     continue;
                 Char ch;
@@ -111,18 +154,69 @@ public class ThrowingSkill extends SkillItem {
                 if (ch.alignment == Char.Alignment.ALLY || ch instanceof NPC)
                     continue;
                 for (int i = 0; i < size; i++)
-                    ch.damage(Math.round((1 - (Math.min(5, size - 1)) * 0.1F) * M4A1.damageRoll()), ThrowingSkill.class);
+                    ch.damage(Math.round( M4A1.damageRoll(1 - (Math.min(5, size - 1)) * 0.1F) ), ThrowingSkill.class);
+            }
+            size = -1;
+            while (list.size() != size){
+                size = list.size();
+                for (Char ch : list.toArray(new Char[0])){
+                    if (ch.alignment == Char.Alignment.ALLY)
+                        continue;
+
+                    int oldPos = ch.pos;
+
+                    CardAffect.throwChar(ch, center, 2, false, false);
+
+                    if (oldPos != ch.pos)
+                        list.remove(ch);
+
+                }
             }
         }
     }
-    private static class FireBomb extends Throwing{
-        private final int times;
-        public FireBomb(int times){
+    public static class FireBomb extends Throwing{
+        private float times;
+        private int affect_Center = -1;
+        public FireBomb(){
+            this(0);
+        }
+        public FireBomb(float times){
             this.times = times;
         }
         @Override
-        public void explore(int cell) {
-
+        public void onThrow(int center) {
+            affect_Center = center;
+            GameScene.add( Blob.seedStrict( center, Math.round(times), Vector_FireBomb.class).add(this) );
+            for (int i : throwingPos())
+                GameScene.add( Blob.seedStrict( center + i, Math.round(times), Vector_FireBomb_Warning.class) );
+        }
+        public void affect(){
+            times -= 0.5F;
+            for (int i : throwingPos()){
+                int cell = affect_Center + i;
+                Char ch = Actor.findChar(cell);
+                if (ch != null && ch.alignment != Char.Alignment.ALLY){
+                    ch.damage(Math.round(M4A1.damageRoll( 0.2F )), this);
+                    CardAffect.fireAllAffect(ch);
+                }
+            }
+        }
+        public float times(){
+            return times;
+        }
+        private static final String TIME_LEFT = "TIME_LEFT";
+        private static final String AFFECT_CENTER = "AFFECT_CENTER";
+        @Override
+        public void storeInBundle( Bundle bundle ){
+            super.storeInBundle(bundle);
+            bundle.put(TIME_LEFT, times);
+            bundle.put(AFFECT_CENTER, affect_Center);
+        }
+        @Override
+        public void restoreFromBundle( Bundle bundle ){
+            super.restoreFromBundle(bundle);
+            times = bundle.getFloat(TIME_LEFT);
+            affect_Center = bundle.getInt(AFFECT_CENTER);
         }
     }
 }

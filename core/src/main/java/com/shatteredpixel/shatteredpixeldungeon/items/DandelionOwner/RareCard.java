@@ -2,44 +2,42 @@ package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.EnumString;
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.hero;
+import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.addAll;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionShield;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 
 public interface RareCard extends Card {
-    static ArrayList<RareCard> random(ArrayList<FirstCard> firstCards, ArrayList<RareCard> curCards){
-        assert firstCards != null && !firstCards.isEmpty() && curCards != null;
-        ArrayList<RareCard> list = new ArrayList<>();
-        if (firstCards.contains(FirstCard.HS2000))
-            addAll(list, HS2000.values());
-        if (firstCards.contains(FirstCard.Vector))
-            addAll(list, Vector.values());
-        if (firstCards.contains(FirstCard.VHS))
-            addAll(list, VHS.values());
-        if (firstCards.contains(FirstCard.WA2000))
-            addAll(list, WA2000.values());
-        if (firstCards.contains(FirstCard.General_Liu))
-            addAll(list, General_Liu.values());
+    @Override
+    default String title(){
+        return "大卡：" + Card.super.title();
+    }
+    static Card random( CardSelector selector ){
+        ArrayList<Card> list = new ArrayList<>();
+        HashMap<FirstCard, RareCard[]> map = cardMap();
+        for (FirstCard card : map.keySet())
+            if (selector.hasCard(card))
+                addAll(list, map.get(card));
         addAll(list, UNIVERSAL.values());
 
-        ArrayList<RareCard> cards = new ArrayList<>();
-        RareCard c;
-        int failTimes = 0;
-        do {
-            c = Random.element(list);
-            if (curCards.contains(c) || cards.contains(c) || c == null) {
-                failTimes++;
-                continue;
-            }
-            cards.add(c);
-        }while ( cards.size() < 4 && failTimes < 1000 );
-        return cards;
+        for (RareCard card : selector.RareCards)
+            list.remove(card);
+        for (Card card : selector.curCards)
+            list.remove(card);
+
+        return Random.element(list);
     }
-    static void addAll(ArrayList<RareCard> list, RareCard[] array){
-        list.addAll(Arrays.asList(array));
+    static HashMap<FirstCard, RareCard[]> cardMap(){
+        HashMap<FirstCard, RareCard[]> map = new HashMap<>();
+        map.put(FirstCard.HS2000, HS2000.values());
+        map.put(FirstCard.Vector, Vector.values());
+        map.put(FirstCard.VHS, VHS.values());
+        map.put(FirstCard.WA2000, WA2000.values());
+        map.put(FirstCard.General_Liu, General_Liu.values());
+        return map;
     }
     @Override
     default Class<? extends Card> getCardClass(){
@@ -47,6 +45,10 @@ public interface RareCard extends Card {
     }
     enum HS2000 implements RareCard{
         Type_64_Auto, AA_12, KSG, DESERT_EAGLE;
+        @Override
+        public String title(){
+            return "HS2000 " + RareCard.super.title();
+        }
         @Override
         public String extra(){
             if (this == Type_64_Auto){
@@ -67,10 +69,18 @@ public interface RareCard extends Card {
         }
     }
     enum Vector implements RareCard{
-        Type_79, AK_74U, HP_35, K2, PP_19
+        Type_79, AK_74U, HP_35, K2, PP_19;
+        @Override
+        public String title(){
+            return "Vector " + RareCard.super.title();
+        }
     }
     enum VHS implements RareCard{
         M82A1, MDR, P90, PM_06, RFB, TAC_50, Zas_M21;
+        @Override
+        public String title(){
+            return "VHS " + RareCard.super.title();
+        }
         @Override
         public String extra(){
             if (this == P90)
@@ -79,12 +89,24 @@ public interface RareCard extends Card {
         }
     }
     enum WA2000 implements RareCard{
-        K11, NTW_20, PKP, Px4, R93, MOSIN_NAGANT
+        K11, NTW_20, PKP, Px4, R93, MOSIN_NAGANT;
+        @Override
+        public String title(){
+            return "WA2000 " + RareCard.super.title();
+        }
     }
     enum General_Liu implements RareCard{
-        C_93, CZ75, M26_ASW, QBU_88, X95, Contender, COLT_SAA, STECHKIN, DiMer
+        C_93, CZ75, M26_ASW, QBU_88, X95, Contender, COLT_SAA, STECHKIN, DiMer;
+        @Override
+        public String title(){
+            return "刘氏步枪 " + RareCard.super.title();
+        }
     }
     enum UNIVERSAL implements RareCard{
-        Type_97_SHOTGUN, FP_6, M1887, DP_12
+        Type_97_SHOTGUN, FP_6, M1887, DP_12;
+        @Override
+        public String title(){
+            return "通用 " + RareCard.super.title();
+        }
     }
 }

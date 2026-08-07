@@ -5,13 +5,37 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundle;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public interface Card {
+    static void random(CardSelector selector){
+        Card card;
+        for (int i = 0; i < 4; i++)
+            if ((card = randomCard(selector)) != null)
+                selector.curCards.add(card);
+    }
+    static Card randomCard(CardSelector selector){
+        Card card;
+        if (selector.curCardNum < 1 && (card = FirstCard.random(selector)) != null)
+            return card;
+        if (selector.curCardNum < 5 && (card = CommonCard.random(selector)) != null)
+            return card;
+        if (selector.curCardNum < 7 && (card = RareCard.random(selector)) != null)
+            return card;
+        if (selector.curCardNum < 8 && (card = FinalCard.random(selector)) != null)
+            return card;
+        return null;
+    }
+    static void addAll(ArrayList<Card> list, Card[] array){
+        list.addAll(Arrays.asList(array));
+    }
     @SuppressWarnings("unchecked")
     default Enum<? extends Card> getCard(){
         return (Enum<? extends Card>) this;
     }
     default String title(){
-        return EnumString(this, ".name");
+        return ((Enum<?>) this).name();
     }
     default String info(){
         String desc = desc();
@@ -20,6 +44,7 @@ public interface Card {
             desc += "\n\n" + extra;
         return desc;
     }
+    default void onSelect(){ }
     default String desc(){
         return EnumString(this, ".desc");
     }
@@ -31,7 +56,7 @@ public interface Card {
     }
     String extraKey = ".extra";
     static String extraByTime(Card card, int mul){
-        CardSelector selector = CardSelector.INSTANCE(hero());
+        CardSelector selector = CardSelector.INSTANCE();
         int i = selector.UpgradeTime() / 1000;
         return EnumString(card, extraKey, i * mul);
     }

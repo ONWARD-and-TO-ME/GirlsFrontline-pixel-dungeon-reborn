@@ -1,8 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -26,12 +28,14 @@ public class CardSelector extends Item {
     public ArrayList<CommonCard> CommonCards    = new ArrayList<>();
     public ArrayList<RareCard> RareCards        = new ArrayList<>();
     public ArrayList<FinalCard> FinalCards      = new ArrayList<>();
-    public ArrayList<? extends Card> curCards   = new ArrayList<>();
-    public ArrayList<? extends Card> failureCards   = new ArrayList<>();
-    private static final String SELECT  = "SELECT_CARD";
-    private static final String CHECK   = "CHECK_CARD";
-    public static CardSelector INSTANCE( Hero hero ){
-        CardSelector selector = hero.belongings.getItem(CardSelector.class);
+    public ArrayList<Card> curCards   = new ArrayList<>();
+    public ArrayList<Card> failureCards   = new ArrayList<>();
+    private static final String AC_SELECT  = "SELECT_CARD";
+    private static final String AC_CHECK   = "CHECK_CARD";
+    public static CardSelector INSTANCE(){
+        if (Dungeon.hero == null)
+            return new CardSelector();
+        CardSelector selector = Dungeon.hero.belongings.getItem(CardSelector.class);
         if (selector == null)
             selector = new CardSelector();
         return selector;
@@ -54,33 +58,26 @@ public class CardSelector extends Item {
 
         return false;
     }
+    public boolean contain( Card card ){
+        return hasCard(card) || curCards.contains(card);
+    }
     @Override
     public ArrayList<String> actions( Hero hero ){
         ArrayList<String> actions = super.actions(hero);
         if (curCardNum < 8 && coolDownLeft <= 0)
-            actions.add(SELECT);
+            actions.add(AC_SELECT);
         if (!FirstCards.isEmpty())
-            actions.add(CHECK);
+            actions.add(AC_CHECK);
         return actions;
     }
     @Override
     public void execute( Hero hero, String action ) {
         super.execute(hero, action);
-        if (action.equals(CHECK))
+        if (action.equals(AC_CHECK))
             checkCards();
-        else if (action.equals(SELECT)){
-            if (curCards.isEmpty()) {
-                switch (curCardNum) {
-                    case 0: default:
-                        curCards = FirstCard.random(FirstCards); break;
-                    case 1: case 2: case 3: case 4:
-                        curCards = CommonCard.random(FirstCards, CommonCards); break;
-                    case 5: case 6:
-                        curCards = RareCard.random(FirstCards, RareCards); break;
-                    case 7:
-                        curCards = FinalCard.random(FirstCards, FinalCards); break;
-                }
-            }
+        else if (action.equals(AC_SELECT)){
+            if (curCards.isEmpty())
+                Card.random(this);
             selectCards();
         }
     }
@@ -110,7 +107,7 @@ public class CardSelector extends Item {
                 public void onClick(){
                     super.onClick();
                     GirlsFrontlinePixelDungeon.scene().addToFront(
-                            new WndOptions(c.title(), c.info(),
+                            new WndOptions(c.title(), c.info(), false,
                                     Messages.get(CardSelector.class, "Entry"),
                                     Messages.get(CardSelector.class, "Cancel")){
                                 @Override
@@ -124,16 +121,16 @@ public class CardSelector extends Item {
                                             RareCards.add((RareCard) c);
                                         else if (c instanceof FinalCard)
                                             FinalCards.add((FinalCard) c);
-                                        if (curCardNum++ < 8) {
+                                        if (curCardNum++ < 8)
                                             coolDownLeft = 1500 + 500 * curCardNum;
-                                            if (bugCoolDownLeft >= 33333)
-                                                coolDownLeft += 5500;
-                                        }
+                                        if (bugCoolDownLeft >= 33333)
+                                            coolDownLeft = 4500;
                                         curCards.clear();
                                         if (INSTANCE != null) {
                                             INSTANCE.hide();
                                             INSTANCE = null;
                                         }
+                                        c.onSelect();
                                         hide();
                                         updateQuickslot();
                                     }
@@ -162,7 +159,7 @@ public class CardSelector extends Item {
                 @Override
                 public void onClick(){
                     super.onClick();
-                    GirlsFrontlinePixelDungeon.scene().addToFront(new WndOptions(c.title(), c.info()));
+                    GirlsFrontlinePixelDungeon.scene().addToFront(new WndOptions(c.title(), c.info(), false));
                 }
             });
     }
@@ -237,10 +234,11 @@ public class CardSelector extends Item {
         }
         @Override
         public boolean act() {
-            if (coolDownLeft > 0)
+            LockedFloor lock = target.buff(LockedFloor.class);
+            if (coolDownLeft > 0 && (lock == null || lock.regenOn()))
                 coolDownLeft--;
 
-            if (bugCoolDownLeft++ == 33333) {
+            if (bugCoolDownLeft++ % 33333 == 0) {
                 int i = curCards.isEmpty() ? 0 : -1;
                 if (curCardNum - i < 8)
                     curCardNum = i;

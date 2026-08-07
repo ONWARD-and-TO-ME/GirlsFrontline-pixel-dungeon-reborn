@@ -2,31 +2,36 @@ package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.hero;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Vector_Fire_Aura;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionShield;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public enum FirstCard implements Card {
     HS2000, Vector, VHS, WA2000, General_Liu;
     @Override
+    public String title(){
+        String name = this == General_Liu ? "刘氏步枪" :Card.super.title();
+        return "阵营卡：" + name;
+    }
+    @Override
+    public void onSelect(){
+        if (this == Vector)
+            Buff.affect(hero(), Vector_Fire_Aura.class).resetAction();
+    }
+    @Override
     public Class<? extends Card> getCardClass(){
         return FirstCard.class;
     }
-    public static ArrayList<FirstCard> random( ArrayList<FirstCard> firstCards ){
-        ArrayList<FirstCard> cards = new ArrayList<>();
-
-        for (FirstCard c : values()){
-            if (firstCards.contains(c) || cards.contains(c))
-                continue;
-            cards.add(c);
-            if (cards.size() >= 4)
-                break;
-        }
-
-        while (cards.size() < 4)
-            cards.add(HS2000);
-
-        return cards;
+    public static Card random( CardSelector selector ){
+        ArrayList<Card> list = new ArrayList<>(Arrays.asList(values()));
+        for (Card card : values())
+            if (selector.contain(card))
+                list.remove(card);
+        return Random.element(list);
     }
     public static int HS2000_Shield_Damage(){
         DandelionShield shield = hero().buff(DandelionShield.class);
