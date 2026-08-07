@@ -37,46 +37,23 @@ public class GenoiseWarn extends Blob {
 	//cosmetic blob, used to warn noobs that goo's pump up should, in fact, be avoided.
 
 	{
-		//this one needs to act after the Goo
 		actPriority = MOB_PRIO - 1;
 	}
-	protected ArrayList<Genoise> genoises = new ArrayList<>();
-	protected ArrayList<Float> fuseTimes = new ArrayList<>();
+	private ArrayList<Genoise> genoises = new ArrayList<>();
 	public static Genoise genoise = null;
-	public static float fuseTime = -100F;
-	@Override
-	public void set(){
-		if (genoise != null && fuseTime != -100F){
-			if (genoises == null)
-				genoises = new ArrayList<>();
-			if (fuseTimes == null)
-				fuseTimes = new ArrayList<>();
-			genoises.add(genoise);
-			fuseTimes.add(fuseTime);
-			genoise = null;
-			fuseTime = -100F;
-		}
+	public GenoiseWarn add(Genoise genoise){
+		genoises.add(genoise);
+		return this;
 	}
+	public void remove(Genoise genoise){
+		genoises.remove(genoise);
+	}
+
 	@Override
     public boolean act() {
-		super.act();
-		while (genoises.size() < fuseTimes.size()){
-			fuseTimes.remove(fuseTimes.size() - 1);
-		}
-		while (fuseTimes.size() < genoises.size()){
-			genoises.remove(genoises.size() - 1);
-		}
-		int i = 0;
-		while (i < fuseTimes.size()){
-			fuseTimes.set(i, fuseTimes.get(i)-1);
-			if (fuseTimes.get(i) < 0) {
-				genoises.remove(i).explore();
-				fuseTimes.remove(i);
-				continue;
-			}
-			i++;
-		}
-		return true;
+		for (Genoise genoise : genoises.toArray(new Genoise[0]))
+			genoise.act(this);
+		return super.act();
 	}
 
 	@Override
@@ -108,7 +85,13 @@ public class GenoiseWarn extends Blob {
 		return Messages.get(this, "desc");
 	}
 	private final static String GENOISE = "GENOISES";
-	private final static String FUSE_TIME = "FUSE_TIME";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(GENOISE, genoises);
+	}
+
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
@@ -116,21 +99,6 @@ public class GenoiseWarn extends Blob {
 			genoises = bundle.getBundlableArrayList(GENOISE, Genoise.class);
 		else
 			genoises = new ArrayList<>();
-		fuseTimes = new ArrayList<>();
-		if (bundle.contains(FUSE_TIME)){
-			for (float i : bundle.getFloatArray(FUSE_TIME)) {
-				fuseTimes.add(i);
-			}
-		}
-	}
-
-	@Override
-	public void storeInBundle(Bundle bundle) {
-		super.storeInBundle(bundle);
-		bundle.put(GENOISE, genoises);
-		float[] fuse = new float[fuseTimes.size()];
-		for (int i = 0; i < fuseTimes.size(); i++)
-			fuse[i] = fuseTimes.get(i);
-		bundle.put(FUSE_TIME, fuse);
+		//在这里维护两个ArrayList感觉很差劲，把时间丢给Genoise了，至于已有的旧Genoise，统一在下一回合爆炸
 	}
 }

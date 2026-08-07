@@ -80,7 +80,6 @@ public class Blob extends Actor {
 			
 		}
 	}
-	
 	private int[] trim( int start, int end ) {
 		int len = end - start;
 		int[] copy = new int[len];
@@ -107,14 +106,19 @@ public class Blob extends Actor {
 
 		}
 	}
-	
+	protected float TICK(){
+		return TICK;
+	}
 	@Override
 	public boolean act() {
 		
-		spend( TICK );
+		spend( TICK() );
 		
 		if (volume > 0) {
-
+			if (curTime() % 1F >= TICK())
+				//保持气体更新总是每个完整回合执行一次
+				//TICK()用于子类执行更频繁的逻辑
+				return true;
 			if (area.isEmpty())
 				setupArea();
 
@@ -205,7 +209,9 @@ public class Blob extends Actor {
 		if (off == null) off = new int[cur.length];
 
 		cur[cell] = amount;
-		volume = amount;
+		volume = 0;
+		for (int i : cur)
+			volume += i;
 
 		area.union(cell%level.width(), cell/level.width());
 	}
@@ -235,7 +241,6 @@ public class Blob extends Actor {
 	public void onBuildFlagMaps( Level l ){
 		//do nothing by default, only some blobs affect flags
 	}
-	public void set(){}
 	public String tileDesc() {
 		return null;
 	}
@@ -258,7 +263,6 @@ public class Blob extends Actor {
 				gas.spend(1f);
 			}
 		}
-		gas.set();
         level.blobs.put(type, gas);
 		if (strict)
 			gas.setVolume( level, cell, amount );
