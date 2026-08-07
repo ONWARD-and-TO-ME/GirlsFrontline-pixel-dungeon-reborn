@@ -224,6 +224,11 @@ public class Hero extends Char {
 	public int HTBoost = 0;
 	
 	private ArrayList<Mob> visibleEnemies;
+	public ArrayList<Mob> getVisibleEnemies(){
+		if (visibleEnemies != null)
+			return new ArrayList<>(visibleEnemies);
+		return new ArrayList<>();
+	}
 
 	//This list is maintained so that some logic checks can be skipped
 	// for enemies we know we aren't seeing normally, resultign in better performance
@@ -449,19 +454,18 @@ public class Hero extends Char {
 	public int bonusTalentPoints(int tier){
         int point;
 		if (lvl < (Talent.tierLevelThresholds[tier]-1)
-				|| (tier == 4 && armorAbility == null)) {
+				|| (tier == 4 && armorAbility == null))
 			point = 0;
-		} else if (buff(PotionOfDivineInspiration.DivineInspirationTracker.class) != null
-					&& buff(PotionOfDivineInspiration.DivineInspirationTracker.class).isBoosted(tier)) {
-            point = 2;
-		} else {
+		else if (buff(PotionOfDivineInspiration.DivineInspirationTracker.class) != null)
+            point = buff(PotionOfDivineInspiration.DivineInspirationTracker.class).getBoosted(tier);
+		else
             point = 0;
-		}
+		if (tier == 4)
+			return point;
+
         int lvl = Dungeon.hero.pointsInTalent(Talent.HIGH_EDUCATION);
-        while (lvl>=tier&&tier!=4){
-            point += 1;
-            lvl-=3;
-        }
+		point += lvl / 3
+				+ (lvl%3 >= tier ? 1 : 0);
         return point;
 	}
 	

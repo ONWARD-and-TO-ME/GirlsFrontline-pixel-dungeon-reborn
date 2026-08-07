@@ -42,10 +42,10 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class PotionOfDivineInspiration extends ExoticPotion {
 	
@@ -68,11 +68,15 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 		if (tracker != null){
 			boolean allBoosted = hero.heroClass != HeroClass.Dandelion;
 			for (int i = 1; i <= 4; i++){
-				if (tracker.isBoosted(i)){
-					enabled[i] = false;
-				} else {
-					allBoosted = false;
+				if (hero.heroClass == HeroClass.Dandelion) {
+					//4层以外的如果出现空天赋说明已经抽完了，所以禁止。仅允许以4层HIGH_EDUCATION给一二三层补天赋点
+					if (i != 4 && randomTalent(hero, i - 1) == null)
+						enabled[i] = false;
 				}
+				else if (tracker.getBoosted(i) != 0)
+					enabled[i] = false;
+				else
+					allBoosted = false;
 			}
 
 			if (allBoosted){
@@ -81,9 +85,8 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 			}
 		}
 
-		if (!isIdentified()) {
+		if (!isIdentified())
 			curItem.detach(curUser.belongings.backpack);
-		}
 
 		GameScene.show(new WndOptions(
 				new ItemSprite(this),
@@ -96,12 +99,7 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 		){
 			@Override
 			protected boolean enabled(int index) {
-				switch (index){
-					case 0: case 1: case 2:
-						return enabled(index + 1) || hero.heroClass == HeroClass.Dandelion;
-					case 3: default:
-						return enabled[index + 1];
-				}
+				return enabled[index + 1];
 			}
 
 			@Override
@@ -109,13 +107,15 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 				super.onSelect(index);
 
 				if (index != -1){
-					Buff.affect(curUser, DivineInspirationTracker.class).setBoosted(index+1);
+					Buff.affect(curUser, DivineInspirationTracker.class).setBoosted(index + 1);
 
-					if (isIdentified()) {
+					if (isIdentified())
 						curItem.detach(curUser.belongings.backpack);
-					}
-					if (hero.heroClass == HeroClass.Dandelion && index < 3)
+
+					if (hero.heroClass == HeroClass.Dandelion && index < 3) {
 						addTalent(hero, index);
+						addTalent(hero, index);
+					}
 					identify();
 					curUser.busy();
 					curUser.sprite.operate(curUser.pos);
@@ -155,22 +155,25 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 		});
 
 	}
-	private static void addTalent( Hero hero, int tier ){
+	private static Talent randomTalent( Hero hero, int tier ){
 		ArrayList<Talent> talents = new ArrayList<>(Arrays.asList(TierOfTalent.TierTalent(tier)));
-		if (!talents.isEmpty()) {
-			Talent add;
-			do {
-				add = talents.remove(Random.Int(talents.size()));
-			}
-			while ((add == null || hero.hasTalentB(add)
-					|| ScrollOfMetamorphosis.WndMetamorphReplace.isIgnoreTalent(add)
-					|| ScrollOfMetamorphosis.WndMetamorphReplace.hasAgainstTalent(add)) && !talents.isEmpty());
-			if (add == null)
-				return;
-			hero.talents.get(tier).put(add, 0);
-			hero.addTalents.put(add, tier);
+		Collections.shuffle(talents);
+		for (Talent talent : talents) {
+			if (talent != null
+					&& !hero.hasTalentB(talent)
+					&& !ScrollOfMetamorphosis.WndMetamorphReplace.isIgnoreTalent(talent)
+					&& !ScrollOfMetamorphosis.WndMetamorphReplace.hasAgainstTalent(talent))
+				return talent;
 		}
+		return null;
 	}
+	private static void addTalent( Hero hero, int tier ){
+		Talent add = randomTalent(hero, tier);
+        if (add == null)
+            return;
+        hero.talents.get(tier).put(add, 0);
+        hero.addTalents.put(add, tier);
+    }
 	@Override
 	public void shatter( int cell ) {
 		super.shatter( cell );
@@ -186,27 +189,34 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 			revivePersists = true;
 		}
 
-		private boolean[] boostedTiers = new boolean[5];
+		private int[] boostedTiers = new int[5];
 
 		private static final String BOOSTED_TIERS = "boosted_tiers";
+		private static final String New_BOOSTED_TIERS = "Boosted_tiers";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
-			bundle.put(BOOSTED_TIERS, boostedTiers);
+			bundle.put(New_BOOSTED_TIERS, boostedTiers);
 		}
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			boostedTiers = bundle.getBooleanArray(BOOSTED_TIERS);
+			if (bundle.contains(New_BOOSTED_TIERS))
+				boostedTiers = bundle.getIntArray(New_BOOSTED_TIERS);
+			else {
+				boolean[] list = bundle.getBooleanArray(BOOSTED_TIERS);
+				for (int i = 0; i < list.length; i++)
+					if (list[i])
+						boostedTiers[i] = 2;
+			}
 		}
 
 		public void setBoosted( int tier ){
-			boostedTiers[tier] = true;
+			boostedTiers[tier] += 2;
 		}
-
-		public boolean isBoosted( int tier ){
+		public int getBoosted( int tier ){
 			return boostedTiers[tier];
 		}
 
