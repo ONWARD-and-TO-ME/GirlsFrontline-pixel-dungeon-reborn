@@ -16,6 +16,7 @@ public interface CommonCard extends Card {
     default String title(){
         return "小卡：" + Card.super.title();
     }
+    // 子枚举覆写保持不变（阵营前缀 + 稀有度前缀 + 本地化卡名）
     static Card random( CardSelector selector ){
         ArrayList<Card> list = new ArrayList<>();
         HashMap<FirstCard, CommonCard[]> map = cardMap();

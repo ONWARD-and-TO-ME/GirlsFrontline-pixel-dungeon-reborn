@@ -56,6 +56,7 @@ public class Badges {
 		MASTERY_TYPE561,
 		MASTERY_GSH18,
 		MASTERY_HK416,
+		MASTERY_DANDELION,
 		FOUND_RATMOGRIFY,
 
 		//bronze
@@ -66,6 +67,7 @@ public class Badges {
 		UNLOCK_TYPE561              ( 20 ),
 		UNLOCK_GSH18       	 	    ( 21 ),
 		UNLOCK_HK416                ( 22 ),
+		UNLOCK_DANDELION            ( 23 ),
         //silver
 		MONSTERS_SLAIN_1            ( 4 ),
 		MONSTERS_SLAIN_2            ( 5 ),
@@ -692,6 +694,10 @@ public class Badges {
 			if (badge == Badge.BOSS_SLAIN_2 && !isUnlocked(Badge.UNLOCK_HK416)) {
 				displayBadge(Badge.UNLOCK_HK416);
 			}
+			// 击败10层BOSS时同时解锁Dandelion角色（占位解锁条件）
+			if (badge == Badge.BOSS_SLAIN_2 && !isUnlocked(Badge.UNLOCK_DANDELION)) {
+				displayBadge(Badge.UNLOCK_DANDELION);
+			}
 			
 			if (badge == Badge.BOSS_SLAIN_1) {
 				switch (Dungeon.hero.heroClass) {
@@ -810,6 +816,9 @@ public class Badges {
 		case HK416:
 			badge = Badge.MASTERY_HK416;
 			break;
+		case Dandelion:
+			badge = Badge.MASTERY_DANDELION;
+			break;
 		}
 		
 		addGlobal(badge);
@@ -826,6 +835,7 @@ public class Badges {
         displayBadge( Badge.UNLOCK_TYPE561);
         displayBadge( Badge.UNLOCK_GSH18);
         displayBadge( Badge.UNLOCK_HK416);
+        displayBadge( Badge.UNLOCK_DANDELION);
     }
 	public static void validateMageUnlock(){
 		if (Statistics.upgradesUsed >= 1 && !isUnlocked(Badge.UNLOCK_MAGE)){

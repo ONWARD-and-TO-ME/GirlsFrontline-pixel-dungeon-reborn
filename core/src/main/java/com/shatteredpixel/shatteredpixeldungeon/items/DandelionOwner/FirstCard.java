@@ -14,8 +14,7 @@ public enum FirstCard implements Card {
     HS2000, Vector, VHS, WA2000, General_Liu;
     @Override
     public String title(){
-        String name = this == General_Liu ? "刘氏步枪" :Card.super.title();
-        return "阵营卡：" + name;
+        return "阵营卡：" + Card.super.title();
     }
     @Override
     public void onSelect(){

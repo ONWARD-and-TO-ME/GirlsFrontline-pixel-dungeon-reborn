@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class M4A1 extends MeleeWeapon {
 
 	{
-		image = ItemSpriteSheet.HK416;
+		image = ItemSpriteSheet.M4A1;
 
 		tier = 1;
 		RCH = 2;

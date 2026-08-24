@@ -155,12 +155,15 @@ public class WndSelectGameInProgress extends Window {
 				case HK416:
 					order = 3;
 					break;
+				case Dandelion:
+					order = 7;
+					break;
 				default:
 					order = 0;
 					break;
 			}
 
-			portrait = new Image(Assets.Interfaces.PORTRAIT1, (order % 7) * 38, (order / 7) * 60, 38, 60);
+			portrait = new Image(Assets.Interfaces.PORTRAIT1, (order % 8) * 38, (order / 8) * 60, 38, 60);
 			frame = new Image(Assets.Interfaces.SAVESLOT, 0, 0, 21, 52);
 
 			setRect(0, 0, frame.width * SCALE, frame.height * SCALE);

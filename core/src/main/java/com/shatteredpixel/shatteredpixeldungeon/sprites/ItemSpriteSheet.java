@@ -839,6 +839,14 @@ public class ItemSpriteSheet {
 		assignItemRect(NIGHTVISIONHELMET2, 16, 16);
 		assignItemRect(UMP9,              16, 16);
 	}                                                               
+
+	//M4A1 行
+	private static final int GUN_M4A1         =xy(1, 39);
+	public static final  int M4A1              =GUN_M4A1+3;
+	
+	static {
+	    assignItemRect(M4A1,              16, 16);
+	}
 	//16 free slots
 
 	//for smaller 8x8 icons that often accompany an item sprite

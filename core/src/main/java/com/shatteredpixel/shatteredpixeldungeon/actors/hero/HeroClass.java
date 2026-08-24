@@ -295,7 +295,11 @@ public enum HeroClass {
 				return Badges.Badge.MASTERY_TYPE561;
 			case GSH18:
 				return Badges.Badge.MASTERY_GSH18;
-	}
+			case HK416:
+				return Badges.Badge.MASTERY_HK416;
+			case Dandelion:
+				return Badges.Badge.MASTERY_DANDELION;
+		}
 		return null;
 	}
     private static void initDebugItem(Hero hero){
@@ -464,6 +468,8 @@ public enum HeroClass {
 				return Assets.Sprites.GSH18;
 			case HK416:
 				return Assets.Sprites.HK416;
+			case Dandelion:
+				return Assets.Sprites.DANDELION;
 		}
 	}
 
@@ -526,6 +532,14 @@ public enum HeroClass {
 				Messages.get(HeroClass.class, "warrior_perk4"),
 				Messages.get(HeroClass.class, "warrior_perk5"),
 		};
+	case Dandelion:
+		return new String[]{
+				Messages.get(HeroClass.class, "warrior_perk1"),
+				Messages.get(HeroClass.class, "warrior_perk2"),
+				Messages.get(HeroClass.class, "warrior_perk3"),
+				Messages.get(HeroClass.class, "warrior_perk4"),
+				Messages.get(HeroClass.class, "warrior_perk5"),
+		};
 	}
 	}
 	
@@ -548,6 +562,8 @@ public enum HeroClass {
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_GSH18);
 			case HK416:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_HK416);
+			case Dandelion:
+				return Badges.isUnlocked(Badges.Badge.UNLOCK_DANDELION);
 		}
 	}
 	
@@ -567,6 +583,8 @@ public enum HeroClass {
 				return Messages.get(HeroClass.class, "gsh18_unlock");
 			case HK416:
 				return Messages.get(HeroClass.class, "hk416_unlock");
+			case Dandelion:
+				return Messages.get(HeroClass.class, "dandelion_unlock");
 		}
 	}
 }

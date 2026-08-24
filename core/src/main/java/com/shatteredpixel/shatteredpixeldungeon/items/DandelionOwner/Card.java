@@ -35,7 +35,11 @@ public interface Card {
         return (Enum<? extends Card>) this;
     }
     default String title(){
-        return ((Enum<?>) this).name();
+        String name = EnumString(this, ".name");
+        if (name.contains("NO TEXT FOUND")) {
+            name = ((Enum<?>) this).name();
+        }
+        return name;
     }
     default String info(){
         String desc = desc();
