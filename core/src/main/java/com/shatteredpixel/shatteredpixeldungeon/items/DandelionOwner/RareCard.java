@@ -13,7 +13,7 @@ import java.util.HashMap;
 public interface RareCard extends Card {
     @Override
     default String title(){
-        return "大卡：" + Card.super.title();
+        return "Rare: " + Card.super.title();
     }
     static Card random( CardSelector selector ){
         ArrayList<Card> list = new ArrayList<>();
@@ -99,14 +99,14 @@ public interface RareCard extends Card {
         C_93, CZ75, M26_ASW, QBU_88, X95, Contender, COLT_SAA, STECHKIN, DiMer;
         @Override
         public String title(){
-            return "刘氏步枪 " + RareCard.super.title();
+            return "General Liu " + RareCard.super.title();
         }
     }
     enum UNIVERSAL implements RareCard{
         Type_97_SHOTGUN, FP_6, M1887, DP_12;
         @Override
         public String title(){
-            return "通用 " + RareCard.super.title();
+            return "Universal " + RareCard.super.title();
         }
     }
 }

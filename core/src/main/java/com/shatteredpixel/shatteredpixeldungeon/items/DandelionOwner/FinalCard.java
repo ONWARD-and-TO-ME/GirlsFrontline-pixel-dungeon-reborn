@@ -9,7 +9,7 @@ import java.util.HashMap;
 public interface FinalCard extends Card {
     @Override
     default String title(){
-        return "终卡：" + Card.super.title();
+        return "Final: " + Card.super.title();
     }
     static Card random( CardSelector selector ){
         ArrayList<Card> list = new ArrayList<>();
@@ -71,14 +71,14 @@ public interface FinalCard extends Card {
         Savage_99, VP1915, VSK_94, Kolibri_Pistole;
         @Override
         public String title(){
-            return "刘氏步枪 " + FinalCard.super.title();
+            return "General Liu " + FinalCard.super.title();
         }
     }
     enum UNIVERSAL implements FinalCard{
         Kar98k, LTLX7000, MG5;
         @Override
         public String title(){
-            return "通用 " + FinalCard.super.title();
+            return "Universal " + FinalCard.super.title();
         }
     }
 }

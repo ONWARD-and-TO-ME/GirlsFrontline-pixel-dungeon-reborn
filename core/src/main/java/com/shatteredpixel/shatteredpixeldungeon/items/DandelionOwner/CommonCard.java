@@ -14,7 +14,7 @@ import java.util.HashMap;
 public interface CommonCard extends Card {
     @Override
     default String title(){
-        return "小卡：" + Card.super.title();
+        return "Common: " + Card.super.title();
     }
     // 子枚举覆写保持不变（阵营前缀 + 稀有度前缀 + 本地化卡名）
     static Card random( CardSelector selector ){
@@ -100,7 +100,7 @@ public interface CommonCard extends Card {
         Type_80, Rex_Zero_1, DEFENDER, JERICHO, RIBEYROLLES, MONDRAGON, TaBuKe;
         @Override
         public String title(){
-            return "刘氏步枪 " + CommonCard.super.title();
+            return "General Liu " + CommonCard.super.title();
         }
         @Override
         public String extra(){
@@ -115,7 +115,7 @@ public interface CommonCard extends Card {
         Super_SASS, USAS_12, V_PM5, Nagant_M1895, Shipka;
         @Override
         public String title(){
-            return "通用 " + CommonCard.super.title();
+            return "Universal " + CommonCard.super.title();
         }
         @Override
         public String extra(){
