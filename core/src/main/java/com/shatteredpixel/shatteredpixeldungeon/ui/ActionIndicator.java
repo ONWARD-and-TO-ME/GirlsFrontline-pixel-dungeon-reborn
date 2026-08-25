@@ -28,11 +28,14 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Image;
 
+import java.util.ArrayList;
+
 public class ActionIndicator extends Tag {
 
     Image icon;
 
-	public static Action action;
+	private static Action action;
+	private static final ArrayList<Action> actions = new ArrayList<>();
 	public static ActionIndicator instance;
 
 	public ActionIndicator() {
@@ -101,7 +104,22 @@ public class ActionIndicator extends Tag {
 			action.doAction();
 		}
 	}
-
+	@Override
+	public boolean onLongClick(){
+		if (actions.size() <= 1)
+			return false;
+		else{
+			if (action == null){
+				action = actions.get(0);
+				return false;
+			}
+			int index = actions.indexOf(action);
+			if (index == actions.size() - 1)
+				index = 0;
+			action = actions.get(index);
+			return true;
+		}
+	}
 	@Override
 	protected String hoverText() {
 		String text = (action == null ? null : action.actionName());
@@ -114,14 +132,22 @@ public class ActionIndicator extends Tag {
 
 	public static void setAction(Action action){
 		ActionIndicator.action = action;
+		if (!actions.contains(action))
+			actions.add(action);
 		updateIcon();
 	}
-
 	public static void clearAction(Action action){
-		if (ActionIndicator.action == action)
+		if (checkAction(action))
 			ActionIndicator.action = null;
+        actions.remove(action);
 	}
-
+	public static boolean checkAction(Action action){
+		return ActionIndicator.action == action;
+	}
+	public static void clearAll(){
+		action = null;
+		actions.clear();
+	}
 	public static void updateIcon(){
 		if (instance != null){
 			synchronized (instance) {
@@ -139,11 +165,11 @@ public class ActionIndicator extends Tag {
 
 	public interface Action{
 
-		public String actionName();
+		String actionName();
 
-		public Image actionIcon();
+		Image actionIcon();
 
-		public void doAction();
+		void doAction();
 
 	}
 
