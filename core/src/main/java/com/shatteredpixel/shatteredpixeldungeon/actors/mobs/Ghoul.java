@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
@@ -173,7 +174,9 @@ public class Ghoul extends Mob {
 		if (beingLifeLinked) {
 			for (Buff buff : buffs()) {
 				//ally buffs, champion, and king damager are preserved when removed via life link
-				if (!(buff instanceof AllyBuff)
+				if(buff instanceof SacrificialFire.Marked){
+					Buff.prolong(this, SacrificialFire.Marked.class, 5F);
+				}else if (!(buff instanceof AllyBuff)
 						&& (!(buff instanceof ChampionEnemy))
 						&& !(buff instanceof DwarfKing.KingDamager)) {
 					buff.detach();
