@@ -24,6 +24,7 @@ package com.watabou.utils;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.watabou.noosa.Game;
 
 import org.json.JSONArray;
@@ -44,6 +45,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -286,32 +288,30 @@ public class Bundle {
 			return null;
 		}
 	}
-
-	public Collection<Bundlable> getCollection( String key ) {
-
-		ArrayList<Bundlable> list = new ArrayList<>();
-
+	@SuppressWarnings("unchecked")
+	private  <E extends Bundlable, T extends Collection<E>> T getCollection( String key, Class<? extends Collection> collection, Class<E> ignoredBundlable){
 		try {
+			T list = (T) ClassReflection.newInstance(collection);
 			JSONArray array = data.getJSONArray( key );
 			for (int i=0; i < array.length(); i++) {
-				Bundlable O = new Bundle( array.getJSONObject( i ) ).get();
+				E O = (E) new Bundle( array.getJSONObject( i ) ).get();
 				if (O != null) list.add( O );
 			}
-		} catch (JSONException e) {
+			return list;
+		} catch (Exception e) {
 			Game.reportException(e);
+			return (T) new ArrayList<E>();
 		}
-
-		return list;
 	}
-
-    public <T extends Bundlable> ArrayList<T> getBundlableArrayList( String key, Class<T> ignore){
-        ArrayList<T> list = new ArrayList<>();
-        Collection<Bundlable> collection = getCollection(key);
-        for (Bundlable i : collection){
-            list.add((T) i);
-        }
-        return list;
-    }
+	public Collection<Bundlable> getCollection( String key ) {
+		return getCollection(key, ArrayList.class, Bundlable.class);
+	}
+	public <T extends Bundlable> ArrayList<T> getArrayList( String key, Class<T> cl ){
+		return getCollection(key, ArrayList.class, cl);
+	}
+	public <T extends Bundlable> LinkedList<T> getLinkedList( String key, Class<T> cl ){
+		return getCollection(key, LinkedList.class, cl);
+	}
 
 	public void put( String key, boolean value ) {
 		try {

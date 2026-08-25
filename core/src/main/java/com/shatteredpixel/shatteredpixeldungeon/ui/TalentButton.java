@@ -241,7 +241,7 @@ public class TalentButton extends Button {
 								}
 								//将新天赋Map替换掉旧的Map
 								Dungeon.hero.talents.set(ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.tier - 1, newTier);
-								onReplace(replacing, Dungeon.hero);
+								onReplace(replacing, talent, Dungeon.hero);
 								//对已在玩家天赋表中的新天赋逐次加点并获得各级收益
 								for (int i = 1; i <= point; i++) {
 									Dungeon.hero.talents.get(ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.tier - 1).put(talent, i);
@@ -348,7 +348,7 @@ public class TalentButton extends Button {
 								}
 								//将新天赋Map替换掉旧的Map
 								Dungeon.hero.talents.set(WndReplaceTalent.INSTANCE.tier - 1, newTier);
-								onReplace(replacing, Dungeon.hero);
+								onReplace(replacing, talent, Dungeon.hero);
 								//对已在玩家天赋表中的新天赋逐次加点并获得各级收益
 								break;
 							}
@@ -392,7 +392,7 @@ public class TalentButton extends Button {
 		}
 	}
 
-    private static void onReplace(Talent replacing, Hero hero){
+    private static void onReplace(Talent replacing, Talent newTalent, Hero hero){
         if (replacing == Talent.HOLD_FAST){
             if (hero.belongings.secArmor != null){
                 final Armor armor = hero.belongings.secArmor;
@@ -407,7 +407,7 @@ public class TalentButton extends Button {
                 }
             }
         }
-        else if (replacing == Talent.IRON_WILL){
+        if (newTalent == Talent.IRON_WILL){
             Buff.affect(hero, BrokenSeal.WarriorShield.class);
         }
     }

@@ -32,17 +32,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrippingTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -62,7 +59,7 @@ public class RabbitBossLevel extends Level {
         prevent = true;
 	}
 
-	private enum State{
+	public enum State{
 		READY,
 		PHASE1,
 		PHASE2,
@@ -70,7 +67,7 @@ public class RabbitBossLevel extends Level {
 	}
 	
 	private State state;
-	private Elphelt elphelt=null;
+	private Elphelt elphelt;
 	
 	@Override
 	public String tilesTex() {
@@ -95,7 +92,7 @@ public class RabbitBossLevel extends Level {
 		super.restoreFromBundle(bundle);
 		state = bundle.getEnum( STATE, State.class );
 
-		if (state!=State.READY&&state!=State.WON) {
+		if (state != State.READY && state != State.WON) {
 			for (Mob mob : mobs){
 				if (mob instanceof Elphelt) {
 					elphelt = (Elphelt) mob;
@@ -255,7 +252,9 @@ public class RabbitBossLevel extends Level {
 	public int randomCenterCellsPos(){
 		return CENTER_POS+Random.IntRange(-1,1)+WIDTH*Random.IntRange(-1,1);
 	}
-
+	public void setState( State state ){
+		this.state = state;
+	}
 	public void progress(){
 		switch (state){
 			//moving to the beginning of the fight

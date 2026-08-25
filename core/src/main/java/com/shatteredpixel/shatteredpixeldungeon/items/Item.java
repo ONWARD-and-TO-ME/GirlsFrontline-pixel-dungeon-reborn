@@ -86,6 +86,7 @@ public class Item implements Bundlable {
 	public static final String AC_DROP		= "DROP";
 	public static final String AC_THROW		= "THROW";
     public static final String AC_CHOOSE    = "CHOOSE";
+	public static final String AC_DEBUG		= "DEBUG";
     public static final String AC_UNDO      = "UNDO";
     public static final String AC_DoOverLoad= "DoOverLoad";
 	
@@ -137,7 +138,7 @@ public class Item implements Bundlable {
 		String name = name();
 
 		if (levelKnown && visiblyUpgraded() != 0 && !Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY)
-				|| !levelKnown && visiblyUpgraded() != Integer.MIN_VALUE && SPDSettings.isAutoIdentify()) {
+				|| !levelKnown && isUpgradable() && visiblyUpgraded() != Integer.MIN_VALUE && SPDSettings.isAutoIdentify()) {
 			name = Messages.format(TXT_TO_STRING_LVL, name, visiblyUpgraded());
 			if (!levelKnown && !Dungeon.isGameMode(WndStartGame.GameMode.IDENTIFY))
 				name += " ?";
@@ -231,32 +232,35 @@ public class Item implements Bundlable {
 		curItem = this;
 		
 		if (action.equals( AC_DROP )) {
-			
 			if (hero.belongings.backpack.contains(this) || isEquipped(hero))
 				doDrop(hero);
-			
-		} else if (action.equals( AC_THROW )) {
-			
+		}
+		else if (action.equals( AC_THROW )) {
 			if (hero.belongings.backpack.contains(this) || isEquipped(hero))
 				doThrow(hero);
-			
-		} else if (action.equals( AC_SKILL ) && coolDownLeft > 0) {
+		}
+		else if (action.equals( AC_SKILL ) && coolDownLeft > 0) {
             if (Dungeon.hero.buff(CooldownTracker.class) == null)
                 Buff.affect(Dungeon.hero, CooldownTracker.class);
-        } else if (action.equals( AC_CHOOSE )){
+        }
+		else if (action.equals( AC_CHOOSE ))
             GameScene.show(new WndUseItem(null, this) );
-        } else if (action.equals( AC_UNDO )){
+		else if (action.equals( AC_DEBUG ))
+			debug();
+		else if (action.equals( AC_UNDO )){
             overLoad = OverLoad.RECOVER;
             overLoadLeft = (level()*100 - overLoadLeft)*2;
-        } else if (action.equals( AC_DoOverLoad )){
+        }
+		else if (action.equals( AC_DoOverLoad )){
             overLoad = OverLoad.OVER_LOAD;
             overLoadLeft = 0;
         }
     }
+	public void debug(){}
     public String NoteGet(){
-		if(!canShowNote){
+		if(!canShowNote)
 			return  "";
-		}
+
 		if (showSelf) {
 			if (!noted.isEmpty())
 				return Messages.get(Item.class, "itemNote",noted)+"\n\n";
@@ -264,6 +268,7 @@ public class Item implements Bundlable {
 				return Messages.get(Item.class, "classNote",ClassNote)+"\n\n";
 			return "";
 		}
+
 		Notes.CustomRecord note = Notes.findCustomRecord(customNoteID);
         if(note != null)
 			return Messages.get(Item.class, "itemNote", note.title().replace('_', 'ˍ'))+"\n\n";

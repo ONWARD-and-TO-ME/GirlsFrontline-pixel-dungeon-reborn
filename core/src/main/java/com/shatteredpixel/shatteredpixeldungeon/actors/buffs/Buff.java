@@ -85,12 +85,18 @@ public class Buff extends Actor {
 	
 	@Override
 	public boolean act() {
-		deactivate();
+		deActivate();
 		return true;
 	}
-	
 	public int icon() {
 		return BuffIndicator.NONE;
+	}
+	public int iconNeedDraw() {
+		return BuffIndicator.INVISIBLE;
+	}
+	public void tintIconNeedDraw( Image icon ) {
+		float[] colors = Image.getColors(getClass());
+		icon.hardlight(colors[0], colors[1], colors[2]);
 	}
 
 	//some buffs may want to tint the base texture color of their icon

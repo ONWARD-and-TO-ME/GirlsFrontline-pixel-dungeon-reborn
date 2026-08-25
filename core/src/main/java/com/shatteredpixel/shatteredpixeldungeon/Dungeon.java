@@ -273,13 +273,17 @@ public class Dungeon {
 		version = Game.versionCode;
 		challenges = paramChallenges;
 		if (isGameMode(WndStartGame.GameMode.IDENTIFY)){
-			if (!isChallenged(Challenges.NO_FOOD))
+			if (Challenges.activeChallenges() < 4
+					&& !isChallenged(Challenges.NO_FOOD))
 				challenges += Challenges.NO_FOOD;
-			if (!isChallenged(Challenges.NO_HEALING))
+			if (Challenges.activeChallenges() < 4
+					&& !isChallenged(Challenges.NO_HEALING))
 				challenges += Challenges.NO_HEALING;
-			if (!isChallenged(Challenges.NO_HERBALISM))
+			if (Challenges.activeChallenges() < 4
+					&& !isChallenged(Challenges.NO_HERBALISM))
 				challenges += Challenges.NO_HERBALISM;
-			if (!isChallenged(Challenges.CHAMPION_ENEMIES))
+			if (Challenges.activeChallenges() < 4
+					&& !isChallenged(Challenges.CHAMPION_ENEMIES))
 				challenges += Challenges.CHAMPION_ENEMIES;
 		}
 		mobsToChampion = -1;
@@ -847,7 +851,7 @@ public class Dungeon {
 			//dropped items
 			ArrayList<Item> items = new ArrayList<>();
 			if (bundle.contains(Messages.format( DROPPED, i )))
-                items = bundle.getBundlableArrayList( Messages.format( DROPPED, i ) , Item.class);
+                items = bundle.getArrayList( Messages.format( DROPPED, i ), Item.class);
 			if (!items.isEmpty()) {
 				droppedItems.put( i, items );
 			}
@@ -855,7 +859,7 @@ public class Dungeon {
 			//ported items
 			items = new ArrayList<>();
 			if (bundle.contains(Messages.format( PORTED, i )))
-                items = bundle.getBundlableArrayList( Messages.format( PORTED, i ) , Item.class);
+                items = bundle.getArrayList( Messages.format( PORTED, i ), Item.class);
 			if (!items.isEmpty()) {
 				portedItems.put( i, items );
 			}
@@ -907,7 +911,7 @@ public class Dungeon {
             try{
                 return loadLevel(save,levelId, copy);
             }catch(IOException e){
-                Game.reportException(e);
+                GirlsFrontlinePixelDungeon.reportException(e);
             }
         }
         return null;

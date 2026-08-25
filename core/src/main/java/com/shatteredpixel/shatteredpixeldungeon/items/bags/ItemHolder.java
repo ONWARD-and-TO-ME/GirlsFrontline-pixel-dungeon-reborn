@@ -48,6 +48,10 @@ public class ItemHolder extends Bag {
 			return false;
 		}
 	}
+    @Override
+    public boolean hasEmpty(){
+        return true;
+    }
 
     public void GradItem( Item item ){
         for (Bag bag : hero.belongings.getBags()){
@@ -111,7 +115,7 @@ public class ItemHolder extends Bag {
         }
     };
 	public int capacity(){
-		return 999;
+		return items.size();
 	}
 
 }

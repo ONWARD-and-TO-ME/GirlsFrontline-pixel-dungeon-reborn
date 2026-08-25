@@ -97,7 +97,7 @@ public abstract class Actor implements Bundlable {
 		time = now;
 	}
 	
-	protected void deactivate() {
+	protected void deActivate() {
 		time = Float.MAX_VALUE;
 	}
 	

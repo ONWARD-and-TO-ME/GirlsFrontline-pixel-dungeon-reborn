@@ -118,7 +118,7 @@ public class Hunger extends Buff implements Hero.Doom {
 
 		} else {
 
-			deactivate();
+			deActivate();
 
 		}
 
@@ -172,7 +172,7 @@ public class Hunger extends Buff implements Hero.Doom {
     }
     public boolean isFull(){ return level <= 0; }
 
-    public float fullA(){
+    public float full(){
         return STARVING-level;
     }
 	public float hunger() {

@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
@@ -314,7 +315,7 @@ public class Toolbar extends Component {
         try {
             mode = Mode.valueOf(SPDSettings.toolbarMode());
         } catch (Exception e){
-            Game.reportException(e);
+            GirlsFrontlinePixelDungeon.reportException(e);
             mode = PixelScene.landscape() ? Mode.GROUP : Mode.SPLIT;
         }
         switch(mode){

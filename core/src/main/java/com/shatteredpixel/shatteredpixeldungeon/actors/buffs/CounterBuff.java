@@ -28,6 +28,9 @@ import com.watabou.utils.Bundle;
 public class CounterBuff extends Buff {
 
 	private float count = 0;
+	public void countClear(){
+		count = 0;
+	}
 
 	public void countUp( float inc ){
 		count += inc;

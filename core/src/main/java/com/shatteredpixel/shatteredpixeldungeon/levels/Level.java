@@ -702,12 +702,14 @@ public abstract class Level implements Bundlable {
 	}
 	
 	public int randomDestination( Char ch ) {
-		int cell;
-		do {
-			cell = Random.Int( length() );
-		} while (!passable[cell]
-				|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell]));
-		return cell;
+		for (int i = 0; i < 1_000_000; i++){
+			int cell = Random.Int( length() );
+			if (!passable[cell]
+					|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell]))
+				continue;
+			return cell;
+		}
+		return ch.pos;
 	}
 	
 	public void addItemToSpawn( Item item ) {

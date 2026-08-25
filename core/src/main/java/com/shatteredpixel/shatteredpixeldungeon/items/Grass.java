@@ -27,41 +27,31 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Image;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
 public class Grass extends Item {
-    //考虑设置草料的堆叠上限，到达上限将会分组，但这需要整理代码
-    //考虑脱离隐身会增加暴露度，暴露度会增加草料消耗，并且暴露度到达一定程度将会无法以此进入隐身，暴露度随时间衰减
-    //考虑增加割草难度，概率获得草料，失败则获得草渣，将堆叠草块的功能给到草渣，对枯草使用草渣概率变成草块，失败则变成草地
-    //增加功能：考虑让草料可对固体使用，令其加入可燃烧II型词条，在燃烧摧毁处加入判断，可燃烧I型正常破坏（旧有地形），II型概率被破坏，失败则去除可燃烧II型词条
-    //可能需要分离燃烧的摧毁函数与其余破坏的摧毁函数
 	{
 		image = ItemSpriteSheet.SEED_HOLDER;
 		stackable = true;
-        defaultAction =AC_CHOOSE;
+        defaultAction = AC_CHOOSE;
 	}
 	private static final String ActA = "ACTA";
     private static final String ActB = "ACTB";
     private static final String ActC = "ACTC";
     private static final int costA = 1;
-    private static final int costB = 3;
-    private static final int costC = 3456;
+    private static final int costB = 2;
+    private static final int costC = 64;
 
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
@@ -107,7 +97,6 @@ public class Grass extends Item {
     private static final String cant_select = Messages.get(Grass.class,"cant_select");
     private static final String cant_build = Messages.get(Grass.class,"cant_build");
     private static final String prompt = Messages.get(Grass.class, "prompt");
-    private static final String fail = Messages.get(Grass.class, "fail");
 
     public static CellSelector.Listener ActAA = new  CellSelector.Listener() {
         //格子选择监听器
@@ -133,20 +122,10 @@ public class Grass extends Item {
                 Char ch = Actor.findChar(target);
                 if (ch != null) {
                     if (ch.alignment == Char.Alignment.ALLY) {
-                        if (Invisibility.isInvisibility(ch)) {
-                            Buff.affect(ch, GrassInvisibility.class, 2);
-                        } else {
-                            Detection detection = ch.buff(Detection.class);
-                            float count = 0;
-                            if (detection != null)
-                                count = detection.count();
-                            if (Random.Float() < count) {
-                                GLog.n(fail);
-                                Dungeon.hero.spendAndNext(0.5F);
-                            } else {
-                                Buff.affect(ch, GrassInvisibility.class, 1);
-                            }
-                        }
+                        if (Invisibility.isInvisibility(ch))
+                            Buff.affect(ch, Invisibility.class, 2);
+                        else
+                            Buff.affect(ch, Invisibility.class, 1);
                         removeGrass(costA);
                     }
                     else {
@@ -260,12 +239,11 @@ public class Grass extends Item {
                             &&Dungeon.level.map[target] != Terrain.UNLOCKED_EXIT&&Dungeon.level.map[target] != Terrain.EXIT
                             //从passable中去除入口和出口
                             || Dungeon.level.map[target] == Terrain.TRAP || Dungeon.level.map[target] == Terrain.INACTIVE_TRAP
-                            //9草料处理一个地表电线，倒也算正常消耗
                             || Dungeon.level.map[target] == Terrain.TRAP_GRASS) {
                         set(target, Terrain.BARRICADE);
                         GameScene.updateMap(target);
                         Dungeon.observe();
-                        removeGrass((int) Math.sqrt(costC));
+                        removeGrass(costC);
                         Dungeon.hero.spend(2);
                     } else {
                         GLog.n(cant_build);
@@ -289,11 +267,11 @@ public class Grass extends Item {
         Grass grass = Dungeon.hero.belongings.getItem(Grass.class);
         if (grass == null)
             return info;
-        if (grass.quantity>=costA)
+        if (grass.quantity >= costA)
             info +="\n" + Messages.get(this,"ActAB");
-        if (grass.quantity>=costB)
+        if (grass.quantity >= costB)
             info +="\n" + Messages.get(this,"ActBB");
-        if (grass.quantity>=costC)
+        if (grass.quantity >= costC)
             info +="\n" + Messages.get(this,"ActCB");
         return info;
     }
@@ -312,71 +290,4 @@ public class Grass extends Item {
 	public int value() {
 		return 2 * quantity;
 	}
-
-    public static class GrassInvisibility extends Invisibility{
-        @Override
-        public void dispelA(){
-            Buff.count(target, Detection.class, 0.15F);
-            super.detach();
-        }
-        @Override
-        public void detach() {
-            CounterBuff detection = target.buff(Detection.class);
-            float max = 0.5F;
-            float count = 0.075F;
-            if (detection != null && detection.count()  > max - count){
-                count = Math.max(0, max - detection.count());
-            }
-            Buff.count(target, Detection.class, count);
-            super.detach();
-        }
-    }
-    public static class Detection extends CounterBuff{
-
-        @Override
-        public boolean act() {
-            if (count()<=0)
-                detach();
-            if (Dungeon.level!=null){
-                if (inFOV( target )){
-                    if (Invisibility.isInvisibility(target))
-                        countDown(0.001F);
-                    else
-                        countUp(0.002F);
-                }
-                else
-                    countDown(0.005F);
-            }
-            spend(1);
-            return true;
-        }
-        private static boolean inFOV(Char target){
-            for (Mob mob : Dungeon.level.mobs){
-                if (mob.alignment == target.alignment)
-                    continue;
-                if (mob.enemy != target)
-                    continue;
-                for (int i : PathFinder.NEIGHBOURS9){
-                    int cell = mob.target+i;
-                    Char ch = Actor.findChar(cell);
-                    if (ch == null || ch != target)
-                        continue;
-                    return true;
-                }
-            }
-            return false;
-        }
-        public int icon() {
-            return BuffIndicator.INVISIBLE;
-        }
-
-        public void tintIcon(Image icon) {
-            icon.hardlight(1.0F, 1.0F, 0.0F);
-        }
-
-        @Override
-        public String desc() {
-            return Messages.get(this, "desc", count()*100);
-        }
-    }
 }

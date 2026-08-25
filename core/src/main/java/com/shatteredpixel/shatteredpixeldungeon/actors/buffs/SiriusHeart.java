@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
@@ -37,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -109,9 +107,9 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
         // 检查是否需要显示/隐藏技能按钮
         Hero hero = (Hero) target;
         if (hero != null) {
-            if (canUse() && ActionIndicator.action != this) {
+            if (canUse() && !ActionIndicator.checkAction(this)) {
                 ActionIndicator.setAction(this);
-            } else if (!canUse() && ActionIndicator.action == this) {
+            } else if (!canUse() && ActionIndicator.checkAction(this)) {
                 ActionIndicator.clearAction(this);
             }
         }

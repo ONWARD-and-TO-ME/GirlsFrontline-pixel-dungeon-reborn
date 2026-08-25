@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.triggers;
 
+import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -35,9 +36,12 @@ public class SceneSwitcher extends Trigger{
 	
 	@Override
 	public void activate(Char ch){
-		if(ch==Dungeon.hero){
-			try{Dungeon.saveAll();
-			}catch(IOException e){Game.reportException(e);}
+		if(ch == Dungeon.hero){
+			try{
+				Dungeon.saveAll();
+			}catch(IOException e){
+				GirlsFrontlinePixelDungeon.reportException(e);
+			}
 			Game.switchScene(scene);
 		}
 	}

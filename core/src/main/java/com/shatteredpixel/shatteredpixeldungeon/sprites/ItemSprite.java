@@ -184,6 +184,7 @@ public class ItemSprite extends MovieClip {
 		}
 	}
 
+	public static int itemSpriteNeedDraw = -2;
 	public ItemSprite view( Item item ){
 		view(item.image(), item.glowing());
 		Emitter emitter = item.emitter();

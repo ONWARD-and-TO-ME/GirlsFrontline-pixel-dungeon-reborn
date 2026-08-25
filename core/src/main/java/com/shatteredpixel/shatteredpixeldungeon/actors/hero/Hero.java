@@ -340,7 +340,7 @@ public class Hero extends Char {
 		// 保存饥饿值
 		Hunger hunger = buff(Hunger.class);
 		if (hunger != null) {
-			bundle.put(HUNGER, (int)hunger.fullA());
+			bundle.put(HUNGER, (int)hunger.full());
 		}
 		
 		bundle.put( HTBOOST, HTBoost );
@@ -738,39 +738,11 @@ public class Hero extends Char {
         Hunger hunger = Dungeon.hero.buff(Hunger.class);
         if (hunger==null)
             return 1;
-        if (ActHPtoGetFood.changeB==0){
-            if (hunger.fullA()>=400){
-                mul+=0.15f;
-            }else if (hunger.fullA()>=300){
-                mul+=0.12f;
-            }else if (hunger.fullA()>=200){
-                mul+=0.06f;
-            }
-        }
-        else if (ActHPtoGetFood.changeB==1){
-            if (hunger.fullA()>=500){
-                mul+=0.15f;
-            }else if (hunger.fullA()>=400){
-                mul+=0.12f;
-            }else if (hunger.fullA()>=300){
-                mul+=0.09f;
-            }else if (hunger.fullA()>=200){
-                mul+=0.06f;
-            }else if (hunger.fullA()>=100){
-                mul+=0.03f;
-            }
-        }
-        else if (ActHPtoGetFood.changeB==2){
-            mul+=0.00045F*hunger.fullA();
-        }
-        if (mul!=1){
-            if (Dungeon.hero.hasTalent(Talent.GUN_1V2)){
-                mul += 0.00015f * Dungeon.hero.pointsInTalent(Talent.GUN_1V2)*hunger.fullA();
-                mul = Math.min(1.35f,mul);
-            }
-            else if (Dungeon.hero.hasTalent(Talent.GUN_1)) {
-                mul += 0.02f * Dungeon.hero.pointsInTalent(Talent.GUN_1);
-            }
+		float full = hunger.full();
+		mul += 0.00045F * full;
+        if (Dungeon.hero.hasTalent(Talent.GUN_1V2)) {
+            mul += 0.00015f * Dungeon.hero.pointsInTalent(Talent.GUN_1V2) * full;
+            mul = Math.min(1.35f, mul);
         }
         return mul;
     }
@@ -1644,7 +1616,6 @@ public class Hero extends Char {
 			}
 		}
 	}
-	
 	public void checkVisibleMobs() {
 		ArrayList<Mob> visible = new ArrayList<>();
 

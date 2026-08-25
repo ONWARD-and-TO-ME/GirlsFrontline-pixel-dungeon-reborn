@@ -24,8 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.items.bombs;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Level.set;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
@@ -65,17 +63,14 @@ public class TestBomb extends Bomb {
         for (int i = 0; i < length; i++) {
             if (outMap(i))
                 continue;
-            if (Dungeon.level.map[i] == Terrain.ENTRANCE||Dungeon.level.map[i] == Terrain.EXIT||Dungeon.level.map[i] == Terrain.UNLOCKED_EXIT) {
-
-            }else if(Dungeon.level.map[i] == Terrain.LOCKED_EXIT)
+            if (Dungeon.level.map[i] == Terrain.ENTRANCE||Dungeon.level.map[i] == Terrain.EXIT||Dungeon.level.map[i] == Terrain.UNLOCKED_EXIT);
+            else if(Dungeon.level.map[i] == Terrain.LOCKED_EXIT)
                 set(i, Terrain.UNLOCKED_EXIT);
-            else {
+            else
                 set(i, Terrain.EMPTY);
-            }
             Heap heap = Dungeon.level.heaps.get(i);
-            if (heap != null) {
+            if (heap != null)
                 heap.explodeLOCK();
-            }
             GameScene.updateMap(i);
         }
 
@@ -94,9 +89,8 @@ public class TestBomb extends Bomb {
         }
 
         Level level = Dungeon.level;
-        for (Blob blob : level.blobs.values()) {
+        for (Blob blob : level.blobs.values())
             blob.fullyClear();
-        }
         Dungeon.level.cleanWalls();
         Dungeon.observe();
 
@@ -123,6 +117,6 @@ public class TestBomb extends Bomb {
 	@Override
 	public int value() {
 		//prices of ingredients
-		return quantity * (20 + 30);
+		return quantity * 50;
 	}
 }

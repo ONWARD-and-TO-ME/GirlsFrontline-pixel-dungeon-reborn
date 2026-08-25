@@ -25,10 +25,12 @@ import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Quad;
 import com.watabou.glwrap.Vertexbuffer;
+import com.watabou.utils.Random;
 import com.watabou.utils.RectF;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
 
 public class Image extends Visual {
 
@@ -255,4 +257,15 @@ public class Image extends Visual {
             this.period = period;
         }
     }
+	static HashMap<Class<?>, float[]> colors = new HashMap<>();
+	public static float[] getColors( Class<?> cl ){
+		if (colors.containsKey(cl))
+			return colors.get(cl);
+		float[] color = new float[3];
+		color[0] = Random.Float();
+		color[1] = Random.Float();
+		color[2] = Random.Float();
+		colors.put(cl, color);
+		return color;
+	}
 }

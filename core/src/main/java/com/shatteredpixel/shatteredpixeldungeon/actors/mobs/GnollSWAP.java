@@ -76,22 +76,22 @@ public class GnollSWAP extends Gnoll {
             return;
 
         ArrayList<Item> items = new ArrayList<>();
-        ArrayList<Class<?>> itemsClass = new ArrayList<>();
-        Item i = Generator.randomUsingDefaults();
-        items.add(i);
-        itemsClass.add(i.getClass());
 
-        do {
+        Item i;
+        Gold gold = null;
+        while (items.size() < 3){
             i = Generator.randomUsingDefaults();
-        } while (i instanceof Gold && itemsClass.contains(Gold.class));
-        items.add(i);
-        itemsClass.add(i.getClass());
-
-        do {
-            i = Generator.randomUsingDefaults();
-        } while (i instanceof Gold && itemsClass.contains(Gold.class));
-        items.add(i);
-        itemsClass.add(i.getClass());
+            if (i instanceof Gold){
+                if (gold == null) {
+                    gold = (Gold) i;
+                    items.add(i);
+                }
+                else
+                    gold.quantity(gold.quantity() + i.quantity());
+                continue;
+            }
+            items.add(i);
+        }
 
         Dungeon.level.throwPath(items, pos);
     }

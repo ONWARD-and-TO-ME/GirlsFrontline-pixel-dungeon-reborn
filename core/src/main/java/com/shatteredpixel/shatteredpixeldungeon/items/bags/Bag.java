@@ -80,9 +80,7 @@ public class Bag extends Item implements Iterable<Item> {
 	public ArrayList<Item> items = new ArrayList<>();
 
 	public int capacity(){
-		return 20 -  // default container size
-                (Dungeon.hero!=null &&
-                        Dungeon.hero.belongings.secArmor!=null ? 1 : 0);
+		return 20; // default container size
 	}
 	
 	@Override
@@ -195,14 +193,16 @@ public class Bag extends Item implements Iterable<Item> {
 		}
 		return false;
 	}
-
+	protected boolean hasEmpty(){
+		return items.size() < capacity();
+	}
 	public boolean canHold( Item item ){
 		if (!loading && owner != null && owner.buff(LostInventory.class) != null
 			&& !item.keptThoughLostInvent){
 			return false;
 		}
 
-		if (items.contains(item) || item instanceof Bag || items.size() < capacity()){
+		if (items.contains(item) || item instanceof Bag || hasEmpty()){
 			return true;
 		} else if (item.stackable) {
 			for (Item i : items) {

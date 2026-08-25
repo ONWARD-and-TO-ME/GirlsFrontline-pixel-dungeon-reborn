@@ -301,7 +301,7 @@ public class Bomb extends Item {
 						bomb.explode(heap.pos);
 					}
 
-					deactivate();
+					deActivate();
 					Actor.remove(this);
 					return true;
 				}

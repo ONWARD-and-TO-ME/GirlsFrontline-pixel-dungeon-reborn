@@ -107,7 +107,7 @@ public class WndZeroLevelHeroSelect extends Window {
 
 	private void startZeroLevelGame(){
 		Dungeon.hero = null;
-		ActionIndicator.action = null;
+		ActionIndicator.clearAll();
 		GamesInProgress.curSlot = 0;
 		InterlevelScene.start();
 		Game.switchScene(GameScene.class);

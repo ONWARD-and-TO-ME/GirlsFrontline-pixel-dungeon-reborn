@@ -703,7 +703,7 @@ public class Armor extends EquipableItem {
             Hunger hunger = hero.buff(Hunger.class);
             if (hunger != null) {
                 if (hero.hasTalent(Talent.Type56Two_Armor)) {
-                    if (hunger.fullA() >= 500 - 100 * hero.pointsInTalent(Talent.Type56Two_Armor))
+                    if (hunger.full() >= 500 - 100 * hero.pointsInTalent(Talent.Type56Two_Armor))
                         lvl += 1;
                 }
                 if (hero.hasTalent(Talent.Type56_22V2)) {

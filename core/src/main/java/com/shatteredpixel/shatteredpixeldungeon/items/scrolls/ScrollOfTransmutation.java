@@ -65,36 +65,26 @@ public class ScrollOfTransmutation extends InventoryScroll {
 
 	@Override
 	protected boolean usableOnItem(Item item) {
-		if(item instanceof MeleeWeapon) {
+		if(item instanceof MeleeWeapon)
             return true;
-        }
-        else if (item instanceof MissileWeapon) {
+        else if (item instanceof MissileWeapon)
             return item.getClass() != Dart.class;
-        }
-        else if (item instanceof Potion) {
+        else if (item instanceof Potion)
             return !(item instanceof Elixir || item instanceof Brew || item instanceof AlchemicalCatalyst);
-        }
-        else if (item instanceof Scroll) {
+        else if (item instanceof Scroll)
             return item != this || item.quantity() > 1 || identifiedByUse;
-        }
-        else if(item instanceof Ring) {
+        else if(item instanceof Ring)
             return true;
-        }
-        else if(item instanceof Wand) {
+        else if(item instanceof Wand)
             return true;
-        }
-        else if(item instanceof Plant.Seed) {
+        else if(item instanceof Plant.Seed)
             return item.getClass() != Rotberry.Seed.class;
-        }
-        else if(item instanceof Runestone) {
+        else if(item instanceof Runestone)
             return true;
-        }
-        else if(item instanceof Artifact) {
+        else if(item instanceof Artifact)
             return true;
-        }
-        else {
+        else
             return false;
-        }
 	}
 	
 	@Override
@@ -165,20 +155,16 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		}
 	}
 	
-	private static MagesStaff changeStaff( MagesStaff staff ){
+	public static MagesStaff changeStaff( MagesStaff staff ){
 		Class<?extends Wand> wandClass = staff.wandClass();
-		
-		if (wandClass == null){
-			return null;
-		} else {
-			Wand n;
-			do {
+		Wand n = (Wand) Generator.random(Generator.Category.WAND);
+		if (wandClass != null)
+			while (Challenges.isItemBlocked(n) || n.getClass() == wandClass)
 				n = (Wand) Generator.random(Generator.Category.WAND);
-			} while (Challenges.isItemBlocked(n) || n.getClass() == wandClass);
-			n.level(0);
-			n.identify();
-			staff.imbueWand(n, null);
-		}
+		n.level(0);
+		n.identify();
+		staff.imbueWand(n, null);
+		//已检查了此方法体，owner为null时，旧wand为null也无所谓，注入新wand前的代码都直接被跳过，然后给旧wand赋值null
 		
 		return staff;
 	}

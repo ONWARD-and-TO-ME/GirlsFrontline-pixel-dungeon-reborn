@@ -40,7 +40,6 @@ public class GenoiseWarn extends Blob {
 		actPriority = MOB_PRIO - 1;
 	}
 	private ArrayList<Genoise> genoises = new ArrayList<>();
-	public static Genoise genoise = null;
 	public GenoiseWarn add(Genoise genoise){
 		genoises.add(genoise);
 		return this;
@@ -96,7 +95,7 @@ public class GenoiseWarn extends Blob {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		if (bundle.contains(GENOISE))
-			genoises = bundle.getBundlableArrayList(GENOISE, Genoise.class);
+			genoises = bundle.getArrayList(GENOISE, Genoise.class);
 		else
 			genoises = new ArrayList<>();
 		//在这里维护两个ArrayList感觉很差劲，把时间丢给Genoise了，至于已有的旧Genoise，统一在下一回合爆炸

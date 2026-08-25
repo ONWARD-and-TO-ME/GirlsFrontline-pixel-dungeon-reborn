@@ -841,26 +841,27 @@ public class WndJournal extends WndTabbed {
 			grid.scrollTo(0, scrollPositions[currentItemIdx]);
 		}
 
+		//TODO 这个理应放到各个类里边，默认返回null，重写返回注解效果，然后property非null时，附页展示其机制。
 		private static String property(MeleeWeapon weapon){
 			weapon.update();
 			String info = "";
 			if (weapon instanceof Cypros){
-				info+=Messages.format("该武器阶数_%d_。\n", weapon.tier);
+				info += Messages.format("该武器阶数_%d_。\n", weapon.tier);
 				((Cypros) weapon).setMode(Cypros.Mode.MAGNUM, false);
 				((Cypros) weapon).setMode(Cypros.Mode.TRAVAILLER, false);
-				info+=Messages.format("_特拉维小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。基础防御_0_~_%d_，防御成长_0_~_%d_。",
+				info += Messages.format("_特拉维小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。基础防御_0_~_%d_，防御成长_0_~_%d_。",
 						((Cypros) weapon).minBaseDmg(0), ((Cypros) weapon).maxBaseDmg(0),
 						weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(0, 1),
 						weapon.RCH, weapon.DLY, weapon.ACC, weapon.DEF, weapon.DEFUPGRADE);
 				info+="\n\n";
 				((Cypros) weapon).setMode(Cypros.Mode.CONFIRE, false);
-				info+=Messages.format("_康菲尔小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
+				info += Messages.format("_康菲尔小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
 						((Cypros) weapon).minBaseDmg(1), ((Cypros) weapon).maxBaseDmg(1),
 						weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(1, 1),
 						weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier*100);
-				info+="\n\n";
+				info += "\n\n";
 				((Cypros) weapon).setMode(Cypros.Mode.MAGNUM, false);
-				info+=Messages.format("_马格南婚礼_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
+				info += Messages.format("_马格南婚礼_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
 						((Cypros) weapon).minBaseDmg(2), ((Cypros) weapon).maxBaseDmg(2),
 						weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(2, 1),
 						weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier*100);
@@ -895,6 +896,9 @@ public class WndJournal extends WndTabbed {
 				if (Item.class.isAssignableFrom(itemClass)) {
 
 					Item item = (Item) Reflection.newInstance(itemClass);
+					assert item != null;
+					//Item总是要进行存读档操作的，所以必定非null
+					item.canNote = item.canShowNote = false;
 
 					if (item instanceof MeleeWeapon)
 						property = property((MeleeWeapon) item);

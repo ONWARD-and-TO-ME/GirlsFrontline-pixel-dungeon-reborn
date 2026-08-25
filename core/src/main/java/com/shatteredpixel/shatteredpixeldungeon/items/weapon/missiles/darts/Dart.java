@@ -121,9 +121,8 @@ public class Dart extends MissileWeapon {
 	
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
-		if (bow != null){
+		if (bow != null)
 			damage = bow.proc(attacker, defender, damage);
-		}
 
 		return super.proc(attacker, defender, damage);
 	}
@@ -153,16 +152,7 @@ public class Dart extends MissileWeapon {
 	@Override
 	public String info() {
 		updateLauncher();
-		if (bow != null && !bow.isIdentified()){
-			int level = bow.level();
-			//temporarily sets the level of the bow to 0 for IDing purposes
-			bow.level(0);
-			String info = super.info();
-			bow.level(level);
-			return info;
-		} else {
-			return super.info();
-		}
+		return super.info();
 	}
 	
 	@Override

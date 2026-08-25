@@ -428,7 +428,7 @@ public class WandOfWarding extends Wand {
 					break;
 				case 4: case 5: case 6:
 					charge = HP / (float) HT * tier;
-					if (charge > 1)
+					if (charge > 3)
 						charge = (float) Math.floor(charge);
 					break;
 			}

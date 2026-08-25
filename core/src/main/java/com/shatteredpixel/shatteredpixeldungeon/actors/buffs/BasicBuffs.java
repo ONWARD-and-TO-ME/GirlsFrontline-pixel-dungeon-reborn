@@ -1,7 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
@@ -10,15 +9,13 @@ public class BasicBuffs extends FlavourBuff {
     {
         this.type = buffType.POSITIVE;
     }
-
-    protected float R = 0;
-    protected float G = 0;
-    protected float B = 0;
+    @Override
     public int icon() {
-        return BuffIndicator.INVISIBLE;
+        return iconNeedDraw();
     }
+    @Override
     public void tintIcon(Image icon) {
-        icon.hardlight(R, G, B);
+        tintIconNeedDraw(icon);
     }
     protected float percent;
     public float percent(){
@@ -43,11 +40,6 @@ public class BasicBuffs extends FlavourBuff {
         percent = bundle.getFloat(PERCENT);
     }
     public static class Increase extends BasicBuffs{
-        {
-            R = 0.4F;
-            G = 0.5F;
-            B = 0.6F;
-        }
         public Increase set(float percent){
             if (this.percent < percent)
                 this.percent = percent;
@@ -55,11 +47,6 @@ public class BasicBuffs extends FlavourBuff {
         }
     }
     public static class Velocity extends BasicBuffs{
-        {
-            R = 0.7F;
-            G = 0.5F;
-            B = 0.6F;
-        }
         public Velocity set(float percent){
             if (this.percent < percent)
                 this.percent = percent;
@@ -67,11 +54,6 @@ public class BasicBuffs extends FlavourBuff {
         }
     }
     public static class Accuracy extends BasicBuffs{
-        {
-            R = 0.4F;
-            G = 0.2F;
-            B = 0.6F;
-        }
         public Accuracy set(float percent){
             if (this.percent < percent)
                 this.percent = percent;
@@ -79,11 +61,6 @@ public class BasicBuffs extends FlavourBuff {
         }
     }
     public static class Evasion extends BasicBuffs{
-        {
-            R = 0.4F;
-            G = 0.5F;
-            B = 0;
-        }
         public Evasion set(float percent){
             if (this.percent < percent)
                 this.percent = percent;
@@ -91,11 +68,6 @@ public class BasicBuffs extends FlavourBuff {
         }
     }
     public static class Reduce extends BasicBuffs{
-        {
-            R = 1F;
-            G = 0.2F;
-            B = 0.3F;
-        }
         public Reduce set(float percent){
             this.percent = percent;
             return this;

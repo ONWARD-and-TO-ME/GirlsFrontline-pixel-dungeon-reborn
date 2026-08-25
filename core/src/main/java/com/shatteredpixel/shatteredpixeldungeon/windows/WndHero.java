@@ -210,7 +210,7 @@ public class WndHero extends WndTabbed {
                     buffFood = String.format("(%d)", (int)Dungeon.hero.buff(ActHPtoGetFood.LockReg.class).visualcooldown());
                 }
 			    statSlot( Messages.get(this, "hunger"),
-                        String.format("%.0f%s/%.0f", hunger.fullA(),buffFood, Hunger.STARVING-Hunger.minLevel) );
+                        String.format("%.0f%s/%.0f", hunger.full(),buffFood, Hunger.STARVING-Hunger.minLevel) );
 			}
 			
 			pos += GAP;

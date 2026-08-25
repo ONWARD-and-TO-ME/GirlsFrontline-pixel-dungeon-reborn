@@ -316,8 +316,10 @@ public abstract class Char extends Actor {
 	 public boolean attack( Char enemy ){
 		return attack(enemy, 1f, 0f, 1f);
 	}
-
 	public boolean attack( Char enemy, float dmgMulti, float dmgBonus, float accMulti ) {
+		return attack(enemy, Integer.MIN_VALUE, dmgMulti, dmgBonus, accMulti);
+	}
+	public boolean attack( Char enemy, int baseDmg, float dmgMulti, float dmgBonus, float accMulti ) {
 
 		if (enemy == null) return false;
 
@@ -363,6 +365,8 @@ public abstract class Char extends Actor {
 			} else {
 				dmg = damageRoll();
 			}
+			if (baseDmg != Integer.MIN_VALUE)
+				dmg = baseDmg;
 
 			dmg = Math.round(dmg*dmgMulti);
 
@@ -400,7 +404,7 @@ public abstract class Char extends Actor {
 
 			if (visibleFight) {
 				if (effectiveDamage > 0 || !enemy.blockSound(Random.Float(0.96f, 1.05f))) {
-                    if (enemy == hero&& hero.heroClass == HeroClass.WARRIOR)
+                    if (enemy == hero && hero.heroClass == HeroClass.WARRIOR)
                         Sample.INSTANCE.play( Assets.Sounds.HIT_PARRY, 1, Random.Float(0.96f, 1.05f));
                     else
                         hitSound(Random.Float(0.87f, 1.15f));
@@ -409,9 +413,8 @@ public abstract class Char extends Actor {
 
 			// If the enemy is already dead, interrupt the attack.
 			// This matters as defence procs can sometimes inflict self-damage, such as armor glyphs.
-			if (!enemy.isAlive()){
+			if (!enemy.isAlive())
 				return true;
-			}
 
 			enemy.damage( effectiveDamage, this );
 
@@ -479,8 +482,8 @@ public abstract class Char extends Actor {
 		float defStat = defender.defenseSkill( attacker );
 
         if (attacker instanceof Hero) {
-            KindOfWeapon w =  hero.belongings.weapon;
-            if (w instanceof Cannon && ((Cannon) w).mustDie) {
+			Cannon w = ((Hero) attacker).belongings.getItem(Cannon.class);
+            if (w != null && w.mustDie) {
                 defender.MustDie( w );
                 return true;
             }
@@ -581,7 +584,7 @@ public abstract class Char extends Actor {
 	}
 	public void damage( int dmg, Object src ) {
         if (buff(Empulse.class) != null){
-            dmg+= dmg*hero.pointsInTalent(Talent.EMP_Two)/10;
+            dmg += dmg * hero.pointsInTalent(Talent.EMP_Two)/10;
         }
 
 		if (!isAlive() || dmg < 0) {
@@ -593,10 +596,8 @@ public abstract class Char extends Actor {
 			return;
 		}
         //流形护盾免伤
-        boolean damageNO = buff(ImmortalShieldAffecter.ImmortalShield.class) != null;
-        if(damageNO){
+        if(buff(ImmortalShieldAffecter.ImmortalShield.class) != null)
             return;
-        }
 
 		for (ChampionEnemy buff : buffs(ChampionEnemy.class)){
 			dmg = (int) Math.ceil(dmg * buff.damageTakenFactor());

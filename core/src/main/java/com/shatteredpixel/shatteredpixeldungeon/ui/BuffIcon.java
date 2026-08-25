@@ -46,7 +46,7 @@ public class BuffIcon extends Image {
 
     public BuffIcon(BookSpell spell){
         super(Assets.Interfaces.BUFFS_LARGE);
-        this.large = true;
+        large = true;
         refresh(spell.icon());
     }
 

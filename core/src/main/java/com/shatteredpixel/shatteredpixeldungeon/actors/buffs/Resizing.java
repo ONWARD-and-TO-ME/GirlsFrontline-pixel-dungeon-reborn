@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+
 public class Resizing extends CounterBuff {
 	
 	{
@@ -29,9 +31,13 @@ public class Resizing extends CounterBuff {
 
 	@Override
 	public void fx(boolean on) {
-        Resizing tracker = target.buff(Resizing.class);
-        float resizing = tracker != null ? tracker.count()/100 : 1;
-        target.sprite.scale.set((float) Math.sqrt(resizing));
+		float size = count() <= 0
+				? 1
+				: count() / 100;
+		if (on)
+			target.sprite.scale.set((float) Math.sqrt(size));
+		else if (target instanceof Hero)
+			target.sprite.scale.set(size * size);
 	}
 
 }

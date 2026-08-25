@@ -215,14 +215,16 @@ public class Tengu extends Mob {
 	}
 	@Override
     public void MustDie( Object cause ){
-        if (HP>HT/2) {
-            HP = HT / 2 + 1;
-            damage(1, cause);
-        }
-        else{
-            HP = 1;
-            damage(1, cause);
-        }
+		Actor.add(new Actor() {
+			@Override
+			protected boolean act() {
+				PrisonBossLevel level = (PrisonBossLevel) Dungeon.level;
+				level.setState(PrisonBossLevel.State.FIGHT_ARENA);
+				level.progress();
+				Actor.remove(this);
+				return true;
+			}
+		});
     }
 	@Override
 	protected boolean canAttack( Char enemy ) {

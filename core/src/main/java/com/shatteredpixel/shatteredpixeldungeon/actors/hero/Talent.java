@@ -328,7 +328,16 @@ public enum Talent {
 	}
 	public static class SpiritBladesTracker extends FlavourBuff{}
 	public static class SuckerPunchTracker extends Buff{}
-	public static class FollowupStrikeTracker extends Buff{}
+	public static class FollowupStrikeTracker extends Buff{
+        @Override
+        public int icon() {
+            return iconNeedDraw();
+        }
+        @Override
+        public void tintIcon(Image icon) {
+            tintIconNeedDraw(icon);
+        }
+    }
 
 	final int icon;
 	final int maxPoints;
@@ -411,6 +420,7 @@ public enum Talent {
 	}
 
 	public static void onTalentUpgraded( Hero hero, Talent talent){
+        Item workingItem;
         if (talent == NATURES_BOUNTY){
             if ( hero.pointsInTalent(NATURES_BOUNTY) == 1) Buff.count(hero, NatureBerriesAvailable.class, 4);
             else                                           Buff.count(hero, NatureBerriesAvailable.class, 2);
@@ -431,19 +441,16 @@ public enum Talent {
 		else if (talent == THIEFS_INTUITION && hero.pointsInTalent(THIEFS_INTUITION) == 2){
 			if (hero.belongings.ring != null) hero.belongings.ring.identify();
 			if (hero.belongings.misc instanceof Ring) hero.belongings.misc.identify();
-			for (Item item : Dungeon.hero.belongings){
-				if (item instanceof Ring){
+			for (Item item : Dungeon.hero.belongings)
+				if (item instanceof Ring)
 					((Ring) item).setKnown();
-				}
-			}
 		}
         else if (talent == Type56One_Identify && hero.pointsInTalent(Type56One_Identify) == 2){
-            for (Item item : Dungeon.hero.belongings){
-                if (item instanceof MeleeWeapon||item instanceof Armor){
-                    item.cursedKnown=true;
+            for (Item item : Dungeon.hero.belongings)
+                if (item instanceof MeleeWeapon || item instanceof Armor){
+                    item.cursedKnown = true;
                     Item.updateQuickslot();
                 }
-            }
         }
 		else if (talent == THIEFS_INTUITION && hero.pointsInTalent(THIEFS_INTUITION) == 1){
 			if (hero.belongings.ring != null) hero.belongings.ring.setKnown();
@@ -451,21 +458,20 @@ public enum Talent {
 		}
         else if (talent == STRONGMAN){
             int times ;
-            if (hero.STR>=2_035_529_520){
+            if (hero.STR >= Integer.MAX_VALUE / 1.06F){
                 times = 1;
-                hero.STR = 2_147_483_647;
+                hero.STR = Integer.MAX_VALUE;
             }
-            else if (hero.STR>=100_000){
+            else if (hero.STR >= 100_000){
                 times = 1000;
-                hero.STR *= (double) Random.Float(1.045F, 1.054F);
+                hero.STR *= Random.Float(1.045F, 1.054F);
             }else {
                 times = hero.STR;
             }
             for (int i = 0; i < times; i++) {
-                if (hero.STR == 2_147_483_647 || hero.STR == -2_147_483_648){
-                    if (Random.Float()<1/3F){
-                        hero.STR = -2_147_483_648;
-                    }
+                if (hero.STR == Integer.MAX_VALUE || hero.STR == Integer.MIN_VALUE){
+                    if (Random.Float() < 1/3F)
+                        hero.STR = Integer.MIN_VALUE;
                     break;
                 }
                 if (Random.Float() < 0.05F) {
@@ -476,26 +482,15 @@ public enum Talent {
             Badges.validateStrengthAttained();
         }
 		else if (talent == LIGHT_CLOAK && hero.pointsInTalent(LIGHT_CLOAK) == 1){
-			for (Item item : Dungeon.hero.belongings.backpack){
-				if (item instanceof CloakOfShadows){
-					if (hero.buff(LostInventory.class) == null || item.keptThoughLostInvent) {
-						((CloakOfShadows) item).activate(Dungeon.hero);
-					}
-				}
-			}
+            if ((workingItem = hero.belongings.getItem(CloakOfShadows.class)) != null)
+                ((CloakOfShadows) workingItem).activate(Dungeon.hero);
 		}
         else if (talent == Type56Three_Book && hero.pointsInTalent(Type56Three_Book) == 1){
-            for (Item item : Dungeon.hero.belongings.backpack){
-                if (item instanceof RedBook){
-                    if (hero.buff(LostInventory.class) == null || item.keptThoughLostInvent) {
-                        ((RedBook) item).activate(Dungeon.hero);
-                    }
-                }
-            }
+            if ((workingItem = hero.belongings.getItem(RedBook.class)) != null)
+                ((RedBook) workingItem).activate(Dungeon.hero);
         }
-		else if (talent == HEIGHTENED_SENSES || talent == FARSIGHT){
+		else if (talent == HEIGHTENED_SENSES || talent == FARSIGHT)
 			Dungeon.observe();
-		}
         else if (talent == Type56Two_Sight){
             Buff.affect( Dungeon.hero, TalentSecondSight.class).Set(Dungeon.levelId, 0);
             if (Dungeon.hero.pointsInTalent(Talent.Type56Two_Sight) == 1){
@@ -506,9 +501,8 @@ public enum Talent {
                 Buff.affect(Dungeon.hero, MindVision.class, 3);
             }
         }
-        else if (talent == PROTECTIVE_SHADOWS && hero.invisible > 0){
+        else if (talent == PROTECTIVE_SHADOWS && hero.invisible > 0)
             Buff.affect(hero, Talent.ProtectiveShadowsTracker.class);
-        }
 	}
 
 	public static class CachedRationsDropped extends CounterBuff{{revivePersists = true;}}
@@ -777,17 +771,15 @@ public enum Talent {
 
         if(hero.hasTalent(Type56One_Damage)){
             ShootGun Gun = hero.belongings.getItem(ShootGun.class);
-            boolean add = false;
-            if (Gun == null && !(hero.belongings.weapon instanceof ShootGun)) {
+            boolean add;
+            if (Gun == null && !(hero.belongings.weapon instanceof ShootGun))
                 //背包不存在榴弹且也没有装备榴弹的情况下
                 add = true;
-            }else {
+            else
                 add = ShootGun.cooldown;
-            }
-            if (add){
-                int a = Random.IntRange(hero.pointsInTalent(Type56One_Damage)-1 , 2);
-                dmg+=a;
-            }
+
+            if (add)
+                dmg += Random.IntRange(hero.pointsInTalent(Type56One_Damage)-1 , 2);
         }
 
 		if(hero.hasTalent(FOLLOWUP_STRIKE)) {

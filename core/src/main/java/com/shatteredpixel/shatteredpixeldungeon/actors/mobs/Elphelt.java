@@ -73,6 +73,7 @@ public class Elphelt extends Mob {
 		maxLvl = 20;
 
 		HUNTING = new Hunting();
+		Elphelt_Genoise.INSTANCE = this;
 	}
 	{
 		properties.add(Property.BOSS);
@@ -370,14 +371,16 @@ public class Elphelt extends Mob {
 	}
     @Override
     public void MustDie( Object cause ){
-        if (HP>HT/2) {
-            HP = HT / 2 + 1;
-            damage(1, cause);
-        }
-        else{
-            HP = 1;
-            damage(1, cause);
-        }
+		Actor.add(new Actor() {
+			@Override
+			protected boolean act() {
+				RabbitBossLevel level = (RabbitBossLevel) Dungeon.level;
+				level.setState(RabbitBossLevel.State.PHASE2);
+				level.progress();
+				Actor.remove(this);
+				return true;
+			}
+		});
     }
 
 	public void fireGenoise( int pos ) {
@@ -693,7 +696,6 @@ public class Elphelt extends Mob {
 
 		if (phase > 0) BossHealthBar.assignBoss(this);
 		if (phase > 1) BossHealthBar.bleed(true);
-		Elphelt_Genoise.INSTANCE = this;
 	}
 
 	protected class Hunting extends Mob.Hunting{

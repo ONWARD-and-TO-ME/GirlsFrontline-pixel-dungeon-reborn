@@ -198,8 +198,8 @@ public class SecondTitleScene extends PixelScene {
 	}
 
     private static void enterMainGame(){
-        Dungeon.hero=null;
-        ActionIndicator.action  = null;
+        Dungeon.hero = null;
+        ActionIndicator.clearAll();
         GamesInProgress.curSlot = 0;
         GamesInProgress.Info gameInfo = GamesInProgress.check(GamesInProgress.curSlot);
         if(gameInfo == null){
@@ -211,8 +211,12 @@ public class SecondTitleScene extends PixelScene {
             GamesInProgress.selectedClass = null;
             GirlsFrontlinePixelDungeon.scene().addToFront(new WndZeroLevelHeroSelect());
         }else{
-            try{InterlevelScene.restore();}
-            catch(IOException e){Game.reportException(e);}
+            try{
+				InterlevelScene.restore();
+			}
+            catch(IOException e){
+				GirlsFrontlinePixelDungeon.reportException(e);
+			}
             Game.switchScene(GameScene.class);
         }
     }

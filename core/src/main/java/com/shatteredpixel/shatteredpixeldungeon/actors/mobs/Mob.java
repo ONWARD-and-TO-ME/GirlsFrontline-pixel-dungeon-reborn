@@ -50,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Wound;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -116,7 +117,7 @@ public abstract class Mob extends Char {
 	public int maxLvl = Hero.MAX_LEVEL;
 	
 	public Char enemy;
-	protected boolean enemySeen;
+	public boolean enemySeen;
 	protected boolean alerted = false;
 
 	protected static final float TIME_TO_WAKE_UP = 1f;
@@ -125,51 +126,54 @@ public abstract class Mob extends Char {
 	private static final String SEEN	= "seen";
 	private static final String TARGET	= "target";
 	private static final String MAX_LVL	= "max_lvl";
-	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		
 		super.storeInBundle( bundle );
 
-		if (state == SLEEPING) {
-			bundle.put( STATE, Sleeping.TAG );
-		} else if (state == WANDERING) {
-			bundle.put( STATE, Wandering.TAG );
-		} else if (state == HUNTING) {
-			bundle.put( STATE, Hunting.TAG );
-		} else if (state == FLEEING) {
-			bundle.put( STATE, Fleeing.TAG );
-		} else if (state == PASSIVE) {
-			bundle.put( STATE, Passive.TAG );
-		}
+		storeState(bundle);
 		bundle.put( SEEN, enemySeen );
 		bundle.put( TARGET, target );
 		bundle.put( MAX_LVL, maxLvl );
 	}
-	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		
 		super.restoreFromBundle( bundle );
 
-		String state = bundle.getString( STATE );
-		if (state.equals( Sleeping.TAG )) {
-			this.state = SLEEPING;
-		} else if (state.equals( Wandering.TAG )) {
-			this.state = WANDERING;
-		} else if (state.equals( Hunting.TAG )) {
-			this.state = HUNTING;
-		} else if (state.equals( Fleeing.TAG )) {
-			this.state = FLEEING;
-		} else if (state.equals( Passive.TAG )) {
-			this.state = PASSIVE;
-		}
+		state = restoreState(bundle.getString( STATE ));
 
 		enemySeen = bundle.getBoolean( SEEN );
 
 		target = bundle.getInt( TARGET );
 
 		if (bundle.contains(MAX_LVL)) maxLvl = bundle.getInt(MAX_LVL);
+	}
+	protected void storeState( Bundle bundle ){
+		if (state == SLEEPING)
+			bundle.put( STATE, Sleeping.TAG );
+		else if (state == WANDERING)
+			bundle.put( STATE, Wandering.TAG );
+		else if (state == HUNTING)
+			bundle.put( STATE, Hunting.TAG );
+		else if (state == FLEEING)
+			bundle.put( STATE, Fleeing.TAG );
+		else if (state == PASSIVE)
+			bundle.put( STATE, Passive.TAG );
+	}
+	protected AiState restoreState( String state ){
+		switch (state){
+			case Sleeping.TAG: default:
+				return SLEEPING;
+			case Wandering.TAG:
+				return WANDERING;
+			case Hunting.TAG:
+				return HUNTING;
+			case Fleeing.TAG:
+				return FLEEING;
+			case Passive.TAG:
+				return PASSIVE;
+		}
 	}
 	@Override
     public CharSprite sprite() {
@@ -723,6 +727,7 @@ public abstract class Mob extends Char {
 				Catalog.countUses(LloydsBeacon.class, beacon.level() == 3 ? 4 : 3);
                 GLog.p( Messages.get(LloydsBeacon.class, "levelUp") );
             }
+			CardSelector.INSTANCE().coolDown(2000);
         }
 		if (cause == Chasm.class){
 			//50% chance to round up, 50% to round down
@@ -1169,13 +1174,15 @@ public abstract class Mob extends Char {
 			//preserve intelligent allies if they are near the hero
 			} else if (mob.alignment == Alignment.ALLY
 					&& mob.intelligentAlly
-					&& Dungeon.level.distance(holdFromPos, mob.pos) <= 5){
+					&& mob.canHeld(Dungeon.level, holdFromPos)){
 				level.mobs.remove( mob );
 				heldAllies.add(mob);
 			}
 		}
 	}
-
+	public boolean canHeld( Level level, int holdFromPos ){
+		return level.distance(holdFromPos, pos) <= 5;
+	}
 	public static void restoreAllies( Level level, int pos ){
 		restoreAllies(level, pos, -1);
 	}

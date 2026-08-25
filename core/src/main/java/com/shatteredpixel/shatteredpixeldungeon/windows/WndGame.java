@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
@@ -95,8 +96,11 @@ public class WndGame extends Window {
 			addButton(curBtn = new RedButton( Messages.get(this, "menu") ) {
 				@Override
 				protected void onClick() {
-					try{Dungeon.saveAll();
-					}catch(IOException e){Game.reportException(e);}
+					try{
+						Dungeon.saveAll();
+					}catch(IOException e){
+						GirlsFrontlinePixelDungeon.reportException(e);
+					}
 					Game.switchScene(TitleScene.class);
 				}
 			} );
@@ -119,8 +123,11 @@ public class WndGame extends Window {
 			RedButton mainMenuBtn = new RedButton( Messages.get(this, "menu") ) {
 				@Override
 				protected void onClick() {
-					try{Dungeon.saveAll();
-					}catch(IOException e){Game.reportException(e);}
+					try{
+						Dungeon.saveAll();
+					}catch(IOException e){
+						GirlsFrontlinePixelDungeon.reportException(e);
+					}
 					Game.switchScene(SecondTitleScene.class);
 				}
 			};

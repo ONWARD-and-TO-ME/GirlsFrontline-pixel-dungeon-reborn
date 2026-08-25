@@ -147,7 +147,7 @@ public class ZeroLevel extends Level {
                         try {
                             Dungeon.saveAll();
                         } catch (IOException e) {
-                            Game.reportException(e);
+                            GirlsFrontlinePixelDungeon.reportException(e);
                         }
                         Game.switchScene(SnakeScene.class);
                     }
@@ -160,7 +160,7 @@ public class ZeroLevel extends Level {
                         try {
                             Dungeon.saveAll();
                         } catch (IOException e) {
-                            Game.reportException(e);
+                            GirlsFrontlinePixelDungeon.reportException(e);
                         }
                         Game.switchScene(MatchThreeScene.class);
                     }
@@ -173,7 +173,7 @@ public class ZeroLevel extends Level {
                         try {
                             Dungeon.saveAll();
                         } catch (IOException e) {
-                            Game.reportException(e);
+                            GirlsFrontlinePixelDungeon.reportException(e);
                         }
                         Game.switchScene(ChessScene.class);
                     }
@@ -196,7 +196,7 @@ public class ZeroLevel extends Level {
                         try {
                             Dungeon.saveAll();
                         } catch (IOException e) {
-                            Game.reportException(e);
+                            GirlsFrontlinePixelDungeon.reportException(e);
                         }
                         Game.switchScene(TitleScene.class);
                     }
@@ -244,7 +244,7 @@ public class ZeroLevel extends Level {
                         try {
                             Dungeon.saveAll();
                         } catch (IOException e) {
-                            Game.reportException(e);
+                            GirlsFrontlinePixelDungeon.reportException(e);
                         }
                         Game.switchScene(SavesScene.class);
                     }
@@ -292,7 +292,7 @@ public class ZeroLevel extends Level {
                         try {
                             Dungeon.saveAll();
                         } catch (IOException e) {
-                            Game.reportException(e);
+                            GirlsFrontlinePixelDungeon.reportException(e);
                         }
                         PixelScene.inGame = true;
                         GirlsFrontlinePixelDungeon.switchNoFade(BadgesScene.class);
@@ -306,7 +306,7 @@ public class ZeroLevel extends Level {
                         try {
                             Dungeon.saveAll();
                         } catch (IOException e) {
-                            Game.reportException(e);
+                            GirlsFrontlinePixelDungeon.reportException(e);
                         }
                         PixelScene.inGame = true;
                         GirlsFrontlinePixelDungeon.switchNoFade(RankingsScene.class);

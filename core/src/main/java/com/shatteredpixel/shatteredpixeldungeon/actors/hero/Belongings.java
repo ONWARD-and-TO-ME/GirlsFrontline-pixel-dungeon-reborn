@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
@@ -50,11 +51,12 @@ public class Belongings implements Iterable<Item> {
 	public static class Backpack extends Bag {
 		public int capacity(){
 			int cap = super.capacity();
-			for (Item item : items){
-				if (item instanceof Bag){
+			for (Item item : items)
+				if (item instanceof Bag)
 					cap++;
-				}
-			}
+
+			if (Dungeon.hero != null && Dungeon.hero.belongings.secArmor != null)
+				cap--;
 			return cap;
 		}
 	}
@@ -280,7 +282,8 @@ public class Belongings implements Iterable<Item> {
 	public<T extends Item> T getItem( Class<T> itemClass, boolean strict ) {
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
 		for (Item item : this) {
-			if ( !strict && itemClass.isInstance( item ) || strict && item.getClass() == itemClass) {
+			if ( !strict && itemClass.isInstance( item )
+					|| strict && item.getClass() == itemClass) {
 				if (!lostInvent || item.keptThoughLostInvent) {
 					return (T) item;
 				}

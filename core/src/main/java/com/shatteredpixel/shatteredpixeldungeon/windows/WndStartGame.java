@@ -167,7 +167,7 @@ public class WndStartGame extends Window {
 
 				Dungeon.hero = null;
                 Dungeon.challenges = 0;
-				ActionIndicator.action = null;
+				ActionIndicator.clearAll();
 				GamesInProgress.curSlot = slot;
 				InterlevelScene.seedCode=SPDSettings.seedCode();
 				Dungeon.GameMode = (long) Math.pow(2, mode.code());
@@ -368,7 +368,6 @@ public class WndStartGame extends Window {
 
 		@Override
 		protected void onClick() {
-			super.onClick();
             if(enable){
                 if( !cl.isUnlocked() ){
                     GirlsFrontlinePixelDungeon.scene().addToFront( new WndMessage(cl.unlockMsg()));
@@ -378,6 +377,18 @@ public class WndStartGame extends Window {
                     GamesInProgress.selectedClass = cl;
                 }
             }
+		}
+
+		@Override
+		protected boolean onLongClick(){
+			if (enable){
+				if( !cl.isUnlocked() )
+					GamesInProgress.selectedClass = cl;
+				else
+					GirlsFrontlinePixelDungeon.scene().add(new WndHeroInfo(cl));
+                return true;
+            }
+			return false;
 		}
 	}
 

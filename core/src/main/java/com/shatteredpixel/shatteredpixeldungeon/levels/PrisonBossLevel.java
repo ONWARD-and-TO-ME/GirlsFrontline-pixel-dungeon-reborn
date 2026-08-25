@@ -121,7 +121,6 @@ public class PrisonBossLevel extends Level {
 	private static final String STATE	        = "state";
 	private static final String TENGU	        = "tengu";
 	private static final String STORED_ITEMS    = "storeditems";
-	private static final String TRIGGERED       = "triggered";
 	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -129,7 +128,6 @@ public class PrisonBossLevel extends Level {
 		bundle.put( STATE, state );
 		bundle.put( TENGU, tengu );
 		bundle.put( STORED_ITEMS, storedItems);
-		bundle.put(TRIGGERED, triggered );
 	}
 	
 	@Override
@@ -152,8 +150,6 @@ public class PrisonBossLevel extends Level {
 		for (Bundlable item : bundle.getCollection(STORED_ITEMS)){
 			storedItems.add( (Item)item );
 		}
-		
-		triggered = bundle.getBooleanArray(TRIGGERED);
 		
 	}
 	
@@ -335,11 +331,11 @@ public class PrisonBossLevel extends Level {
 			}
 		}
 
-		if(Dungeon.isChallenged(Challenges.STRONGER_BOSSES)||Challenges.activeChallenges()>=2){
-			Noel noel=new Noel();
-			noel.pos=7+18*width();
+		if(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) || Challenges.activeChallenges() >= 2){
+			Noel noel = new Noel();
+			noel.pos = 7 + 18 * width();
 			GameScene.add(noel);
-			placeTrigger(new NoelTrigger().create(10+23*width()));
+			placeTrigger(new NoelTrigger().create(10 + 23 * width()));
 		}
 		
 		CustomTilemap vis = new ExitVisual();
@@ -431,6 +427,9 @@ public class PrisonBossLevel extends Level {
 		PrisonLevel.addPrisonVisuals(this, visuals);
 		return visuals;
 	}
+	public void setState( State state ){
+		this.state = state;
+	}
 	
 	public void progress(){
 		switch (state){
@@ -466,7 +465,7 @@ public class PrisonBossLevel extends Level {
 				
 				tengu.state = tengu.HUNTING;
 				tengu.pos = tenguPos;
-				GameScene.add( tengu );
+				GameScene.add( tengu, 1 );
 				tengu.notice();
 				
 				state = State.FIGHT_START;
@@ -510,7 +509,7 @@ public class PrisonBossLevel extends Level {
 				
 				tengu.state = tengu.HUNTING;
 				tengu.pos = (arena.left + arena.width()/2) + width()*(arena.top+2);
-				GameScene.add(tengu);
+				GameScene.add(tengu, 1);
 				tengu.notice();
 				
 				GameScene.flash(0x80FFFFFF);
@@ -576,8 +575,7 @@ public class PrisonBossLevel extends Level {
 				break;
 		}
 	}
-	
-	private boolean[] triggered = new boolean[]{false, false, false, false};
+
 	
 	@Override
 	public void occupyCell(Char ch) {

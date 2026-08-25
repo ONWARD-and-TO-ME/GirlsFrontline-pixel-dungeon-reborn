@@ -34,13 +34,19 @@ public class GameMath {
 		return speed;
 	}
 	
-	public static float gate( float min, float value, float max ) {
-		if (value < min) {
-			return min;
-		} else if (value > max) {
-			return max;
-		} else {
-			return value;
+	public static float gate( float var1, float value, float var2 ) {
+		float min, max;
+		if (var1 < var2) {
+			min = var1;
+			max = var2;
 		}
+		else {
+			min = var2;
+			max = var1;
+		}
+		if (value < min)
+			return min;
+		else
+			return Math.min(value, max);
 	}
 }
