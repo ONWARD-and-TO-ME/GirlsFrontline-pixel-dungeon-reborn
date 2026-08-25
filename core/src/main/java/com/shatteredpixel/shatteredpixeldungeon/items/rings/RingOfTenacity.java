@@ -23,10 +23,21 @@ package com.shatteredpixel.shatteredpixeldungeon.items.rings;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corrosion;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 import java.text.DecimalFormat;
+import java.util.HashSet;
 
 public class RingOfTenacity extends Ring {
 
@@ -38,12 +49,16 @@ public class RingOfTenacity extends Ring {
 		super.statsInfo();
 		if (isIdentified()){
 			String info = Messages.get(this, "stats", new DecimalFormat("#.##").format(100f * (1f - Math.pow(0.85f, soloBuffedBonus()))));
+			info += "\n\n" + Messages.get(this, "element_stats", new DecimalFormat("#.##").format(100f * (1f - Math.pow(0.825f, soloBuffedBonus()))));
             if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)) {
                 info = info + "\n\n" + Messages.get(this, "combined_stats", Messages.decimalFormat("#.##", 100.0F * (1.0F - Math.pow(0.85F, combinedBuffedBonus(Dungeon.hero)))));
+                info = info + "\n\n" + Messages.get(this, "element_combined_stats", Messages.decimalFormat("#.##", 100.0F * (1.0F - Math.pow(0.825F, combinedBuffedBonus(Dungeon.hero)))));
             }
             return info;
         } else {
-			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(100f * (1f - Math.pow(0.85f, TextGuessingLevel()))));
+			String info = Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(100f * (1f - Math.pow(0.85f, TextGuessingLevel()))));
+			info += "\n\n" + Messages.get(this, "element_typical_stats", new DecimalFormat("#.##").format(100f * (1f - Math.pow(0.825f, TextGuessingLevel()))));
+			return info;
 		}
 	}
 
@@ -51,13 +66,42 @@ public class RingOfTenacity extends Ring {
 	protected RingBuff buff( ) {
 		return new Tenacity();
 	}
-	
+
 	public static float damageMultiplier( Char t ){
 		//(HT - HP)/HT = heroes current % missing health.
 		return (float)Math.pow(0.85, getBuffedBonus( t, Tenacity.class)*((float)(t.HT - t.HP)/t.HT));
 	}
 
+	// === 元素抗性 (合并自 RingOfElements) ===
+
+	public static final HashSet<Class> RESISTS = new HashSet<>();
+	static {
+		RESISTS.add( Burning.class );
+		RESISTS.add( Chill.class );
+		RESISTS.add( Frost.class );
+		RESISTS.add( Ooze.class );
+		RESISTS.add( Paralysis.class );
+		RESISTS.add( Poison.class );
+		RESISTS.add( Corrosion.class );
+
+		RESISTS.add( ToxicGas.class );
+		RESISTS.add( Electricity.class );
+
+		RESISTS.addAll( AntiMagic.RESISTS );
+	}
+
+	public static float resist( Char target, Class effect ){
+		if (getBuffedBonus(target, Tenacity.class) == 0) return 1f;
+
+		for (Class c : RESISTS){
+			if (c.isAssignableFrom(effect)){
+				return (float)Math.pow(0.825, getBuffedBonus(target, Tenacity.class));
+			}
+		}
+
+		return 1f;
+	}
+
 	public class Tenacity extends RingBuff {
 	}
 }
-

@@ -63,6 +63,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Swiftness;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Thorns;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfKing;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -712,6 +713,9 @@ public class Armor extends EquipableItem {
             }
             //down at 200, 200+300, 200+300+400, ...
             lvl -= (int) ((Math.sqrt(200*broken + 22500) - 150)/100);
+            int multi = RingOfKing.updateMultiplier(hero);
+            if (multi != 0)
+                lvl += multi;
 			return lvl;
 		} else {
 			return level();
@@ -902,6 +906,11 @@ public class Armor extends EquipableItem {
         else
             lvl = TextGuessingLevel();
         int req = STRReq(lvl);
+        if (hero != null){
+            int multi = RingOfKing.updateMultiplier(hero);
+            if (multi != 0 && isEquipped(hero))
+                req += multi;
+        }
         if (masteryPotionBonus){
             req -= 2;
         }

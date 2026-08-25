@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfKing;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Annoying;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Displacing;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Exhausting;
@@ -366,6 +367,11 @@ abstract public class Weapon extends KindOfWeapon {
 			lvl = TextGuessingLevel();
 		}
 		int req = STRReq(lvl);
+		if (hero != null){
+			int multi = RingOfKing.updateMultiplier(hero);
+			if (multi != 0 && isEquipped(hero))
+				req += multi;
+		}
 		if (masteryPotionBonus){
 			req -= 2;
 		}
@@ -397,6 +403,9 @@ abstract public class Weapon extends KindOfWeapon {
 		if (isEquipped( hero ) || hero.belongings.contains( this )){
             if (hero.buff(EquipLevelUp.class) != null)
                 lvl += Dungeon.hero.hasTalent(Talent.Type56FourTwoTwo)?Dungeon.hero.pointsInTalent(Talent.Type56FourTwoTwo):1;
+            int multi = RingOfKing.updateMultiplier(hero);
+            if (multi != 0)
+                lvl += multi;
 			return lvl;
 		}
         return level();
