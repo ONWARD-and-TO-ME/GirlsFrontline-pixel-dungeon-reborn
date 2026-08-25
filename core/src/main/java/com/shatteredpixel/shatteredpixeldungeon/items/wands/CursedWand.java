@@ -53,6 +53,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourg
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CursingTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ShockingTrap;
@@ -414,7 +416,17 @@ public class CursedWand {
 			//random transmogrification
 			case 3:
 				//skips this effect if there is no item to transmogrify
-				if (origin == null || user != Dungeon.hero || !Dungeon.hero.belongings.contains(origin)){
+				if (origin == null || user != Dungeon.hero){
+					return cursedEffect(origin, user, targetPos);
+				}
+				if (!Dungeon.hero.belongings.contains(origin)){
+					MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+					if (origin instanceof Wand
+							&& staff != null && staff.wand == origin){
+						ScrollOfTransmutation.changeStaff(staff);
+						GLog.w( Messages.get(CursedWand.class, "transmogrify_wand") );
+						return true;
+					}
 					return cursedEffect(origin, user, targetPos);
 				}
 				origin.detach(Dungeon.hero.belongings.backpack);
