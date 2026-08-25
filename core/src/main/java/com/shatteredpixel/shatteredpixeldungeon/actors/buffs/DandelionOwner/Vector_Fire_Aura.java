@@ -6,6 +6,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ColorFlameFactory;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardAffect;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardCalculator;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CommonCard;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.FinalCard;
@@ -39,7 +42,7 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
 
         spend(0.1F);
         updateEmitter(false);
-        float TICK = CardSelector.INSTANCE().hasCard(FinalCard.Vector.G36) ? 1F : 2F;
+        float TICK = hasCard(FinalCard.Vector.G36) ? 1F : 2F;
         if (target.curTime() % TICK < 0.1F){
             for (AffectAura a : getList()){
                 int cell = a.cellInLevel(Dungeon.level, target);
@@ -69,7 +72,8 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
         return p.x <= 0 || p.y <= 0 || p.x >= Dungeon.level.width() - 1 || p.y >= Dungeon.level.height() - 1;
     }
     private void effectOnTarget(Char ch){
-
+        CardAffect.fireAllAffect(ch);
+        ch.damage(CardCalculator.fireDamage(true), this);
     }
     private final ArrayList<Emitter> emitters = new ArrayList<>();
     private void destroyEmitter(){
@@ -88,6 +92,8 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
             e.pour( new ColorFlameFactory(0xAA4488), 0.05f );
             emitters.add(e);
         }
+
+        lastPos = target.pos;
     }
     public boolean contain(int pos){
         for (AffectAura a : getList())
@@ -122,7 +128,7 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
         fireAura.clear();
         Bundle b = bundle.getBundle(Affect_Aura);
         for (String key : b.getKeys())
-            fireAura.put(Integer.valueOf(key.split(Affect_Floor)[1]), b.getBundlableArrayList(key, AffectAura.class));
+            fireAura.put(Integer.valueOf(key.split(Affect_Floor)[1]), b.getArrayList(key, AffectAura.class));
         resetAction();
     }
 
@@ -135,18 +141,18 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
         ArrayList<AffectAura> auras = getList();
         if (auras.size() < 5)
             return Icons.Notice(new PotionOfLiquidFlame());
-        if (auras.size() < 10 && CardSelector.INSTANCE().hasCard(CommonCard.Vector.PP_90))
+        if (auras.size() < 10 && hasCard(CommonCard.Vector.PP_90))
             return Icons.Notice(new PotionOfDragonsBreath());
         return null;
     }
     @Override
     public void doAction() {
-        ArrayList<AffectAura> auras = fireAura.get(Dungeon.levelId);
+        ArrayList<AffectAura> auras = getList();
         if (auras.size() < 5) {
             GameScene.selectCell(pathSelector);
             return;
         }
-        if (auras.size() < 10 && CardSelector.INSTANCE().hasCard(CommonCard.Vector.PP_90))
+        if (auras.size() < 10 && hasCard(CommonCard.Vector.PP_90))
             GameScene.selectCell(diySelector);
     }
     public void resetAction(){
@@ -197,7 +203,7 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
         public void onSelect(Integer target) {
             if (target != null) {
                 Point point = Dungeon.level.cellToPoint(target);
-                Point hero = Dungeon.level.cellToPoint(Dungeon.hero.pos);
+                Point hero = Dungeon.level.cellToPoint(Vector_Fire_Aura.this.target.pos);
                 int x = point.x - hero.x, y = point.y - hero.y;
                 if (Math.abs(x) > 4 || Math.abs(y) > 4){
                     GLog.i(Messages.get(Vector_Fire_Aura.class, "OutSide"));
@@ -220,6 +226,9 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
             return Messages.get(Vector_Fire_Aura.class, "select_diy");
         }
     };
+    private static boolean hasCard(Card card){
+        return CardSelector.INSTANCE().hasCard(card);
+    }
     public static class AffectAura implements Bundlable {
         private int xAdd;
         private int yAdd;

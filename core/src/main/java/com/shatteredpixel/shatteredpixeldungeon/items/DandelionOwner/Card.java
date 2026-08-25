@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public interface Card {
+    static void getAllCard(CardSelector selector){
+        FirstCard.getAllCard(selector);
+        CommonCard.getAllCard(selector);
+        RareCard.getAllCard(selector);
+        FinalCard.getAllCard(selector);
+    }
     static void random(CardSelector selector){
         Card card;
         for (int i = 0; i < 4; i++)
@@ -17,29 +23,26 @@ public interface Card {
     }
     static Card randomCard(CardSelector selector){
         Card card;
-        if (selector.curCardNum < 1 && (card = FirstCard.random(selector)) != null)
+        int curCardNum = selector.curCardNum;
+        if (curCardNum < 1 && (card = FirstCard.random(selector)) != null)
             return card;
-        if (selector.curCardNum < 5 && (card = CommonCard.random(selector)) != null)
+        if (curCardNum < 5 && (card = CommonCard.random(selector)) != null)
             return card;
-        if (selector.curCardNum < 7 && (card = RareCard.random(selector)) != null)
+        if (curCardNum < 7 && (card = RareCard.random(selector)) != null)
             return card;
-        if (selector.curCardNum < 8 && (card = FinalCard.random(selector)) != null)
+        if (curCardNum < 8 && (card = FinalCard.random(selector)) != null)
             return card;
         return null;
     }
     static void addAll(ArrayList<Card> list, Card[] array){
         list.addAll(Arrays.asList(array));
     }
-    @SuppressWarnings("unchecked")
-    default Enum<? extends Card> getCard(){
-        return (Enum<? extends Card>) this;
+    default Enum<?> getCard(){
+        return (Enum<?>) this;
     }
-    default String title(){
-        String name = EnumString(this, ".name");
-        if (name.contains("NO TEXT FOUND")) {
-            name = ((Enum<?>) this).name();
-        }
-        return name;
+    String title();
+    default String cardName(){
+        return EnumString(this, ".name");
     }
     default String info(){
         String desc = desc();
@@ -61,7 +64,7 @@ public interface Card {
     String extraKey = ".extra";
     static String extraByTime(Card card, int mul){
         CardSelector selector = CardSelector.INSTANCE();
-        int i = selector.UpgradeTime() / 1000;
+        int i = selector.upgradeTime() / 1000;
         return EnumString(card, extraKey, i * mul);
     }
     Class<? extends Card> getCardClass();
@@ -69,18 +72,31 @@ public interface Card {
         return Messages.get(card.getCardClass(), card.getCard().name() + key, args);
     }
     enum CardPoint{
-        General_Liu_KillingTimes;
-        private int point;
+        General_Liu_KillingTimes, R93_HitPoint,
+        AttackDamage_Add, AttackDelay_Add;
+        private float point;
         private static final String CardPointBundle = "Card_Point_Bd";
         public void pointUp(){
             point++;
         }
-        public int point(){
+        public void pointDown(){
+            point--;
+        }
+        public void pointUp( float p ){
+            point += p;
+        }
+        public void pointDown( float p ){
+            point -= p;
+        }
+        public void pointClear(){
+            point = 0;
+        }
+        public float point(){
             return point;
         }
         public static void reset(){
             for (CardPoint c : values())
-                c.point = 0;
+                c.pointClear();
         }
         public static void store( Bundle bundle ){
             Bundle b = new Bundle();
@@ -91,8 +107,8 @@ public interface Card {
         public static void restore( Bundle bundle ){
             Bundle b = bundle.contains(CardPointBundle) ? bundle.getBundle(CardPointBundle) : new Bundle();
             for (CardPoint c : CardPoint.values())
-                if(b.contains(c.name()))
-                    c.point = b.getInt(c.name());
+                if (b.contains(c.name()))
+                    c.point = b.getFloat(c.name());
         }
     }
 }

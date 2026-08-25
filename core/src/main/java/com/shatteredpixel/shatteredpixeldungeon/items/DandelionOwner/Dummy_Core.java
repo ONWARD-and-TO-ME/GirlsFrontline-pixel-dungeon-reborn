@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
@@ -18,15 +19,25 @@ public abstract class Dummy_Core extends Item {
     }
     private static final String AC_FIX = "fix";
     private static final String AC_CALL = "call";
-    private int fixTimeNeed;
-    private float htMul;
-    private float attackSpeedMul;
-    private float damageMul;
-    public Dummy_Core(){
-        this(0);
+    protected int fixTimeNeed = 5;
+    public float htMul;
+    public float attackSpeedMul;
+    public float damageMul;
+    @SuppressWarnings("unchecked")
+    public <T extends Dummy_Core> T set( float ht, float speed, float dmg ){
+        htMul = ht;
+        attackSpeedMul = speed;
+        damageMul = dmg;
+        return (T) this;
     }
-    public Dummy_Core(int fix){
-        fixTimeNeed = fix;
+    @SuppressWarnings("unchecked")
+    public <T extends Dummy_Core> T broken(){
+        fixTimeNeed = 5;
+        return (T) this;
+    }
+    public Dummy_Core quantity( int value ) {
+        quantity = value;
+        return this;
     }
     @Override
     public ArrayList<String> actions( Hero hero ){
@@ -44,16 +55,21 @@ public abstract class Dummy_Core extends Item {
             fixTimeNeed--;
             hero.spendAndNext(1F);
         }
-        else if (action.equals(AC_CALL)){
+        else if (action.equals(AC_CALL))
             Buff.affect(hero, Core_Calling.class).addCore((Dummy_Core) detach(hero.belongings.backpack));
-        }
     }
     public void summon( int pos ){
-        Puppet puppet = puppet(htMul, attackSpeedMul, damageMul);
+        Puppet puppet = puppet();
+        setSize(puppet);
         GameScene.add(puppet, 0);
         ScrollOfTeleportation.appear(puppet, pos);
     }
-    protected abstract Puppet puppet(float ht, float attackSpeed, float damage);
+    protected abstract void setSize( Puppet puppet );
+    protected Class<? extends Puppet> puppetClass;
+    @SuppressWarnings("unchecked")
+    protected <T extends Puppet> T puppet() {
+        return (T) Reflection.newInstance(puppetClass).set(this);
+    }
     private static final String FIX_TIME_NEED = "FIX_TIME_NEED";
     private static final String MulAtHT         = "Mul_T";
     private static final String MulAtAtkSpeed   = "Mul_AS";

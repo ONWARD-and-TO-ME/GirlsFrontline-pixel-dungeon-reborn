@@ -38,7 +38,7 @@ public class Vector_FireBomb extends Blob {
 	@Override
 	public void restoreFromBundle( Bundle bundle ){
 		super.restoreFromBundle(bundle);
-		fireBombs = bundle.getBundlableArrayList(AFFECT_FIRE_BOMB, ThrowingSkill.FireBomb.class);
+		fireBombs = bundle.getArrayList(AFFECT_FIRE_BOMB, ThrowingSkill.FireBomb.class);
 	}
 	@Override
 	protected void evolve() {

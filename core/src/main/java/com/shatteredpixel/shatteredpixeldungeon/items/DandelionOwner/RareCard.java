@@ -4,7 +4,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.hero;
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.addAll;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionShield;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.HS2000_Shield;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -13,13 +13,23 @@ import java.util.HashMap;
 public interface RareCard extends Card {
     @Override
     default String title(){
-        return "Rare: " + Card.super.title();
+        return "大卡：" + cardName();
+    }
+    static void getAllCard( CardSelector selector ){
+        HashMap<FirstCard, RareCard[]> map = cardMap();
+        for (FirstCard f : map.keySet())
+            for (RareCard card : map.get(f)){
+                if (selector.RareCards.contains(card)
+                        || selector.curCards.contains(card))
+                    continue;
+                selector.curCards.add(f);
+            }
     }
     static Card random( CardSelector selector ){
         ArrayList<Card> list = new ArrayList<>();
         HashMap<FirstCard, RareCard[]> map = cardMap();
         for (FirstCard card : map.keySet())
-            if (selector.hasCard(card))
+            if (selector.contain(card))
                 addAll(list, map.get(card));
         addAll(list, UNIVERSAL.values());
 
@@ -47,12 +57,12 @@ public interface RareCard extends Card {
         Type_64_Auto, AA_12, KSG, DESERT_EAGLE;
         @Override
         public String title(){
-            return "HS2000 " + RareCard.super.title();
+            return FirstCard.HS2000.cardName() + " " + RareCard.super.title();
         }
         @Override
         public String extra(){
             if (this == Type_64_Auto){
-                DandelionShield shield = hero().buff(DandelionShield.class);
+                HS2000_Shield shield = hero().buff(HS2000_Shield.class);
                 if (shield != null && shield.shielding() > hero().HP)
                     return EnumString(this, extraKey, (shield.shielding() - hero().HP) * 1.5F);
             }
@@ -61,9 +71,6 @@ public interface RareCard extends Card {
                 return EnumString(this, extraKey, i);
             }
             if (this == DESERT_EAGLE){
-                DandelionShield shield = hero().buff(DandelionShield.class);
-                if (shield != null && shield.shielding() > 0)
-                    return EnumString(this, extraKey, FirstCard.HS2000_Shield_Damage());
             }
             return null;
         }
@@ -72,14 +79,14 @@ public interface RareCard extends Card {
         Type_79, AK_74U, HP_35, K2, PP_19;
         @Override
         public String title(){
-            return "Vector " + RareCard.super.title();
+            return FirstCard.Vector.cardName() + " " + RareCard.super.title();
         }
     }
     enum VHS implements RareCard{
         M82A1, MDR, P90, PM_06, RFB, TAC_50, Zas_M21;
         @Override
         public String title(){
-            return "VHS " + RareCard.super.title();
+            return FirstCard.VHS.cardName() + " " + RareCard.super.title();
         }
         @Override
         public String extra(){
@@ -92,14 +99,23 @@ public interface RareCard extends Card {
         K11, NTW_20, PKP, Px4, R93, MOSIN_NAGANT;
         @Override
         public String title(){
-            return "WA2000 " + RareCard.super.title();
+            return FirstCard.WA2000.cardName() + " " + RareCard.super.title();
         }
     }
     enum General_Liu implements RareCard{
-        C_93, CZ75, M26_ASW, QBU_88, X95, Contender, COLT_SAA, STECHKIN, DiMer;
+        C_93, CZ75, M26_ASW, QBU_88, X95, Contender, COLT_SAA, STECHKIN;
+        @Override
+        public void onSelect(){
+            if (this == C_93)
+                CardAffect.getCore(hero(), new Cores.C93());
+            else if (this == CZ75 || this == Contender)
+                CardAffect.getCore(hero(), new Cores.NormalCore().quantity(4));
+            else if (this == COLT_SAA || this == STECHKIN)
+                CardAffect.getCore(hero(), new Cores.NormalCore().quantity(2));
+        }
         @Override
         public String title(){
-            return "General Liu " + RareCard.super.title();
+            return FirstCard.General_Liu.cardName() + " " + RareCard.super.title();
         }
     }
     enum UNIVERSAL implements RareCard{

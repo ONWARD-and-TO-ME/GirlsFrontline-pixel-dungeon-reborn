@@ -3,16 +3,21 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardCalculator;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.FinalCard;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.IntensifySkill;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.ThrowingSkill;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
+import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 
-public class M4A1 extends MeleeWeapon {
+public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 
 	{
 		image = ItemSpriteSheet.M4A1;
@@ -20,6 +25,13 @@ public class M4A1 extends MeleeWeapon {
 		tier = 1;
 		RCH = 2;
         dmgBaseDiffer = -0.8F;
+	}
+	@Override
+	public int damageRoll(Char owner) {
+		float damage = super.damageRoll(owner);
+		if (!(owner instanceof Hero))
+			return (int) damage;
+		return (int) CardCalculator.onM4A1damageRoll((Hero) owner, damage);
 	}
 	@Override
 	public float delayFactor( Char owner ) {
@@ -31,6 +43,18 @@ public class M4A1 extends MeleeWeapon {
 	private static final String INTENSIFY_READY = "INTENSIFY_READY";
 	public boolean throwing_ready;
 	public boolean intensify_ready;
+	@Override
+	public void storeInBundle( Bundle bundle ){
+		super.storeInBundle(bundle);
+		bundle.put(THROWING_READY, throwing_ready);
+		bundle.put(INTENSIFY_READY, intensify_ready);
+	}
+	@Override
+	public void restoreFromBundle( Bundle bundle ){
+		super.restoreFromBundle(bundle);
+		throwing_ready = bundle.getBoolean(THROWING_READY);
+		intensify_ready = bundle.getBoolean(INTENSIFY_READY);
+	}
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
@@ -45,9 +69,8 @@ public class M4A1 extends MeleeWeapon {
 	@Override
 	public void execute( Hero hero, String action ) {
 		super.execute( hero, action );
-		if (action.equals(THROWING_SKILL)){
-			defaultAction = THROWING_SKILL;
-			updateQuickslot();
+		if (action.equals(THROWING_SKILL)) {
+			ActionIndicator.setAction(this);
 			ThrowingSkill.INSTANCE(ThrowingSelector(false), SnipeSelector(false));
 		}
 		else if (action.equals(THROWING_READY))
@@ -119,10 +142,6 @@ public class M4A1 extends MeleeWeapon {
 			m = new M4A1();
 		return m;
 	}
-	public static float damageRoll(float mul){
-		M4A1 m = INSTANCE();
-		return m.augment.damageFactor(m.damageRoll(null)) * mul;
-	}
 	@Override
 	public int reach( Char owner ){
 		if (change())
@@ -131,5 +150,17 @@ public class M4A1 extends MeleeWeapon {
 	}
 	private boolean change(){
 		return CardSelector.INSTANCE().hasCard(FinalCard.WA2000.FAL);
+	}
+	@Override
+	public String actionName() {
+		return "投掷技能";
+	}
+	@Override
+	public Image actionIcon() {
+		return new ItemSprite(this);
+	}
+	@Override
+	public void doAction() {
+		ThrowingSkill.INSTANCE(ThrowingSelector(false), SnipeSelector(false));
 	}
 }

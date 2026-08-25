@@ -14,14 +14,24 @@ import java.util.HashMap;
 public interface CommonCard extends Card {
     @Override
     default String title(){
-        return "Common: " + Card.super.title();
+        return "小卡：" + cardName();
+    }
+    static void getAllCard( CardSelector selector ){
+        HashMap<FirstCard, CommonCard[]> map = cardMap();
+        for (FirstCard f : map.keySet())
+            for (CommonCard card : map.get(f)){
+                if (selector.CommonCards.contains(card)
+                        || selector.curCards.contains(card))
+                    continue;
+                selector.curCards.add(f);
+            }
     }
     // 子枚举覆写保持不变（阵营前缀 + 稀有度前缀 + 本地化卡名）
     static Card random( CardSelector selector ){
         ArrayList<Card> list = new ArrayList<>();
         HashMap<FirstCard, CommonCard[]> map = cardMap();
         for (FirstCard card : map.keySet())
-            if (selector.hasCard(card))
+            if (selector.contain(card))
                 addAll(list, map.get(card));
         addAll(list, UNIVERSAL.values());
 
@@ -49,7 +59,7 @@ public interface CommonCard extends Card {
         Sten_II;
         @Override
         public String title(){
-            return "HS2000 " + CommonCard.super.title();
+            return FirstCard.HS2000.cardName() + " " + CommonCard.super.title();
         }
         @Override
         public String extra(){
@@ -65,7 +75,7 @@ public interface CommonCard extends Card {
         Type_64, Cx4, KLIN, HONEY_BADGER, MAT_49, PP_90, Beretta_38, Uzi, UKM_2000;
         @Override
         public String title(){
-            return "Vector " + CommonCard.super.title();
+            return FirstCard.Vector.cardName() + " " + CommonCard.super.title();
         }
         @Override
         public String extra(){
@@ -78,7 +88,7 @@ public interface CommonCard extends Card {
         Ak5, EM_2, IDW, M82, MP_446, P7, PM1910, SAR_21, SPP_1, Thunder, Spitfire;
         @Override
         public String title(){
-            return "VHS " + CommonCard.super.title();
+            return FirstCard.VHS.cardName() + " " + CommonCard.super.title();
         }
         @Override
         public String extra(){
@@ -93,19 +103,19 @@ public interface CommonCard extends Card {
         SSG3000, SV_98;
         @Override
         public String title(){
-            return "WA2000 " + CommonCard.super.title();
+            return FirstCard.WA2000.cardName() + " " + CommonCard.super.title();
         }
     }
     enum General_Liu implements CommonCard{
         Type_80, Rex_Zero_1, DEFENDER, JERICHO, RIBEYROLLES, MONDRAGON, TaBuKe;
         @Override
         public String title(){
-            return "General Liu " + CommonCard.super.title();
+            return FirstCard.General_Liu.cardName() + " " + CommonCard.super.title();
         }
         @Override
         public String extra(){
             if (this == Rex_Zero_1 && CardPoint.General_Liu_KillingTimes.point() > 0)
-                return EnumString(this, extraKey, CardPoint.General_Liu_KillingTimes.point());
+                return EnumString(this, extraKey, (int) CardPoint.General_Liu_KillingTimes.point());
             return null;
         }
     }

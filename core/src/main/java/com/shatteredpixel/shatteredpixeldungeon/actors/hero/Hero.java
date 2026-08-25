@@ -32,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ActHPtoGetFood;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Adrenaline;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AdrenalineSurge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
@@ -45,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.HS2000_Shield;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
@@ -75,6 +75,11 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardAffect;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.FinalCard;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.IntensifySkill;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -87,7 +92,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Flow;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Obfuscation;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Stone;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Swiftness;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
@@ -1469,6 +1473,7 @@ public class Hero extends Char {
 	
 	@Override
 	public int attackProc( final Char enemy, int damage ) {
+		final int baseDMG = damage;
 		damage = super.attackProc( enemy, damage );
         if (Dungeon.hero.buff(LloydsBeacon.beaconRecharge.class)!=null
                 && Dungeon.hero.buff(LloydsBeacon.beaconRecharge.class).isCursed()){
@@ -1514,6 +1519,8 @@ public class Hero extends Char {
         BasicBuffs.Increase increase = Dungeon.hero.buff(BasicBuffs.Increase.class);
         if (increase != null)
             damage *= increase.percent();
+
+		damage = CardAffect.cardAttackProc(this, enemy, damage, baseDMG, wep);
 		return damage;
 	}
 	
@@ -1593,6 +1600,7 @@ public class Hero extends Char {
 
 		int preHP = HP + shielding();
 		super.damage( dmg, src );
+		CardAffect.afterDamage(this);
 		int postHP = HP + shielding();
 		int effectiveDamage = preHP - postHP;
 
@@ -1794,6 +1802,7 @@ public class Hero extends Char {
 
 			spend( 1 / speed );
 			justMoved = true;
+			CardAffect.onMove(this);
 			
 			search(false);
 
@@ -2018,6 +2027,16 @@ public class Hero extends Char {
 	public void die( Object cause ) {
 
 		curAction = null;
+		if (CardSelector.INSTANCE().hasCard(FinalCard.HS2000.Webley)){
+			GameScene.flash(0x80FFFF40);
+			Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
+			GLog.w(Card.EnumString(FinalCard.HS2000.Webley, "fail"));
+			HP = HT / 4;
+			PotionOfHealing.cure(this);
+			Buff.affect(this, HS2000_Shield.class).incShield(HT);
+			Buff.affect(this, IntensifySkill.Intensify.class, 20F);
+			CardSelector.INSTANCE().destroyCard(FinalCard.HS2000.Webley);
+		}
 
 		Ankh ankh = null;
 

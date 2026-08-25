@@ -6,10 +6,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Vector_FireBomb;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Vector_FireBomb_Warning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.AttackDMG_Add;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -135,7 +136,7 @@ public class ThrowingSkill extends SkillItem {
                     size++;
             }
             for (int i = 0; i < size; i++)
-                dmg += M4A1.damageRoll( 1 - (Math.min(5, size - 1)) * 0.1F );
+                dmg += CardAffect.tryCrit( 1 - (Math.min(5, size - 1)) * 0.1F, true );
             return dmg;
         }
         @Override
@@ -150,26 +151,45 @@ public class ThrowingSkill extends SkillItem {
                     list.add(ch);
             }
             int size = list.size();
+            boolean crit = CardAffect.crit();
             for (Char ch : list){
                 if (ch.alignment == Char.Alignment.ALLY || ch instanceof NPC)
                     continue;
-                for (int i = 0; i < size; i++)
-                    ch.damage(Math.round( M4A1.damageRoll(1 - (Math.min(5, size - 1)) * 0.1F) ), ThrowingSkill.class);
+                for (int i = 0; i < size; i++) {
+                    float minimax = 1;
+                    float maxMul = 1F;
+                    if (hasCard(CommonCard.UNIVERSAL.Type56_1))
+                        minimax *= 0.5F;
+                    if (hasCard(FinalCard.WA2000.Python)){
+                        minimax *= 0.5F;
+                        maxMul += 0.75F;
+                    }
+
+                    float dmg = CardCalculator.M4A1damageRoll(1 - minimax, maxMul, 1 - (Math.min(5, size - 1)) * 0.1F);
+                    if (crit)
+                        ch.damage(CardCalculator.critDamage(dmg, true), ThrowingSkill.class);
+                    else
+                        ch.damage(Math.round(dmg), ThrowingSkill.class);
+                }
             }
-            size = -1;
-            while (list.size() != size){
-                size = list.size();
-                for (Char ch : list.toArray(new Char[0])){
-                    if (ch.alignment == Char.Alignment.ALLY)
-                        continue;
+            if (crit && hasCard(CommonCard.WA2000.SV_98))
+                Buff.affect(Dungeon.hero, AttackDMG_Add.SV_98.class, 5F);
 
-                    int oldPos = ch.pos;
+            if (hasCard(RareCard.UNIVERSAL.M1887)) {
+                size = -1;
+                while (list.size() != size) {
+                    size = list.size();
+                    for (Char ch : list.toArray(new Char[0])) {
+                        if (ch.alignment == Char.Alignment.ALLY || ch instanceof NPC)
+                            continue;
 
-                    CardAffect.throwChar(ch, center, 2, false, false);
+                        int oldPos = ch.pos;
 
-                    if (oldPos != ch.pos)
-                        list.remove(ch);
+                        CardAffect.throwChar(ch, center, 2, false, false);
 
+                        if (oldPos != ch.pos)
+                            list.remove(ch);
+                    }
                 }
             }
         }
@@ -196,8 +216,8 @@ public class ThrowingSkill extends SkillItem {
                 int cell = affect_Center + i;
                 Char ch = Actor.findChar(cell);
                 if (ch != null && ch.alignment != Char.Alignment.ALLY){
-                    ch.damage(Math.round(M4A1.damageRoll( 0.2F )), this);
                     CardAffect.fireAllAffect(ch);
+                    ch.damage(CardCalculator.fireDamage(false), this);
                 }
             }
         }

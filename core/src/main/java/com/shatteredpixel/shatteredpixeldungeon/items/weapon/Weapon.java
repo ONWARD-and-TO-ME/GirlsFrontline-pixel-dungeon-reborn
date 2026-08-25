@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardCalculator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -276,21 +277,26 @@ abstract public class Weapon extends KindOfWeapon {
 	
 	@Override
 	public float delayFactor( Char owner ) {
-        float baseDelay = baseDelay(owner) * (1f/speedMultiplier(owner));
-        if(baseDelay<2F){
-            //攻速小于2回合，返回常态值，无论是基础攻速还是受一次狂怒增益后的攻速
-            return baseDelay;
-        }
-        if((1f/speedMultiplier(owner))>1F){
-            //攻速乘数大于1时，即诅咒时，返回常态值
-            return baseDelay;
-        }
-        //受狂怒影响后攻速仍大于2回合，额外吃一倍狂怒戒指收益
-        //吃两倍狂怒收益小于2回合时，设置为2回合
-        //吃两倍狂怒后仍大于2回合，则返回两倍狂怒收益的攻速
-        return Math.max(2, baseDelay* (1f/speedMultiplier(owner)));
+		float delay = delayFuror(owner);
+		if (owner instanceof Hero)
+			return CardCalculator.cardDelayFactor((Hero) owner, delay, this);
+		return delay;
 	}
+	private float delayFuror( Char owner ){
+		float baseDelay = baseDelay(owner) * (1f/speedMultiplier(owner));
+		if(baseDelay<2F)
+			//攻速小于2回合，返回常态值，无论是基础攻速还是受一次狂怒增益后的攻速
+			return baseDelay;
 
+		if((1f/speedMultiplier(owner))>1F)
+			//攻速乘数大于1时，即诅咒时，返回常态值
+			return baseDelay;
+
+		//受狂怒影响后攻速仍大于2回合，额外吃一倍狂怒戒指收益
+		//吃两倍狂怒收益小于2回合时，设置为2回合
+		//吃两倍狂怒后仍大于2回合，则返回两倍狂怒收益的攻速
+		return Math.max(2, baseDelay* (1f/speedMultiplier(owner)));
+	}
 	protected float baseDelay( Char owner ){
 		float delay = augment.delayFactor(DLY);
 		if (owner instanceof Hero) {
@@ -310,7 +316,6 @@ abstract public class Weapon extends KindOfWeapon {
 
 		return delay;
 	}
-
 	protected float speedMultiplier(Char owner ){
 		return RingOfFuror.attackSpeedMultiplier(owner);
 	}

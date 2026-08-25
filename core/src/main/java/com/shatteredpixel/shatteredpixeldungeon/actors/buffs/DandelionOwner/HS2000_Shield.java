@@ -1,5 +1,6 @@
-package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
+package com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -11,7 +12,7 @@ import com.watabou.utils.Bundle;
 import java.util.Collections;
 import java.util.LinkedList;
 
-public class DandelionShield extends ShieldBuff {
+public class HS2000_Shield extends ShieldBuff {
 	
 	{
 		type = buffType.POSITIVE;
@@ -87,7 +88,7 @@ public class DandelionShield extends ShieldBuff {
 	
 	@Override
 	public void tintIcon(Image icon) {
-		icon.hardlight(0.5f, 1f, 2f);
+		tintIconNeedDraw(icon);
 	}
 
 	@Override

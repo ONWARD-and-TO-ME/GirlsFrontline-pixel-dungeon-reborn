@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Dummy_Core;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -12,7 +13,11 @@ import java.util.LinkedList;
 
 public class Core_Calling extends Buff {
     private LinkedList<Dummy_Core> cores = new LinkedList<>();
-    private LinkedList<Integer> callingTimes = new LinkedList<>();
+    private final LinkedList<Integer> callingTimes = new LinkedList<>();
+    public void addCore(Dummy_Core core){
+        cores.add(core);
+        callingTimes.add(5);
+    }
     @Override
     public boolean act(){
         spend(TICK);
@@ -38,11 +43,29 @@ public class Core_Calling extends Buff {
             callingTimes.removeFirst();
             cores.removeFirst().summon(pos);
         }
+        if (cores.isEmpty())
+            detach();
 
         return true;
     }
-    public void addCore(Dummy_Core core){
-        cores.add(core);
-        callingTimes.add(5);
+    private static final String CALLING_CORES = "CALLING_CORES";
+    private static final String CALLING_TIMES = "CALLING_TIMES";
+    @Override
+    public void storeInBundle( Bundle bundle ){
+        super.storeInBundle(bundle);
+        bundle.put(CALLING_CORES, cores);
+        int[] times = new int[callingTimes.size()];
+        for (int i = 0; i < callingTimes.size(); i++)
+            times[i] = callingTimes.get(i);
+        bundle.put(CALLING_TIMES, times);
+    }
+    @Override
+    public void restoreFromBundle( Bundle bundle ){
+        super.restoreFromBundle(bundle);
+        cores = bundle.getLinkedList(CALLING_CORES, Dummy_Core.class);
+        int[] times = bundle.getIntArray(CALLING_TIMES);
+        callingTimes.clear();
+        for (int time : times)
+            callingTimes.add(time);
     }
 }

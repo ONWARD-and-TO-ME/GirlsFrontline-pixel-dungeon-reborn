@@ -1,0 +1,125 @@
+package com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner;
+
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CommonCard;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.FinalCard;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.RareCard;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfShroudingFog;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
+
+public class VHS_Hack extends CounterBuff implements ActionIndicator.Action {
+    {
+        revivePersists = true;
+    }
+    @Override
+    public boolean act(){
+        spend(TICK);
+        if (hasCard(FinalCard.VHS.AUG)){
+            boolean notice = false;
+            for (Mob m : Dungeon.level.mobs){
+                if (m.alignment == Char.Alignment.ENEMY
+                        && m.enemySeen
+                        && target.fieldOfView[m.pos]) {
+                    notice = true;
+                    break;
+                }
+            }
+            if (notice)
+                charge(1F);
+        }
+        return true;
+    }
+    private static boolean hasCard( Card card ){
+        return CardSelector.INSTANCE().hasCard(card);
+    }
+    public void fullCharge(){
+        countClear();
+        hackLeft++;
+    }
+    public void charge( float charge ){
+        if (!hasCard(FinalCard.VHS.AUG) && (isHacking() || hackLeft > 0))
+            return;
+
+        countUp(charge);
+        if (count() >= chargeNeed()){
+            countClear();
+            hackLeft += addHack();
+        }
+    }
+    private float chargeNeed(){
+        float need = 5F;
+        if (hasCard(CommonCard.VHS.IDW))
+            need--;
+        if (hasCard(RareCard.VHS.P90))
+            need -= 2;
+        return need;
+    }
+    private int addHack(){
+        int add = 1;
+        if (hasCard(RareCard.VHS.PM_06))
+            add += 2;
+        return add;
+    }
+    private int hackLeft;
+    private boolean hacking = false;
+    public boolean isHacking(){
+        return hacking;
+    }
+    @Override
+    public void fx(boolean on){
+        if (on)
+            ActionIndicator.setAction(this);
+        else
+            ActionIndicator.clearAction(this);
+    }
+    @Override
+    public String actionName() {
+        return isHacking() ? "取消骇入"
+                :"开启骇入";
+    }
+    @Override
+    public Image actionIcon() {
+        Image image = isHacking() ? Icons.Notice(new PotionOfShroudingFog())
+                : Icons.Notice(new PotionOfInvisibility());
+
+        if (!hacking && hackLeft == 0)
+            image.alpha(0.3F);
+        return image;
+    }
+    @Override
+    public void doAction() {
+        if (!hacking && hackLeft == 0)
+            return;
+        hacking = !hacking;
+        if (hacking)
+            hackLeft--;
+        else
+            hackLeft++;
+    }
+    private static final String HACK_LEFT = "HACK_LEFT";
+    private static final String HACKING = "Hacking";
+    @Override
+    public void storeInBundle( Bundle bundle ){
+        super.storeInBundle(bundle);
+        bundle.put(HACKING, hacking);
+        bundle.put(HACK_LEFT, hackLeft);
+    }
+    @Override
+    public void restoreFromBundle( Bundle bundle ){
+        super.restoreFromBundle(bundle);
+        hacking = bundle.getBoolean(HACKING);
+        hackLeft = bundle.getInt(HACK_LEFT);
+    }
+    public static class VHS_Hack_KillingTracker extends FlavourBuff {}
+}

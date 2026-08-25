@@ -1,7 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 
-import com.watabou.utils.Random;
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.addAll;
+import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.hero;
+
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.Puppets;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,13 +12,23 @@ import java.util.HashMap;
 public interface FinalCard extends Card {
     @Override
     default String title(){
-        return "Final: " + Card.super.title();
+        return "终卡：" + cardName();
+    }
+    static void getAllCard( CardSelector selector ){
+        HashMap<FirstCard, FinalCard[]> map = cardMap();
+        for (FirstCard f : map.keySet())
+            for (FinalCard card : map.get(f)){
+                if (selector.FinalCards.contains(card)
+                        || selector.curCards.contains(card))
+                    continue;
+                selector.curCards.add(f);
+            }
     }
     static Card random( CardSelector selector ){
         ArrayList<Card> list = new ArrayList<>();
         HashMap<FirstCard, FinalCard[]> map = cardMap();
         for (FirstCard card : map.keySet())
-            if (selector.hasCard(card))
+            if (selector.contain(card))
                 addAll(list, map.get(card));
         addAll(list, UNIVERSAL.values());
 
@@ -43,35 +56,56 @@ public interface FinalCard extends Card {
         CAWS, S_A_T_8, Webley;
         @Override
         public String title(){
-            return "HS2000 " + FinalCard.super.title();
+            return FirstCard.HS2000.cardName() + " " + FinalCard.super.title();
         }
     }
     enum Vector implements FinalCard{
         G36, KSVK;
         @Override
         public String title(){
-            return "Vector " + FinalCard.super.title();
+            return FirstCard.Vector.cardName() + " " + FinalCard.super.title();
         }
     }
     enum VHS implements FinalCard{
         AUG, PA_15;
         @Override
         public String title(){
-            return "VHS " + FinalCard.super.title();
+            return FirstCard.VHS.cardName() + " " + FinalCard.super.title();
         }
     }
     enum WA2000 implements FinalCard{
         FAL, Python;
         @Override
+        public void onSelect(){
+            if (this == FAL){
+
+            }
+            if (this == Python){
+                CardPoint.AttackDamage_Add.pointUp(CardCalculator.everDamageFactor_Add(true));
+                CardPoint.AttackDelay_Add.pointUp(CardCalculator.everDelayFactor_Add(true));
+            }
+        }
+        @Override
         public String title(){
-            return "WA2000 " + FinalCard.super.title();
+            return FirstCard.WA2000.cardName() + " " + FinalCard.super.title();
         }
     }
     enum General_Liu implements FinalCard{
         Savage_99, VP1915, VSK_94, Kolibri_Pistole;
         @Override
+        public void onSelect(){
+            if (this == Savage_99)
+                CardAffect.getCore(hero(), new Cores.Savage_99());
+            else if (this == VP1915)
+                CardAffect.getCore(hero(), new Cores.VP1915());
+            else if (this == VSK_94)
+                CardAffect.getCore(hero(), new Cores.NormalCore().quantity(3));
+            else if (this == Kolibri_Pistole)
+                CardAffect.getCore(hero(), new Cores.Kolibri_Pistole());
+        }
+        @Override
         public String title(){
-            return "General Liu " + FinalCard.super.title();
+            return FirstCard.General_Liu.cardName() + " " + FinalCard.super.title();
         }
     }
     enum UNIVERSAL implements FinalCard{

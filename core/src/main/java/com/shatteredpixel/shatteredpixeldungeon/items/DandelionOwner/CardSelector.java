@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -22,7 +23,7 @@ public class CardSelector extends Item {
         unique = true;
         defaultAction = AC_CHOOSE;
     }
-    public int bugCoolDownLeft;
+    public int duration;
     public int curCardNum;
     public ArrayList<FirstCard> FirstCards      = new ArrayList<>();
     public ArrayList<CommonCard> CommonCards    = new ArrayList<>();
@@ -40,8 +41,11 @@ public class CardSelector extends Item {
             selector = new CardSelector();
         return selector;
     }
-    public int UpgradeTime(){
-        return bugCoolDownLeft;
+    public void coolDown( int coolDown ){
+        coolDownLeft -= coolDown;
+    }
+    public int upgradeTime(){
+        return duration;
     }
     public boolean hasCard( Card card ){
         if (failureCards.contains(card))
@@ -59,15 +63,21 @@ public class CardSelector extends Item {
         return false;
     }
     public boolean contain( Card card ){
-        return hasCard(card) || curCards.contains(card);
+        return hasCard(card) || curCards.contains(card) || failureCards.contains(card);
+    }
+    public void destroyCard(Card card ){
+        failureCards.add(card);
     }
     @Override
     public ArrayList<String> actions( Hero hero ){
         ArrayList<String> actions = super.actions(hero);
-        if (curCardNum < 8 && coolDownLeft <= 0)
+        if (curCardNum < 8 && coolDownLeft <= 0
+                || !curCards.isEmpty())
             actions.add(AC_SELECT);
         if (!FirstCards.isEmpty())
             actions.add(AC_CHECK);
+        if (Dungeon.isChallenged(Challenges.TEST_MODE))
+            actions.add(AC_DEBUG);
         return actions;
     }
     @Override
@@ -80,6 +90,14 @@ public class CardSelector extends Item {
                 Card.random(this);
             selectCards();
         }
+    }
+    @Override
+    public void debug(){
+        ArrayList<Card> cur = new ArrayList<>(curCards);
+        curCards.clear();
+        Card.getAllCard(this);
+        selectCards();
+        curCards = cur;
     }
     protected CoolDownTracker coolDownTracker;
     @Override
@@ -123,7 +141,7 @@ public class CardSelector extends Item {
                                             FinalCards.add((FinalCard) c);
                                         if (curCardNum++ < 8)
                                             coolDownLeft = 1500 + 500 * curCardNum;
-                                        if (bugCoolDownLeft >= 33333)
+                                        if (duration >= 33333)
                                             coolDownLeft = 4500;
                                         curCards.clear();
                                         if (INSTANCE != null) {
@@ -164,7 +182,7 @@ public class CardSelector extends Item {
             });
     }
     enum storeString{
-        Bug_CoolDown, CoolDownLeft_Card, CurCardNum,
+        duration_CoolDown, CoolDownLeft_Card, CurCardNum,
         First, Common, Rare, Final, cur, failure;
         private static final String cardNum = "_CardsNum_";
         private static final String cardName = "Cards_Name";
@@ -195,7 +213,7 @@ public class CardSelector extends Item {
     @Override
     public void storeInBundle( Bundle bundle ){
         super.storeInBundle(bundle);
-        bundle.put(storeString.Bug_CoolDown.name(), bugCoolDownLeft);
+        bundle.put(storeString.duration_CoolDown.name(), duration);
         bundle.put(storeString.CoolDownLeft_Card.name(), coolDownLeft);
         bundle.put(storeString.CurCardNum.name(), curCardNum);
         storeString.First.store(bundle, FirstCards);
@@ -208,7 +226,7 @@ public class CardSelector extends Item {
     @Override
     public void restoreFromBundle( Bundle bundle ){
         super.restoreFromBundle(bundle);
-        bugCoolDownLeft = bundle.getInt(storeString.Bug_CoolDown.name());
+        duration = bundle.getInt(storeString.duration_CoolDown.name());
         coolDownLeft    = bundle.getInt(storeString.CoolDownLeft_Card.name());
         curCardNum      = bundle.getInt(storeString.CurCardNum.name());
         FirstCards      = storeString.First.restore(bundle, FirstCard.class);
@@ -238,12 +256,16 @@ public class CardSelector extends Item {
             if (coolDownLeft > 0 && (lock == null || lock.regenOn()))
                 coolDownLeft--;
 
-            if (bugCoolDownLeft++ % 33333 == 0) {
+            if (duration++ % 33333 == 0) {
                 int i = curCards.isEmpty() ? 0 : -1;
                 if (curCardNum - i < 8)
                     curCardNum = i;
                 updateQuickslot();
             }
+            if (duration % 500 == 0)
+                CardAffect.halfKilo();
+            if (duration % 1000 == 0)
+                CardAffect.kiloTimes();
             spend(TICK);
             return true;
         }

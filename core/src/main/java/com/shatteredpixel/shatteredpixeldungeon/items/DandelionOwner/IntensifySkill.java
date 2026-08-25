@@ -5,10 +5,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.MoveSpeed;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionShield;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.HS2000_Shield;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
+import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
 
@@ -35,19 +37,19 @@ public class IntensifySkill extends SkillItem {
         int shield = (int) (Math.ceil(Dungeon.curDepth() / 5F) * 3);
         if (hasCard(CommonCard.UNIVERSAL.LWMMG))
             shield += 8;
-        Buff.affect(hero, DandelionShield.class).incShield(shield);
+        Buff.affect(hero, HS2000_Shield.class).incShield(shield);
         getIntensify(hero, 10F);
     }
     private static void blast_INSTANCE( Hero hero ){
         ArrayList<Mob> mobs = hero.getVisibleEnemies();
         for (Mob mob : mobs)
-            Buff.affect(mob, MoveSpeed.SM_LTLX7000.class).addActiveTime(3F);
+            Buff.affect(mob, MoveSpeed.SM_LTLX7000.class).addActiveTime(5F);
 
         int size = -1;
         while (mobs.size() != size){
             size = mobs.size();
             for (Mob mob : mobs.toArray(new Mob[0])){
-                if (mob.alignment == Char.Alignment.ALLY)
+                if (mob.alignment == Char.Alignment.ALLY || mob instanceof NPC)
                     continue;
 
                 int oldPos = mob.pos;
@@ -82,5 +84,14 @@ public class IntensifySkill extends SkillItem {
     private static boolean hasCard( Card card ){
         return CardSelector.INSTANCE().hasCard(card);
     }
-    public static class Intensify extends FlavourBuff { }
+    public static class Intensify extends FlavourBuff {
+        @Override
+        public int icon(){
+            return iconNeedDraw();
+        }
+        @Override
+        public void tintIcon(Image icon) {
+            tintIconNeedDraw(icon);
+        }
+    }
 }
