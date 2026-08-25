@@ -12,7 +12,7 @@ import java.util.HashMap;
 public interface FinalCard extends Card {
     @Override
     default String title(){
-        return "终卡：" + cardName();
+        return "Final：" + cardName();
     }
     static void getAllCard( CardSelector selector ){
         HashMap<FirstCard, FinalCard[]> map = cardMap();

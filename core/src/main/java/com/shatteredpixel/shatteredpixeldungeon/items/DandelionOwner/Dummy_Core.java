@@ -7,7 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public abstract class Dummy_Core extends Item {
     {
-        image = ItemSpriteSheet.SOMETHING;
+        image = ItemSprite.itemSpriteNeedDraw;
     }
     private static final String AC_FIX = "fix";
     private static final String AC_CALL = "call";

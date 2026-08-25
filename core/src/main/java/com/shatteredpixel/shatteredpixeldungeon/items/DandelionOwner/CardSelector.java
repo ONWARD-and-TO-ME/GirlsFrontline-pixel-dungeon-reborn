@@ -9,7 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.canScrollRedButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndWithCanScrollButton;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class CardSelector extends Item {
     {
-        image = ItemSpriteSheet.SOMETHING;
+        image = ItemSprite.itemSpriteNeedDraw;
         unique = true;
         defaultAction = AC_CHOOSE;
     }

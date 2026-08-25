@@ -109,7 +109,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKn
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
 import com.watabou.utils.DeviceCompat;
@@ -119,34 +118,23 @@ import java.util.HashMap;
 
 public enum HeroClass {
 
-	WARRIOR( SurfaceScene.UMP45,
-			HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR ),
-	MAGE( SurfaceScene.G11,
-			HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
-	ROGUE( SurfaceScene.UMP9,
-			HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
-	HUNTRESS( SurfaceScene.HK416,
-			HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
-	TYPE561( SurfaceScene.TYPE56,
-			HeroSubClass.EMP_BOMB, HeroSubClass.GUN_MASTER ),
-	GSH18( SurfaceScene.GSH18,
-			HeroSubClass.FUTURE_STAR, HeroSubClass.MOBILE_MEDICALTABLE ),
-	HK416( SurfaceScene.HK416_,
-			HeroSubClass.NONE, HeroSubClass.NONE ),
-	Dandelion( SurfaceScene.Dandelion ),
-	PUBLIC_1( SurfaceScene.NONE,
-			HeroSubClass.NONE ),
-    NONE( SurfaceScene.NONE,
-			HeroSubClass.NONE );
+	WARRIOR( HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR ),
+	MAGE( HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
+	ROGUE( HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
+	HUNTRESS( HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
+	TYPE561( HeroSubClass.EMP_BOMB, HeroSubClass.GUN_MASTER ),
+	GSH18( HeroSubClass.FUTURE_STAR, HeroSubClass.MOBILE_MEDICALTABLE ),
+	HK416( HeroSubClass.NONE, HeroSubClass.NONE ),
+	Dandelion(),
+	PUBLIC_1( HeroSubClass.NONE ),
+    NONE( HeroSubClass.NONE );
 	private final HeroSubClass[] subClasses;
-	public final int AvatarCode;
     public static final HashMap<String, String> rename = new HashMap<>();
     static {
 
     }
 
-	HeroClass( int AvatarCode, HeroSubClass...subClasses ) {
-		this.AvatarCode = AvatarCode;
+	HeroClass( HeroSubClass...subClasses ) {
 		this.subClasses = subClasses;
 	}
 

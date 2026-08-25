@@ -22,7 +22,7 @@ public enum FirstCard implements Card {
     }
     @Override
     public String title(){
-        return "阵营卡：" + cardName();
+        return "Initial：" + cardName();
     }
     @Override
     public void onSelect(){

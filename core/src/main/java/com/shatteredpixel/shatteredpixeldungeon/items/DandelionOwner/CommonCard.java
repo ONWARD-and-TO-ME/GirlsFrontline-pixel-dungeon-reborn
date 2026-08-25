@@ -14,7 +14,7 @@ import java.util.HashMap;
 public interface CommonCard extends Card {
     @Override
     default String title(){
-        return "小卡：" + cardName();
+        return "Common：" + cardName();
     }
     static void getAllCard( CardSelector selector ){
         HashMap<FirstCard, CommonCard[]> map = cardMap();

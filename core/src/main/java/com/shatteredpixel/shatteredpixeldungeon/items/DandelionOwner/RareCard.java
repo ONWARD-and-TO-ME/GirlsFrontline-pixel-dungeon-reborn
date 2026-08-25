@@ -13,7 +13,7 @@ import java.util.HashMap;
 public interface RareCard extends Card {
     @Override
     default String title(){
-        return "大卡：" + cardName();
+        return "Rare：" + cardName();
     }
     static void getAllCard( CardSelector selector ){
         HashMap<FirstCard, RareCard[]> map = cardMap();

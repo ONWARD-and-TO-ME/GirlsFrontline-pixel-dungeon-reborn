@@ -47,12 +47,21 @@ public class GirlsFrontlinePixelDungeon extends Game {
 	public static Class<? extends PixelScene> previousSceneClass;
 	
 	public GirlsFrontlinePixelDungeon( PlatformSupport platform ) {
-		super(sceneClass==null?WelcomeScene.class:sceneClass,platform );
+		super(sceneClass == null
+				? WelcomeScene.class
+				: sceneClass
+				, platform );
 
 		//Old And New
 		com.watabou.utils.Bundle.addAlias(
 				com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff.class,
 				"com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.G11" );
+
+		com.watabou.utils.Bundle.addAlias(
+				com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfTenacity.class,
+				"com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfElements" );
+		//元素合并至韧性。
+
 	}
 	public static void reportException( Throwable tr ) {
 		Game.GameMode = Dungeon.GameMode;

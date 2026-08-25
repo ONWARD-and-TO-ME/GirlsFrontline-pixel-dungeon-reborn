@@ -186,7 +186,15 @@ public class ItemSprite extends MovieClip {
 
 	public static int itemSpriteNeedDraw = -2;
 	public ItemSprite view( Item item ){
-		view(item.image(), item.glowing());
+		int image = item.image();
+		boolean needDraw = image == itemSpriteNeedDraw;
+		if (needDraw)
+			image = ItemSpriteSheet.ARCANE_RESIN;
+		view(image, item.glowing());
+		if (needDraw){
+			float[] colors = Image.getColors(item.getClass());
+			hardlight(colors[0], colors[1], colors[2]);
+		}
 		Emitter emitter = item.emitter();
 		if (emitter != null && parent != null) {
 			emitter.pos( this );

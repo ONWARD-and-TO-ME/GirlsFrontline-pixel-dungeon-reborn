@@ -25,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
@@ -279,17 +278,13 @@ public class CardAffect {
         M4A1.INSTANCE().intensify_ready = true;
     }
     public static void onThrowing(){
-        if (hasCard(CommonCard.UNIVERSAL.PP_19) && Random.Float() < 0.3F){
-            GLog.p(Messages.get(CardAffect.class, "throwing_charged"));
-            M4A1.INSTANCE().throwing_ready = true;
-        }
+        if (hasCard(CommonCard.UNIVERSAL.PP_19) && Random.Float() < 0.3F)
+            addThrowing();
     }
     public static void onIntensify(){
         if (hasCard(CommonCard.UNIVERSAL.HK512) && Random.Float() < 0.3F)
             addIntensify();
         if (hasCard(RareCard.WA2000.K11))
-            addThrowing();
-        if (hasCard(CommonCard.UNIVERSAL.PP_19) && Random.Float() < 0.3F)
             addThrowing();
     }
     public static void onMove( Hero hero ){
