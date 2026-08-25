@@ -33,6 +33,7 @@ public class GLog {
 	public static final String NEGATIVE		= "-- ";
 	public static final String WARNING		= "** ";
 	public static final String HIGHLIGHT	= "@@ ";
+	public static final String DIY_COLOR		= "￥￥";
 
 	public static final String NEW_LINE	    = "\n";
 	
@@ -66,5 +67,8 @@ public class GLog {
 	
 	public static void h( String text, Object... args ) {
 		i( HIGHLIGHT + text, args );
+	}
+	public static void color( String text, int color, Object... args ){
+		i( DIY_COLOR + color + DIY_COLOR + text, args );
 	}
 }
