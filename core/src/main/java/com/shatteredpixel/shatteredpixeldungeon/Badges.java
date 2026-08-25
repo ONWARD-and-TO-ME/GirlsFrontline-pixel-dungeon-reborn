@@ -997,7 +997,8 @@ public class Badges {
 		if (badge == null || SeedFinder.SeedFinding) {
 			return;
 		}
-        if (Dungeon.isChallenged(TEST_MODE)){
+        if (Dungeon.isChallenged(TEST_MODE) && !local.contains(badge)){
+			local.add(badge);
             GLog.h( Messages.get(Badges.class, "endorsed", badge.title()) );
             GLog.newLine();
             return;

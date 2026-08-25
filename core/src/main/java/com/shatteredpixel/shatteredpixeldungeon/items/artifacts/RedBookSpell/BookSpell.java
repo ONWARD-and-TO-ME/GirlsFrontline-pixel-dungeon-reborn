@@ -7,11 +7,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.RedBook;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 
 import java.util.ArrayList;
 
-public class BookSpell {
+public class BookSpell implements ActionIndicator.Action {
     public static ArrayList<BookSpell> getSpellList(RedBook book, int tier) {
         ArrayList<BookSpell> spells = new ArrayList<>();
         int lvl = book.level();
@@ -55,11 +58,9 @@ public class BookSpell {
         desc += "\n\n" + Messages.get(BookSpell.class, "charge_cost", this.chargeUse);
         return desc;
     }
-
     public int chargeUse = 1;
     public float timeUse = 1;
     public int extraUse = 0;
-
     public void onCast(RedBook book, Hero hero) {
         book.onUse(chargeUse);
         if (extraUse!=0){
@@ -70,10 +71,31 @@ public class BookSpell {
         Item.updateQuickslot();
         Sample.INSTANCE.play("sounds/read.mp3");
     }
-
     public String shortDesc() {
         String Desc = Messages.get(this, "short_desc");
         Desc += "\n" + Messages.get(BookSpell.class, "charge_cost", this.chargeUse);
         return Desc;
+    }
+    @Override
+    public String actionName() {
+        return name();
+    }
+    @Override
+    public Image actionIcon() {
+        return new BuffIcon(this);
+    }
+    @Override
+    public void doAction() {
+        Hero hero = Dungeon.hero;
+        RedBook book;
+        if (hero == null || (book = hero.belongings.getItem(RedBook.class)) == null)
+            return;
+        onCast(book, hero);
+    }
+    public void setAction(){
+        ActionIndicator.setAction(this);
+    }
+    public void resetAction(){
+        ActionIndicator.clearAction(this);
     }
 }

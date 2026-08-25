@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
@@ -34,6 +33,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
@@ -230,10 +231,12 @@ public class DEL extends NPC {
         }
     }
     public static int getMissionGold(int mission){
+        int curBossDepth = (int) Math.ceil(Dungeon.depth / 5F) * 5;
+        int nextBossDepth = curBossDepth / 5 * 6;
         switch (mission){
-            case 0: default: return  (int) (100 * (Statistics.deepestFloor + Dungeon.depth*2)/3F);
-            case 1: return  (int) (80 * (Statistics.deepestFloor + Dungeon.depth*2)/3F);
-            case 2: return  100*(Statistics.deepestFloor - Dungeon.depth + 1);
+            case 0: default: return  new ScrollOfRemoveCurse().value() * (curBossDepth - 1);
+            case 1: return  new ScrollOfUpgrade().value() * (nextBossDepth - 2);
+            case 2: return  new ScrollOfRemoveCurse().value() * (nextBossDepth - 3);
             case 3: return 20;
             case 4: return 100;
 
@@ -375,9 +378,9 @@ public class DEL extends NPC {
         @Override
         public void restoreFromBundle( Bundle bundle ) {
             super.restoreFromBundle( bundle );
-            items = bundle.getBundlableArrayList(ITEM, Item.class);
+            items = bundle.getArrayList(ITEM, Item.class);
             times = bundle.getIntArrayList(TIME);
-            drops = bundle.getBundlableArrayList(DROP, Item.class);
+            drops = bundle.getArrayList(DROP, Item.class);
         }
     }
     public static class RemovingCurse extends FlavourBuff {

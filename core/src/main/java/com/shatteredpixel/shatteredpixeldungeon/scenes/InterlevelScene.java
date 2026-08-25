@@ -56,6 +56,7 @@ import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.NoosaScriptNoLighting;
 import com.watabou.noosa.SkinnedBlock;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.PathFinder;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -424,8 +425,12 @@ public class InterlevelScene extends PixelScene {
 	private void access(){
 
         Mob.holdAllies(Dungeon.level);
-        try{Dungeon.saveAll();}
-        catch(IOException e){Game.reportException(e);}
+        try{
+			Dungeon.saveAll();
+		}
+        catch(IOException e){
+			GirlsFrontlinePixelDungeon.reportException(e);
+		}
 
         Level level=Dungeon.tryLoadLevel(accessLevelId,false);
         if(null==level){
@@ -554,7 +559,10 @@ public class InterlevelScene extends PixelScene {
 				level.map[Dungeon.hero.pos] = Terrain.GRASS;
 			}
 			Dungeon.hero.resurrect();
-			level.drop(new LostBackpack(), invPos);
+			level.drop(new LostBackpack(), invPos).seen = true;
+			for (int i : PathFinder.NEIGHBOURS9)
+				Dungeon.level.mapped[invPos+i] = true;
+			GameScene.updateFog(invPos, 1);
 		}
 
 		Notes.add(Notes.Landmark.LOST_PACK);
