@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfKing;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Recycle;
@@ -143,9 +144,41 @@ public class v0_5_X_Changes {
         changes.addButton(new ChangeButton(new AlchemistSprite(), 0.8F,
                 new AlchemistSprite().idle,
                 "炼金术士",
-        "_-_ 为_明亮之拳_(BrightFist)替换了全新的_炼金术士_贴图。\n"+
-        "_-_ 新贴图每帧尺寸为20×23像素，拥有完整的待机、移动、近战攻击、远程施法、死亡动画。\n\n"+
-        "_-_ 她的药剂似乎_散发着彩虹般的光芒_……！？光光？！AI写的啥阴？"
+        "_-_ 为_明亮之拳_(BrightFist)替换为全新的_炼金术士_贴图。\n"
+        ));
+        changes.addButton(new ChangeButton(new Hero(HeroClass.Dandelion), 0.8F,
+                "丹德莱",
+        "_-_ 新增自机角色_丹德莱_，以卡牌指令系统为核心玩法。\n"+
+        "_-_ 丹德莱拥有独特的_卡牌部署系统_，通过抽卡器在局内获取各类卡牌增强战斗力。\n"+
+        "_-_ 初始武器为_M4A1_，可通过卡牌效果获得投掷技能和强化技能。\n"+
+        "_-_ 喝下_神意合剂_时可随机获得一个天赋。\n"+
+        "_-_ 丹德莱拥有专属的_嬗变机制_：依据行动类型来减速，不同行动有不同影响。"
+        ));
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+        changes.hardlight( CharSprite.POSITIVE );
+        changeInfos.add(changes);
+        changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.RING_GARNET),
+                "瞄准镜增强",
+        "_-_ _韧性瞄准镜_合并了原_元素瞄准镜_的全部效果：现在韧性瞄准镜在提供减伤的同时，还提供元素抗性（火焰、雷电、气体等）并降低负面效果持续时间。\n"+
+        "_-_ 元素瞄准镜的位置被全新的_超频瞄准镜_取代。"));
+        changes.addButton(new ChangeButton(new RingOfKing(),
+                "超频瞄准镜",
+        "_-_ 新增瞄准镜：_超频瞄准镜_。\n"+
+        "_-_ 装备后，当前武器与护甲获得_额外的等级_，同时它们的力量需求也会增加。\n"+
+        "_-_ 此瞄准镜_合并了原韧性与元素瞄准镜的效果_——韧性瞄准镜现在额外提供元素抗性。"
+        ));
+        changes.addButton(new ChangeButton(Icons.get(Icons.DISPLAY),
+                "0层选择角色",
+        "_-_ 新增_0层角色选择_功能，在开始游戏前可以选择想要使用的角色。\n"+
+        "_-_ 白板416角色占位（仅debug模式出现）。"
+        ));
+        changes.addButton(new ChangeButton(Icons.get(Icons.MAGNIFY),
+                "快捷行动切换",
+        "_-_ _长按_快捷行动按钮可以切换Action，方便快速选择不同操作。"
+        ));
+        changes.addButton(new ChangeButton(Icons.get(Icons.WARNING),
+                "自定义GLog颜色",
+        "_-_ 新增自定义颜色GLog工具，支持更多颜色输出，方便模组开发与调试。"
         ));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
@@ -157,16 +190,31 @@ public class v0_5_X_Changes {
                     "_-_ _生日蛋糕_:新增四种蛋糕款式可选：薄荷巧克力、草莓奶油、烘焙可可、抹茶青苹果，在节日蛋糕设置界面中可以选择喜欢的款式。\n"
                     +"_-_ _重置天赋图标_:以统一图标风格为少前地牢风格。我们拥有了更贴合少前世界观的图标。\n"
                     + "_-_ _新增边框UI_：更新符合少前地牢风格的天赋边框并入状态面板风格切换机制。\n"
-                    + "_-_ _生日蛋糕设置窗口_:增加蛋糕款式选择功能，窗口大小自适应调整。_这个是ai帮忙写的没啥用可以删掉。_\n"
+                    + "_-_ _生日蛋糕设置窗口_:增加蛋糕款式选择功能，窗口大小自适应调整。\n"
             );
             miscChanges.add(
                     "_-_ 修复了WndOptions窗口在按钮数量不是整行倍数时按钮超出窗口边界的问题。\n"
                     + "_-_ 指挥妖精、双生妖精、增员妖精新增独立物品图标。\n"
                     + "_-_ 新增投掷武器：_CZ75投掷斧_，1阶、力量需求9、无限耐久、回旋镖机制、可升级附魔，但当前仅在测试道具中可获取。（是的它回来了）\n"
-                    +"_-_ 修复了CZ75投掷斧从快捷栏投掷后不返回快捷栏的问题，投掷后会自动回到原快捷栏位置。_这个也可以删掉。_\n"
+                    +"_-_ 修复了CZ75投掷斧从快捷栏投掷后不返回快捷栏的问题，投掷后会自动回到原快捷栏位置。\n"
             );
             miscChanges.add(
-                    "_-_ 等待编辑...\n"
+                    "_-_ _天赋贴图_初步优化，统一了风格。\n"
+                    + "_-_ _天赋文本_进行了调整与修正。\n"
+            );
+            miscChanges.add(
+                    "_-_ 卡牌文案路径索引建立，为后续卡牌本地化打基础。\n"
+                    + "_-_ 抽卡器加入_失效卡牌的ArrayList_，移除了未使用的import。\n"
+                    + "_-_ 丹德莱依据行动类型来减速的_代码模板_完成，相关代码已受影响。\n"
+                    + "_-_ _神意合剂_对丹德莱的效果已整理完成。\n"
+                    +"_-_ 由G11发射_诅咒子弹_触发嬗变时，将会对G11自身进行嬗变。\n"
+            );
+            miscChanges.add(
+                "_-_ 修复了_兵蚁群_假死时也计入祭坛经验的问题，现在将在5回合后结算（即首次假死不计入）。\n"
+                    + "_-_ 修复了一系列_合剂_不触发使用药水的天赋的问题。\n"
+                    + "_-_ 修复了_图鉴_显示局内标签文本的问题。\n"
+                    + "_-_ 修复了之前不小心改掉的一些东西。\n"
+                    + "_-_ 主动拆除_NDB防御塔_（哨卫）时，现在可回收一定的充能。"
             );
         }
         changes.addButton(new ChangeButton(new BlacksmithSprite(), 0.8F,
