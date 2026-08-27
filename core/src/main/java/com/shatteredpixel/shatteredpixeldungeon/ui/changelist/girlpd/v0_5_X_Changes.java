@@ -157,16 +157,14 @@ public class v0_5_X_Changes {
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
-        changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.RING_GARNET),
-                "瞄准镜增强",
-        "_-_ _韧性瞄准镜_合并了原_元素瞄准镜_的全部效果：现在韧性瞄准镜在提供减伤的同时，还提供元素抗性（火焰、雷电、气体等）并降低负面效果持续时间。\n"+
-        "_-_ 元素瞄准镜的位置被全新的_超频瞄准镜_取代。"));
-        changes.addButton(new ChangeButton(new RingOfKing(),
-                "超频瞄准镜",
-        "_-_ 新增瞄准镜：_超频瞄准镜_。\n"+
-        "_-_ 装备后，当前武器与护甲获得_额外的等级_，同时它们的力量需求也会增加。\n"+
-        "_-_ 此瞄准镜_合并了原韧性与元素瞄准镜的效果_——韧性瞄准镜现在额外提供元素抗性。"
-        ));
+        changes.addButton(new ChangeButton(new Object[]{new ItemSprite(ItemSpriteSheet.RING_GARNET), new RingOfKing()},
+                new String[]{"瞄准镜增强", "超频瞄准镜"},
+                new String[]{
+                        "_-_ _韧性瞄准镜_合并了原_元素瞄准镜_的效果：现在韧性瞄准镜在提供减伤的同时，还提供元素抗性（火焰、雷电、气体等）并降低负面效果持续时间。\n——合并参考来源于魔绫地牢。",
+                        "_-_ 新增瞄准镜：_超频瞄准镜_，填补原元素瞄准镜的位置。\n"+
+                        "_-_ 装备后，当前武器与护甲获得_额外的等级_，同时它们的力量需求也会增加。\n"+
+                        "_-_ 额外等级与额外力量需求的数值一致，随瞄准镜等级提升而增加。\n——来源于萝卜地牢的力量。（国王之戒）"
+                }));
         changes.addButton(new ChangeButton(Icons.get(Icons.DISPLAY),
                 "0层选择角色",
         "_-_ 新增_0层角色选择_功能，在开始游戏前可以选择想要使用的角色。\n"+
