@@ -11,7 +11,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Atta
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.HS2000_Shield;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.MoveSpeed;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.S_M82A1;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.VHS_Hack;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Vulnerability;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Weakly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
@@ -19,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.Puppet;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.Puppets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
@@ -26,8 +26,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -35,13 +33,30 @@ import java.util.ArrayList;
 public class CardAffect {
     private static float partialShield = 0;
     //这个不需要存档，即便靠跨存档进行操作或者关闭重启，也就多一点或者少一点护盾。
+    private static int attackMask = 0;
+    private static final int Type_97_SHOTGUN = 1;
+    private static final int Kar_98k = 2;
+    public static int cardAttackProc( Hero hero, Char enemy, int damage, int baseDMG, KindOfWeapon wep ) {
+        float dmg = damage;
+        if (hasCard(FirstCard.VHS))
+            dmg = CardCalculator.VHS_Hack_Proc(hero, enemy, dmg, wep);
+        dmg += CardCalculator.cardAttackProc_NormalAdd(hero, wep);
+        if (!(wep instanceof M4A1)) {
+            //此二者已在M4A1damageRoll执行。
+            dmg = CardCalculator.cardAttackProc_Add(hero, dmg, false);
+            dmg = CardCalculator.cardAttackProc_Mul(hero, dmg, false);
+        }
+        int d = tryCrit(dmg, wep instanceof M4A1);
+        if (hasCard(RareCard.General_Liu.CZ75))
+            d /= 2;
+        if (hasCard(RareCard.UNIVERSAL.Type_97_SHOTGUN))
+            d /= 2;
+        affectAfterAttack(hero, enemy, baseDMG, wep);
+        return d;
+    }
     private static void affectAfterAttack( Hero hero, Char enemy, int baseDMG, KindOfWeapon wep ){
         if (hasCard(FirstCard.HS2000)){
-            float s = 1;
-            if (hasCard(RareCard.HS2000.KSG))
-                s++;
-            if (hasCard(FinalCard.HS2000.S_A_T_8))
-                s += 2;
+            float s = CardCalculator.shieldPerHit();
             if (!(wep instanceof M4A1))
                 s *= wep.mulByDelay(hero);
             partialShield += s;
@@ -58,71 +73,40 @@ public class CardAffect {
         if (hasCard(CommonCard.UNIVERSAL.USAS_12))
             Buff.affect(enemy, MoveSpeed.SM_USAS_12.class).upgrade().setActiveTime(5F);
 
-        if (hasCard(RareCard.UNIVERSAL.Type_97_SHOTGUN)){
-            if (!Ignore_Type_97_SHOTGUN){
-                Ignore_Type_97_SHOTGUN = true;
-                ArrayList<Mob> mobs = new ArrayList<>();
-                for (Mob m : hero.getVisibleEnemies()) {
-                    if (m.alignment == Char.Alignment.ALLY || m instanceof NPC)
-                        continue;
-                    if (hero.canAttack(m))
-                        mobs.add(m);
-                }
-                if (mobs.isEmpty())
-                    if (enemy instanceof Mob)
-                        mobs.add((Mob) enemy);
-                if (mobs.isEmpty())
-                    Ignore_Type_97_SHOTGUN = false;
-                else
-                    //攻击，Hero先执行attack再spend，attackProc在attack中执行，所以过程中加入Actor会及时结算。
-                    //第一段攻击，状态值为false，所以当前段伤害/2，进入此处，将状态值赋值为true，加入一个Actor记录下半段攻击，攻击的伤害为进入CardAffect的原始伤害。
-                    addDoubleAttack(hero, Random.element(mobs), 0.5F, baseDMG);
-                    //第二段伤害需要落后于第一段伤害
+        if (hasCard(RareCard.UNIVERSAL.Type_97_SHOTGUN) && (attackMask & Type_97_SHOTGUN) == 0) {
+            ArrayList<Mob> mobs = new ArrayList<>();
+            for (Mob m : hero.getVisibleEnemies()) {
+                if (m.alignment == Char.Alignment.ALLY || m instanceof NPC)
+                    continue;
+                if (hero.canAttack(m))
+                    mobs.add(m);
             }
-            else
-                //第二段攻击，状态值为true，进入此段，不会变成死循环。将状态值赋值为false，为下一次攻击做准备。
-                Ignore_Type_97_SHOTGUN = false;
+            if (mobs.isEmpty())
+                if (enemy instanceof Mob)
+                    mobs.add((Mob) enemy);
+            if (!mobs.isEmpty())
+                addDoubleAttack(hero, Random.element(mobs), baseDMG, attackMask | Type_97_SHOTGUN);
         }
-        if (hasCard(FinalCard.UNIVERSAL.Kar98k)){
-            if (!Ignore_Kar98k){
-                Ignore_Kar98k = true;
-                addDoubleAttack(hero, enemy, 1F, baseDMG);
-            }
-            else
-                Ignore_Kar98k = false;
-        }
+        if (hasCard(FinalCard.UNIVERSAL.Kar98k) && (attackMask & Kar_98k) == 0)
+            addDoubleAttack(hero, enemy, baseDMG, attackMask | Kar_98k);
         if (hasFailCard(RareCard.UNIVERSAL.FP_6) && Random.Float() < 0.15F)
             throwChar(enemy, hero.pos, 2, false, false);
     }
-    private static void addDoubleAttack( Hero hero, Char enemy, float dmgMulti, int damage ){
+    private static void addDoubleAttack(Hero hero, Char enemy, int damage, int mask ){
         Actor.add(new Actor() {
             @Override
             protected boolean act() {
-                hero.attack(enemy, damage, dmgMulti, 0, Char.INFINITE_ACCURACY);
-                Actor.remove(this);
+                attackMask = mask;
+                try {
+                    hero.attack(enemy, damage, 1F, 0F, Char.INFINITE_ACCURACY);
+                } finally {
+                    //虽然我感觉无需try-finally，但是AI推荐。
+                    attackMask = 0;
+                    Actor.remove(this);
+                }
                 return true;
             }
         });
-    }
-    private static boolean Ignore_Type_97_SHOTGUN = false;
-    private static boolean Ignore_Kar98k = false;
-    public static int cardAttackProc( Hero hero, Char enemy, int damage, int baseDMG, KindOfWeapon wep ){
-        float dmg = damage;
-        if (hasCard(FirstCard.VHS))
-            dmg = VHS_Hack_Proc(hero, enemy, dmg, wep);
-        dmg += CardCalculator.cardAttackProc_NormalAdd(hero, wep);
-        if (!(wep instanceof M4A1)) {
-            //此二者已在M4A1damageRoll执行。
-            dmg = CardCalculator.cardAttackProc_Add(hero, dmg, false);
-            dmg = CardCalculator.cardAttackProc_Mul(hero, dmg, false);
-        }
-        int d = tryCrit(dmg, wep instanceof M4A1);
-        if (hasCard(RareCard.General_Liu.CZ75))
-            d /= 2;
-        if (hasCard(RareCard.UNIVERSAL.Type_97_SHOTGUN) && !Ignore_Type_97_SHOTGUN)
-            d /= 2;
-        affectAfterAttack(hero, enemy, baseDMG, wep);
-        return d;
     }
     public static void fireAllAffect(Char ch){
         if (hasCard(CommonCard.Vector.Type_64))
@@ -144,116 +128,6 @@ public class CardAffect {
         if (hasCard(FinalCard.Vector.KSVK))
             Buff.affect(ch, Vulnerability.V_KSVK.class).upgrade().setActiveTime(5F);
     }
-    public static float VHS_Hack_Proc( Hero hero, Char enemy, float damage, KindOfWeapon wep ){
-        VHS_Hack hack = Buff.affect(hero, VHS_Hack.class);
-        boolean isM4A1 = wep instanceof M4A1;
-        float delay = wep.delayFactor(hero);
-        if (!hack.isHacking()){
-            if (isM4A1)
-                hack.charge(1F);
-            else
-                hack.charge(GameMath.gate(0.5F, delay, 2F));
-            return damage;
-        }
-        float add = 0;
-        if (hasCard(CommonCard.VHS.Ak5))
-            add += 5;
-        if (hasCard(CommonCard.VHS.PM1910)) {
-            float mul = isM4A1 ? 2 : 0.75F;
-            add += Math.min(0.4F * (hero.HT - hero.HP), CardCalculator.M4A1max(mul));
-        }
-        if (hasCard(CommonCard.VHS.Thunder))
-            add += Math.min(enemy.HT * 0.02F, 15);
-        if (hasCard(RareCard.VHS.TAC_50))
-            add += Math.min(enemy.HT * 0.05F, 30);
-
-        int dmg = tryCrit(damage * VHS_Hack_Factor() + add, isM4A1);
-        if (hasCard(RareCard.VHS.Zas_M21)) {
-            float mul = 1F;
-            ArrayList<Char> mobs = new ArrayList<>();
-            for (int i : PathFinder.NEIGHBOURS25) {
-                int cell = i + enemy.pos;
-                Char m = Actor.findChar(cell);
-                if (m == null || m.alignment == Char.Alignment.ALLY || m instanceof NPC)
-                    continue;
-                if (m == enemy)
-                    continue;
-                if (mul > 0.5F)
-                    mul -= 0.1F;
-                mobs.add(m);
-            }
-            for (Char ch : mobs) {
-                int finalDmg = dmg;
-                float finalMul = mul;
-                Actor.add(new Actor() {
-                    @Override
-                    protected boolean act() {
-                        ch.damage(Math.round(finalDmg * finalMul), VHS_Hack.class);
-                        Actor.remove(this);
-                        return true;
-                    }
-                });
-            }
-        }
-        if (hasCard(RareCard.VHS.MDR)) {
-            dmg /= 5;
-            for (Mob m : hero.getVisibleEnemies()){
-                if (m.alignment == Char.Alignment.ALLY || m instanceof NPC)
-                    continue;
-                if (m == enemy)
-                    continue;
-                int finalDmg = dmg;
-                Actor.add(new Actor() {
-                    @Override
-                    protected boolean act() {
-                        m.damage(finalDmg, VHS_Hack.class);
-                        Actor.remove(this);
-                        return true;
-                    }
-                });
-                VHS_Hack_Affect(m);
-            }
-        }
-        if (hasCard(RareCard.VHS.RFB)){
-            if (enemy.buff(VHS_Hack.VHS_Hack_KillingTracker.class) == null)
-                Actor.add(new Actor() {
-
-                    {
-                        actPriority = VFX_PRIO;
-                    }
-
-                    @Override
-                    protected boolean act() {
-                        if (enemy.isAlive()) {
-                            hack.fullCharge();
-                            Buff.affect(enemy, VHS_Hack.VHS_Hack_KillingTracker.class, 5F);
-                        }
-                        Actor.remove(this);
-                        return true;
-                    }
-                });
-        }
-        if (hasCard(FinalCard.VHS.PA_15))
-            if (enemy.HP < 0.15F * enemy.HT)
-                Actor.add(new Actor() {
-                    @Override
-                    protected boolean act() {
-                        enemy.damage(enemy.HT / 4, VHS_Hack.class);
-                        Actor.remove(this);
-                        return true;
-                    }
-                });
-
-        return dmg;
-    }
-    private static float VHS_Hack_Factor(){
-        float factor = 1F;
-        if (hasCard(CommonCard.VHS.EM_2))
-            factor += 0.5F;
-        if (hasCard(CommonCard.VHS.SAR_21))
-            factor += (upgradeTimes() / 1000F) * 0.08F;
-        return factor;
-    }
     public static void VHS_Hack_Affect( Char ch ){
         if (hasCard(CommonCard.VHS.M82))
             Buff.affect(ch, Weakly.W_M82.class).upgrade().setActiveTime(8F);
@@ -267,7 +141,7 @@ public class CardAffect {
             Buff.affect(ch, AttackSpeed.SA_Spitfire.class).setActiveTime(15F);
 
         if (hasCard(RareCard.VHS.M82A1))
-            Buff.affect(ch, S_M82A1.class).setActiveTime(5F);
+            Buff.affect(ch, S_M82A1.class).setActiveTime(8F);
     }
     private static void addThrowing(){
         GLog.p("已向M4A1填充瞬发投掷技能。");
@@ -308,21 +182,7 @@ public class CardAffect {
                 : Math.round(baseDmg);
     }
     public static boolean crit(){
-        float rate = 0F;
-        if (Dungeon.hero.buff(IntensifySkill.Intensify.class) != null)
-            rate += 0.1F;
-        if (hasCard(FirstCard.WA2000))
-            rate += 0.3F;
-        if (hasFailCard(CommonCard.UNIVERSAL.Mk48))
-            rate += 0.2F;
-        if (hasCard(CommonCard.WA2000.SSG3000)
-                && Dungeon.hero.buff(IntensifySkill.Intensify.class) != null)
-            rate += 0.6F;
-        if (hasCard(RareCard.WA2000.PKP))
-            rate += 0.5F;
-        if (hasCard(RareCard.WA2000.MOSIN_NAGANT))
-            rate += (float) Math.floor(upgradeTimes() / 1000F) * 0.02F;
-        return Random.Float() < rate;
+        return Random.Float() < CardCalculator.crit();
     }
     public static void getCore( Hero hero, Dummy_Core core ){
         if (!core.doPickUp(hero))
@@ -349,6 +209,12 @@ public class CardAffect {
             puppet.damageMul *= 0.3F;
             puppet.attackSpeedMul *= 0.3F;
         }
+        if (puppet instanceof Puppets.C93)
+            puppet.htMul *= 0.75F;
+        if (puppet instanceof Puppets.Savage_99)
+            puppet.damageMul *= 2F;
+        if (puppet instanceof Puppets.VP1915)
+            puppet.htMul *= 2F;
     }
     public static <T extends Puppet> void puppetDie( T puppet ){
         if (hasCard(CommonCard.General_Liu.Rex_Zero_1))

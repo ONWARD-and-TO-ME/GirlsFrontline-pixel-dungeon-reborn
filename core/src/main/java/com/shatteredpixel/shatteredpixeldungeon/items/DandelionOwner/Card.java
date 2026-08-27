@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundle;
@@ -62,17 +63,16 @@ public interface Card {
         return Dungeon.hero;
     }
     String extraKey = ".extra";
-    static String extraByTime(Card card, int mul){
-        CardSelector selector = CardSelector.INSTANCE();
-        int i = selector.upgradeTime() / 1000;
-        return EnumString(card, extraKey, i * mul);
-    }
+    String fail = "已失效";
     Class<? extends Card> getCardClass();
+    default float chance( Hero hero ){
+        return 0;
+    }
     static String EnumString(Card card, String key, Object... args){
         return Messages.get(card.getCardClass(), card.getCard().name() + key, args);
     }
     enum CardPoint{
-        General_Liu_KillingTimes, R93_HitPoint,
+        R93_HitPoint,
         AttackDamage_Add, AttackDelay_Add;
         private float point;
         private static final String CardPointBundle = "Card_Point_Bd";
@@ -110,5 +110,26 @@ public interface Card {
                 if (b.contains(c.name()))
                     c.point = b.getFloat(c.name());
         }
+    }
+    default String damageFactor(){
+        return EnumString(this, extraKey, CardCalculator.everDamageFactor_Add(true) * 100);
+    }
+    default String delayFactor(){
+        return EnumString(this, extraKey, CardCalculator.everDelayFactor_Add(true) * 100);
+    }
+    default String critFactor(){
+        return EnumString(this, extraKey, CardCalculator.critFactor() * 100);
+    }
+    default String crit(){
+        return EnumString(this, extraKey, CardCalculator.crit() * 100);
+    }
+    default String normalChance(){
+        return EnumString(this, extraKey, Math.round(chance(hero()) * 100));
+    }
+    static int shield( Hero hero ){
+        int shield = 0;
+        for (ShieldBuff shieldBuff : hero.buffs(ShieldBuff.class))
+            shield += shieldBuff.shielding();
+        return shield;
     }
 }

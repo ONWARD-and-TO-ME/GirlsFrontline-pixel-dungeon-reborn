@@ -78,7 +78,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.En
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.ImmortalShieldAffecter;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Potential;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCleansing;
@@ -313,7 +312,7 @@ public abstract class Char extends Actor {
 		}
 	}
 
-	 public boolean attack( Char enemy ){
+	public boolean attack( Char enemy ){
 		return attack(enemy, 1f, 0f, 1f);
 	}
 	public boolean attack( Char enemy, float dmgMulti, float dmgBonus, float accMulti ) {
@@ -367,8 +366,7 @@ public abstract class Char extends Actor {
 			}
 			if (baseDmg != Integer.MIN_VALUE)
 				dmg = baseDmg;
-
-			dmg = Math.round(dmg*dmgMulti);
+			dmg = Math.round(dmg * dmgMulti);
 
 			Berserk berserk = buff(Berserk.class);
 			if (berserk != null) dmg = berserk.damageFactor(dmg);
@@ -399,6 +397,9 @@ public abstract class Char extends Actor {
 			if ( enemy.buff( Vulnerable.class ) != null){
 				effectiveDamage *= 1.33f;
 			}
+
+			if (baseDmg != Integer.MIN_VALUE)
+				effectiveDamage = Math.round(baseDmg * dmgMulti + dmgBonus);
 
 			effectiveDamage = attackProc( enemy, effectiveDamage );
 

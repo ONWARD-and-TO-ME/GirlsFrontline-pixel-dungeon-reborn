@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GreatCrab;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.LeatherArmor;
@@ -375,6 +376,7 @@ public class Ghost extends NPC {
 		public static void complete() {
 			weapon = null;
 			armor = null;
+			CardSelector.INSTANCE().coolDown(1000);
 			
 			Notes.remove( Notes.Landmark.GHOST );
 		}

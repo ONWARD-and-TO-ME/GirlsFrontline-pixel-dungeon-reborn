@@ -28,6 +28,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.ActiveAbstract;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Buff_Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
@@ -178,7 +180,9 @@ public class Ghoul extends Mob {
 					Buff.prolong(this, SacrificialFire.Marked.class, 5F);
 				}else if (!(buff instanceof AllyBuff)
 						&& (!(buff instanceof ChampionEnemy))
-						&& !(buff instanceof DwarfKing.KingDamager)) {
+						&& !(buff instanceof DwarfKing.KingDamager)
+						&& !(buff instanceof ActiveAbstract.NotDetach)
+						&& !(buff instanceof Buff_Statistics)) {
 					buff.detach();
 				}
 			}

@@ -1,9 +1,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 
+import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.EnumString;
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.addAll;
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.hero;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.Puppets;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -77,9 +77,6 @@ public interface FinalCard extends Card {
         FAL, Python;
         @Override
         public void onSelect(){
-            if (this == FAL){
-
-            }
             if (this == Python){
                 CardPoint.AttackDamage_Add.pointUp(CardCalculator.everDamageFactor_Add(true));
                 CardPoint.AttackDelay_Add.pointUp(CardCalculator.everDelayFactor_Add(true));
@@ -88,6 +85,16 @@ public interface FinalCard extends Card {
         @Override
         public String title(){
             return FirstCard.WA2000.cardName() + " " + FinalCard.super.title();
+        }
+        @Override
+        public String extra(){
+            if (this == Python) {
+                if (CardSelector.INSTANCE().hasCard(this))
+                    return EnumString(this, extraKey,
+                            Math.round(CardCalculator.everDamageFactor_Add(true) * 100),
+                            Math.round(CardCalculator.everDelayFactor_Add(true) * 100));
+            }
+            return null;
         }
     }
     enum General_Liu implements FinalCard{

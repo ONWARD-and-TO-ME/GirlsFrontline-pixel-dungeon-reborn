@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.VHS_Hack;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -165,13 +166,20 @@ abstract public class Weapon extends KindOfWeapon {
 	public Enchantment enchantment;
 	public boolean curseInfusionBonus = false;
 	public boolean masteryPotionBonus = false;
-	
+	public int enchantmentProc( Char attacker, Char defender, int damage ){
+		if (enchantment == null)
+			return damage;
+		if (attacker.buff(MagicImmune.class) != null)
+			return damage;
+		VHS_Hack hack = attacker.buff(VHS_Hack.class);
+		if (hack != null && hack.againstEnchant())
+			return damage;
+		return enchantment.proc( this, attacker, defender, damage );
+	}
 	@Override
 	public int proc( Char attacker, Char defender, int damage ) {
-		
-		if (enchantment != null && attacker.buff(MagicImmune.class) == null) {
-			damage = enchantment.proc( this, attacker, defender, damage );
-		}
+
+		damage = enchantmentProc(attacker, defender, damage);
 		
 		if (!levelKnown && attacker == Dungeon.hero) {
 			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero, this) );
@@ -497,7 +505,14 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 
 	public boolean hasEnchant(Class<?extends Enchantment> type, Char owner) {
-		return enchantment != null && enchantment.getClass() == type && owner.buff(MagicImmune.class) == null;
+		if (enchantment == null)
+			return false;
+		if (owner.buff(MagicImmune.class) != null)
+			return false;
+		VHS_Hack hack = owner.buff(VHS_Hack.class);
+		if (hack != null && hack.againstEnchant())
+			return false;
+		return enchantment.getClass() == type;
 	}
 	
 	//these are not used to process specific enchant effects, so magic immune doesn't affect them

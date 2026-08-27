@@ -1,8 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 
-import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.EnumString;
-import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.extraByTime;
-import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.hero;
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.addAll;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -12,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public interface CommonCard extends Card {
+    // 子枚举覆写保持不变（阵营前缀 + 稀有度前缀 + 本地化卡名）
     @Override
     default String title(){
         return "Common：" + cardName();
@@ -26,7 +24,6 @@ public interface CommonCard extends Card {
                 selector.curCards.add(f);
             }
     }
-    // 子枚举覆写保持不变（阵营前缀 + 稀有度前缀 + 本地化卡名）
     static Card random( CardSelector selector ){
         ArrayList<Card> list = new ArrayList<>();
         HashMap<FirstCard, CommonCard[]> map = cardMap();
@@ -63,12 +60,17 @@ public interface CommonCard extends Card {
         }
         @Override
         public String extra(){
-            if (this == Sten_II){
-                Hero hero = hero();
-                int i = 67 - (100 * hero.HP) / hero.HT;
-                return EnumString(this, extraKey, i);
-            }
+            if (this == Sten_II)
+                return normalChance();
             return null;
+        }
+        @Override
+        public float chance( Hero hero) {
+            switch (this) {
+                case Sten_II:
+                    return 0.667F - (float) hero.HP / hero.HT;
+            }
+            return 0F;
         }
     }
     enum Vector implements CommonCard{
@@ -76,12 +78,6 @@ public interface CommonCard extends Card {
         @Override
         public String title(){
             return FirstCard.Vector.cardName() + " " + CommonCard.super.title();
-        }
-        @Override
-        public String extra(){
-            if (this == UKM_2000)
-                return extraByTime(this, 1);
-            return null;
         }
     }
     enum VHS implements CommonCard{
@@ -92,11 +88,17 @@ public interface CommonCard extends Card {
         }
         @Override
         public String extra(){
-            if (this == SAR_21)
-                return extraByTime(this, 8);
-            if (this == IDW)
-                return EnumString(this, extraKey, FirstCard.VHS_HitTime());
+            if (this == PM1910)
+                return normalChance();
             return null;
+        }
+        @Override
+        public float chance( Hero hero ){
+            switch (this) {
+                case PM1910:
+                    return 0.4F * (hero.HT - hero.HP);
+            }
+            return 0F;
         }
     }
     enum WA2000 implements CommonCard{
@@ -112,12 +114,6 @@ public interface CommonCard extends Card {
         public String title(){
             return FirstCard.General_Liu.cardName() + " " + CommonCard.super.title();
         }
-        @Override
-        public String extra(){
-            if (this == Rex_Zero_1 && CardPoint.General_Liu_KillingTimes.point() > 0)
-                return EnumString(this, extraKey, (int) CardPoint.General_Liu_KillingTimes.point());
-            return null;
-        }
     }
     enum UNIVERSAL implements CommonCard{
         Type56_1, _9A91, AEK_999, C96, FAMAS, FX_05, GSh_18, HK512,
@@ -129,13 +125,42 @@ public interface CommonCard extends Card {
         }
         @Override
         public String extra(){
-            if (this == AEK_999) {
-                int i = hero().HT - hero().HP;
-                return EnumString(this, extraKey, i * 0.6F);
+            switch (this){
+                case _9A91:
+                case Super_SASS:
+                    //伤害
+                    return damageFactor();
+                case FX_05:
+                case PK:
+                    //攻速
+                    return delayFactor();
+                case Mk12:
+                    //爆伤比例
+                    return critFactor();
+                case Mk48:
+                    //暴击率
+                    return crit();
             }
-            if (this == FX_05 || this == Super_SASS)
-                return extraByTime(this, 4);
+            if (this == AEK_999)
+                return normalChance();
+            if (this == M1014){
+                if (CardSelector.INSTANCE().failureCards.contains(this))
+                    return fail;
+            }
+
             return null;
+        }
+        @Override
+        public float chance( Hero hero ){
+            switch (this){
+                case _9A91:
+                    return 0.3F;
+                case AEK_999:
+                    return 0.006F * (hero.HT - hero.HP);
+                case K31:
+                    return 1F;
+            }
+            return 0F;
         }
     }
 }

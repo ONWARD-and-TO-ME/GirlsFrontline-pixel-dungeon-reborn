@@ -25,6 +25,11 @@ public class Puppets {
     }
     public static class C93 extends ElitePuppet{
         @Override
+        public boolean canAttack(Char enemy){
+            int distance = Dungeon.level.distance(pos, enemy.pos) ;
+            return distance <= 3 || super.canAttack(enemy);
+        }
+        @Override
         protected boolean canSkill(){
             return enemySeen;
         }
@@ -46,12 +51,17 @@ public class Puppets {
     }
     public static class Savage_99 extends ElitePuppet {
         @Override
+        public boolean canAttack(Char enemy){
+            int distance = Dungeon.level.distance(pos, enemy.pos) ;
+            return distance <= 3 || super.canAttack(enemy);
+        }
+        @Override
         protected boolean canSkill() {
             return enemySeen && enemy != null && enemy.alignment != alignment && canAttack(enemy);
         }
         @Override
         protected float skillCD() {
-            return 50;
+            return 20;
         }
         @Override
         protected void skill() {
@@ -60,6 +70,11 @@ public class Puppets {
         }
     }
     public static class VP1915 extends ElitePuppet {
+        @Override
+        public boolean canAttack(Char enemy){
+            int distance = Dungeon.level.distance(pos, enemy.pos) ;
+            return distance <= 2;
+        }
         @Override
         protected boolean canSkill() {
             return enemySeen;

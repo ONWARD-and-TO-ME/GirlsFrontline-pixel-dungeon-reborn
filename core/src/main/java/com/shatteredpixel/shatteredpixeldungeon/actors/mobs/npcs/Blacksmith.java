@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -135,6 +136,8 @@ public class Blacksmith extends NPC {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.L1())));
 					
 					Quest.completed = true;
+
+					CardSelector.INSTANCE().coolDown(1000);
 					Quest.reforged = false;
 				}
 				

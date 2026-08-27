@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Core_Calling extends Buff {
+    {
+        revivePersists = true;
+    }
     private LinkedList<Dummy_Core> cores = new LinkedList<>();
     private final LinkedList<Integer> callingTimes = new LinkedList<>();
     public void addCore(Dummy_Core core){

@@ -4,7 +4,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.hero;
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.addAll;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.HS2000_Shield;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -61,18 +61,26 @@ public interface RareCard extends Card {
         }
         @Override
         public String extra(){
-            if (this == Type_64_Auto){
-                HS2000_Shield shield = hero().buff(HS2000_Shield.class);
-                if (shield != null && shield.shielding() > hero().HP)
-                    return EnumString(this, extraKey, (shield.shielding() - hero().HP) * 1.5F);
-            }
-            if (this == AA_12){
-                int i = 50 + hero().HT - hero().HP;
-                return EnumString(this, extraKey, i);
-            }
-            if (this == DESERT_EAGLE){
+            switch (this){
+                case Type_64_Auto:
+                    if (Card.shield(hero()) <= 0)
+                        break;
+                case AA_12:
+                    return normalChance();
+                case DESERT_EAGLE:
+                    return EnumString(this, extraKey, CardCalculator.shieldAttack(hero(), 1F));
             }
             return null;
+        }
+        @Override
+        public float chance( Hero hero ){
+            switch (this){
+                case Type_64_Auto:
+                    return 0.015F * (Card.shield(hero) - hero.HP);
+                case AA_12:
+                    return 0.5F + 0.01F * (hero.HT - hero.HP);
+            }
+            return 0;
         }
     }
     enum Vector implements RareCard{
@@ -90,8 +98,11 @@ public interface RareCard extends Card {
         }
         @Override
         public String extra(){
-            if (this == P90)
-                return EnumString(this, extraKey, FirstCard.VHS_HitTime());
+            switch (this){
+                case P90:
+                    return EnumString(this, extraKey,
+                            CardCalculator.hack_chargeNeed());
+            }
             return null;
         }
     }
@@ -100,6 +111,20 @@ public interface RareCard extends Card {
         @Override
         public String title(){
             return FirstCard.WA2000.cardName() + " " + RareCard.super.title();
+        }
+        @Override
+        public String extra(){
+            switch (this){
+                case PKP:
+                case MOSIN_NAGANT:
+                    return crit();
+                case Px4:
+                    return critFactor();
+                case R93:
+                    return EnumString(this, extraKey,
+                            5 - (int) CardPoint.R93_HitPoint.point());
+            }
+            return null;
         }
     }
     enum General_Liu implements RareCard{

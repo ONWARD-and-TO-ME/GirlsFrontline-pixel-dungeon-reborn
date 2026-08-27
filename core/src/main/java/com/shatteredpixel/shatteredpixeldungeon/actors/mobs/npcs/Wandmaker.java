@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
@@ -327,7 +328,8 @@ public class Wandmaker extends NPC {
 		public static void complete() {
 			wand1 = null;
 			wand2 = null;
-			
+
+			CardSelector.INSTANCE().coolDown(1000);
 			Notes.remove( Notes.Landmark.WANDMAKER );
 		}
 	}

@@ -1,7 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
-import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.utils.Bundle;
 
 public abstract class ActiveBuff extends CounterBuff implements ActiveAbstract {
@@ -27,15 +26,6 @@ public abstract class ActiveBuff extends CounterBuff implements ActiveAbstract {
     }
     protected void onWorking(float time){
         activeTime -= time;
-    }
-    @Override
-    public int icon() {
-        return working()
-                ? icons()
-                : BuffIndicator.NONE;
-    }
-    public int icons(){
-        return BuffIndicator.INVISIBLE;
     }
     protected float activeTime;
     final public void addActiveTime(float time){

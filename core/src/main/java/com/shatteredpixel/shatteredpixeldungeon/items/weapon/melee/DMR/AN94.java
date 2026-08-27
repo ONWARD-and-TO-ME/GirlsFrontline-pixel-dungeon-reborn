@@ -24,8 +24,7 @@ public class AN94 extends DesignatedMarksmanRifle {
     }
     @Override
     public int proc(Char attacker, Char defender, int damage ) {
-        if (enchantment != null)
-            damage = enchantment.proc(this, attacker, defender, damage);
+        damage = enchantmentProc(attacker, defender, damage);
         return super.proc(attacker, defender, damage);
     }
 }

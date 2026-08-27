@@ -382,6 +382,7 @@ public enum HeroClass {
 		new PotionOfHealing().identify().collect();
 	}
 	private static void initDandelion( Hero hero ){
+		hero.subClass = HeroSubClass.EMPTY;
 		(hero.belongings.weapon = new M4A1()).identify();
 		new CardSelector().collect();
 		IntensifySkill intensify = new IntensifySkill();

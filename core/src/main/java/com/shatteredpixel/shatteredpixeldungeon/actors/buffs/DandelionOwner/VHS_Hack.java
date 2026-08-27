@@ -4,11 +4,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardCalculator;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
-import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CommonCard;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.FinalCard;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.RareCard;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
@@ -25,7 +24,7 @@ public class VHS_Hack extends CounterBuff implements ActionIndicator.Action {
     @Override
     public boolean act(){
         spend(TICK);
-        if (hasCard(FinalCard.VHS.AUG)){
+        if (hasCard(FinalCard.VHS.AUG)) {
             boolean notice = false;
             for (Mob m : Dungeon.level.mobs){
                 if (m.alignment == Char.Alignment.ENEMY
@@ -52,18 +51,10 @@ public class VHS_Hack extends CounterBuff implements ActionIndicator.Action {
             return;
 
         countUp(charge);
-        if (count() >= chargeNeed()){
+        if (count() >= CardCalculator.hack_chargeNeed()){
             countClear();
             hackLeft += addHack();
         }
-    }
-    private float chargeNeed(){
-        float need = 5F;
-        if (hasCard(CommonCard.VHS.IDW))
-            need--;
-        if (hasCard(RareCard.VHS.P90))
-            need -= 2;
-        return need;
     }
     private int addHack(){
         int add = 1;
@@ -75,6 +66,9 @@ public class VHS_Hack extends CounterBuff implements ActionIndicator.Action {
     private boolean hacking = false;
     public boolean isHacking(){
         return hacking;
+    }
+    public boolean againstEnchant(){
+        return hacking && !hasCard(FinalCard.VHS.AUG);
     }
     @Override
     public void fx(boolean on){

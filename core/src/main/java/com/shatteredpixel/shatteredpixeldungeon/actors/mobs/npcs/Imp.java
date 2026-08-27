@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
@@ -238,6 +239,7 @@ public class Imp extends NPC {
 		public static void complete() {
 			reward = null;
 			completed = true;
+			CardSelector.INSTANCE().coolDown(1000);
 			
 			Notes.remove( Notes.Landmark.IMP );
 		}

@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 
+import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.EnumString;
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -12,6 +13,9 @@ import java.util.Arrays;
 
 public enum FirstCard implements Card {
     HS2000, Vector, VHS, WA2000, General_Liu;
+    private static boolean hasCard( Card card ){
+        return CardSelector.INSTANCE().hasCard(card);
+    }
     public static void getAllCard( CardSelector selector ){
         for (FirstCard f : FirstCard.values()) {
             if (selector.FirstCards.contains(f)
@@ -35,6 +39,26 @@ public enum FirstCard implements Card {
                     new Cores.NormalCore());
     }
     @Override
+    public String extra(){
+        if (!hasCard(this))
+            return null;
+        switch (this) {
+            case HS2000:
+                return EnumString(this, extraKey, CardCalculator.shieldPerHit());
+            case Vector:
+                return EnumString(this, extraKey, Math.round(CardCalculator.fireDamageChance(true) * 100));
+            case VHS:
+                return EnumString(this, extraKey,
+                        CardCalculator.hack_chargeNeed(),
+                        Math.round(CardCalculator.VHS_Hack_Factor() * 100));
+            case WA2000:
+                return EnumString(this, extraKey,
+                        Math.round(CardCalculator.crit() * 100),
+                        Math.round(CardCalculator.critFactor() * 100));
+        }
+        return null;
+    }
+    @Override
     public Class<? extends Card> getCardClass(){
         return FirstCard.class;
     }
@@ -44,8 +68,5 @@ public enum FirstCard implements Card {
             if (selector.contain(card))
                 list.remove(card);
         return Random.element(list);
-    }
-    public static int VHS_HitTime(){
-        return 5;
     }
 }
