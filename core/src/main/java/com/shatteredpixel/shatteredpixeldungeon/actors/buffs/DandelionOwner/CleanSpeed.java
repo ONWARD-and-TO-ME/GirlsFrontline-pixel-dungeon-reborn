@@ -10,7 +10,9 @@ public abstract class CleanSpeed extends ActiveBuff {
     public float TICK(){
         if (!working() || activeTime >= 0.1F)
             return 0.1F;
-        return activeTime;
+        if (activeTime > 0)
+            return activeTime;
+        return 0.1F;
     }
     @Override
     protected void onWorking(float time){

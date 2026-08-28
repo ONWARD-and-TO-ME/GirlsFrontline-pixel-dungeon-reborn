@@ -21,7 +21,7 @@ public interface FinalCard extends Card {
                 if (selector.FinalCards.contains(card)
                         || selector.curCards.contains(card))
                     continue;
-                selector.curCards.add(f);
+                selector.curCards.add(card);
             }
     }
     static Card random( CardSelector selector ){
@@ -58,6 +58,17 @@ public interface FinalCard extends Card {
         public String title(){
             return FirstCard.HS2000.cardName() + " " + FinalCard.super.title();
         }
+        @Override
+        public String extra(){
+            switch (this){
+                case CAWS:
+                    return EnumString(this, extraKey, CardCalculator.shieldAttack(hero(), 2F));
+                case Webley:
+                    if (CardSelector.INSTANCE().failureCards.contains(this))
+                        return EnumString(this, ".fail");
+            }
+            return null;
+        }
     }
     enum Vector implements FinalCard{
         G36, KSVK;
@@ -78,8 +89,10 @@ public interface FinalCard extends Card {
         @Override
         public void onSelect(){
             if (this == Python){
-                CardPoint.AttackDamage_Add.pointUp(CardCalculator.everDamageFactor_Add(true));
-                CardPoint.AttackDelay_Add.pointUp(CardCalculator.everDelayFactor_Add(true));
+                float damage = CardCalculator.everDamageFactor_Add(true);
+                float delay = CardCalculator.everDelayFactor_Add(true);
+                CardPoint.AttackDamage_Add.pointUp(damage);
+                CardPoint.AttackDelay_Add.pointUp(delay);
             }
         }
         @Override

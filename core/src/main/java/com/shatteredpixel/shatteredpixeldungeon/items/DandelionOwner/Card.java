@@ -63,7 +63,7 @@ public interface Card {
         return Dungeon.hero;
     }
     String extraKey = ".extra";
-    String fail = "已失效";
+    default String failText(){ return Messages.get(Card.class, "fail"); }
     Class<? extends Card> getCardClass();
     default float chance( Hero hero ){
         return 0;
@@ -112,16 +112,16 @@ public interface Card {
         }
     }
     default String damageFactor(){
-        return EnumString(this, extraKey, CardCalculator.everDamageFactor_Add(true) * 100);
+        return EnumString(this, extraKey, (int) (CardCalculator.everDamageFactor_Add(true) * 100));
     }
     default String delayFactor(){
-        return EnumString(this, extraKey, CardCalculator.everDelayFactor_Add(true) * 100);
+        return EnumString(this, extraKey, (int) (CardCalculator.everDelayFactor_Add(true) * 100));
     }
     default String critFactor(){
-        return EnumString(this, extraKey, CardCalculator.critFactor() * 100);
+        return EnumString(this, extraKey, (int) (CardCalculator.critFactor() * 100));
     }
     default String crit(){
-        return EnumString(this, extraKey, CardCalculator.crit() * 100);
+        return EnumString(this, extraKey, (int) (CardCalculator.crit() * 100));
     }
     default String normalChance(){
         return EnumString(this, extraKey, Math.round(chance(hero()) * 100));

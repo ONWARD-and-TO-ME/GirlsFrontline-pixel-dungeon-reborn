@@ -199,7 +199,7 @@ public class CardSelector extends Item {
             bundle.put( name() + cardName, b );
         }
         @SuppressWarnings("unchecked")
-        public <T extends Card> ArrayList<T> restore( Bundle bundle, Class<T> ignore ){
+        public <T extends Card> ArrayList<T> restore( Bundle bundle, Class<T> ignored ){
             ArrayList<T> list = new ArrayList<>();
             Bundle b = bundle.getBundle( name() + cardName );
             int size = b.getInt( name() + cardLength );

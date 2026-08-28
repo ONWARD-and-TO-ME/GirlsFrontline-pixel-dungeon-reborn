@@ -215,7 +215,7 @@ public class ThrowingSkill extends SkillItem {
             for (int i : throwingPos()){
                 int cell = affect_Center + i;
                 Char ch = Actor.findChar(cell);
-                if (ch != null && ch.alignment != Char.Alignment.ALLY){
+                if (ch != null && ch.alignment != Char.Alignment.ALLY && !(ch instanceof NPC)){
                     CardAffect.fireAllAffect(ch);
                     ch.damage(CardCalculator.fireDamage(false), this);
                 }

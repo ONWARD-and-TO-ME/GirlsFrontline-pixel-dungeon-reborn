@@ -22,7 +22,7 @@ public interface RareCard extends Card {
                 if (selector.RareCards.contains(card)
                         || selector.curCards.contains(card))
                     continue;
-                selector.curCards.add(f);
+                selector.curCards.add(card);
             }
     }
     static Card random( CardSelector selector ){

@@ -17,21 +17,13 @@ import java.util.ArrayList;
 public class IntensifySkill extends SkillItem {
     @Override
     public void onSkill( Hero hero ){
+        INSTANCE(hero);
+        hero.spendAndNext(Actor.TICK);
         if (!isBlast())
-            intensify(hero);
+            coolDownLeft = 50;
         else
-            blast(hero);
+            coolDownLeft = 30;
         updateQuickslot();
-    }
-    public void intensify( Hero hero ){
-        intensify_INSTANCE(hero);
-        hero.spendAndNext(Actor.TICK);
-        coolDownLeft = 50;
-    }
-    public void blast( Hero hero ){
-        blast_INSTANCE(hero);
-        hero.spendAndNext(Actor.TICK);
-        coolDownLeft = 30;
     }
     private static void intensify_INSTANCE( Hero hero ){
         int shield = (int) (Math.ceil(Dungeon.curDepth() / 5F) * 3);
@@ -43,7 +35,7 @@ public class IntensifySkill extends SkillItem {
     private static void blast_INSTANCE( Hero hero ){
         ArrayList<Mob> mobs = hero.getVisibleEnemies();
         for (Mob mob : mobs)
-            Buff.affect(mob, MoveSpeed.SM_LTLX7000.class).addActiveTime(5F);
+            CardAffect.affect(mob, MoveSpeed.SM_LTLX7000.class).addActiveTime(5F);
 
         int size = -1;
         while (mobs.size() != size){
@@ -84,14 +76,5 @@ public class IntensifySkill extends SkillItem {
     private static boolean hasCard( Card card ){
         return CardSelector.INSTANCE().hasCard(card);
     }
-    public static class Intensify extends FlavourBuff {
-        @Override
-        public int icon(){
-            return iconNeedDraw();
-        }
-        @Override
-        public void tintIcon(Image icon) {
-            tintIconNeedDraw(icon);
-        }
-    }
+    public static class Intensify extends FlavourBuff { }
 }

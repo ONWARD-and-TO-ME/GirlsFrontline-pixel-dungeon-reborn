@@ -77,6 +77,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.Deat
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.Endure;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.ImmortalShieldAffecter;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardCalculator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Potential;
@@ -541,6 +542,7 @@ public abstract class Char extends Actor {
 		if ( buff(Weakness.class) != null ){
 			damage *= 0.67f;
 		}
+		damage = CardCalculator.weakly(this, damage);
 		for (ChampionEnemy buff : buffs(ChampionEnemy.class)){
 			damage *= buff.meleeDamageFactor();
 			buff.onAttackProc( enemy );
@@ -599,7 +601,7 @@ public abstract class Char extends Actor {
         //流形护盾免伤
         if(buff(ImmortalShieldAffecter.ImmortalShield.class) != null)
             return;
-
+		dmg = CardCalculator.vulner(this, dmg);
 		for (ChampionEnemy buff : buffs(ChampionEnemy.class)){
 			dmg = (int) Math.ceil(dmg * buff.damageTakenFactor());
 		}

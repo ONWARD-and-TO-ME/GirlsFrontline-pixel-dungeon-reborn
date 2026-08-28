@@ -65,7 +65,7 @@ public class Puppets {
         }
         @Override
         protected void skill() {
-            attack(enemy, 5, damageRoll(), Char.INFINITE_ACCURACY);
+            attack(enemy, 5, 0, Char.INFINITE_ACCURACY);
             spend(5F);
         }
     }

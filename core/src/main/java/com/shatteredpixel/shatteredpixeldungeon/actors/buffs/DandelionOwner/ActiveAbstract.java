@@ -19,10 +19,10 @@ public interface ActiveAbstract {
             return singleValue() * Math.min(((CounterBuff) this).count(), maxTimes());
         }
     }
-    interface FireVenueEffect extends ActiveAbstract{
+    interface FireVenueEffect extends NotDetach{
         @Override
         default boolean working(){
-            return ActiveAbstract.super.working() && workVenue();
+            return workVenue();
         }
         default boolean workVenue(){
             Vector_FireBomb_Warning fire = (Vector_FireBomb_Warning) Dungeon.level.blobs.get( Vector_FireBomb_Warning.class );

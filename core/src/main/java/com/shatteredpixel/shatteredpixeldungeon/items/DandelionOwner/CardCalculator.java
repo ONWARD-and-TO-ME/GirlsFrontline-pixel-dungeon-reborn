@@ -7,6 +7,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.AttackDMG_Add;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.AttackDelay_Add;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.VHS_Hack;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Vulnerability;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Weakly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -20,6 +22,20 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 public class CardCalculator {
+    public static int vulner( Char ch, int dmg ){
+        float chance = 1F;
+        for (Vulnerability v : ch.buffs(Vulnerability.class))
+            if (v.working())
+                chance += v.modifier();
+        return (int) Math.ceil(dmg * chance);
+    }
+    public static int weakly( Char ch, int dmg ){
+        float chance = 1F;
+        for (Weakly w : ch.buffs(Weakly.class))
+            if (w.working())
+                chance -= w.modifier();
+        return (int) Math.max(0, Math.ceil(dmg * chance));
+    }
     public static float cardAttackProc_NormalAdd( Hero hero, KindOfWeapon wep ){
         int m4Add = 0;
         int add = 0;
@@ -104,6 +120,8 @@ public class CardCalculator {
         if (hero.buff(IntensifySkill.Intensify.class) != null
                 && hasCard(CommonCard.UNIVERSAL.Shipka))
             multiplier += 1F;
+        for (AttackDelay_Add a : hero.buffs(AttackDelay_Add.class))
+            multiplier += a.percent();
         if (hasCard(RareCard.General_Liu.CZ75))
             multiplier /= 2;
         if (hasCard(FinalCard.UNIVERSAL.MG5)) {
@@ -305,7 +323,7 @@ public class CardCalculator {
             rate += 0.1F;
         if (hasCard(FirstCard.WA2000))
             rate += 0.3F;
-        if (hasFailCard(CommonCard.UNIVERSAL.Mk48))
+        if (hasCard(CommonCard.UNIVERSAL.Mk48))
             rate += 0.2F;
         if (hasCard(CommonCard.WA2000.SSG3000)
                 && Dungeon.hero.buff(IntensifySkill.Intensify.class) != null)

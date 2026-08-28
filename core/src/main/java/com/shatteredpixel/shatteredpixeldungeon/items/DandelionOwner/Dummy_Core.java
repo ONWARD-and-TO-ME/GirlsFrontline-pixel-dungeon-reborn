@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.Puppet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Bundle;
@@ -20,9 +21,9 @@ public abstract class Dummy_Core extends Item {
     private static final String AC_FIX = "fix";
     private static final String AC_CALL = "call";
     protected int fixTimeNeed = 5;
-    public float htMul;
-    public float attackSpeedMul;
-    public float damageMul;
+    public float htMul = 0.1F;
+    public float attackSpeedMul = 0.5F;
+    public float damageMul = 0.5F;
     @SuppressWarnings("unchecked")
     public <T extends Dummy_Core> T set( float ht, float speed, float dmg ){
         htMul = ht;
@@ -57,6 +58,13 @@ public abstract class Dummy_Core extends Item {
         }
         else if (action.equals(AC_CALL))
             Buff.affect(hero, Core_Calling.class).addCore((Dummy_Core) detach(hero.belongings.backpack));
+    }
+    @Override
+    public String desc() {
+        return Messages.get(this, "desc",
+                (int) (htMul * 100),
+                (int) (damageMul * 100),
+                (int) (attackSpeedMul * 100));
     }
     public void summon( int pos ){
         Puppet puppet = puppet();

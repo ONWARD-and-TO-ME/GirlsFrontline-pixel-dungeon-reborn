@@ -8,9 +8,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.
 public class Cores {
     public static class NormalCore extends Dummy_Core {
         {
-            htMul = 0.1F;
-            attackSpeedMul = 0.5F;
-            damageMul = 0.5F;
             puppetClass = Puppets.Normal.class;
         }
         @Override
@@ -19,6 +16,10 @@ public class Cores {
         }
     }
     public abstract static class EliteCore extends Dummy_Core {
+        {
+            htMul = 0.2F;
+            attackSpeedMul = 1F;
+        }
         @Override
         protected void setSize(Puppet puppet) {
             Buff.count(puppet, Resizing.class, 75F);

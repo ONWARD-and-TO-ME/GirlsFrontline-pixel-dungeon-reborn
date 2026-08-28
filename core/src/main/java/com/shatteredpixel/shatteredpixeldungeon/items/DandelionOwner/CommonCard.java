@@ -21,7 +21,7 @@ public interface CommonCard extends Card {
                 if (selector.CommonCards.contains(card)
                         || selector.curCards.contains(card))
                     continue;
-                selector.curCards.add(f);
+                selector.curCards.add(card);
             }
     }
     static Card random( CardSelector selector ){
@@ -140,12 +140,11 @@ public interface CommonCard extends Card {
                 case Mk48:
                     //暴击率
                     return crit();
-            }
-            if (this == AEK_999)
-                return normalChance();
-            if (this == M1014){
-                if (CardSelector.INSTANCE().failureCards.contains(this))
-                    return fail;
+                case AEK_999:
+                    return normalChance();
+                case M1014:
+                    if (CardSelector.INSTANCE().failureCards.contains(this))
+                        return failText();
             }
 
             return null;

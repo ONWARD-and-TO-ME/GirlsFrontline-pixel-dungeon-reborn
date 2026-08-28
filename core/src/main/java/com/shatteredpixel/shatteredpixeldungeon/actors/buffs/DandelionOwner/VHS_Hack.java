@@ -47,13 +47,33 @@ public class VHS_Hack extends CounterBuff implements ActionIndicator.Action {
         hackLeft++;
     }
     public void charge( float charge ){
-        if (!hasCard(FinalCard.VHS.AUG) && (isHacking() || hackLeft > 0))
+        boolean AUG = hasCard(FinalCard.VHS.AUG);
+        if (!AUG && (isHacking() || hackLeft > 0))
             return;
 
-        countUp(charge);
-        if (count() >= CardCalculator.hack_chargeNeed()){
-            countClear();
-            hackLeft += addHack();
+        if (count() < CardCalculator.hack_chargeNeed())
+            countUp(charge);
+        else {
+            if (!AUG) {
+                //无AUG：充满后清除点数，hackLeft累加addHack()
+                countClear();
+                hackLeft += addHack();
+            } else {
+                if (!isHacking()) {
+                    //有AUG，非hacking：清除点数→hackLeft累加addHack()→自动消耗一次开启hacking
+                    countClear();
+                    hackLeft += addHack();
+                    hacking = true;
+                    hackLeft--;
+                } else {
+                    //有AUG，正处于hacking：清除点数向hackLeft添加骇入次数，但不超过addHack()
+                    if (hackLeft < addHack()) {
+                        countClear();
+                        hackLeft = Math.min(hackLeft + addHack(), addHack());
+                    }
+                    //hackLeft已达上限：不清除点数，保留三边累积（hacking + hackLeft已满 + count>=Need）
+                }
+            }
         }
     }
     private int addHack(){

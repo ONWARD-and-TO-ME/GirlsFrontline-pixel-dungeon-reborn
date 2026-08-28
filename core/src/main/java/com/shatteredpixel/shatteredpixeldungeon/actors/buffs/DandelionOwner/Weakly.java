@@ -1,10 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner;
 
 public abstract class Weakly extends ActiveAbstract.Modifier {
-    public static class W_M82 extends Weakly {
+    public static class W_M82 extends Weakly implements Upgradable {
         @Override
-        public float values() {
-            return 50;
+        public float singleValue() {
+            return 20;
+        }
+        @Override
+        public int maxTimes() {
+            return 4;
         }
     }
 

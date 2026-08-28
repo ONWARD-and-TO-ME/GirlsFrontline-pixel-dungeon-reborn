@@ -42,7 +42,7 @@ public class Core_Calling extends Buff {
         }
 
         while (!placeable.isEmpty() && !callingTimes.isEmpty() && callingTimes.get(0) == 0){
-            int pos = placeable.remove(Random.Int(placeable.size() - 1));
+            int pos = placeable.remove(Random.Int(placeable.size()));
             callingTimes.removeFirst();
             cores.removeFirst().summon(pos);
         }

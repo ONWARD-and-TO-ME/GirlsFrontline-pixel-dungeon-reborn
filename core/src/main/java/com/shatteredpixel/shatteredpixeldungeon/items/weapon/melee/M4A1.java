@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelecto
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.FinalCard;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.IntensifySkill;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.ThrowingSkill;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -153,7 +154,7 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 	}
 	@Override
 	public String actionName() {
-		return "投掷技能";
+		return Messages.get(M4A1.class, "action_name");
 	}
 	@Override
 	public Image actionIcon() {

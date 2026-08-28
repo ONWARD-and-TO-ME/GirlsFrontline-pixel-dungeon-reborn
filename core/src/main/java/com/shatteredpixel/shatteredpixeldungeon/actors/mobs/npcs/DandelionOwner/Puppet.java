@@ -6,6 +6,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.AttackDMG_Add;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.AttackDelay_Add;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardAffect;
@@ -96,7 +98,10 @@ public abstract class Puppet extends NPC {
     }
     @Override
     public float attackDelay() {
-        return Math.max(hero().attackDelay() / attackSpeedMul, 1/3F);
+        float factor = 1F;
+        for (AttackDelay_Add a : buffs(AttackDelay_Add.class))
+            factor += a.percent();
+        return Math.max(hero().attackDelay() / attackSpeedMul * factor, 1/3F);
     }
     @Override
     protected boolean canAttack(Char enemy) {
@@ -104,7 +109,7 @@ public abstract class Puppet extends NPC {
         if (hero.belongings.weapon() != null)
             return hero.belongings.weapon().canReach(this, enemy.pos);
         else
-            return M4A1.INSTANCE().canReach(this, enemy.pos);
+            return M4A1.INSTANCE().canReach(this, enemy.pos) || super.canAttack(enemy);
     }
     @Override
     public int drRoll() {
@@ -117,6 +122,10 @@ public abstract class Puppet extends NPC {
     @Override
     public int attackProc( Char enemy, int damage ) {
         damage = super.attackProc( enemy, damage );
+        float factor = 1F;
+        for (AttackDMG_Add a : buffs(AttackDMG_Add.class))
+            factor += a.percent();
+        damage *= factor;
 
         Hero hero = hero();
         if (hero.belongings.weapon() != null)

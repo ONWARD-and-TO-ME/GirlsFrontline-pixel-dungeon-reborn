@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ColorFlameFactory;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card;
@@ -49,7 +50,7 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
                 if (outMap(cell))
                     continue;
                 Char ch = Actor.findChar(cell);
-                if (ch != null && ch.alignment != Char.Alignment.ALLY)
+                if (ch != null && ch.alignment != Char.Alignment.ALLY && !(ch instanceof NPC))
                     effectOnTarget(ch);
             }
         }
@@ -190,7 +191,7 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
                         return;
                     }
                 }
-                GLog.i(Messages.get(Vector_Fire_Aura.class, "NotPath"));
+                GLog.i(Messages.get(Vector_Fire_Aura.class, "not_path"));
             }
         }
         @Override
@@ -206,7 +207,7 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
                 Point hero = Dungeon.level.cellToPoint(Vector_Fire_Aura.this.target.pos);
                 int x = point.x - hero.x, y = point.y - hero.y;
                 if (Math.abs(x) > 4 || Math.abs(y) > 4){
-                    GLog.i(Messages.get(Vector_Fire_Aura.class, "OutSide"));
+                    GLog.i(Messages.get(Vector_Fire_Aura.class, "out_side"));
                     return;
                 }
                 if (Math.abs(x) <= 1 && Math.abs(y) <= 1){

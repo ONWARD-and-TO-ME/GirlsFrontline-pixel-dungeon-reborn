@@ -27,7 +27,7 @@ public abstract class SkillItem extends Item {
         super.execute(hero, action);
         if (action.equals(AC_SKILL)){
             if (coolDownLeft > 0)
-                GLog.w(Messages.get(SkillItem.class, "CoolDown"));
+                GLog.w(Messages.get(SkillItem.class, "CoolDown", coolDownLeft));
             else
                 onSkill( hero );
         }
@@ -51,6 +51,9 @@ public abstract class SkillItem extends Item {
         }
     }
     public class CoolDownTracker extends Buff {
+        {
+            revivePersists = true;
+        }
         @Override
         public boolean act() {
             if (coolDownLeft > 0)
