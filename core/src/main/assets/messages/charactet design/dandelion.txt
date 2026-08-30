@@ -2,6 +2,7 @@
 → GFPD-Reborn 二创角色设计方案
 V7 修订版（核对修正全部卡牌描述，仅前三章）
 覆盖全部104张卡牌 + 5阵营16套成型搭配方案
+本方案由：tome提出
 基于开源仓库：GirlsFrontline-pixel-dungeon-reborn
 
 目录
