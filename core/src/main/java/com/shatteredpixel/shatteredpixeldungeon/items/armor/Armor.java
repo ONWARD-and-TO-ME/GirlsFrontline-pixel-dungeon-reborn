@@ -322,7 +322,7 @@ public class Armor extends EquipableItem {
 			return true;
 		}
         //新旧护甲都不适用于调整至副护甲时，按旧逻辑处理
-        if (hero.belongings.armor().tier() <= tier()){
+        if (hero.belongings.armor().tier() <= tier() || !hero.hasTalent(Talent.HOLD_FAST)){
             //因为加入了副护甲自动调整至主护甲的机制，所以旧逻辑不方便直接调用doUnequip，把原doUnequip的代码复制一份出来使用
             if (hero.belongings.armor.unEquipable(hero)) {
                 changeFirst(hero);
@@ -337,7 +337,7 @@ public class Armor extends EquipableItem {
         }
         //对于pointsInTalent，无加点等效加点0，阶数至少为1
         //所以上述逻辑完全覆盖了旧逻辑，并且执行代码相同，只是为了新内容而更改表述方式，下面的逻辑是为天赋改动新增的
-        if (hero.hasTalent(Talent.HOLD_FAST)){
+        else {
             //主护甲无红底的情况下，允许与副护甲交互
             if (!hero.belongings.armor.cursed) {
                 //副护甲阶数不小于新护甲，那么新护甲只能与副护甲交换

@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Buff
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.HS2000_Shield;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.MoveSpeed;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.S_M82A1;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.VHS_Hack;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Vulnerability;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Weakly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
@@ -19,6 +20,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.Puppet;
+import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.Puppets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
@@ -28,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -36,8 +41,6 @@ public class CardAffect {
     private static float partialShield = 0;
     //这个不需要存档，即便靠跨存档进行操作或者关闭重启，也就多一点或者少一点护盾。
     private static int attackMask = 0;
-    private static final int Type_97_SHOTGUN = 0;
-    private static final int Kar_98k = 1;
     public static int cardAttackProc( Hero hero, Char enemy, int damage, int baseDMG, KindOfWeapon wep ) {
         float dmg = damage;
         if (hasCard(FirstCard.VHS))
@@ -66,8 +69,10 @@ public class CardAffect {
             partialShield -= shield;
             Buff.affect(hero, HS2000_Shield.class).incShield(shield);
         }
-        if (hasCard(FirstCard.VHS))
+        if (hasCard(FirstCard.VHS) && hero.buff(VHS_Hack.class).isHacking()) {
+            hero.buff(VHS_Hack.class).completed();
             VHS_Hack_Affect(enemy);
+        }
         if (hasCard(RareCard.WA2000.R93))
             Card.CardPoint.R93_HitPoint.pointUp();
         if (hasCard(CommonCard.UNIVERSAL.SPAS_12) && Random.Float() < 0.06F)
@@ -75,7 +80,7 @@ public class CardAffect {
         if (hasCard(CommonCard.UNIVERSAL.USAS_12))
             affect(enemy, MoveSpeed.SM_USAS_12.class).upgrade().setActiveTime(5F);
 
-        if (hasCard(RareCard.UNIVERSAL.Type_97_SHOTGUN) && attackMask >> Type_97_SHOTGUN == 0) {
+        if (hasCard(RareCard.UNIVERSAL.Type_97_SHOTGUN)) {
             ArrayList<Mob> mobs = new ArrayList<>();
             for (Mob m : hero.getVisibleEnemies()) {
                 if (m.alignment == Char.Alignment.ALLY || m instanceof NPC)
@@ -87,14 +92,18 @@ public class CardAffect {
                 if (enemy instanceof Mob)
                     mobs.add((Mob) enemy);
             if (!mobs.isEmpty())
-                addDoubleAttack(hero, Random.element(mobs), baseDMG, attackMask | (int) Math.pow(2, Type_97_SHOTGUN));
+                addDoubleAttack(hero, Random.element(mobs), baseDMG, 0);
         }
-        if (hasCard(FinalCard.UNIVERSAL.Kar98k) && attackMask >> Kar_98k == 0)
-            addDoubleAttack(hero, enemy, baseDMG, attackMask | (int) Math.pow(2, Kar_98k));
+        if (hasCard(FinalCard.UNIVERSAL.Kar98k))
+            addDoubleAttack(hero, enemy, baseDMG, 1);
         if (hasCard(RareCard.UNIVERSAL.FP_6) && Random.Float() < 0.15F)
             throwChar(enemy, hero.pos, 2, false, false);
     }
-    private static void addDoubleAttack(Hero hero, Char enemy, int damage, int mask ){
+    private static void addDoubleAttack(Hero hero, Char enemy, int damage, int code ){
+        if (attackMask >> code != 0)
+            return;
+
+        int mask = attackMask | (int) Math.pow(2, code);
         Actor.add(new Actor() {
             @Override
             protected boolean act() {
@@ -144,6 +153,8 @@ public class CardAffect {
 
         if (hasCard(RareCard.VHS.M82A1))
             affect(ch, S_M82A1.class).setActiveTime(8F);
+        for (int i : PathFinder.NEIGHBOURS9)
+            CellEmitter.get(i + ch.pos).burst(SmokeParticle.FACTORY, 4);
     }
     private static void addThrowing(){
         GLog.p(Messages.get(CardAffect.class, "throwing_charged"));
@@ -217,6 +228,8 @@ public class CardAffect {
             puppet.damageMul *= 2F;
         if (puppet instanceof Puppets.VP1915)
             puppet.htMul *= 2F;
+        puppet.update();
+        puppet.HP = puppet.HT;
     }
     public static <T extends Puppet> void puppetDie( T puppet ){
         if (hasCard(CommonCard.General_Liu.Rex_Zero_1))

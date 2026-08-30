@@ -18,20 +18,28 @@ public interface RareCard extends Card {
     static void getAllCard( CardSelector selector ){
         HashMap<FirstCard, RareCard[]> map = cardMap();
         for (FirstCard f : map.keySet())
-            for (RareCard card : map.get(f)){
-                if (selector.RareCards.contains(card)
-                        || selector.curCards.contains(card))
-                    continue;
-                selector.curCards.add(card);
-            }
+            if (selector.hasCard(f))
+                for (RareCard card : map.get(f)) {
+                    if (selector.RareCards.contains(card)
+                            || selector.curCards.contains(card))
+                        continue;
+                    selector.curCards.add(card);
+                }
+        for (RareCard card : UNIVERSAL.values()){
+            if (selector.RareCards.contains(card)
+                    || selector.curCards.contains(card))
+                continue;
+            selector.curCards.add(card);
+        }
     }
-    static Card random( CardSelector selector ){
+    static Card random( CardSelector selector, boolean signal ){
         ArrayList<Card> list = new ArrayList<>();
         HashMap<FirstCard, RareCard[]> map = cardMap();
         for (FirstCard card : map.keySet())
             if (selector.contain(card))
                 addAll(list, map.get(card));
-        addAll(list, UNIVERSAL.values());
+        if (!signal)
+            addAll(list, UNIVERSAL.values());
 
         for (RareCard card : selector.RareCards)
             list.remove(card);
@@ -122,7 +130,7 @@ public interface RareCard extends Card {
                     return critFactor();
                 case R93:
                     return EnumString(this, extraKey,
-                            5 - (int) CardPoint.R93_HitPoint.point());
+                            Math.min(5, (int) CardPoint.R93_HitPoint.point()));
             }
             return null;
         }

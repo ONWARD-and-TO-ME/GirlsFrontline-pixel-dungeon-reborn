@@ -1,7 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 
 public abstract class ElitePuppet extends Puppet{
     private float next_skill_time;
@@ -17,8 +20,15 @@ public abstract class ElitePuppet extends Puppet{
         return super.act();
     }
     @Override
+    public boolean canHeld(Level level, int holdFromPos ){
+        return true;
+    }
+    @Override
     public void dropCore(){
-        Dungeon.level.drop(core.broken(), Dungeon.level.randomDestination( this ));
+        Dungeon.level.drop(core.broken(), Dungeon.level.randomDestination( this )).seen = true;
+        for (int i : PathFinder.NEIGHBOURS9)
+            Dungeon.level.mapped[pos + i] = true;
+        GameScene.updateFog(pos, 1);
     }
     private static final String NEXT_SKILL_TIME = "NEXT_SKILL_TIME";
     @Override

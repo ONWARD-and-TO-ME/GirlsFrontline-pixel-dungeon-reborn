@@ -69,6 +69,10 @@ public class CardSelector extends Item {
         failureCards.add(card);
     }
     @Override
+    public String desc(){
+        return super.desc() + "\n" + curCardNum;
+    }
+    @Override
     public ArrayList<String> actions( Hero hero ){
         ArrayList<String> actions = super.actions(hero);
         if (curCardNum < 8 && coolDownLeft <= 0
@@ -117,6 +121,7 @@ public class CardSelector extends Item {
         }
     }
     private static WndWithCanScrollButton INSTANCE = null;
+    private static WndOptions selecting = null;
     private void selectCards(){
         ArrayList<canScrollRedButton> buttons = new ArrayList<>();
         for (Card c : curCards)
@@ -124,8 +129,10 @@ public class CardSelector extends Item {
                 @Override
                 public void onClick(){
                     super.onClick();
+                    if (selecting != null)
+                        selecting.hide();
                     GirlsFrontlinePixelDungeon.scene().addToFront(
-                            new WndOptions(c.title(), c.info(), false,
+                            selecting = new WndOptions(c.title(), c.info(), false,
                                     Messages.get(CardSelector.class, "Entry"),
                                     Messages.get(CardSelector.class, "Cancel")){
                                 @Override
@@ -139,7 +146,8 @@ public class CardSelector extends Item {
                                             RareCards.add((RareCard) c);
                                         else if (c instanceof FinalCard)
                                             FinalCards.add((FinalCard) c);
-                                        if (curCardNum++ < 8)
+                                        curCardNum++;
+                                        if (curCardNum < 8)
                                             coolDownLeft = 1500 + 500 * curCardNum;
                                         if (duration >= 33333)
                                             coolDownLeft = 4500;
@@ -255,12 +263,12 @@ public class CardSelector extends Item {
             LockedFloor lock = target.buff(LockedFloor.class);
             if (coolDownLeft > 0 && (lock == null || lock.regenOn()))
                 coolDownLeft--;
-
-            if (duration++ % 33333 == 0) {
+            updateQuickslot();
+            duration++;
+            if (duration % 33333 == 0) {
                 int i = curCards.isEmpty() ? 0 : -1;
                 if (curCardNum - i < 8)
                     curCardNum = i;
-                updateQuickslot();
             }
             if (duration % 500 == 0)
                 CardAffect.halfKilo();

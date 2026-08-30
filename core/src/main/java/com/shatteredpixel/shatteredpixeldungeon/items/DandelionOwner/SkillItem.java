@@ -58,6 +58,7 @@ public abstract class SkillItem extends Item {
         public boolean act() {
             if (coolDownLeft > 0)
                 coolDownLeft--;
+            updateQuickslot();
             spend(TICK);
             return true;
         }

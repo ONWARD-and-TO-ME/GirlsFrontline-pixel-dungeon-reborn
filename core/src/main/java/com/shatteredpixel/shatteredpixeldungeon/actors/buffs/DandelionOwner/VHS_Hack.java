@@ -17,9 +17,21 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
-public class VHS_Hack extends CounterBuff implements ActionIndicator.Action {
+public class VHS_Hack extends CounterBuff {
     {
         revivePersists = true;
+    }
+    @Override
+    public int icon(){
+        return iconNeedDraw();
+    }
+    @Override
+    public void tintIcon( Image icon ){
+        tintIconNeedDraw(icon);
+    }
+    @Override
+    public String desc(){
+        return "当前充能点数:" + count() + "\n当前剩余骇入次数:" + hackLeft;
     }
     @Override
     public boolean act(){
@@ -44,39 +56,34 @@ public class VHS_Hack extends CounterBuff implements ActionIndicator.Action {
     }
     public void fullCharge(){
         countClear();
-        hackLeft++;
+        if (hacking)
+            hackLeft++;
+        else
+            hacking = true;
     }
     public void charge( float charge ){
         boolean AUG = hasCard(FinalCard.VHS.AUG);
-        if (!AUG && (isHacking() || hackLeft > 0))
+        if (!AUG && isHacking())
             return;
 
         if (count() < CardCalculator.hack_chargeNeed())
             countUp(charge);
         else {
-            if (!AUG) {
-                //无AUG：充满后清除点数，hackLeft累加addHack()
-                countClear();
-                hackLeft += addHack();
-            } else {
-                if (!isHacking()) {
-                    //有AUG，非hacking：清除点数→hackLeft累加addHack()→自动消耗一次开启hacking
-                    countClear();
-                    hackLeft += addHack();
-                    hacking = true;
-                    hackLeft--;
-                } else {
-                    //有AUG，正处于hacking：清除点数向hackLeft添加骇入次数，但不超过addHack()
-                    if (hackLeft < addHack()) {
+            if (isHacking()){
+                if (AUG)
+                    if (hackLeft < maxHack()) {
                         countClear();
-                        hackLeft = Math.min(hackLeft + addHack(), addHack());
+                        hackLeft = maxHack();
                     }
-                    //hackLeft已达上限：不清除点数，保留三边累积（hacking + hackLeft已满 + count>=Need）
-                }
+            }
+            else {
+                countClear();
+                hackLeft = maxHack() - 1;
+                hacking = true;
             }
         }
     }
-    private int addHack(){
+    private int maxHack(){
         int add = 1;
         if (hasCard(RareCard.VHS.PM_06))
             add += 2;
@@ -87,39 +94,15 @@ public class VHS_Hack extends CounterBuff implements ActionIndicator.Action {
     public boolean isHacking(){
         return hacking;
     }
+    public void completed(){
+        hacking = false;
+        if(hackLeft > 0){
+            hacking = true;
+            hackLeft--;
+        }
+    }
     public boolean againstEnchant(){
         return hacking && !hasCard(FinalCard.VHS.AUG);
-    }
-    @Override
-    public void fx(boolean on){
-        if (on)
-            ActionIndicator.setAction(this);
-        else
-            ActionIndicator.clearAction(this);
-    }
-    @Override
-    public String actionName() {
-        return isHacking() ? "取消骇入"
-                :"开启骇入";
-    }
-    @Override
-    public Image actionIcon() {
-        Image image = isHacking() ? Icons.Notice(new PotionOfShroudingFog())
-                : Icons.Notice(new PotionOfInvisibility());
-
-        if (!hacking && hackLeft == 0)
-            image.alpha(0.3F);
-        return image;
-    }
-    @Override
-    public void doAction() {
-        if (!hacking && hackLeft == 0)
-            return;
-        hacking = !hacking;
-        if (hacking)
-            hackLeft--;
-        else
-            hackLeft++;
     }
     private static final String HACK_LEFT = "HACK_LEFT";
     private static final String HACKING = "Hacking";

@@ -17,22 +17,23 @@ import java.util.ArrayList;
 public abstract class Dummy_Core extends Item {
     {
         image = ItemSprite.itemSpriteNeedDraw;
+        unique = true;
     }
     private static final String AC_FIX = "fix";
     private static final String AC_CALL = "call";
-    protected int fixTimeNeed = 5;
+    protected int fixTimeNeed = 0;
     public float htMul = 0.1F;
     public float attackSpeedMul = 0.5F;
     public float damageMul = 0.5F;
     @SuppressWarnings("unchecked")
-    public <T extends Dummy_Core> T set( float ht, float speed, float dmg ){
+    public <T extends Dummy_Core> T set( float ht, float speed, float dmg ) {
         htMul = ht;
         attackSpeedMul = speed;
         damageMul = dmg;
         return (T) this;
     }
     @SuppressWarnings("unchecked")
-    public <T extends Dummy_Core> T broken(){
+    public <T extends Dummy_Core> T broken() {
         fixTimeNeed = 5;
         return (T) this;
     }
@@ -64,7 +65,7 @@ public abstract class Dummy_Core extends Item {
         return Messages.get(this, "desc",
                 (int) (htMul * 100),
                 (int) (damageMul * 100),
-                (int) (attackSpeedMul * 100));
+                (int) (attackSpeedMul * 100)) + "\n" + fixTimeNeed;
     }
     public void summon( int pos ){
         Puppet puppet = puppet();
@@ -97,5 +98,14 @@ public abstract class Dummy_Core extends Item {
         htMul           = bundle.getFloat(MulAtHT);
         attackSpeedMul  = bundle.getFloat(MulAtAtkSpeed);
         damageMul       = bundle.getFloat(MulAtDamage);
+    }
+    @Override
+    public boolean isUpgradable() {
+        return false;
+    }
+
+    @Override
+    public boolean isIdentified() {
+        return true;
     }
 }

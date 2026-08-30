@@ -18,20 +18,43 @@ public interface Card {
     }
     static void random(CardSelector selector){
         Card card;
-        for (int i = 0; i < 4; i++)
-            if ((card = randomCard(selector)) != null)
+        int num = selector.curCardNum;
+        if (num == 0) {
+            for (int i = 0; i < 5; i++)
+                if ((card = randomCard(selector)) != null)
+                    selector.curCards.add(card);
+        }
+        else {
+            for (int i = 0; i < 3; i++)
+                if ((card = randomCard(selector)) != null)
+                    selector.curCards.add(card);
+            if ((card = signalCard(selector)) != null)
                 selector.curCards.add(card);
+            else if ((card = randomCard(selector)) != null)
+                selector.curCards.add(card);
+        }
+    }
+    static Card signalCard(CardSelector selector){
+        Card card;
+        int curCardNum = selector.curCardNum;
+        if (curCardNum < 5 && (card = CommonCard.random(selector, true)) != null)
+            return card;
+        if (curCardNum < 7 && (card = RareCard.random(selector, true)) != null)
+            return card;
+        if (curCardNum < 8 && (card = FinalCard.random(selector,true)) != null)
+            return card;
+        return null;
     }
     static Card randomCard(CardSelector selector){
         Card card;
         int curCardNum = selector.curCardNum;
         if (curCardNum < 1 && (card = FirstCard.random(selector)) != null)
             return card;
-        if (curCardNum < 5 && (card = CommonCard.random(selector)) != null)
+        if (curCardNum < 5 && (card = CommonCard.random(selector, false)) != null)
             return card;
-        if (curCardNum < 7 && (card = RareCard.random(selector)) != null)
+        if (curCardNum < 7 && (card = RareCard.random(selector, false)) != null)
             return card;
-        if (curCardNum < 8 && (card = FinalCard.random(selector)) != null)
+        if (curCardNum < 8 && (card = FinalCard.random(selector, false)) != null)
             return card;
         return null;
     }

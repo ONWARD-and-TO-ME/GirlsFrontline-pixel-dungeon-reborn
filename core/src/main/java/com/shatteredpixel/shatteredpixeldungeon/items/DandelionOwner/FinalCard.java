@@ -17,20 +17,28 @@ public interface FinalCard extends Card {
     static void getAllCard( CardSelector selector ){
         HashMap<FirstCard, FinalCard[]> map = cardMap();
         for (FirstCard f : map.keySet())
-            for (FinalCard card : map.get(f)){
-                if (selector.FinalCards.contains(card)
-                        || selector.curCards.contains(card))
-                    continue;
-                selector.curCards.add(card);
-            }
+            if (selector.hasCard(f))
+                for (FinalCard card : map.get(f)) {
+                    if (selector.FinalCards.contains(card)
+                            || selector.curCards.contains(card))
+                        continue;
+                    selector.curCards.add(card);
+                }
+        for (FinalCard card : UNIVERSAL.values()){
+            if (selector.FinalCards.contains(card)
+                    || selector.curCards.contains(card))
+                continue;
+            selector.curCards.add(card);
+        }
     }
-    static Card random( CardSelector selector ){
+    static Card random( CardSelector selector, boolean signal ){
         ArrayList<Card> list = new ArrayList<>();
         HashMap<FirstCard, FinalCard[]> map = cardMap();
         for (FirstCard card : map.keySet())
             if (selector.contain(card))
                 addAll(list, map.get(card));
-        addAll(list, UNIVERSAL.values());
+        if (!signal)
+            addAll(list, UNIVERSAL.values());
 
         for (FinalCard card : selector.FinalCards)
             list.remove(card);
@@ -62,7 +70,7 @@ public interface FinalCard extends Card {
         public String extra(){
             switch (this){
                 case CAWS:
-                    return EnumString(this, extraKey, CardCalculator.shieldAttack(hero(), 2F));
+                    return EnumString(this, extraKey, CardCalculator.shieldAttack(hero(), 3F));
                 case Webley:
                     if (CardSelector.INSTANCE().failureCards.contains(this))
                         return EnumString(this, ".fail");

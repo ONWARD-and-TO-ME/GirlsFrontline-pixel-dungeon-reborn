@@ -9,22 +9,26 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.AttackDMG_Add;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.AttackDelay_Add;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardAffect;
-import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardCalculator;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Dummy_Core;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.MirrorSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.PuppetSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-public abstract class Puppet extends NPC {
+public abstract class Puppet extends DirectableAlly {
     {
-        spriteClass = MirrorSprite.class;
-        HP = HT = 10;
+        spriteClass = PuppetSprite.class;
+        intelligentAlly = true;
+        alignment = Char.Alignment.ALLY;
+        HP = HT = 1;
+        state = WANDERING;
     }
     {
         immunities.add( ToxicGas.class );
@@ -42,10 +46,9 @@ public abstract class Puppet extends NPC {
         attackSpeedMul = core.attackSpeedMul;
         damageMul = core.damageMul;
         CardAffect.summonPuppet(this);
-        update();
         return this;
     }
-    protected void update(){
+    public void update(){
         HT = (int) (hero().HT * htMul);
     }
     @Override
@@ -55,7 +58,10 @@ public abstract class Puppet extends NPC {
         super.die(cause);
     }
     public void dropCore(){
-        Dungeon.level.drop(core.broken(), pos);
+        Dungeon.level.drop(core.broken(), pos).seen = true;
+        for (int i : PathFinder.NEIGHBOURS9)
+            Dungeon.level.mapped[pos + i] = true;
+        GameScene.updateFog(pos, 1);
     }
     @Override
     public boolean act(){
@@ -69,15 +75,18 @@ public abstract class Puppet extends NPC {
         //在读档时Dungeon.hero总是优先于Level的读档，所以轮到Level中的Mob的读档时，Dungeon.hero总是非null的。
         //此处加一个判null只是为了图鉴系统处不闪退。
     }
+    public int armTier(){
+        return hero().tier();
+    }
     @Override
     public int damageRoll() {
-        int damage;
+        float damage;
         Hero hero = hero();
-        if (hero.belongings.weapon() != null)
+        if (hero.belongings.weapon() instanceof M4A1)
             damage = hero.belongings.weapon().damageRoll(this);
         else
-            damage = hero.damageRoll(); //handles ring of force
-        return (int) Math.min(CardCalculator.M4A1max(damageMul), damage);
+            damage = hero.damageRoll() * 0.5F; //handles ring of force
+        return (int) damage;
     }
     @Override
     public int attackSkill( Char target ) {
@@ -141,7 +150,7 @@ public abstract class Puppet extends NPC {
     @Override
     public CharSprite sprite() {
         CharSprite s = super.sprite();
-        ((MirrorSprite)s).updateArmor( hero().tier() );
+        ((PuppetSprite) s).updateArmor( armTier() );
         return s;
     }
     private static final String MulAtHT         = "Mul_T";

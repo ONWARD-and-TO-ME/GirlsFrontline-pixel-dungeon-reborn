@@ -34,6 +34,7 @@ import java.util.HashMap;
 
 public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
     {
+        actPriority = MOB_PRIO + 1 ;
         revivePersists = true;
     }
     private final HashMap<Integer, ArrayList<AffectAura>> fireAura = new HashMap<>();
@@ -43,8 +44,8 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
 
         spend(0.1F);
         updateEmitter(false);
-        float TICK = hasCard(FinalCard.Vector.G36) ? 1F : 2F;
-        if (target.curTime() % TICK < 0.1F){
+        float TICK = hasCard(FinalCard.Vector.G36) ? 0.5F : 1F;
+        if (curTime() % TICK < 0.1F){
             for (AffectAura a : getList()){
                 int cell = a.cellInLevel(Dungeon.level, target);
                 if (outMap(cell))

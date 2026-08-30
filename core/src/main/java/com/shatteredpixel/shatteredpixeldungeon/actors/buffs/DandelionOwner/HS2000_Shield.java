@@ -35,6 +35,8 @@ public class HS2000_Shield extends ShieldBuff {
 	public boolean act() {
 		list.removeFirst();
 		list.addLast(0);
+		if (target != null)
+			target.needsShieldUpdate = true;
 		curShield--;
 		if (curShield < 0)
 			curShield = 0;

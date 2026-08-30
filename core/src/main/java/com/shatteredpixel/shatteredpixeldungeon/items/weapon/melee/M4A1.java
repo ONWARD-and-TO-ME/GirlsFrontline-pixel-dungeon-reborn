@@ -22,7 +22,8 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 
 	{
 		image = ItemSpriteSheet.M4A1;
-
+		unique = true;
+		defaultAction = AC_CHOOSE;
 		tier = 1;
 		RCH = 2;
         dmgBaseDiffer = -0.8F;
@@ -39,26 +40,50 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 		float delay = super.delayFactor(owner);
 		return Math.max(0.333F, delay);
 	}
+	private static final String SkillItem_THROWING = "SkillItem_THROWING";
+	private static final String SkillItem_INTENSIFY = "SkillItem_INTENSIFY";
 	private static final String THROWING_SKILL = "THROWING_SKILL";
 	private static final String THROWING_READY = "THROWING_READY";
 	private static final String INTENSIFY_READY = "INTENSIFY_READY";
 	public boolean throwing_ready;
 	public boolean intensify_ready;
+	private ThrowingSkill throwing = new ThrowingSkill();
+	private IntensifySkill intensify = new IntensifySkill();
+	@Override
+	public void Tracker( Char owner ){
+		super.Tracker(owner);
+		throwing.Tracker(owner);
+		intensify.Tracker(owner);
+	}
+	@Override
+	public void stopTrack(){
+		super.stopTrack();
+		throwing.stopTrack();
+		intensify.stopTrack();
+	}
 	@Override
 	public void storeInBundle( Bundle bundle ){
 		super.storeInBundle(bundle);
 		bundle.put(THROWING_READY, throwing_ready);
 		bundle.put(INTENSIFY_READY, intensify_ready);
+		bundle.put(SkillItem_THROWING, throwing);
+		bundle.put(SkillItem_INTENSIFY, intensify);
 	}
 	@Override
 	public void restoreFromBundle( Bundle bundle ){
 		super.restoreFromBundle(bundle);
 		throwing_ready = bundle.getBoolean(THROWING_READY);
 		intensify_ready = bundle.getBoolean(INTENSIFY_READY);
+		if (bundle.contains(SkillItem_THROWING))
+			throwing = (ThrowingSkill) bundle.get(SkillItem_THROWING);
+		if (bundle.contains(SkillItem_INTENSIFY))
+			intensify = (IntensifySkill) bundle.get(SkillItem_INTENSIFY);
 	}
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
+		actions.add(SkillItem_INTENSIFY);
+		actions.add(SkillItem_THROWING);
 		if (change() && isEquipped(hero))
 			actions.add(THROWING_SKILL);
 		if (throwing_ready)
@@ -68,9 +93,21 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 		return actions;
 	}
 	@Override
+	public void activate( Char ch ){
+		Tracker(ch);
+	}
+	@Override
 	public void execute( Hero hero, String action ) {
 		super.execute( hero, action );
-		if (action.equals(THROWING_SKILL)) {
+		if (action.equals(SkillItem_THROWING)) {
+			throwing.Tracker(hero);
+			throwing.execute(hero, AC_SKILL);
+		}
+		else if (action.equals(SkillItem_INTENSIFY)) {
+			intensify.Tracker(hero);
+			intensify.execute(hero, AC_SKILL);
+		}
+		else if (action.equals(THROWING_SKILL)) {
 			ActionIndicator.setAction(this);
 			ThrowingSkill.INSTANCE(ThrowingSelector(false), SnipeSelector(false));
 		}

@@ -87,7 +87,7 @@ public class CardCalculator {
         if (isM4A1)
             return damage * chance;
         else
-            return Math.min(damage * chance, M4A1max(2 * chance));
+            return Math.min(damage * chance, M4A1max((chance >= 1 ? 2 : 3) * chance));
     }
     public static float everDamageFactor_Add( boolean checkNagant ){
         float mul = 0;
@@ -153,18 +153,20 @@ public class CardCalculator {
         return M4A1damageRoll(0F, 1F, mul);
     }
     public static float M4A1max( float mul ){
-//        M4A1 m = M4A1.INSTANCE();
-//        float dmg = m.augment.damageFactor(m.max()) * mul;
-//        return onM4A1damageRoll(Dungeon.hero, dmg);
+        M4A1 m = M4A1.INSTANCE();
+        float dmg = m.augment.damageFactor(m.max()) * mul;
+        return onM4A1damageRoll(Dungeon.hero, dmg);
         //暂时还是不吃强化符石好了
-        return onM4A1damageRoll(Dungeon.hero, M4A1.INSTANCE().max() * mul);
+//        return onM4A1damageRoll(Dungeon.hero, M4A1.INSTANCE().max() * mul);
     }
     public static int shieldPerHit(){
         int s = 1;
+        if (hasCard(CommonCard.HS2000.Sten_II) && Random.Int(3) != 0)
+            s += 1;
         if (hasCard(RareCard.HS2000.KSG))
-            s++;
-        if (hasCard(FinalCard.HS2000.S_A_T_8))
             s += 2;
+        if (hasCard(FinalCard.HS2000.S_A_T_8))
+            s += 4;
         return s;
     }
     public static int shieldAttack( Hero hero, float f ){
@@ -177,8 +179,9 @@ public class CardCalculator {
         return (int) Math.floor(Math.sqrt(2 * (shield - 1)) + 1);
     }
     public static float fireDamageChance( boolean auras ){
-        float chance = 0.3F;
+        float chance = 0.5F;
         if (auras){
+            chance = 0.3F;
             if (hasCard(CommonCard.Vector.KLIN))
                 chance += 0.2F;
             if (hasCard(CommonCard.Vector.HONEY_BADGER))
@@ -186,7 +189,7 @@ public class CardCalculator {
             if (hasCard(RareCard.Vector.K2))
                 chance += 0.5F;
             if (hasCard(CommonCard.Vector.UKM_2000))
-                chance += (float) Math.floor(upgradeTimes() / 1000F) * 5;
+                chance += (float) Math.floor(upgradeTimes() / 1000F) * 0.05F;
         }
         return chance;
     }
@@ -226,21 +229,22 @@ public class CardCalculator {
         int dmg = CardAffect.tryCrit(damage * VHS_Hack_Factor() + add, isM4A1);
         if (hasCard(RareCard.VHS.MDR)) {
             dmg /= 5;
-            if (!Ignore_MDR) {
+            if (mask >> 0 == 0) {
                 for (Mob m : hero.getVisibleEnemies()) {
                     if (m.alignment == Char.Alignment.ALLY || m instanceof NPC)
                         continue;
                     if (m == enemy)
                         continue;
-                    Ignore_MDR = true;
-                    //确保对主目标以外的目标不会触发新一轮MDR骇入，以防无限递归
+                    int finalMask = mask | (int) Math.pow(2, 0);
                     Actor.add(new Actor() {
                         {
                             actPriority = VFX_PRIO;
                         }
                         @Override
                         protected boolean act() {
+                            mask = finalMask;
                             m.damage(Math.round(VHS_Hack_Proc(hero, m, damage, wep)), VHS_Hack.class);
+                            mask = 0;
                             Actor.remove(this);
                             return true;
                         }
@@ -248,8 +252,6 @@ public class CardCalculator {
                     CardAffect.VHS_Hack_Affect(m);
                 }
             }
-            else
-                Ignore_MDR = false;
         }
         if (hasCard(RareCard.VHS.Zas_M21)) {
             float mul = 1F;
@@ -308,19 +310,19 @@ public class CardCalculator {
 
         return dmg;
     }
-    private static boolean Ignore_MDR = false;
+    private static int mask = 0;
     public static float VHS_Hack_Factor() {
-        float factor = 1F;
+        float factor = 1.5F;
         if (hasCard(CommonCard.VHS.EM_2))
             factor += 0.5F;
         if (hasCard(CommonCard.VHS.SAR_21))
-            factor += (upgradeTimes() / 1000F) * 0.08F;
+            factor += (float) Math.floor(upgradeTimes() / 1000F) * 0.08F;
         return factor;
     }
     public static float crit(){
         float rate = 0F;
         if (Dungeon.hero.buff(IntensifySkill.Intensify.class) != null)
-            rate += 0.1F;
+            rate += 0.3F;
         if (hasCard(FirstCard.WA2000))
             rate += 0.3F;
         if (hasCard(CommonCard.UNIVERSAL.Mk48))

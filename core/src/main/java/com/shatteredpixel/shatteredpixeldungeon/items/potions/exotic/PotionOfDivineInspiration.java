@@ -162,13 +162,13 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 		for (Talent talent : talents) {
 			if (talent != null
 					&& !hero.hasTalentB(talent)
-					&& !ScrollOfMetamorphosis.WndMetamorphReplace.isIgnoreTalent(talent)
-					&& !ScrollOfMetamorphosis.WndMetamorphReplace.hasAgainstTalent(talent))
+					&& !ScrollOfMetamorphosis.WndMetamorphReplace.isIgnoreTalent(hero.heroClass, talent)
+					&& !ScrollOfMetamorphosis.WndMetamorphReplace.hasAgainstTalent(hero, talent))
 				return talent;
 		}
 		return null;
 	}
-	private static void addTalent( Hero hero, int tier ){
+	public static void addTalent( Hero hero, int tier ){
 		Talent add = randomTalent(hero, tier);
         if (add == null)
             return;

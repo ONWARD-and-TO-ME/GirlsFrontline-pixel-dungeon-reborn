@@ -24,7 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic;
 import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -242,14 +242,14 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			replaceOptions = options;
 			setup(replacing, tier, options);
 		}
-		public static boolean hasAgainstTalent( Talent talent ){
+		public static boolean hasAgainstTalent( Hero hero, Talent talent ){
 			for (ArrayList<Talent> array : against)
 				//新蜕变的天赋属于互斥天赋
 				if (array.contains(talent)) {
 					//查找玩家身上可能存在的与新天赋互斥的天赋
 					Talent againstOne = null;
 					for (Talent t : array) {
-						if (Dungeon.hero.hasTalentB(t)) {
+						if (hero.hasTalentB(t)) {
 							againstOne = t;
 							break;
 						}
@@ -260,8 +260,8 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 				}
 			return false;
 		}
-		public static boolean isIgnoreTalent( Talent talent ){
-			return restrictedTalents.containsKey(talent) && restrictedTalents.get(talent) != curUser.heroClass;
+		public static boolean isIgnoreTalent( HeroClass cls, Talent talent ){
+			return restrictedTalents.containsKey(talent) && restrictedTalents.get(talent) != cls;
 		}
 		private Talent newTalent(HeroClass cls, Talent replacing, int tier, Set<Talent> options){
 			ArrayList<LinkedHashMap<Talent, Integer>> clsTalents = new ArrayList<>();
@@ -276,11 +276,11 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 					clsTalentsAtTier.remove(talent);
 				else {
 					//移除无法使用的天赋且未做蜕变适应的天赋
-					if (isIgnoreTalent(talent))
+					if (isIgnoreTalent(cls, talent))
 						clsTalentsAtTier.remove(talent);
 
 					//移除互斥天赋
-					if (hasAgainstTalent(talent))
+					if (hasAgainstTalent(curUser, talent))
 						clsTalentsAtTier.remove(talent);
 
 					//移除已经随机出来的天赋
@@ -295,6 +295,10 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 				return Random.element(clsTalentsAtTier);
 		}
 		private void setup(Talent replacing, int tier, LinkedHashMap<Talent, Integer> replaceOptions){
+			if (replaceOptions.isEmpty()){
+				hide();
+				return;
+			}
 
 			float top = 0;
 

@@ -186,15 +186,7 @@ public class ItemSprite extends MovieClip {
 
 	public static int itemSpriteNeedDraw = -2;
 	public ItemSprite view( Item item ){
-		int image = item.image();
-		boolean needDraw = image == itemSpriteNeedDraw;
-		if (needDraw)
-			image = ItemSpriteSheet.ARCANE_RESIN;
-		view(image, item.glowing());
-		if (needDraw){
-			float[] colors = Image.getColors(item.getClass());
-			hardlight(colors[0], colors[1], colors[2]);
-		}
+		view(item, item.glowing());
 		Emitter emitter = item.emitter();
 		if (emitter != null && parent != null) {
 			emitter.pos( this );
@@ -230,12 +222,31 @@ public class ItemSprite extends MovieClip {
 				return view( 0, null );
 		}
 	}
-	
+
 	public ItemSprite view( int image, Glowing glowing ) {
 		if (this.emitter != null) this.emitter.killAndErase();
 		emitter = null;
+		boolean needDraw = image == itemSpriteNeedDraw;
+		if (needDraw)
+			image = ItemSpriteSheet.ARCANE_RESIN;
 		frame( image );
 		glow( glowing );
+		return this;
+	}
+
+	public ItemSprite view( Item item, Glowing glowing ) {
+		if (this.emitter != null) this.emitter.killAndErase();
+		emitter = null;
+		int image = item.image();
+		boolean needDraw = image == itemSpriteNeedDraw;
+		if (needDraw)
+			image = ItemSpriteSheet.ARCANE_RESIN;
+		frame( image );
+		glow( glowing );
+		if (needDraw){
+			float[] colors = Image.getColors(item.getClass());
+			hardlight(colors[0], colors[1], colors[2]);
+		}
 		return this;
 	}
 

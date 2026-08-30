@@ -474,7 +474,7 @@ public class Hero extends Char {
 	}
 	
 	public String className() {
-        if (subClass != null && subClass != HeroSubClass.NONE)
+        if (subClass != null && subClass != HeroSubClass.NONE && subClass != HeroSubClass.EMPTY)
             return subClass.title();
         if (heroClass != null && heroClass != HeroClass.NONE)
 		    return heroClass.title();

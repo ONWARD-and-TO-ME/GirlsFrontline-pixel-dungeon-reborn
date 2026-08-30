@@ -112,7 +112,7 @@ public class ArcaneResin extends Item {
 
 		@Override
 		public void onSelect( Item item ) {
-			if (item != null && item instanceof Wand) {
+			if (item instanceof Wand) {
 				Wand w = (Wand)item;
 
 				if (w.level() >= 3){
@@ -189,7 +189,7 @@ public class ArcaneResin extends Item {
 		public Item sampleOutput(ArrayList<Item> ingredients) {
 			Wand w = (Wand)ingredients.get(0);
 			int level = w.level() - w.resinBonus;
-            int quantity = 2*(level+1);
+            int quantity = 2 * (level + 1);
             if (Dungeon.hero != null){
                 if (Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION)){
                     if (Dungeon.hero.heroClass != HeroClass.MAGE)

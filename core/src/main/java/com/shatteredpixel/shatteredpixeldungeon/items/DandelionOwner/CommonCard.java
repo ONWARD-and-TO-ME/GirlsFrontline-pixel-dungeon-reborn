@@ -17,20 +17,28 @@ public interface CommonCard extends Card {
     static void getAllCard( CardSelector selector ){
         HashMap<FirstCard, CommonCard[]> map = cardMap();
         for (FirstCard f : map.keySet())
-            for (CommonCard card : map.get(f)){
-                if (selector.CommonCards.contains(card)
-                        || selector.curCards.contains(card))
-                    continue;
-                selector.curCards.add(card);
-            }
+            if (selector.hasCard(f))
+                for (CommonCard card : map.get(f)) {
+                    if (selector.CommonCards.contains(card)
+                            || selector.curCards.contains(card))
+                        continue;
+                    selector.curCards.add(card);
+                }
+        for (CommonCard card : UNIVERSAL.values()){
+            if (selector.CommonCards.contains(card)
+                    || selector.curCards.contains(card))
+                continue;
+            selector.curCards.add(card);
+        }
     }
-    static Card random( CardSelector selector ){
+    static Card random( CardSelector selector, boolean signal ){
         ArrayList<Card> list = new ArrayList<>();
         HashMap<FirstCard, CommonCard[]> map = cardMap();
         for (FirstCard card : map.keySet())
             if (selector.contain(card))
                 addAll(list, map.get(card));
-        addAll(list, UNIVERSAL.values());
+        if (!signal)
+            addAll(list, UNIVERSAL.values());
 
         for (CommonCard card : selector.CommonCards)
             list.remove(card);

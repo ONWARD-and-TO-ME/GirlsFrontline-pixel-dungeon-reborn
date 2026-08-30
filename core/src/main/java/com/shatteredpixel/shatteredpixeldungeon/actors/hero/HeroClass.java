@@ -65,8 +65,6 @@ import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator.TestRi
 import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator.debugBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
-import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.IntensifySkill;
-import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.ThrowingSkill;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
@@ -87,6 +85,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibili
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
@@ -383,14 +382,17 @@ public enum HeroClass {
 	}
 	private static void initDandelion( Hero hero ){
 		hero.subClass = HeroSubClass.EMPTY;
-		(hero.belongings.weapon = new M4A1()).identify();
-		new CardSelector().collect();
-		IntensifySkill intensify = new IntensifySkill();
-		intensify.collect();
-		ThrowingSkill throwing = new ThrowingSkill();
-		throwing.collect();
-		Dungeon.quickslot.setSlot(0, intensify);
-		Dungeon.quickslot.setSlot(1, throwing);
+		M4A1 m = new M4A1();
+		(hero.belongings.weapon = m).identify();
+		CardSelector selector = new CardSelector();
+		selector.collect();
+		Dungeon.quickslot.setSlot(0, selector);
+		Dungeon.quickslot.setSlot(1, m);
+		for (int i = 0; i < 5; i++){
+			PotionOfDivineInspiration.addTalent(hero, 0);
+			PotionOfDivineInspiration.addTalent(hero, 1);
+			PotionOfDivineInspiration.addTalent(hero, 2);
+		}
 	}
 	public String title() {
 		return Messages.get(HeroClass.class, name());
