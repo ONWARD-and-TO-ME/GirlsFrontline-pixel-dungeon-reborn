@@ -27,22 +27,29 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.ChangeInfo;
 import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.girlpd.v0_5_X_Changes;
+import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.girlpd.v0_6_X_Changes;
 import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.audio.Music;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 
 public class ChangesScene extends PixelScene {
-	
+
 	public static int changesSelected = 0;
+
+	//大版本页签名称，顺序与 changesSelected 对应
+	private static final String[] VERSION_NAMES = { "0.5.X", "0.6.X" };
 	
 	@Override
 	public void create() {
@@ -88,6 +95,9 @@ public class ChangesScene extends PixelScene {
 		switch (changesSelected){
 			case 0: default:
 				v0_5_X_Changes.addAllChanges(changeInfos);
+				break;
+			case 1:
+				v0_6_X_Changes.addAllChanges(changeInfos);
 				break;
 		}
 
@@ -143,11 +153,69 @@ public class ChangesScene extends PixelScene {
 				panel.innerHeight() + 2);
 		list.scrollTo(0, 0);
 
+		//底部大版本切换页签（参考破碎像素地牢更新日志的版本页签）
+		float tabW = pw / VERSION_NAMES.length - 1;
+		float tabX = panel.x;
+		float tabY = h - 16;
+		for (int i = 0; i < VERSION_NAMES.length; i++){
+			add( new VersionTab( VERSION_NAMES[i], i, tabX, tabY, tabW, 16 ) );
+			tabX += tabW + 1;
+		}
+
 		Archs archs = new Archs();
 		archs.setSize( Camera.main.width, Camera.main.height );
 		addToBack( archs );
 
 		fadeIn();
+	}
+
+	//大版本页签按钮，样式仿照 WndTabbed 的 LabeledTab
+	private class VersionTab extends Button {
+
+		private final NinePatch bg;
+		private final RenderedTextBlock label;
+		private final int index;
+
+		VersionTab( String text, int index, float x, float y, float w, float h ){
+			super();
+			this.index = index;
+
+			label = PixelScene.renderTextBlock( 9 );
+			label.text( text );
+			label.alpha( index == changesSelected ? 1f : 0.6f );
+			add( label );
+
+			bg = Chrome.get( index == changesSelected ?
+					Chrome.Type.TAB_SELECTED :
+					Chrome.Type.TAB_UNSELECTED );
+			addToBack( bg );
+
+			setPos( x, y );
+			setSize( w, h );
+			PixelScene.align( this );
+		}
+
+		@Override
+		protected void layout() {
+			super.layout();
+
+			bg.x = x;
+			bg.y = y;
+			bg.size( width, height );
+
+			label.setPos(
+					x + (width - label.width()) / 2,
+					y + (height - label.height()) / 2 - 3 );
+			PixelScene.align( label );
+		}
+
+		@Override
+		protected void onClick() {
+			if (changesSelected == index) return;
+			changesSelected = index;
+			Sample.INSTANCE.play( Assets.Sounds.CLICK, 0.7f, 0.7f, 1.2f );
+			Game.switchScene( ChangesScene.class );
+		}
 	}
 
 }

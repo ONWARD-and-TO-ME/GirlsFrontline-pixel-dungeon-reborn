@@ -107,9 +107,9 @@ public class v0_5_X_Changes {
     	add_0_5_4_3_Changes(changeInfos);
     	add_0_5_4_1_Changes(changeInfos);
     	add_0_5_3_Changes(changeInfos);
-		add_0_5_2_Changes(changeInfos);
-		add_0_5_1_Changes(changeInfos);
-		add_0_5_0_Changes(changeInfos);
+	add_0_5_2_Changes(changeInfos);
+	add_0_5_1_Changes(changeInfos);
+	add_0_5_0_Changes(changeInfos);
     }
 
     public static void Example( ArrayList<ChangeInfo> changeInfos ) {
