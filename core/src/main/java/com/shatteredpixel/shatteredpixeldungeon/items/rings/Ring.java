@@ -477,11 +477,11 @@ public class Ring extends KindofMisc implements ColorItem {
 
 	public int soloBuffedBonus(){
 		if (cursed){
-			return Math.min( 0, Ring.this.buffedLvl()-2 );
+			return Math.min( 0, buffedLvl() - 2 );
 		} else {
-            int lvl =Ring.this.buffedLvl()+1;
-            if (Ring.this.buffedLvl()<0) {
-                lvl =Ring.this.buffedLvl()-1;
+            int lvl = buffedLvl() + 1;
+            if (buffedLvl() < 0) {
+                lvl = buffedLvl() - 1;
             }
             //-1、0的buff等级去除，以立刻获得对应收益
 			return lvl;

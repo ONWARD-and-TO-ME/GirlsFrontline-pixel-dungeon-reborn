@@ -232,9 +232,9 @@ public class DEL extends NPC {
     }
     public static int getMissionGold(int mission){
         int curBossDepth = (int) Math.ceil(Dungeon.depth / 5F) * 5;
-        int nextBossDepth = curBossDepth / 5 * 6;
+        int nextBossDepth = curBossDepth + 5;
         switch (mission){
-            case 0: default: return  new ScrollOfRemoveCurse().value() * (curBossDepth - 1);
+            case 0: default: return  new ScrollOfRemoveCurse().value() * (nextBossDepth - 1);
             case 1: return  new ScrollOfUpgrade().value() * (nextBossDepth - 2);
             case 2: return  new ScrollOfRemoveCurse().value() * (nextBossDepth - 3);
             case 3: return 20;

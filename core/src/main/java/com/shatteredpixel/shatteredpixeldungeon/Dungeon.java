@@ -242,7 +242,7 @@ public class Dungeon {
             return false;
         }
     }
-	public static HashSet<Class<? extends ColorItem>> guessType ;
+	public static HashSet<Class<? extends ColorItem>> guessType = new HashSet<>() ;
 
 	public static QuickSlot quickslot = new QuickSlot();
 	

@@ -15,16 +15,14 @@ public class SaltyZongzi extends Food {
 	@Override
 	protected float eatingTime(){
 		if(Dungeon.hero.hasTalent(Talent.Type56Two_FOOD)
-                || Dungeon.hero.hasTalent(Talent.Type56_21V2)
-                || Dungeon.hero.hasTalent(Talent.Type56_21V3)){
+                || Dungeon.hero.hasTalent(Talent.Type56_21V2))
 			return 0;
-		}else{
+		else
 			return super.eatingTime();
-		}
 	}
     @Override
     protected void satisfy( Hero hero ){
-        energy+=100;
+        energy += 100;
         super.satisfy(hero);
         energy = Hunger.HUNGRY;
         //仅在进食前改变提供饱食度，进食后恢复，以实现不对号角生效

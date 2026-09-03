@@ -172,7 +172,7 @@ public enum Talent {
 
     //争议内容
     Type56_14V2(131),
-    Type56_21V2(132),Type56_21V3(132),Type56_22V2(133),Type56_23V2(134),Type56_23V3(134),Type56_23V4(HeroClass.TYPE561, 134),
+    Type56_21V2(132),Type56_22V2(133),Type56_23V2(134),Type56_23V3(134),Type56_23V4(HeroClass.TYPE561, 134),
     GUN_1V2(142, 3), GUN_1V3(142, 3), GUN_2V2(143, 3),
 
     //type561 T3
@@ -282,10 +282,10 @@ public enum Talent {
 		public int icon() { return BuffIndicator.HEALING; }
 		public void tintIcon(Image icon) { icon.hardlight(0.8f, 0.6f, 0.2f); }
 	}
-	public static class GSH18EnergizingMealTracker extends CounterBuff{}
+	public static class GSH18EnergizingMealTracker extends Buff{}
     
     //天狼星心脏 buff
-    public static class SiriushHeartTracker extends FlavourBuff {
+    public static class SiriushHeartTracker extends Buff {
         {
             // 设置为不会随时间自然消失，只在攻击后被移除
             revivePersists = true;
@@ -296,7 +296,7 @@ public enum Talent {
         public String toString() { return Messages.get(this, "sirius_heart_name"); }
         public String desc() { return Messages.get(this, "sirius_heart_desc"); }
     }
-    public static class Type56BookTracker extends CounterBuff{
+    public static class Type56BookTracker extends Buff{
         {
             revivePersists = true;
         }
@@ -573,12 +573,9 @@ public enum Talent {
             }
         }
         // GSH18天赋：元气一餐
-        if (hero.hasTalent(GSH18_ENERGIZING_MEAL)) {
+        if (hero.hasTalent(GSH18_ENERGIZING_MEAL))
             // 进食后添加buff，用于跟踪下次攻击必定命中和增加攻击范围
-            if (hero.buff(Talent.GSH18EnergizingMealTracker.class) == null) {
-                Buff.count(hero, GSH18EnergizingMealTracker.class, 1);
-            }
-        }
+            Buff.affect(hero, GSH18EnergizingMealTracker.class);
 
         if (Dungeon.hero.hasTalent(Talent.Type56_21V2)){
             if (Dungeon.hero.HP < Dungeon.hero.HT) {
@@ -701,10 +698,12 @@ public enum Talent {
 
 	public static void onArtifactUsed( Hero hero ){
 		if (hero.hasTalent(ENHANCED_RINGS)){
-			Buff.prolong(hero, EnhancedRings.class, 3f*hero.pointsInTalent(ENHANCED_RINGS)).set(1);
+			Buff.prolong(hero, EnhancedRings.class, 3f * hero.pointsInTalent(ENHANCED_RINGS)).set(1);
+            hero.updateHT(false);
 		}
         else if (hero.hasTalent(ENHANCED_RINGS_V2) && hero.buff(EnhancedRings.CoolDown.class) == null){
             Buff.prolong(hero, EnhancedRings.class, 3).set(hero.pointsInTalent(ENHANCED_RINGS_V2));
+            hero.updateHT(false);
         }
 	}
 
@@ -835,34 +834,23 @@ public enum Talent {
 		}
 		
 		// GSH18天赋：双星守护
-		if(hero.hasTalent(GSH18_STAR_SHIELD)){
-			StarShieldTracker tracker = Buff.affect(hero, StarShieldTracker.class);
-			int shieldPerHit = hero.pointsInTalent(GSH18_STAR_SHIELD); // +1回1点，+2回2点
-			
-			// 检查角色是否为GSH18
-			boolean isGSH18 = hero.heroClass == HeroClass.GSH18; // GSH18角色
-			
-			// 如果是GSH18，正常上限；否则，上限减半
-			int maxPerTurn;
-			if (isGSH18) {
-				maxPerTurn = 5 * hero.pointsInTalent(GSH18_STAR_SHIELD); // +1每回合最多5点，+2每回合最多10点
-			} else {
-				maxPerTurn = (5 * hero.pointsInTalent(GSH18_STAR_SHIELD)) / 2; // 非GSH18角色上限减半
-			}
-			
-			if(tracker.count() < maxPerTurn){
-			StarShield shield = hero.buff(StarShield.class);
-			if (shield == null) {
-				// 如果角色还没有护盾buff，创建一个新的
-				shield = Buff.affect(hero, StarShield.class);
-			}
-			shield.incShield(shieldPerHit);
-			tracker.countUp(shieldPerHit);
-			if (hero.sprite != null) {
-				hero.sprite.centerEmitter().burst(MagicMissile.WardParticle.FACTORY, 2);
-			}
-			}
-		}
+		if(hero.hasTalent(GSH18_STAR_SHIELD)) {
+            StarShieldTracker tracker = Buff.affect(hero, StarShieldTracker.class);
+            int shieldPerHit = hero.pointsInTalent(GSH18_STAR_SHIELD); // +1回1点，+2回2点
+
+            // 如果是GSH18，正常上限；否则，上限减半
+            int maxPerTurn = 5 * hero.pointsInTalent(GSH18_STAR_SHIELD); // +1每回合最多5点，+2每回合最多10点
+
+            if (hero.heroClass != HeroClass.GSH18)
+                maxPerTurn /= 2; // 非GSH18角色上限减半
+
+            if (tracker.count() < maxPerTurn) {
+                Buff.affect(hero, StarShield.class).incShield(shieldPerHit);
+                tracker.countUp(shieldPerHit);
+                if (hero.sprite != null)
+                    hero.sprite.centerEmitter().burst(MagicMissile.WardParticle.FACTORY, 2);
+            }
+        }
 
         if(hero.hasTalent(HOW_DARE_YOU)){
             float chance  =0.15f;
@@ -878,13 +866,16 @@ public enum Talent {
                 Buff.affect(enemy, Terror.class,duration);
         }
 
-        if(hero.hasTalent(JIEFANGCI))
-            if(Dungeon.level.adjacent(hero.pos,enemy.pos) && hero.belongings.weapon() instanceof ShootGun){
+        if(hero.hasTalent(JIEFANGCI) && Dungeon.level.adjacent(hero.pos,enemy.pos)){
+            if (hero.belongings.weapon() instanceof ShootGun
+                    || hero.buff(JIEFANGCI_Tracker.class) == null) {
+                Buff.prolong(hero, JIEFANGCI_Tracker.class, 5F);
                 dmg += 1 + 4 * hero.pointsInTalent(JIEFANGCI);
                 float chance = 0.05F + 0.1F * hero.pointsInTalent(JIEFANGCI);
-                if(Random.Float() < chance)
-                    Buff.affect(enemy, Cripple.class,2F);
+                if (Random.Float() < chance)
+                    Buff.affect(enemy, Cripple.class, 2F);
             }
+        }
 
         if(hero.hasTalent(SEARCH_ARMY) && enemy instanceof Mob){
             if(enemy.paralysed>0)
@@ -895,6 +886,7 @@ public enum Talent {
 
         return dmg;
 	}
+    public static class JIEFANGCI_Tracker extends FlavourBuff{}
 
 	public static void onShielding(Hero hero){
 		if(hero.hasTalent(GSH18_INTELLIGENCE_AWARENESS)){

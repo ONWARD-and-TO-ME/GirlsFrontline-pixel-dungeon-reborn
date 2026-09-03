@@ -182,7 +182,7 @@ public class Badges {
 		CHAMPION_2                  ( 113 ),
 		CHAMPION_3                  ( 114 ),
 
-		CRYSTAL_TROPHY				( 115,true),
+		CRYSTAL_TROPHY				( 115, true),
         XMASGift				    ( 119),
 		Identify           			( 121),
 		Degrade_Equipment           ( 121);
@@ -212,7 +212,10 @@ public class Badges {
 			this( -1 );
 		}
 	}
-	
+	public static HashSet<Badge> hidden = new HashSet<>();
+	static {
+		hidden.add(Badge.Degrade_Equipment);
+	}
 	private static HashSet<Badge> global;
 	private static HashSet<Badge> local = new HashSet<>();
 	
@@ -1130,7 +1133,7 @@ public class Badges {
 	private static void leaveWorst( Collection<Badge> list, Badge...badges ) {
 		for (int i=0; i < badges.length; i++) {
 			if (list.contains( badges[i])) {
-				for (int j=i+1; j < badges.length; j++) {
+				for (int j = i + 1; j < badges.length; j++) {
 					list.remove( badges[j] );
 				}
 				break;

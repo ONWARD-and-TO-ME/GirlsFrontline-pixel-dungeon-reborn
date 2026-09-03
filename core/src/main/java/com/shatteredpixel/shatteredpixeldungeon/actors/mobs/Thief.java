@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ThiefSprite;
@@ -151,7 +152,7 @@ public class Thief extends Mob {
 
 		Item toSteal = hero.belongings.randomUnequipped();
 
-		if (toSteal != null && !toSteal.unique && toSteal.level() < 1 ) {
+		if (toSteal != null && !toSteal.unique && toSteal.level() < 1 && !(toSteal instanceof M4A1) ) {
 
 			GLog.w( Messages.get(Thief.class, "stole", toSteal.name()) );
 			if (!toSteal.stackable) {

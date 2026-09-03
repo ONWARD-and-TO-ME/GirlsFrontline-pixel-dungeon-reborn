@@ -116,11 +116,9 @@ abstract public class Weapon extends KindOfWeapon {
 				if (this instanceof MissileWeapon && Random.Int(4) == 0)
 					enchant();
 			}
-			int baseSTR = 10;
-			if (this instanceof SakuraBlade)
-				baseSTR = 12;
-			int str = (int) Math.floor((hero.STR() - baseSTR) / 2F);
-			tier = Math.min(10, str + 1);
+			tier = 10;
+			while (STRReq() > hero.STR())
+				tier--;
 		}
 	}
 
@@ -318,7 +316,7 @@ abstract public class Weapon extends KindOfWeapon {
 				cause = "以完整回合盘初步判断武器等级。";
 			else if (encumbrance <= 0)
 				cause = "以没有超力惩罚初步判断武器等级。";
-			if (owner.wholeTime() || encumbrance <=0)
+			if (owner.wholeTime() || encumbrance <= 0)
 				guessLevel(STRNeed(str - Math.max(0, encumbrance)), cause);
 		}
 
@@ -380,11 +378,8 @@ abstract public class Weapon extends KindOfWeapon {
 			lvl = TextGuessingLevel();
 		}
 		int req = STRReq(lvl);
-		if (hero != null){
-			int multi = RingOfKing.updateMultiplier(hero);
-			if (multi != 0 && isEquipped(hero))
-				req += multi;
-		}
+		if (hero != null && isEquipped(hero))
+			req += RingOfKing.updateMultiplier(hero);
 		if (masteryPotionBonus){
 			req -= 2;
 		}
@@ -415,10 +410,10 @@ abstract public class Weapon extends KindOfWeapon {
             return lvl;
 		if (isEquipped( hero ) || hero.belongings.contains( this )){
             if (hero.buff(EquipLevelUp.class) != null)
-                lvl += Dungeon.hero.hasTalent(Talent.Type56FourTwoTwo)?Dungeon.hero.pointsInTalent(Talent.Type56FourTwoTwo):1;
-            int multi = RingOfKing.updateMultiplier(hero);
-            if (multi != 0)
-                lvl += multi;
+                lvl += Dungeon.hero.hasTalent(Talent.Type56FourTwoTwo)
+						? Dungeon.hero.pointsInTalent(Talent.Type56FourTwoTwo)
+						: 1;
+			lvl += RingOfKing.updateMultiplier(hero);
 			return lvl;
 		}
         return level();

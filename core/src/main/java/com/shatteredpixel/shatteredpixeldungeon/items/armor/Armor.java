@@ -162,8 +162,9 @@ public class Armor extends EquipableItem {
                 }
                 cursed = curse;
             }
-            int str = (hero.STR() - 10) / 2;
-            tier = Math.min(10, str + 1);
+            tier = 10;
+            while (STRReq() > hero.STR())
+                tier--;
         }
     }
 	private static final String USES_LEFT_TO_ID = "uses_left_to_id";
@@ -713,9 +714,7 @@ public class Armor extends EquipableItem {
             }
             //down at 200, 200+300, 200+300+400, ...
             lvl -= (int) ((Math.sqrt(200*broken + 22500) - 150)/100);
-            int multi = RingOfKing.updateMultiplier(hero);
-            if (multi != 0)
-                lvl += multi;
+            lvl += RingOfKing.updateMultiplier(hero);
 			return lvl;
 		} else {
 			return level();
@@ -906,11 +905,8 @@ public class Armor extends EquipableItem {
         else
             lvl = TextGuessingLevel();
         int req = STRReq(lvl);
-        if (hero != null){
-            int multi = RingOfKing.updateMultiplier(hero);
-            if (multi != 0 && isEquipped(hero))
-                req += multi;
-        }
+        if (hero != null && isEquipped(hero))
+            req += RingOfKing.updateMultiplier(hero);
         if (masteryPotionBonus){
             req -= 2;
         }

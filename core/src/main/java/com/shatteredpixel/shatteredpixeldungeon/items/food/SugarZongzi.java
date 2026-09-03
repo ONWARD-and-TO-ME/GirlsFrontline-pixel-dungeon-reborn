@@ -30,15 +30,13 @@ public class SugarZongzi extends Food {
     @Override
     protected float eatingTime(){
         if(Dungeon.hero.hasTalent(Talent.Type56Two_FOOD)
-                || Dungeon.hero.hasTalent(Talent.Type56_21V2)
-                || Dungeon.hero.hasTalent(Talent.Type56_21V3)){
+                || Dungeon.hero.hasTalent(Talent.Type56_21V2))
             return 0;
-        }else{
+        else
             return super.eatingTime();
-        }
     }
 	@Override
     public int value() {
-        return 16*quantity;
+        return 16 * quantity;
     }
 }

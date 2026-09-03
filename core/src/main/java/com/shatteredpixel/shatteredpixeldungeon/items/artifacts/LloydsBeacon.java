@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
@@ -383,6 +384,7 @@ public class LloydsBeacon extends Artifact {
                                     if (ch.alignment != curUser.alignment && FairyItems.inFairyRoom(curUser))
                                         Buff.prolong(ch, Paralysis.class, 5F);
                                 }
+                                Talent.onArtifactUsed(curUser);
                                 curUser.spendAndNext(1f);
                             }
                         }

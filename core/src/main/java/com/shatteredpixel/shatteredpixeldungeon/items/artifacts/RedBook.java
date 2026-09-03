@@ -91,7 +91,7 @@ public class RedBook extends Artifact{
     public void onUse(int chargeUse){
         charge-=chargeUse;
         if (Dungeon.hero.buff(Talent.Type56BookTracker.class) == null) {
-            Buff.count(Dungeon.hero, Talent.Type56BookTracker.class, 1);
+            Buff.affect(Dungeon.hero, Talent.Type56BookTracker.class);
         }
         updateQuickslot();
         Talent.onArtifactUsed(Dungeon.hero);

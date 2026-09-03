@@ -565,10 +565,10 @@ public class Hero extends Char {
 		}
 		
 		// GSH18天赋：元气一餐 +1级效果
-		if (hasTalent(Talent.GSH18_ENERGIZING_MEAL) && pointsInTalent(Talent.GSH18_ENERGIZING_MEAL) >= 1 && buff(Talent.GSH18EnergizingMealTracker.class) != null) {
+		if (hasTalent(Talent.GSH18_ENERGIZING_MEAL)
+				&& buff(Talent.GSH18EnergizingMealTracker.class) != null) {
 			// 下次攻击必定命中，设置一个非常高的accuracy值，变成测试枪了（）
-            accuracy += 1000f;
-			accuracy *= 1000f;
+			return 1_000_000;
 		}
         // 56天赋：1-4
         if (buff(Talent.Type56BookTracker.class) != null) {
@@ -703,29 +703,7 @@ public class Hero extends Char {
 		} else {
 			dmg = RingOfForce.damageRoll(this);
 		}
-        if (Dungeon.hero.hasTalent(Talent.Type56_21V3)){
-            Hunger hunger = buff(Hunger.class);
-            WellFed full = buff(WellFed.class);
-            int tier;
-            if (full!=null){
-                tier = 3;
-            }
-            else if (hunger!=null){
-                if (hunger.isStarving()){
-                    tier = 0;
-                }else if (hunger.isHungry()){
-                    tier = 1;
-                }else {
-                    tier = 2;
-                }
-            }
-            else {
-                tier = 0;
-            }
-            int baseRoll = 1+2*Dungeon.hero.pointsInTalent(Talent.Type56_21V3);
-            dmg += Random.Int(baseRoll*tier);
-        }
-        if (Dungeon.hero.subClass==HeroSubClass.GUN_MASTER) {
+        if (Dungeon.hero.subClass == HeroSubClass.GUN_MASTER) {
             Hunger hunger = Dungeon.hero.buff(Hunger.class);
             if (hunger != null) {
                 if (!hunger.isStarving()) {
@@ -834,7 +812,7 @@ public class Hero extends Char {
 		}
 
 		// GSH18天赋：元气一餐 +2级效果 - 攻击范围增加1格
-		if (hasTalent(Talent.GSH18_ENERGIZING_MEAL) && pointsInTalent(Talent.GSH18_ENERGIZING_MEAL) >= 2 && buff(Talent.GSH18EnergizingMealTracker.class) != null) {
+		if (pointsInTalent(Talent.GSH18_ENERGIZING_MEAL) >= 2 && buff(Talent.GSH18EnergizingMealTracker.class) != null) {
 			// 检查是否在2格范围内
 			if (Dungeon.level.distance(pos, enemy.pos) <= 2 && Dungeon.level.heroFOV[enemy.pos]) {
 				return true;
@@ -2223,7 +2201,7 @@ public class Hero extends Char {
 		}
 
 		// GSH18天赋：元气一餐 - 攻击后移除buff
-		if (hit&&(buff(Talent.GSH18EnergizingMealTracker.class) != null)) {
+		if (hit && (buff(Talent.GSH18EnergizingMealTracker.class) != null)) {
 			buff(Talent.GSH18EnergizingMealTracker.class).detach();
 		}
 		

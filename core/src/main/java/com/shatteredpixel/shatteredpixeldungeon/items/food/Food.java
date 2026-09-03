@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Food extends Item {
 
@@ -105,18 +106,21 @@ public class Food extends Item {
     }
 
 	public static float eatingTimeStatic(){
-		if(Dungeon.hero.hasTalent(Talent.IRON_STOMACH)
-                || Dungeon.hero.hasTalent(Talent.ENERGIZING_MEAL)
-                || Dungeon.hero.hasTalent(Talent.MYSTICAL_MEAL)
-                || Dungeon.hero.hasTalent(Talent.INVIGORATING_MEAL)
-                || Dungeon.hero.hasTalent(Talent.Type56Two_FOOD)
-                || Dungeon.hero.hasTalent(Talent.GSH18_ENERGIZING_MEAL)
-                || Dungeon.hero.hasTalent(Talent.Type56_21V2)
-                || Dungeon.hero.hasTalent(Talent.Type56_21V3)){
-			return TIME_TO_EAT - 2;
-		} else {
-			return TIME_TO_EAT;
-		}
+		for (Talent talent : eatingTimeTalent)
+			if (Dungeon.hero.hasTalent(talent))
+				return TIME_TO_EAT - 2;
+
+		return TIME_TO_EAT;
+	}
+	public static final HashSet<Talent> eatingTimeTalent = new HashSet<>();
+	static {
+		eatingTimeTalent.add(Talent.IRON_STOMACH);
+		eatingTimeTalent.add(Talent.ENERGIZING_MEAL);
+		eatingTimeTalent.add(Talent.MYSTICAL_MEAL);
+		eatingTimeTalent.add(Talent.INVIGORATING_MEAL);
+		eatingTimeTalent.add(Talent.Type56Two_FOOD);
+		eatingTimeTalent.add(Talent.GSH18_ENERGIZING_MEAL);
+		eatingTimeTalent.add(Talent.Type56_21V2);
 	}
 
 	protected float eatingTime(){

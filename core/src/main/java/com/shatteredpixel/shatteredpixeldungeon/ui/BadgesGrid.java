@@ -64,6 +64,8 @@ public class BadgesGrid extends Component {
 			Badges.filterHigherIncrementalBadges(lockedBadges);
 
 			for (Badges.Badge badge : lockedBadges) {
+				if (Badges.hidden.contains(badge))
+					continue;
 				BadgeButton button = new BadgeButton( badge, false );
 				add(button);
 				badgeButtons.add(button);

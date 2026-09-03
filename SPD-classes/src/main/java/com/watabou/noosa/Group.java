@@ -172,12 +172,12 @@ public class Group extends Gizmo {
 		return g;
 	}
 	
-	public synchronized Gizmo recycle( Class<? extends Gizmo> c ) {
+	public synchronized <T extends Gizmo> T recycle( Class<T> c ) {
 
 		Gizmo g = getFirstAvailable( c );
 		if (g != null) {
 			
-			return g;
+			return (T) g;
 			
 		} else if (c == null) {
 			
@@ -187,7 +187,7 @@ public class Group extends Gizmo {
 			
 			g = Reflection.newInstance(c);
 			if (g != null) {
-				return add(g);
+				return (T) add(g);
 			}
 			
 		}

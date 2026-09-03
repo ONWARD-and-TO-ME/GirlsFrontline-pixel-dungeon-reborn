@@ -32,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Music;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 
 public class BadgesScene extends PixelScene {
 

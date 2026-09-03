@@ -95,7 +95,7 @@ public class RingOfMight extends Ring {
 	}
 	
 	public static int strengthBonus( Char target ){
-		return getBonus( target, Might.class );
+		return getBuffedBonus( target, Might.class );
 	}
 	
 	public static float HTMultiplier( Char target ){
