@@ -359,24 +359,9 @@ public enum Bestiary {
 
 		switch (depth){
 
-			// Sewers
-			case 4:
-				if (Random.Float() < 0.025f) rotation.add(Thief.class); break;
-
-			// Prison
-			case 9:
-				if (Random.Float() < 0.025f) rotation.add(Bat.class); break;
-
-			// Caves
-			case 14:
-				if (Random.Float() < 0.025f) rotation.add(Ghoul.class); break;
-
-			// City
-			case 19:
-				if (Random.Float() < 0.025f) rotation.add(Guard.class); break;
-
-            case 24:
-                if (Random.Float() < 0.025f) rotation.add(Succubus.class); break;
+			case 4: case 9: case 14: case 19: case 24:
+                if (Random.Float() < 0.025F)
+                    rotation.add(Random.element(getRotation(depth + 2))); break;
 		}
 	}
 
@@ -413,7 +398,10 @@ public enum Bestiary {
             int j = Random.Int(100);
             if (!swapMob.containsKey(cl))
                 continue;
-            if (j < Dungeon.mobRan)
+            int chance = Dungeon.mobRan;
+            if (cl == Golyat.class)
+                chance *= 4;
+            if (j < chance)
                 rotation.set(i, swapMob.get(cl));
 		}
 	}
