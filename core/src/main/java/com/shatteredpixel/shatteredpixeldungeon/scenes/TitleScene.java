@@ -136,7 +136,7 @@ public class TitleScene extends PixelScene {
 		StyledButton btnAbout = new StyledButton(GREY_BUTTON,"关于"){
 			@Override
 			protected void onClick() {
-				GirlsFrontlinePixelDungeon.switchNoFade( AboutScene.class );
+				GirlsFrontlinePixelDungeon.switchNoFade( AboutSceneV2.class );
 			}
 		};
 		Image xs = Icons.get(Icons.GIRLPDS);
@@ -447,7 +447,8 @@ public class TitleScene extends PixelScene {
 				if (Info.heroClass == HeroClass.NONE) {
 					name.text( Info.heroClass.title() );
 				} else {
-					name.text( Info.subClass != HeroSubClass.NONE ? Info.subClass.title() :Info.heroClass.title() );
+					//EMPTY 为无子类职业（如丹德莱）的占位，其名称未定义，须回退显示职业名
+					name.text( Info.subClass != HeroSubClass.NONE && Info.subClass != HeroSubClass.EMPTY ? Info.subClass.title() :Info.heroClass.title() );
 				}
 
 

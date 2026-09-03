@@ -55,7 +55,8 @@ public class WndGameInProgress extends Window {
 		final GamesInProgress.Info info = GamesInProgress.check(slot);
 		
 		String className = null;
-		if (info.subClass != HeroSubClass.NONE){
+		//EMPTY 为无子类职业（如丹德莱）的占位，其名称未定义，须回退显示职业名
+		if (info.subClass != HeroSubClass.NONE && info.subClass != HeroSubClass.EMPTY){
 			className = info.subClass.title();
 		} else {
 			className = info.heroClass.title();

@@ -144,7 +144,7 @@ public class v0_5_X_Changes {
         changes.addButton(new ChangeButton(new AlchemistSprite(), 0.8F,
                 new AlchemistSprite().idle,
                 "炼金术士",
-        "_-_ 为_明亮之拳_(BrightFist)替换为全新的_炼金术士_贴图。\n"
+        "_-_ _明亮之拳_(BrightFist)替换为全新的_炼金术士_贴图。\n"
         ));
         changes.addButton(new ChangeButton(new Hero(HeroClass.Dandelion), 0.8F,
                 "丹德莱",
@@ -160,10 +160,10 @@ public class v0_5_X_Changes {
         changes.addButton(new ChangeButton(new Object[]{new ItemSprite(ItemSpriteSheet.RING_GARNET), new RingOfKing()},
                 new String[]{"瞄准镜增强", "超频瞄准镜"},
                 new String[]{
-                        "_-_ _韧性瞄准镜_合并了原_元素瞄准镜_的效果：现在韧性瞄准镜在提供减伤的同时，还提供元素抗性（火焰、雷电、气体等）并降低负面效果持续时间。\n——合并参考来源于魔绫地牢。",
+                        "_-_ _韧性瞄准镜_合并了原_元素瞄准镜_的效果：现在韧性瞄准镜在提供减伤的同时，还提供元素抗性（火焰、雷电、气体等）并降低负面效果持续时间。\n——合并参考来源于_魔绫地牢_。",
                         "_-_ 新增瞄准镜：_超频瞄准镜_，填补原元素瞄准镜的位置。\n"+
                         "_-_ 装备后，当前武器与护甲获得_额外的等级_，同时它们的力量需求也会增加。\n"+
-                        "_-_ 额外等级与额外力量需求的数值一致，随瞄准镜等级提升而增加。\n——来源于萝卜地牢的力量。（国王之戒）"
+                        "_-_ 额外等级与额外力量需求的数值一致，随瞄准镜等级提升而增加。\n——来源于_萝卜地牢_的力量。（国王之戒）"
                 }));
         changes.addButton(new ChangeButton(Icons.get(Icons.DISPLAY),
                 "0层选择角色",
