@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Core_Calling;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -10,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ public abstract class Dummy_Core extends Item {
     {
         image = ItemSprite.itemSpriteNeedDraw;
         unique = true;
+        defaultAction = AC_CHOOSE;
+        stackable = true;
     }
     private static final String AC_FIX = "fix";
     private static final String AC_CALL = "call";
@@ -35,11 +39,26 @@ public abstract class Dummy_Core extends Item {
     @SuppressWarnings("unchecked")
     public <T extends Dummy_Core> T broken() {
         fixTimeNeed = 5;
+        if (CardSelector.INSTANCE().hasCard(CommonCard.General_Liu.MOS))
+            fixTimeNeed -= Random.NormalIntRange(1, 2);
+        if (CardSelector.INSTANCE().hasCard(RareCard.General_Liu.SAIGA))
+            fixTimeNeed -= Random.NormalIntRange(2, 4);
         return (T) this;
     }
     public Dummy_Core quantity( int value ) {
         quantity = value;
         return this;
+    }
+    @Override
+    public boolean isSimilar( Item item ) {
+        if (!super.isSimilar(item))
+            return false;
+        //已判定getClass()
+        Dummy_Core core = (Dummy_Core) item;
+        return core.fixTimeNeed == fixTimeNeed
+                && core.htMul == htMul
+                && core.damageMul == damageMul
+                && core.attackSpeedMul == attackSpeedMul;
     }
     @Override
     public ArrayList<String> actions( Hero hero ){
@@ -54,7 +73,10 @@ public abstract class Dummy_Core extends Item {
     public void execute( Hero hero, String action ){
         super.execute(hero, action);
         if (action.equals(AC_FIX)){
-            fixTimeNeed--;
+            Dummy_Core core = (Dummy_Core) detach(hero.belongings.backpack);
+            core.fixTimeNeed--;
+            if (!core.collect())
+                Dungeon.level.drop(core, hero.pos);
             hero.spendAndNext(1F);
         }
         else if (action.equals(AC_CALL))
@@ -63,9 +85,9 @@ public abstract class Dummy_Core extends Item {
     @Override
     public String desc() {
         return Messages.get(this, "desc",
-                (int) (htMul * 100),
-                (int) (damageMul * 100),
-                (int) (attackSpeedMul * 100)) + "\n" + fixTimeNeed;
+                (int) (CardAffect.coreHtMul(this) * 100),
+                (int) (CardAffect.coreDamageMul(this) * 100),
+                (int) (CardAffect.coreAttackSpeedMul(this) * 100)) + "\n" + fixTimeNeed;
     }
     public void summon( int pos ){
         Puppet puppet = puppet();

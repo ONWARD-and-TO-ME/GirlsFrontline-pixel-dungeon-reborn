@@ -42,9 +42,6 @@ public abstract class Puppet extends DirectableAlly {
     public Dummy_Core core;
     public Puppet set( Dummy_Core core ){
         this.core = core;
-        htMul = core.htMul;
-        attackSpeedMul = core.attackSpeedMul;
-        damageMul = core.damageMul;
         CardAffect.summonPuppet(this);
         return this;
     }
@@ -82,11 +79,11 @@ public abstract class Puppet extends DirectableAlly {
     public int damageRoll() {
         float damage;
         Hero hero = hero();
-        if (hero.belongings.weapon() instanceof M4A1)
+        if (hero.belongings.weapon() != null)
             damage = hero.belongings.weapon().damageRoll(this);
         else
-            damage = hero.damageRoll() * 0.5F; //handles ring of force
-        return (int) damage;
+            damage = hero.damageRoll(); //handles ring of force
+        return (int) (damage * damageMul);
     }
     @Override
     public int attackSkill( Char target ) {

@@ -68,11 +68,9 @@ public class CardCalculator {
         float add = 0;
         if (hasCard(CommonCard.HS2000.Sten_II))
             add += dmgIncrease(damage, CommonCard.HS2000.Sten_II.chance(hero), isM4A1);
-        if (hasCard(CommonCard.UNIVERSAL._9A91))
-            add += dmgIncrease(damage, CommonCard.UNIVERSAL._9A91.chance(hero), isM4A1);
         if (hasCard(CommonCard.UNIVERSAL.AEK_999))
             add += dmgIncrease(damage, CommonCard.UNIVERSAL.AEK_999.chance(hero), isM4A1);
-        if (hero.buff(IntensifySkill.Intensify.class) != null &&hasCard(CommonCard.UNIVERSAL.K31))
+        if (hasCard(CommonCard.UNIVERSAL.K31) && hero.buff(IntensifySkill.Intensify.class) != null)
             add += dmgIncrease(damage, CommonCard.UNIVERSAL.K31.chance(hero), isM4A1);
         if (hasCard(RareCard.HS2000.Type_64_Auto) && Card.shield(hero) > hero.HP)
             add += dmgIncrease(damage, RareCard.HS2000.Type_64_Auto.chance(hero), isM4A1);
@@ -87,12 +85,14 @@ public class CardCalculator {
         if (isM4A1)
             return damage * chance;
         else
-            return Math.min(damage * chance, M4A1max((chance >= 1 ? 2 : 3) * chance));
+            return Math.min(damage * chance, M4A1max(Math.max((chance >= 1 ? 2 : 3) * chance, 1)));
     }
     public static float everDamageFactor_Add( boolean checkNagant ){
         float mul = 0;
         if (hasFailCard(CommonCard.UNIVERSAL.M1014))
             mul += 1F;
+        if (hasCard(CommonCard.UNIVERSAL._9A91))
+            mul += 0.3F;
         mul += Card.CardPoint.AttackDamage_Add.point();
         if (checkNagant){
             if (hasCard(CommonCard.UNIVERSAL.Nagant_M1895)
@@ -126,7 +126,7 @@ public class CardCalculator {
             multiplier /= 2;
         if (hasCard(FinalCard.UNIVERSAL.MG5)) {
             if (isM4A1)
-                return 0.333F;
+                return 0.3333F;
             multiplier *= 3;
         }
         if (!isM4A1)
@@ -179,9 +179,8 @@ public class CardCalculator {
         return (int) Math.floor(Math.sqrt(2 * (shield - 1)) + 1);
     }
     public static float fireDamageChance( boolean auras ){
-        float chance = 0.5F;
         if (auras){
-            chance = 0.3F;
+            float chance = 0.3F;
             if (hasCard(CommonCard.Vector.KLIN))
                 chance += 0.2F;
             if (hasCard(CommonCard.Vector.HONEY_BADGER))
@@ -190,8 +189,10 @@ public class CardCalculator {
                 chance += 0.5F;
             if (hasCard(CommonCard.Vector.UKM_2000))
                 chance += (float) Math.floor(upgradeTimes() / 1000F) * 0.05F;
+            return chance;
         }
-        return chance;
+        else
+            return 0.5F;
     }
     public static int fireDamage( boolean auras ){
         return Math.round(M4A1damageRoll( fireDamageChance(auras) ));
@@ -216,7 +217,7 @@ public class CardCalculator {
             return damage;
         }
 
-        float add = 0;
+        float add = dmgIncrease(damage, VHS_Hack_Factor(), wep instanceof M4A1);
         if (hasCard(CommonCard.VHS.Ak5))
             add += 5;
         if (hasCard(CommonCard.VHS.PM1910))
@@ -226,7 +227,7 @@ public class CardCalculator {
         if (hasCard(RareCard.VHS.TAC_50))
             add += Math.min(enemy.HT * 0.05F, 30);
 
-        int dmg = CardAffect.tryCrit(damage * VHS_Hack_Factor() + add, isM4A1);
+        int dmg = CardAffect.tryCrit(damage + add, isM4A1);
         if (hasCard(RareCard.VHS.MDR)) {
             dmg /= 5;
             if (mask >> 0 == 0) {
@@ -288,7 +289,7 @@ public class CardCalculator {
                     }
                     @Override
                     protected boolean act() {
-                        if (enemy.isAlive()) {
+                        if (enemy.isAlive() && enemy.buff(VHS_Hack.VHS_Hack_KillingTracker.class) == null) {
                             hack.fullCharge();
                             Buff.affect(enemy, VHS_Hack.VHS_Hack_KillingTracker.class, 20F);
                         }
@@ -312,7 +313,7 @@ public class CardCalculator {
     }
     private static int mask = 0;
     public static float VHS_Hack_Factor() {
-        float factor = 1.5F;
+        float factor = 0.5F;
         if (hasCard(CommonCard.VHS.EM_2))
             factor += 0.5F;
         if (hasCard(CommonCard.VHS.SAR_21))

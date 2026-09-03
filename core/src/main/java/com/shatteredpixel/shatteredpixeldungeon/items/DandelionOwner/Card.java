@@ -35,14 +35,13 @@ public interface Card {
         }
     }
     static Card signalCard(CardSelector selector){
-        Card card;
         int curCardNum = selector.curCardNum;
-        if (curCardNum < 5 && (card = CommonCard.random(selector, true)) != null)
-            return card;
-        if (curCardNum < 7 && (card = RareCard.random(selector, true)) != null)
-            return card;
-        if (curCardNum < 8 && (card = FinalCard.random(selector,true)) != null)
-            return card;
+        if (curCardNum < 5)
+            return CommonCard.random(selector, true);
+        if (curCardNum < 7)
+            return RareCard.random(selector, true);
+        if (curCardNum < 8)
+            return FinalCard.random(selector,true);
         return null;
     }
     static Card randomCard(CardSelector selector){

@@ -58,6 +58,10 @@ public class ThrowingSkill extends SkillItem {
         return true;
     }
     public static boolean Snipe_INSTANCE( int target ) {
+        if (!Dungeon.level.heroFOV[target]){
+            GLog.n(Messages.get(ThrowingSkill.class, "no_sight"));
+            return false;
+        }
         Char ch = Actor.findChar(target);
         if (ch == null || ch.alignment == Char.Alignment.ALLY || ch instanceof NPC) {
             GLog.n(Messages.get(ThrowingSkill.class, "no_enemy"));
@@ -149,12 +153,10 @@ public class ThrowingSkill extends SkillItem {
                 if (outMap(cell))
                     continue;
                 if (Dungeon.level.flammable[cell]) {
-                    if (Dungeon.level.heroFOV[cell]) {
-                        CellEmitter.get(cell).burst(SmokeParticle.FACTORY, 4);
-                    }
                     Dungeon.level.destroy(cell);
                     GameScene.updateMap(cell);
                 }
+                CellEmitter.get(i).burst(SmokeParticle.FACTORY, 5);
                 Char ch;
                 if ((ch = Actor.findChar(cell)) != null)
                     list.add(ch);

@@ -136,7 +136,7 @@ public interface RareCard extends Card {
         }
     }
     enum General_Liu implements RareCard{
-        C_93, CZ75, M26_ASW, QBU_88, X95, Contender, COLT_SAA, STECHKIN;
+        C_93, CZ75, M26_ASW, QBU_88, X95, Contender, COLT_SAA, STECHKIN, SAIGA;
         @Override
         public void onSelect(){
             if (this == C_93)

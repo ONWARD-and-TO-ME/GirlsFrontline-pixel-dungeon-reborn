@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.canScrollRedButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
@@ -33,6 +34,7 @@ public class CardSelector extends Item {
     public ArrayList<Card> failureCards   = new ArrayList<>();
     private static final String AC_SELECT  = "SELECT_CARD";
     private static final String AC_CHECK   = "CHECK_CARD";
+    private static final String AC_ADD = "ADD_CARD";
     public static CardSelector INSTANCE(){
         if (Dungeon.hero == null)
             return new CardSelector();
@@ -70,7 +72,7 @@ public class CardSelector extends Item {
     }
     @Override
     public String desc(){
-        return super.desc() + "\n" + curCardNum;
+        return super.desc() + "\n" + curCardNum + "\n" + duration;
     }
     @Override
     public ArrayList<String> actions( Hero hero ){
@@ -80,6 +82,7 @@ public class CardSelector extends Item {
             actions.add(AC_SELECT);
         if (!FirstCards.isEmpty())
             actions.add(AC_CHECK);
+        actions.add(AC_ADD);
         if (Dungeon.isChallenged(Challenges.TEST_MODE))
             actions.add(AC_DEBUG);
         return actions;
@@ -94,6 +97,9 @@ public class CardSelector extends Item {
                 Card.random(this);
             selectCards();
         }
+        else if (action.equals(AC_ADD))
+            GameScene.selectItem(WeaponToCard.weaponSelector);
+
     }
     @Override
     public void debug(){
@@ -147,10 +153,10 @@ public class CardSelector extends Item {
                                         else if (c instanceof FinalCard)
                                             FinalCards.add((FinalCard) c);
                                         curCardNum++;
-                                        if (curCardNum < 8)
-                                            coolDownLeft = 1500 + 500 * curCardNum;
                                         if (duration >= 33333)
-                                            coolDownLeft = 4500;
+                                            coolDownLeft += 4500;
+                                        else if (curCardNum < 8)
+                                            coolDownLeft += 1500 + 500 * curCardNum;
                                         curCards.clear();
                                         if (INSTANCE != null) {
                                             INSTANCE.hide();

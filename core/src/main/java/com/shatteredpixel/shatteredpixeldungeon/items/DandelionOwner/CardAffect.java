@@ -21,10 +21,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.Puppet;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.HackParticle;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DandelionOwner.Puppets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
@@ -130,8 +128,10 @@ public class CardAffect {
         if (hasCard(RareCard.Vector.Type_79))
             affect(ch, MoveSpeed.SM_Type_79.class);
         if (hasCard(RareCard.Vector.AK_74U)){
-            affect(ch, MoveSpeed.SM_AK_74U.class).setActiveTime(5F);
-            affect(ch, Vulnerability.V_AK_74U.class).setActiveTime(5F);
+            if(ch.buff(MoveSpeed.SM_AK_74U.class) == null)
+                affect(ch, MoveSpeed.SM_AK_74U.class).setActiveTime(5F);
+            if(ch.buff(Vulnerability.V_AK_74U.class) == null)
+                affect(ch, Vulnerability.V_AK_74U.class).setActiveTime(5F);
         }
         if (hasCard(RareCard.Vector.HP_35))
             affect(ch, Vulnerability.V_HP_35.class);
@@ -151,10 +151,10 @@ public class CardAffect {
         if (hasCard(CommonCard.VHS.Spitfire))
             affect(ch, AttackSpeed.SA_Spitfire.class).setActiveTime(15F);
 
-        if (hasCard(RareCard.VHS.M82A1))
+        if (hasCard(RareCard.VHS.M82A1) && ch.buff(S_M82A1.class) == null)
             affect(ch, S_M82A1.class).setActiveTime(8F);
         for (int i : PathFinder.NEIGHBOURS9)
-            CellEmitter.get(i + ch.pos).burst(SmokeParticle.FACTORY, 4);
+            CellEmitter.get(i + ch.pos).burst(HackParticle.FACTORY, 5);
     }
     private static void addThrowing(){
         GLog.p(Messages.get(CardAffect.class, "throwing_charged"));
@@ -201,33 +201,46 @@ public class CardAffect {
         if (!core.doPickUp(hero))
             Dungeon.level.drop(core, hero.pos);
     }
-    public static <T extends Puppet> void summonPuppet( T puppet ){
+    public static float coreHtMul( Dummy_Core core ){
+        float mul = core.htMul;
+        if (hasCard(CommonCard.General_Liu.JERICHO))
+            mul -= 0.05F;
+        if (hasCard(RareCard.General_Liu.Contender))
+            mul *= 0.05F;
+        if (core instanceof Cores.C93)
+            mul *= 0.75F;
+        if (core instanceof Cores.VP1915)
+            mul *= 2F;
+        return mul;
+    }
+    public static float coreAttackSpeedMul( Dummy_Core core ){
+        float mul = core.attackSpeedMul;
         if (hasCard(CommonCard.General_Liu.Type_80))
-            puppet.attackSpeedMul += 0.25F;
-        if (hasCard(CommonCard.General_Liu.JERICHO)){
-            puppet.htMul -= 0.05F;
-            puppet.attackSpeedMul += 0.2F;
-            puppet.damageMul += 0.2F;
-        }
+            mul += 0.25F;
+        if (hasCard(CommonCard.General_Liu.JERICHO))
+            mul += 0.2F;
+        if (hasCard(RareCard.General_Liu.Contender))
+            mul *= 0.3F;
+        return mul;
+    }
+    public static float coreDamageMul( Dummy_Core core ){
+        float mul = core.damageMul;
+        if (hasCard(CommonCard.General_Liu.JERICHO))
+            mul += 0.2F;
         if (hasCard(CommonCard.General_Liu.RIBEYROLLES))
-            puppet.damageMul += 0.25F;
-
-        if (hasCard(RareCard.General_Liu.CZ75)) {
-            puppet.damageMul *= 0.5F;
-//            puppet.attackSpeedMul *= 0.5F;
-            //使用的玩家武器攻速，这里暂时不做二次扣减。
-        }
-        if (hasCard(RareCard.General_Liu.Contender)){
-            puppet.htMul *= 0.05F;
-            puppet.damageMul *= 0.3F;
-            puppet.attackSpeedMul *= 0.3F;
-        }
-        if (puppet instanceof Puppets.C93)
-            puppet.htMul *= 0.75F;
-        if (puppet instanceof Puppets.Savage_99)
-            puppet.damageMul *= 2F;
-        if (puppet instanceof Puppets.VP1915)
-            puppet.htMul *= 2F;
+            mul += 0.25F;
+        if (hasCard(RareCard.General_Liu.CZ75))
+            mul *= 0.5F;
+        if (hasCard(RareCard.General_Liu.Contender))
+            mul *= 0.3F;
+        if (core instanceof Cores.Savage_99)
+            mul *= 2F;
+        return mul;
+    }
+    public static void summonPuppet( Puppet puppet ){
+        puppet.htMul = coreHtMul(puppet.core);
+        puppet.attackSpeedMul = coreAttackSpeedMul(puppet.core);
+        puppet.damageMul = coreDamageMul(puppet.core);
         puppet.update();
         puppet.HP = puppet.HT;
     }

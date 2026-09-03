@@ -7,12 +7,14 @@ import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardCalcula
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.FinalCard;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.IntensifySkill;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.SkillItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.ThrowingSkill;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
@@ -22,7 +24,6 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 
 	{
 		image = ItemSpriteSheet.M4A1;
-		unique = true;
 		defaultAction = AC_CHOOSE;
 		tier = 1;
 		RCH = 2;
@@ -38,7 +39,7 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 	@Override
 	public float delayFactor( Char owner ) {
 		float delay = super.delayFactor(owner);
-		return Math.max(0.333F, delay);
+		return Math.max(0.3333F, delay);
 	}
 	private static final String SkillItem_THROWING = "SkillItem_THROWING";
 	private static final String SkillItem_INTENSIFY = "SkillItem_INTENSIFY";
@@ -109,7 +110,7 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 		}
 		else if (action.equals(THROWING_SKILL)) {
 			ActionIndicator.setAction(this);
-			ThrowingSkill.INSTANCE(ThrowingSelector(false), SnipeSelector(false));
+			doAction();
 		}
 		else if (action.equals(THROWING_READY))
 			ThrowingSkill.INSTANCE(ThrowingSelector(true), SnipeSelector(true));
@@ -191,7 +192,7 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 	}
 	@Override
 	public String actionName() {
-		return Messages.get(M4A1.class, "action_name");
+		return Messages.get(M4A1.class, "ac_throwing_skill");
 	}
 	@Override
 	public Image actionIcon() {
@@ -199,6 +200,9 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 	}
 	@Override
 	public void doAction() {
-		ThrowingSkill.INSTANCE(ThrowingSelector(false), SnipeSelector(false));
+		if (coolDownLeft > 0)
+			GLog.w(Messages.get(SkillItem.class, "CoolDown", coolDownLeft));
+		else
+			ThrowingSkill.INSTANCE(ThrowingSelector(false), SnipeSelector(false));
 	}
 }

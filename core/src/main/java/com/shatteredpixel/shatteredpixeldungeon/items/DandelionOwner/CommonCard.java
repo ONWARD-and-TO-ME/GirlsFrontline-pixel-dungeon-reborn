@@ -117,7 +117,7 @@ public interface CommonCard extends Card {
         }
     }
     enum General_Liu implements CommonCard{
-        Type_80, Rex_Zero_1, DEFENDER, JERICHO, RIBEYROLLES, MONDRAGON, TaBuKe;
+        Type_80, Rex_Zero_1, DEFENDER, JERICHO, RIBEYROLLES, MONDRAGON, TaBuKe, MOS;
         @Override
         public String title(){
             return FirstCard.General_Liu.cardName() + " " + CommonCard.super.title();
@@ -130,6 +130,13 @@ public interface CommonCard extends Card {
         @Override
         public String title(){
             return "Universal " + CommonCard.super.title();
+        }
+        @Override
+        public void onSelect(){
+            if (this == Super_SASS)
+                Card.CardPoint.AttackDamage_Add.pointUp(0.04F * (float) Math.floor(CardSelector.INSTANCE().upgradeTime() / 1000F));
+            else if (this == FX_05)
+                Card.CardPoint.AttackDelay_Add.pointUp(0.04F * (float) Math.floor(CardSelector.INSTANCE().upgradeTime() / 1000F));
         }
         @Override
         public String extra(){
