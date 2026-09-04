@@ -120,6 +120,13 @@ public class DEL extends NPC {
             }
             else
                 yellNormal( Messages.get(this, "working", Dungeon.hero.name() ) );
+
+            //根据任务状态切换表情：完成→成功，进行中→疑惑，无任务→等待
+            if (sprite instanceof DELSprite) {
+                if (mission.finish())           ((DELSprite) sprite).showSuccess();
+                else if (!mission.noMission())  ((DELSprite) sprite).showConfused();
+                else                            ((DELSprite) sprite).backToWaiting();
+            }
 		}
 		return super.act();
 	}

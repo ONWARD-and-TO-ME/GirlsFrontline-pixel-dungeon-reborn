@@ -22,60 +22,52 @@
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.particles.Emitter;
 
 public class DELSprite extends MobSprite {
 
-	private Emitter emitter;
+	//deele.png 每帧 24x23：0-1 等待，2 疑惑，3 成功
+	private Animation confused;
+	private Animation success;
 
 	public DELSprite() {
 		super();
-		
-		texture( Assets.Sprites.TROLL );
-		
-		TextureFilm frames = new TextureFilm( texture, 13, 22);
-		
-		idle = new Animation( 15, true );
-		idle.frames( frames, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 3 );
-		
-		run = new Animation( 20, true );
-		run.frames( frames, 0 );
-		
+
+		texture( Assets.Sprites.DEELE );
+
+		TextureFilm frames = new TextureFilm( texture, 24, 23);
+
+		idle = new Animation( 1, true );
+		idle.frames( frames, 0,0,0,1 );
+
+		run = new Animation( 10, true );
+		run.frames( frames, 0, 1 );
+
 		die = new Animation( 20, false );
 		die.frames( frames, 0 );
-		
+
+		confused = new Animation( 1, true );
+		confused.frames( frames, 2 );
+
+		success = new Animation( 1, true );
+		success.frames( frames, 3 );
+
 		play( idle );
 	}
-	
-	@Override
-	public void link( Char ch ) {
-		super.link( ch );
-		
-		emitter = new Emitter();
-		emitter.autoKill = false;
-		emitter.pos( x + 7, y + 12 );
-		parent.add( emitter );
+
+	//疑惑表情：单帧定格（如任务尚未完成时）
+	public void showConfused() {
+		play( confused );
 	}
-	
-	@Override
-	public void update() {
-		super.update();
-		
-		if (emitter != null) {
-			emitter.visible = visible;
-		}
+
+	//成功表情：单帧定格（如任务完成时）
+	public void showSuccess() {
+		play( success );
 	}
-	
-	@Override
-	public void onComplete( Animation anim ) {
-		super.onComplete( anim );
-		
-		if (visible && emitter != null && anim == idle) {
-			emitter.burst( Speck.factory( Speck.FORGE ), 3 );
-		}
+
+	//恢复默认的等待动画
+	public void backToWaiting() {
+		play( idle );
 	}
 
 }

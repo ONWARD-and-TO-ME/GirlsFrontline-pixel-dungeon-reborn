@@ -74,6 +74,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingGridPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.badlogic.gdx.Gdx;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
@@ -100,6 +101,7 @@ public class WndJournal extends WndTabbed {
 	private NotesTab notesTab;
 	private CatalogTab catalogTab;
     private BadgesTab badgesTab;
+    private DesignTab designTab;
 	
 	public static int last_index = 0;
 	private static WndJournal INSTANCE = null;
@@ -143,6 +145,11 @@ public class WndJournal extends WndTabbed {
 		add(badgesTab);
 		badgesTab.setRect(0, 0, width, height);
 		badgesTab.updateList();
+
+		designTab = new DesignTab();
+		add(designTab);
+		designTab.setRect(0, 0, width, height);
+		designTab.updateList();
 
 		ArrayList<Tab> tabs = new ArrayList<>();
 		int page = 0;
@@ -193,8 +200,22 @@ public class WndJournal extends WndTabbed {
 					}
 
 					@Override
+				protected String hoverText() {
+					return Messages.get(badgesTab, "title");
+				}
+			});
+		page++;
+		int finalPage5 = page;
+		tabs.add(new IconTab( new ItemSprite(ItemSpriteSheet.SCROLL_HOLDER, null) ) {
+					protected void select( boolean value ) {
+						super.select( value );
+						designTab.active = designTab.visible = value;
+						if (value) last_index = finalPage5;
+					}
+
+					@Override
 					protected String hoverText() {
-						return Messages.get(badgesTab, "title");
+						return Messages.get(designTab, "title");
 					}
 				});
 
@@ -215,6 +236,7 @@ public class WndJournal extends WndTabbed {
 		guideTab.layout();
 		alchemyTab.layout();
 		catalogTab.layout();
+		designTab.layout();
 		if (!TitleScene)
 			notesTab.layout();
 	}
@@ -419,6 +441,151 @@ public class WndJournal extends WndTabbed {
 
 	}
 	
+	//设计文档页签：列出 assets/messages/character-design/ 下的 txt 文档，点击打开可滚动阅读窗口
+	public static class DesignTab extends Component {
+
+		private static final String DOC_DIR = "messages/character-design/";
+		private static final String[] DOC_FILES = {
+				"dandelion.txt",
+				"HK416 Character Design Concept - August 2025.txt",
+				"HK416Character Design Concept3.0.txt",
+				"Proposed Changes to the Weapon Structure in the GirlsFrontline Dungeon 1.0.txt",
+		};
+
+		private ScrollPane list;
+		private final ArrayList<DesignItem> docs = new ArrayList<>();
+
+		@Override
+		protected void createChildren() {
+			list = new ScrollPane( new Component() ){
+				@Override
+				public void onClick( float x, float y ) {
+					for (DesignItem item : docs) {
+						if (item.onClick( x, y )) {
+							break;
+						}
+					}
+				}
+			};
+			add( list );
+		}
+
+		@Override
+		protected void layout() {
+			super.layout();
+			list.setRect( 0, 0, width, height);
+		}
+
+		public void updateList(){
+			Component content = list.content();
+			docs.clear();
+
+			float pos = 0;
+
+			ColorBlock line = new ColorBlock( width(), 1, 0xFF222222);
+			line.y = pos;
+			content.add(line);
+
+			RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
+			title.hardlight(TITLE_COLOR);
+			title.maxWidth( (int)width() - 2 );
+			title.setPos( (width() - title.width())/2f, pos + 1 + ((ITEM_HEIGHT) - title.height())/2f);
+			PixelScene.align(title);
+			content.add(title);
+
+			pos += Math.max(ITEM_HEIGHT, title.height());
+
+			for (int i = 0; i < DOC_FILES.length; i++){
+				DesignItem item = new DesignItem( DOC_FILES[i], Messages.get(this, "doc_" + i) );
+				item.setRect( 0, pos, width(), ITEM_HEIGHT );
+				content.add( item );
+				pos += item.height();
+				docs.add(item);
+			}
+
+			content.setSize( width(), pos );
+			list.setSize( list.width(), list.height() );
+		}
+
+		//读取 txt 正文：去回车符；下划线替换为连字符（分词器会把单个下划线当作高亮开关）；制表符转空格
+	//assets 内文件必须用 Gdx.files.internal 读取；FileUtils 单参 getFileHandle 默认指向存档目录
+	private static String loadDoc( String file ){
+		try {
+			String txt = Gdx.files.internal( DOC_DIR + file ).readString( "UTF-8" );
+			txt = txt.replace( "\r", "" ).replace( "_", "-" ).replace( "\t", "  " );
+			return splitLongRuns( txt );
+		} catch (Exception e) {
+			return Messages.get(DesignTab.class, "failed");
+		}
+	}
+
+	//分词器只在空格、换行、CJK 字符边界断词；连续横线（原下划线分隔线）或超长英文单词
+	//（长文件名、链接等无空格 ASCII 串）不会被折行，会撑破正文宽度。这里把过长的连续可见
+	//ASCII 串按固定长度切开：纯横线截为固定长度的分隔线，其余串每段之间插入空格作为断点
+	private static String splitLongRuns( String text ) {
+		final int LIMIT = 20;
+		StringBuilder sb = new StringBuilder( text.length() );
+		int runStart = 0;
+		int len = text.length();
+		for (int i = 0; i <= len; i++) {
+			boolean atEnd = i == len;
+			boolean isAscii = !atEnd && text.charAt( i ) >= 0x21 && text.charAt( i ) <= 0x7E;
+			if (atEnd || !isAscii) {
+				String run = text.substring( runStart, i );
+				if (run.length() > LIMIT) {
+					boolean allDashes = true;
+					for (int k = 0; k < run.length(); k++) {
+						if (run.charAt( k ) != '-') {
+							allDashes = false;
+							break;
+						}
+					}
+					if (allDashes) {
+						for (int k = 0; k < LIMIT; k++) sb.append( '-' );
+					} else {
+						for (int j = 0; j < run.length(); j += LIMIT) {
+							sb.append( run, j, Math.min( j + LIMIT, run.length() ) );
+							if (j + LIMIT < run.length()) sb.append( ' ' );
+						}
+					}
+				} else {
+					sb.append( run );
+				}
+				if (!atEnd) sb.append( text.charAt( i ) );
+				runStart = i + 1;
+			}
+		}
+		return sb.toString();
+	}
+
+		private static class DesignItem extends ListItem {
+
+			private final String file;
+			private final String docTitle;
+
+			public DesignItem( String file, String title ){
+				super( new ItemSprite(ItemSpriteSheet.SCROLL_HOLDER), title );
+				this.file = file;
+				this.docTitle = title;
+			}
+
+			public boolean onClick( float x, float y ) {
+				if (inside( x, y )) {
+					Window window = new WndDocument( new ItemSprite(ItemSpriteSheet.SCROLL_HOLDER),
+							docTitle, loadDoc(file) );
+					if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
+						GameScene.show(window);
+					} else {
+						GirlsFrontlinePixelDungeon.scene().addToFront(window);
+					}
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+	}
+
 	public static class AlchemyTab extends Component {
 		
 		private RedButton[] pageButtons;
