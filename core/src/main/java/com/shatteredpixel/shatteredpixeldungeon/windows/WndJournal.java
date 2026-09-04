@@ -75,6 +75,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingGridPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
@@ -84,7 +85,11 @@ import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
 
 public class WndJournal extends WndTabbed {
 	
@@ -445,12 +450,72 @@ public class WndJournal extends WndTabbed {
 	public static class DesignTab extends Component {
 
 		private static final String DOC_DIR = "messages/character-design/";
-		private static final String[] DOC_FILES = {
-				"dandelion.txt",
-				"HK416 Character Design Concept - August 2025.txt",
-				"HK416Character Design Concept3.0.txt",
-				"Proposed Changes to the Weapon Structure in the GirlsFrontline Dungeon 1.0.txt",
-		};
+		private static final String DOC_INDEX = DOC_DIR + "doc-index.txt";
+
+		//文档列表缓存：开发环境直接列目录得到，打包后从 Gradle 生成的清单读取
+		private static List<String> docFiles;
+
+		//枚举文档目录下的全部 txt：
+		//开发时 assets 是文件系统上的真实文件夹，可直接 list()，新放入的 txt 立即生效；
+		//打包成 jar 后 classpath 内目录无法枚举，回退读取构建期生成的 doc-index.txt 清单
+		private static List<String> listDocs(){
+			if (docFiles != null) return docFiles;
+			LinkedHashSet<String> names = new LinkedHashSet<>();
+			try {
+				FileHandle dir = Gdx.files.internal( DOC_DIR );
+				if (dir.exists() && dir.isDirectory()) {
+					for (FileHandle f : dir.list( ".txt" )) {
+						String n = f.name();
+						if (!"doc-index.txt".equalsIgnoreCase( n )) names.add( n );
+					}
+				}
+			} catch (Exception e) {
+				//jar/classpath 内无法枚举目录，走清单兜底
+			}
+			if (names.isEmpty()) {
+				try {
+					for (String line : Gdx.files.internal( DOC_INDEX ).readString( "UTF-8" ).split( "\n" )) {
+						String n = line.trim();
+						if (n.toLowerCase( Locale.ROOT ).endsWith( ".txt" )) names.add( n );
+					}
+				} catch (Exception e) {
+					//清单不存在，列表留空
+				}
+			}
+			docFiles = new ArrayList<>( names );
+			//welcome 为卷首说明固定置顶，其余按文件名不区分大小写排序
+			docFiles.sort( (a, b) -> {
+				if (a.equalsIgnoreCase( "welcome.txt" ) && !b.equalsIgnoreCase( "welcome.txt" )) return -1;
+				if (!a.equalsIgnoreCase( "welcome.txt" ) && b.equalsIgnoreCase( "welcome.txt" )) return 1;
+				return a.compareToIgnoreCase( b );
+			} );
+			return docFiles;
+		}
+
+		//文档标题：优先取 I18N 键 doc_<由文件名推导的键名>；未配置时以文件名（去掉 .txt）作为默认名
+		private static String docTitle( String fileName ){
+			String title = Messages.get( DesignTab.class, "doc_" + docKey( fileName ) );
+			if (Messages.NO_TEXT_FOUND.equals( title )) {
+				title = fileName.toLowerCase( Locale.ROOT ).endsWith( ".txt" )
+						? fileName.substring( 0, fileName.length() - 4 ) : fileName;
+			}
+			return title;
+		}
+
+		//文件名 -> properties 键后缀：转小写，仅保留字母/数字/下划线/CJK 字符，
+		//其余字符（空格、连字符、点号等）统一转下划线并合并连续下划线
+		private static String docKey( String fileName ){
+			String base = fileName.toLowerCase( Locale.ROOT );
+			if (base.endsWith( ".txt" )) base = base.substring( 0, base.length() - 4 );
+			StringBuilder sb = new StringBuilder( base.length() );
+			for (int i = 0; i < base.length(); i++) {
+				char c = base.charAt( i );
+				boolean ok = (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_'
+						|| (c >= 0x4E00 && c <= 0x9FFF);
+				sb.append( ok ? c : '_' );
+			}
+			return sb.toString().replaceAll( "_+", "_" );
+		}
 
 		private ScrollPane list;
 		private final ArrayList<DesignItem> docs = new ArrayList<>();
@@ -495,8 +560,8 @@ public class WndJournal extends WndTabbed {
 
 			pos += Math.max(ITEM_HEIGHT, title.height());
 
-			for (int i = 0; i < DOC_FILES.length; i++){
-				DesignItem item = new DesignItem( DOC_FILES[i], Messages.get(this, "doc_" + i) );
+			for (String file : listDocs()){
+				DesignItem item = new DesignItem( file, docTitle( file ) );
 				item.setRect( 0, pos, width(), ITEM_HEIGHT );
 				content.add( item );
 				pos += item.height();
@@ -567,6 +632,14 @@ public class WndJournal extends WndTabbed {
 				super( new ItemSprite(ItemSpriteSheet.SCROLL_HOLDER), title );
 				this.file = file;
 				this.docTitle = title;
+			}
+
+			@Override
+			protected void layout() {
+				//默认标题（文件名）可能较长，先按宽度换行并据文字高度撑高列表项，再走父类布局
+				label.maxWidth( (int)(width - 16 - 1) );
+				if (label.height() + 2 > height) height = label.height() + 2;
+				super.layout();
 			}
 
 			public boolean onClick( float x, float y ) {

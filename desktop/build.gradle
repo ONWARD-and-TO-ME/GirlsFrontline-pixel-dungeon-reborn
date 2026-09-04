@@ -9,6 +9,22 @@ ext.appMainClass = "com.shatteredpixel.shatteredpixeldungeon.desktop.DesktopLaun
 processResources {
     from new File(project(':core').projectDir, "/src/main/assets")
     from new File(project(':desktop').projectDir,"/src/main/assets")
+
+    //设计文档目录清单：打包成 jar 后 classpath 内目录无法枚举，
+    //构建时扫描 core/assets/messages/character-design 下的 txt 生成 doc-index.txt，游戏运行时读取
+    doLast {
+        def docDir = new File(project(':core').projectDir, "src/main/assets/messages/character-design")
+        def outDir = new File(destinationDir, "messages/character-design")
+        def names = (docDir.listFiles({ f -> f.isFile() && f.name.toLowerCase(Locale.ROOT).endsWith('.txt') } as FileFilter) ?: [])
+                .collect { it.name }
+                .sort { a, b ->
+                    if (a.equalsIgnoreCase('welcome.txt') && !b.equalsIgnoreCase('welcome.txt')) return -1
+                    if (!a.equalsIgnoreCase('welcome.txt') && b.equalsIgnoreCase('welcome.txt')) return 1
+                    return a.compareToIgnoreCase(b)
+                }
+        outDir.mkdirs()
+        new File(outDir, "doc-index.txt").setText(names.join('\n') + '\n', 'UTF-8')
+    }
 }
 
 def osName = System.getProperty('os.name').toLowerCase(Locale.ROOT)
