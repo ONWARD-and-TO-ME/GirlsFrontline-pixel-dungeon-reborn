@@ -806,20 +806,15 @@ public class Hero extends Char {
 			return false;
 		}
 
+		KindOfWeapon wep = Dungeon.hero.belongings.weapon();
 		//can always attack adjacent enemies
 		if (Dungeon.level.adjacent(pos, enemy.pos)) {
-			return true;
-		}
-
-		// GSH18天赋：元气一餐 +2级效果 - 攻击范围增加1格
-		if (pointsInTalent(Talent.GSH18_ENERGIZING_MEAL) >= 2 && buff(Talent.GSH18EnergizingMealTracker.class) != null) {
-			// 检查是否在2格范围内
-			if (Dungeon.level.distance(pos, enemy.pos) <= 2 && Dungeon.level.heroFOV[enemy.pos]) {
+			if (!(wep instanceof Weapon) || ((Weapon) wep).reach(this) > 0)
+				//KindOfWeapon目前只有一个子类即Weapon，但还是补一个instanceOf
+				//此处是为了让M4A1选择了FAL时禁用近战
 				return true;
 			}
 		}
-
-		KindOfWeapon wep = Dungeon.hero.belongings.weapon();
 
 		if (wep != null){
 			return wep.canReach(this, enemy.pos);

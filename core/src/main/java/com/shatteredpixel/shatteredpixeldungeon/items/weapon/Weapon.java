@@ -59,8 +59,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Projec
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocking;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Unstable;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampiric;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SakuraBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -337,19 +335,14 @@ abstract public class Weapon extends KindOfWeapon {
 		// GSH18天赋：漫画之心 - 根据武器等级增加攻击距离
 		if (owner instanceof Hero) {
 			Hero hero = (Hero) owner;
-			if (hero.hasTalent(Talent.GSH18_COMIC_HEART) && this instanceof MeleeWeapon) {
-				int tier = ((MeleeWeapon) this).tier;
-				int talentLevel = hero.pointsInTalent(Talent.GSH18_COMIC_HEART);
-				
-				// +1级：使用1阶武器时攻击距离+1
-				if (talentLevel >= 1 && tier == 1) {
-					reach += 1;
-				}
-				// +2级：使用2阶武器时攻击距离+1
-				if (talentLevel >= 2 && tier == 2) {
-					reach += 1;
-				}
+			if (hero.hasTalent(Talent.GSH18_COMIC_HEART)) {
+				if (tier <= hero.pointsInTalent(Talent.GSH18_COMIC_HEART))
+					reach++;
 			}
+			// GSH18天赋：元气一餐 +2级效果 - 攻击范围增加1格
+			if (hero.pointsInTalent(Talent.GSH18_ENERGIZING_MEAL) >= 2
+					&& hero.buff(Talent.GSH18EnergizingMealTracker.class) != null)
+				reach++;
 		}
 		
 		return reach;

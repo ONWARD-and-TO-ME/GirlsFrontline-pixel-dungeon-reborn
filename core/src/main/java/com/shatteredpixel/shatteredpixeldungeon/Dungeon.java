@@ -840,7 +840,6 @@ public class Dungeon {
 
 		gold = bundle.getInt( GOLD );
 		energy = bundle.getInt( ENERGY );
-        //ExtractSummoned = bundle.getBoolean( Summoned );读取计数
 
 		Generator.restoreFromBundle( bundle );
 

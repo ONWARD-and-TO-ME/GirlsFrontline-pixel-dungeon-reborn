@@ -183,7 +183,7 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 	}
 	@Override
 	public int reach( Char owner ){
-		if (change())
+		if (owner instanceof Hero && change())
 			return 0;
 		return super.reach( owner );
 	}
