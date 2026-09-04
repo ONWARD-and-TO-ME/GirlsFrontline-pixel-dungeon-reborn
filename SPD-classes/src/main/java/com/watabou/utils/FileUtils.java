@@ -129,6 +129,16 @@ public class FileUtils {
 			return file.length();
 		}
 	}
+
+	//returns last modified time of a file in millis, or 0 if file does not exist
+	public static long lastModified( String name ){
+		FileHandle file = getFileHandle( name );
+		if (!file.exists() || file.isDirectory()){
+			return 0;
+		} else {
+			return file.lastModified();
+		}
+	}
 	
 	public static boolean deleteFile( String name ){
 		return getFileHandle( name ).delete();

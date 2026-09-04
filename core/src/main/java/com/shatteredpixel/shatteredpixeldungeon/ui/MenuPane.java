@@ -46,6 +46,10 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PointF;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class MenuPane extends Component {
 
 	private Image bg;
@@ -66,6 +70,13 @@ public class MenuPane extends Component {
 	public static BitmapText version;
 
 	private DangerIndicator danger;
+
+	//局内系统时钟：显示日期与设备时间，位于菜单功能按钮下方，右对齐
+	private BitmapText dateText;
+	private BitmapText clockText;
+	private float clockAcc = 0f;
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd", Locale.getDefault() );
+	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat( "HH:mm", Locale.getDefault() );
 
 	public static final int WIDTH = 32;
 
@@ -171,6 +182,16 @@ public class MenuPane extends Component {
 		add( danger );
 
 		add( pickedUp = new Toolbar.PickedUpItem());
+
+		dateText = new BitmapText( PixelScene.pixelFont);
+		dateText.hardlight( 0xCACFC2 );
+		dateText.text( DATE_FORMAT.format( new Date() ) );
+		add( dateText );
+
+		clockText = new BitmapText( PixelScene.pixelFont);
+		clockText.hardlight( 0xCACFC2 );
+		clockText.text( TIME_FORMAT.format( new Date() ) );
+		add( clockText );
 	}
 
 	@Override
@@ -217,6 +238,42 @@ public class MenuPane extends Component {
 		PixelScene.align(version);
 
 		danger.setPos( x + WIDTH - danger.width(), y + bg.height + 3 );
+
+		dateText.scale.set(PixelScene.align(0.67f));
+		clockText.scale.set(PixelScene.align(0.67f));
+		layoutClock();
+	}
+
+	//时钟两行右对齐于菜单面板右缘，位于危险指示标签下方
+	private void layoutClock() {
+		dateText.measure();
+		clockText.measure();
+		float rightEdge = x + WIDTH - 1;
+		float dateY = y + bg.height + 3 + DangerIndicator.HEIGHT + 2;
+		dateText.x = rightEdge - dateText.width();
+		dateText.y = dateY;
+		clockText.x = rightEdge - clockText.width();
+		clockText.y = dateY + dateText.height() + 1;
+		PixelScene.align(dateText);
+		PixelScene.align(clockText);
+	}
+
+	@Override
+	public void update() {
+		super.update();
+
+		//每秒检查一次，仅在日期或分钟变化时重建文本
+		clockAcc += Game.elapsed;
+		if (clockAcc >= 1f) {
+			clockAcc -= 1f;
+			String d = DATE_FORMAT.format( new Date() );
+			String t = TIME_FORMAT.format( new Date() );
+			if (!d.equals( dateText.text() ) || !t.equals( clockText.text() )) {
+				dateText.text( d );
+				clockText.text( t );
+				layoutClock();
+			}
+		}
 	}
 
 	public void pickup(Item item, int cell) {

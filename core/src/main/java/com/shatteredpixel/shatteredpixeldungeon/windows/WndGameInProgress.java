@@ -38,7 +38,10 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Game;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.FileUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class WndGameInProgress extends Window {
@@ -72,6 +75,19 @@ public class WndGameInProgress extends Window {
 		if (info.challenges > 0) GAP -= 2;
 		
 		pos = title.bottom() + GAP;
+
+		//上次进入时间：取存档文件最后保存时间，右对齐显示在标题下方右侧
+		long lastModified = FileUtils.lastModified( GamesInProgress.gameFile(slot) );
+		if (lastModified > 0) {
+			String dateStr = new SimpleDateFormat( "yyyy-MM-dd HH:mm", Locale.getDefault() ).format( new Date( lastModified ) );
+			RenderedTextBlock lastPlay = PixelScene.renderTextBlock( 6 );
+			lastPlay.text( Messages.format( Messages.get(this, "last_play"), dateStr ) );
+			lastPlay.maxWidth( WIDTH );
+			lastPlay.setPos( WIDTH - lastPlay.width() - 1, title.bottom() + 1 );
+			PixelScene.align( lastPlay );
+			add( lastPlay );
+			pos = Math.max( pos, lastPlay.bottom() + 2 );
+		}
 		
 		if (info.challenges > 0) {
 			RedButton btnChallenges = new RedButton( Messages.get(this, "challenges") ) {
