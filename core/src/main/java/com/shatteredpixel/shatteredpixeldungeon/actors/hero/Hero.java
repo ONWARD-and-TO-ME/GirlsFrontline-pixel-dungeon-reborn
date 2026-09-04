@@ -813,7 +813,6 @@ public class Hero extends Char {
 				//KindOfWeapon目前只有一个子类即Weapon，但还是补一个instanceOf
 				//此处是为了让M4A1选择了FAL时禁用近战
 				return true;
-			}
 		}
 
 		if (wep != null){
