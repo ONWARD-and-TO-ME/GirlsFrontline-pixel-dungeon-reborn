@@ -51,6 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.Point;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -99,12 +100,12 @@ public class DEL extends NPC {
                 add = true;
                 WorkLoad += 20;
                 if (Dungeon.level instanceof RegularLevel){
-                    for (Room room : ((RegularLevel) Dungeon.level).rooms()){
-                        if (room instanceof FairyRoom) {
-                            ((RegularLevel) Dungeon.level).fairyRoom = ((FairyRoom) room).inside;
-                            for (int i : ((FairyRoom) room).inside)
-                                Dungeon.level.sharedVision[i] = true;
-                        }
+                    FairyRoom fairyRoom = ((RegularLevel) Dungeon.level).getRoom(FairyRoom.class);
+                    if (fairyRoom != null) {
+                        if (fairyRoom.list().size() == 1)
+                            fairyRoom.rePaint(Dungeon.level, pos);
+                        for (Point point : fairyRoom.list())
+                            Dungeon.level.sharedVision[Dungeon.level.pointToCell(point)] = true;
                     }
                 }
             }

@@ -153,7 +153,13 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable {
 		return new Point( Random.IntRange( left + m, right - m ),
 				Random.IntRange( top + m, bottom - m ));
 	}
-	
+	public ArrayList<Point> list(){
+		ArrayList<Point> list = new ArrayList<>();
+		for (int i = left; i <= right; i++)
+			for (int j = top; j <= bottom; j++)
+				list.add(new Point(i, j));
+		return list;
+	}
 	//a point is only considered to be inside if it is within the 1 tile perimeter
 	public boolean inside( Point p ) {
 		return p.x > left && p.y > top && p.x < right && p.y < bottom;
@@ -385,21 +391,24 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable {
 		}
 		return edges;
 	}
-	
+	private static final String LEFT_	= "left";
+	private static final String TOP_		= "top";
+	private static final String RIGHT_	= "right";
+	private static final String BOTTOM_	= "bottom";
 	@Override
 	public void storeInBundle( Bundle bundle ) {
-		bundle.put( "left", left );
-		bundle.put( "top", top );
-		bundle.put( "right", right );
-		bundle.put( "bottom", bottom );
+		bundle.put( LEFT_, left );
+		bundle.put( TOP_, top );
+		bundle.put( RIGHT_, right );
+		bundle.put( BOTTOM_, bottom );
 	}
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
-		left = bundle.getInt( "left" );
-		top = bundle.getInt( "top" );
-		right = bundle.getInt( "right" );
-		bottom = bundle.getInt( "bottom" );
+		left = bundle.getInt( LEFT_ );
+		top = bundle.getInt( TOP_ );
+		right = bundle.getInt( RIGHT_ );
+		bottom = bundle.getInt( BOTTOM_ );
 	}
 
 	//FIXME currently connections and neighbours are not preserved on load

@@ -4,14 +4,19 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DEL;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.FairyRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -38,8 +43,21 @@ public class FairyItems extends Item {
             return true;
         if (!(Dungeon.level instanceof RegularLevel))
             return false;
-        for (int i :((RegularLevel) Dungeon.level).fairyRoom){
-            if (i == hero.pos)
+        FairyRoom room = ((RegularLevel) Dungeon.level).getRoom(FairyRoom.class);
+        if (room == null)
+            return false;
+        if (room.list().size() == 1) {
+            DEL del = null;
+            for (Mob m : Dungeon.level.mobs)
+                if (m instanceof DEL) {
+                    del = (DEL) m;
+                    break;
+                }
+            if (del != null)
+                room.rePaint(Dungeon.level, del.pos);
+        }
+        for (Point point : room.list()) {
+            if (hero.pos == Dungeon.level.pointToCell(point))
                 return true;
         }
         return false;

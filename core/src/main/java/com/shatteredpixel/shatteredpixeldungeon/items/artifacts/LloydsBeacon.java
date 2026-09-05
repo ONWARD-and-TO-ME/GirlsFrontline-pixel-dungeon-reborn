@@ -119,7 +119,7 @@ public class LloydsBeacon extends Artifact {
 		if (returnLevelId != -1) {
 			actions.add( AC_RETURN );
 		}
-        if (Dungeon.level instanceof RegularLevel && ((RegularLevel) Dungeon.level).fairyRoom.length > 0){
+        if (Dungeon.level instanceof RegularLevel && ((RegularLevel) Dungeon.level).getRoom(FairyRoom.class) != null){
             if (FairyItems.inFairyRoom(hero))
                 actions.add(AC_TP);
             else
@@ -241,11 +241,12 @@ public class LloydsBeacon extends Artifact {
         }
         else if (action.equals( AC_FAIRY )){
             int cd = 50;
-            PathFinder.buildDistanceMap(((RegularLevel) Dungeon.level).fairyRoom[FairyRoom.front], BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+            int front = ((RegularLevel) Dungeon.level).getRoom(FairyRoom.class).itemPos;
+            PathFinder.buildDistanceMap(front, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
             if (PathFinder.distance[curUser.pos] == Integer.MAX_VALUE){
                 cd *= 4;
             }
-            ScrollOfTeleportation.appear( hero, ((RegularLevel) Dungeon.level).fairyRoom[FairyRoom.front] );
+            ScrollOfTeleportation.appear( hero, front );
             for(Mob m : Dungeon.level.mobs){
                 if (m.pos == hero.pos){
                     //displace mob

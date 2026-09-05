@@ -36,17 +36,15 @@ import com.watabou.utils.Random;
 
 public class FairyRoom extends SpecialRoom {
     private static final int rate = 4;
-    public static final int front = (rate*2+1)*rate+rate-1;
     @Override
-    public int minWidth() { return rate*2+1; }
+    public int minWidth() { return rate * 2 + 1; }
     @Override
-    public int minHeight() { return rate*2+1; }
+    public int minHeight() { return rate * 2 + 1; }
     @Override
-    public int maxWidth() { return rate*2+1; }
+    public int maxWidth() { return rate * 2 + 1; }
     @Override
-    public int maxHeight() { return rate*2+1; }
-    private int itemPos  =   -1;
-    public int[] inside = new int[(rate*2+1)*(rate*2+1)];
+    public int maxHeight() { return rate * 2 + 1; }
+    public int itemPos  =   -1;
 
 	public void paint( Level level ) {
 		
@@ -54,14 +52,6 @@ public class FairyRoom extends SpecialRoom {
 		Painter.fill( level, this, 1, Terrain.EMPTY_SP );
 
         int pos = level.pointToCell(center());
-        int i = 0;
-        for (int x = -rate; x <= rate; x++){
-            for (int y = -rate; y <= rate; y++){
-                Point point = new Point(center().x + x, center().y + y);
-                inside[i] = level.pointToCell(point);
-                i++;
-            }
-        }
         Mob del = new DEL();
         del.pos = pos;
         level.mobs.add( del );
@@ -72,7 +62,13 @@ public class FairyRoom extends SpecialRoom {
         entrance().set( Door.Type.UNLOCKED );
 		
 	}
-
+    public void rePaint( Level level, int center ){
+        Point p = level.cellToPoint(center);
+        left = p.x - rate;
+        right = p.x + rate;
+        top = p.y - rate;
+        bottom = p.y + rate;
+    }
     public int Pos(){
         return itemPos;
     }
@@ -80,19 +76,16 @@ public class FairyRoom extends SpecialRoom {
         Dungeon.level.drop(item, itemPos).type = Heap.Type.MISSION_CHEST;
     }
     private static final String ITEM_POS    =   "MISSION_PLACE";
-    private static final String ROOM_PLACE  =   "ROOM_PLACE";
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(ITEM_POS, itemPos);
-        bundle.put(ROOM_PLACE, inside);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
-        super.storeInBundle(bundle);
+        super.restoreFromBundle(bundle);
         itemPos = bundle.getInt(ITEM_POS);
-        inside  = bundle.getIntArray(ROOM_PLACE);
     }
 
 }

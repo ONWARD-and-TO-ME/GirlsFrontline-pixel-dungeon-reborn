@@ -37,11 +37,17 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArm
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
+import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
+
+import java.util.ArrayList;
 
 public class WndTradeItem extends WndInfoItem {
 
@@ -220,18 +226,43 @@ public class WndTradeItem extends WndInfoItem {
 		}
 	}
     public static void SellItemPlace(Item item){
-        Hero hero = Dungeon.hero;
-        for(int ofs : PathFinder.NEIGHBOURS9) {
-            Char target = Actor.findChar(hero.pos + ofs);
-            if(target instanceof Shopkeeper)
-                continue;
-            if (!item.sold && !Dungeon.level.solid[hero.pos + ofs] && Dungeon.level.heaps.get(hero.pos + ofs) == null && Dungeon.level.passable[hero.pos + ofs]) {
-                Dungeon.level.drop(item, hero.pos + ofs).type = Heap.Type.FOR_SALE;
-                item.sold = true;
-            }
-			else if (item instanceof Artifact)
-				((Artifact) item).resetSpawn(0.001F);
+		int randomPos = -1;
+		if (Dungeon.level instanceof RegularLevel){
+			ShopRoom room = ((RegularLevel) Dungeon.level).getRoom(ShopRoom.class);
+			ArrayList<Point> list = room.list();
+			Random.shuffle(list);
+			for (Point point : list){
+				int pos = Dungeon.level.pointToCell(point);
+				if (Char.hasProp(Actor.findChar(pos), Char.Property.IMMOVABLE))
+					continue;
+				if (Dungeon.level.solid[pos])
+					continue;
+				if (Dungeon.level.heaps.get(pos) != null)
+					continue;
+				if (!Dungeon.level.passable[pos])
+					continue;
+				randomPos = pos;
+			}
 		}
+		if (randomPos == -1) {
+			for (int i : PathFinder.NEIGHBOURS9) {
+				int pos = Dungeon.hero.pos + i;
+				if (Char.hasProp(Actor.findChar(pos), Char.Property.IMMOVABLE))
+					continue;
+				if (Dungeon.level.solid[pos])
+					continue;
+				if (Dungeon.level.heaps.get(pos) != null)
+					continue;
+				if (!Dungeon.level.passable[pos])
+					continue;
+				randomPos = pos;
+			}
+		}
+		if (!item.sold && randomPos != -1){
+			item.sold = true;
+			Dungeon.level.drop(item, randomPos).type = Heap.Type.FOR_SALE;
+		} else if (item instanceof Artifact)
+			((Artifact) item).resetSpawn(0.001F);
     }
 	
 	private void buy( Heap heap ) {

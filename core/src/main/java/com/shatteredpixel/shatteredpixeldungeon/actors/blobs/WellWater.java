@@ -32,6 +32,8 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
+import java.util.ArrayList;
+
 public abstract class WellWater extends Blob {
 
 	@Override
@@ -90,11 +92,21 @@ public abstract class WellWater extends Blob {
 				return true;
 				
 			} else {
-				
-				int newPlace;
-				do {
-					newPlace = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
-				} while (!Dungeon.level.passable[newPlace] && !Dungeon.level.avoid[newPlace]);
+				ArrayList<Integer> path8 = new ArrayList<>();
+				for (int i : PathFinder.NEIGHBOURS8) path8.add(i + pos);
+				Random.shuffle(path8);
+				int newPlace = -1;
+				for (int i : path8)
+					if (Dungeon.level.passable[i]){
+						newPlace = i;
+						break;
+					}
+				if (newPlace == -1)
+					for (int i : path8)
+						if (Dungeon.level.avoid[i]) {
+							newPlace = i;
+							break;
+						}
 				Dungeon.level.drop( heap.pickUp(), newPlace ).sprite.drop( pos );
 				
 				return false;

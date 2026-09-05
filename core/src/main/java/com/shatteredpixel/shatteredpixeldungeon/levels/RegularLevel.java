@@ -78,8 +78,6 @@ public abstract class RegularLevel extends Level {
 	
 	protected Room roomEntrance;
 	protected Room roomExit;
-    public int[] fairyRoom = new int[0];
-	
 	@Override
 	protected boolean build() {
 		
@@ -521,13 +519,20 @@ public abstract class RegularLevel extends Level {
 		return false;
 	}
 	
-	protected Room randomRoom( Class<?extends Room> type ) {
+	public Room randomRoom( Class<?extends Room> type ) {
 		Random.shuffle( rooms );
 		for (Room r : rooms) {
 			if (type.isInstance(r)) {
 				return r;
 			}
 		}
+		return null;
+	}
+	@SuppressWarnings("unchecked")
+	public <T extends Room> T getRoom( Class<T> type){
+		for (Room r : rooms)
+			if (type.isInstance(r))
+				return (T) r;
 		return null;
 	}
 	
@@ -593,21 +598,18 @@ public abstract class RegularLevel extends Level {
 		
 		return super.fallCell( false );
 	}
-
-    private static final String FAIRY_ROOM = "FAIRY_ROOM";
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
-		bundle.put( "rooms", rooms );
-        bundle.put(FAIRY_ROOM, fairyRoom);
+		bundle.put( ROOMS, rooms );
 	}
-	
-	@SuppressWarnings("unchecked")
+	private static final String ROOMS = "rooms";
+
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		
-		rooms = new ArrayList<>( (Collection<Room>) ((Collection<?>) bundle.getCollection( "rooms" )) );
+		rooms = bundle.getArrayList(ROOMS, Room.class);
 		for (Room r : rooms) {
 			r.onLevelLoad( this );
 			if (r instanceof EntranceRoom ){
@@ -616,10 +618,6 @@ public abstract class RegularLevel extends Level {
 				roomExit = r;
 			}
 		}
-        if (bundle.contains(FAIRY_ROOM))
-            fairyRoom = bundle.getIntArray(FAIRY_ROOM);
-        else
-            fairyRoom = new int[0];
 	}
 	
 }
