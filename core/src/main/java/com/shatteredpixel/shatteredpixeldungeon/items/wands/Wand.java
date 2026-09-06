@@ -341,10 +341,10 @@ public abstract class Wand extends Item {
 	}
 
 	@Override
-	public int buffedLvl() {
-		int lvl = super.buffedLvl();
+	public int buffedLvl(int lvl) {
+		int level = super.buffedLvl(lvl);
         if (BuffLevelPoint != Integer.MIN_VALUE)
-            return lvl;
+            return level;
 
 		if (charger != null && charger.target != null) {
 			if (charger.target.buff(WildMagic.WildMagicTracker.class) != null){
@@ -353,25 +353,25 @@ public abstract class Wand extends Item {
 				bonus /= 2; // +1/+1.5/+2/+2.5/+3 at 0/1/2/3/4 talent points
 
 				int maxBonusLevel = 2 + ((Hero)charger.target).pointsInTalent(Talent.WILD_POWER);
-				if (lvl < maxBonusLevel) {
-					lvl = Math.min(lvl + bonus, maxBonusLevel);
+				if (level < maxBonusLevel) {
+					level = Math.min(level + bonus, maxBonusLevel);
 				}
 			}
 
             ScrollEmpower scrollEmpower = charger.target.buff(ScrollEmpower.class);
             if (scrollEmpower != null){
-				lvl += scrollEmpower.level;
+				level += scrollEmpower.level;
 			}
             if (curCharges == 1 && charger.target instanceof Hero && ((Hero)charger.target).hasTalent(Talent.DESPERATE_POWER)){
-                lvl += ((Hero)charger.target).pointsInTalent(Talent.DESPERATE_POWER);
+                level += ((Hero)charger.target).pointsInTalent(Talent.DESPERATE_POWER);
             }
 
 			WandOfMagicMissile.MagicCharge buff = charger.target.buff(WandOfMagicMissile.MagicCharge.class);
-			if (buff != null && buff.level() > lvl){
+			if (buff != null && buff.level() > level){
 				return buff.level();
 			}
 		}
-		return lvl;
+		return level;
 	}
 
 	public void updateLevel() {

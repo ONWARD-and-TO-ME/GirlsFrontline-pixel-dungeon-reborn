@@ -473,17 +473,17 @@ public class Item implements Bundlable {
 	//returns the level of the item, after it may have been modified by temporary boosts/reductions
 	//note that not all item properties should care about buffs/debuffs! (e.g. str requirement)
 	public int buffedLvl(){
+		return buffedLvl(level());
+	}
+	protected int buffedLvl(int lvl){
         if (BuffLevelPoint != Integer.MIN_VALUE)
-            return level() + BuffLevelPoint;
-        int lvl = level();
+            return lvl + BuffLevelPoint;
         if (overLoad == OverLoad.RECOVER && overLoadLeft != 0)
             lvl -= (int)(Math.sqrt(8 * Math.ceil(overLoadLeft / 100F) + 1) - 1)/2;
-		if (hero.buff( Degrade.class ) != null) {
+		if (hero.buff( Degrade.class ) != null)
 			return Degrade.reduceLevel(lvl);
-		}
         return lvl;
 	}
-
 	public void level( int value ){
 		level = value;
 
@@ -571,12 +571,15 @@ public class Item implements Bundlable {
 			lvl = guessingLevel();
 		return lvl;
 	}
+	public int TextGuessingBuffedLevel(){
+		return buffedLvl(TextGuessingLevel());
+	}
 	public int visiblyUpgraded() {
 		return levelKnown ? level() : guessingLevel();
 	}
 
 	public int buffedVisiblyUpgraded() {
-		return levelKnown ? buffedLvl() : guessingLevel();
+		return levelKnown ? buffedLvl() : TextGuessingBuffedLevel();
 	}
 	
 	public boolean visiblyCursed() {

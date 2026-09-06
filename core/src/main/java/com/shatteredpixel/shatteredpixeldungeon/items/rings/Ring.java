@@ -417,8 +417,8 @@ public class Ring extends KindofMisc implements ColorItem {
 	}
 
 	@Override
-	public int buffedLvl() {
-		int lvl = super.buffedLvl();
+	public int buffedLvl(int lvl) {
+		int level = super.buffedLvl(lvl);
         EnhancedRings buff = Dungeon.hero.buff(EnhancedRings.class);
 		if ( buff != null ){
 			Ring other = null;
@@ -430,21 +430,21 @@ public class Ring extends KindofMisc implements ColorItem {
 				other = Dungeon.hero.belongings.ring();
 
 			if (other == null || buff.level != 3)
-			    lvl += buff.level;
+			    level += buff.level;
             else {
 				if (level() > other.level())
-					lvl += 3;
+					level += 3;
 				else if (level() < other.level())
-					lvl += 1;
+					level += 1;
 				else {
 					if (Dungeon.hero.belongings.misc() == this)
-						lvl += 3;
+						level += 3;
 					else
-						lvl += 1;
+						level += 1;
 				}
             }
 		}
-		return lvl;
+		return level;
 	}
 
 	public static int getBonus(Char target, Class<?extends RingBuff> type){

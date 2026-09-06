@@ -96,9 +96,9 @@ public class MeleeWeapon extends Weapon {
 				info += " " + Messages.get(Weapon.class, "excess_str", hero.STR() - STRReq());
 			}
 		} else {
-			int lvl = TextGuessingLevel();
-			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(lvl), max(lvl), STRReq(lvl));
-			if (STRReq(0) > hero.STR()) {
+			int lvl = TextGuessingBuffedLevel();
+			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(lvl), max(lvl), STRReq(false));
+			if (STRReq(false) > hero.STR()) {
 				info += " " + Messages.get(MeleeWeapon.class, "probably_too_heavy");
 			}
 		}

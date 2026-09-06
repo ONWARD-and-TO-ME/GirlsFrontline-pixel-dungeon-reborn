@@ -121,14 +121,10 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 
 	protected boolean hasSameEnchant(Weapon item){
-		if (enchantment != null && item.enchantment == null)
-			return false;
-		if (enchantment == null && item.enchantment != null)
-			return false;
 		if (enchantment == null && item.enchantment == null)
 			return true;
-		if (enchantment.getClass() == item.enchantment.getClass())
-			return true;
+		if (enchantment != null && item.enchantment != null)
+			return enchantment.getClass() == item.enchantment.getClass();
 		return false;
 	}
 	public enum Augment {
@@ -397,17 +393,17 @@ abstract public class Weapon extends KindOfWeapon {
 	
 	//overrides as other things can equip these
 	@Override
-	public int buffedLvl() {
-        int lvl = super.buffedLvl();
+	public int buffedLvl( int lvl ) {
+        int level = super.buffedLvl(lvl);
         if (BuffLevelPoint != Integer.MIN_VALUE)
-            return lvl;
+            return level;
 		if (isEquipped( hero ) || hero.belongings.contains( this )){
             if (hero.buff(EquipLevelUp.class) != null)
-                lvl += Dungeon.hero.hasTalent(Talent.Type56FourTwoTwo)
+                level += Dungeon.hero.hasTalent(Talent.Type56FourTwoTwo)
 						? Dungeon.hero.pointsInTalent(Talent.Type56FourTwoTwo)
 						: 1;
-			lvl += RingOfKing.updateMultiplier(hero);
-			return lvl;
+			level += RingOfKing.updateMultiplier(hero);
+			return level;
 		}
         return level();
 	}

@@ -275,7 +275,7 @@ public class SpiritBow extends Weapon {
 	}
 
 	@Override
-	public int buffedLvl() {
+	public int buffedLvl(int lvl) {
 		//level isn't affected by buffs/debuffs
 		return level();
 	}

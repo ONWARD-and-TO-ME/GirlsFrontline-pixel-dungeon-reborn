@@ -693,29 +693,29 @@ public class Armor extends EquipableItem {
 	
 	//other things can equip these, for now we assume only the hero can be affected by leveling debuffs
 	@Override
-	public int buffedLvl() {
-        int lvl = super.buffedLvl();
+	public int buffedLvl(int lvl) {
+        int level = super.buffedLvl(lvl);
         if (BuffLevelPoint != Integer.MIN_VALUE)
-            return lvl;
+            return level;
 		if (isEquipped( hero ) || hero.belongings.contains(this)) {
             if (hero.buff(EquipLevelUp.class) != null) {
-                lvl += 1 + hero.pointsInTalent(Talent.Type56FourTwoTwo);
+                level += 1 + hero.pointsInTalent(Talent.Type56FourTwoTwo);
             }
             Hunger hunger = hero.buff(Hunger.class);
             if (hunger != null) {
                 if (hero.hasTalent(Talent.Type56Two_Armor)) {
                     if (hunger.full() >= 500 - 100 * hero.pointsInTalent(Talent.Type56Two_Armor))
-                        lvl += 1;
+                        level += 1;
                 }
                 if (hero.hasTalent(Talent.Type56_22V2)) {
                     if (hunger.isFull())
-                        lvl += hero.pointsInTalent(Talent.Type56_22V2);
+                        level += hero.pointsInTalent(Talent.Type56_22V2);
                 }
             }
             //down at 200, 200+300, 200+300+400, ...
-            lvl -= (int) ((Math.sqrt(200*broken + 22500) - 150)/100);
-            lvl += RingOfKing.updateMultiplier(hero);
-			return lvl;
+            level -= (int) ((Math.sqrt(200*broken + 22500) - 150)/100);
+            level += RingOfKing.updateMultiplier(hero);
+			return level;
 		} else {
 			return level();
 		}
@@ -802,16 +802,16 @@ public class Armor extends EquipableItem {
 		String info = super.info();
 		
 		if (levelKnown) {
-			info += "\n\n" + Messages.get(Armor.class, "curr_absorb", DRMin(), DRMax(), STRReq());
+			info += "\n\n" + Messages.get(Armor.class, "curr_absorb", DRMin(), DRMax(), STRReq(true));
 			
-			if (STRReq() > Dungeon.hero.STR()) {
+			if (STRReq(true) > Dungeon.hero.STR()) {
 				info += " " + Messages.get(Armor.class, "too_heavy");
 			}
 		} else {
-            int lvl = TextGuessingLevel();
-			info += "\n\n" + Messages.get(Armor.class, "avg_absorb", DRMin(lvl), DRMax(lvl), STRReq(lvl));
+            int lvl = TextGuessingBuffedLevel();
+			info += "\n\n" + Messages.get(Armor.class, "avg_absorb", DRMin(lvl), DRMax(lvl), STRReq(false));
 
-			if (STRReq(0) > Dungeon.hero.STR()) {
+			if (STRReq(false) > Dungeon.hero.STR()) {
 				info += " " + Messages.get(Armor.class, "probably_too_heavy");
 			}
 		}
