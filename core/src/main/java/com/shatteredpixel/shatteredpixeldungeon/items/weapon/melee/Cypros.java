@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.RabbitWeaponGenoise;
@@ -85,6 +86,12 @@ public class Cypros extends MeleeWeapon {
 
     private static Mode mode;
     public Mode getMode() { return mode; }
+
+    //仅「马格南婚礼」手枪形态视为HG手枪，特拉维（霰弹）与康菲尔（步枪）形态不算
+    @Override
+    public boolean hasTag( KindOfWeapon.Tag tag ) {
+        return tag == KindOfWeapon.Tag.HG && mode == Mode.MAGNUM;
+    }
 
     public static final String AC_ZAP	= "ZAP";
     public static final String AC_SWITCH= "SWITCH";

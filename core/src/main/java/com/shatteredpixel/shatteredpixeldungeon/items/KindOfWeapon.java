@@ -39,12 +39,21 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 abstract public class KindOfWeapon extends EquipableItem {
-	
+
 	protected static final float TIME_TO_EQUIP = 1f;
 
 	protected String hitSound = Assets.Sounds.HIT;
 	protected float hitSoundPitch = 1f;
-	
+
+	//武器枪种标签，供角色天赋等系统按武器类别进行判定
+	public enum Tag {
+		HG	//手枪（Handgun）
+	}
+
+	public boolean hasTag( Tag tag ){
+		return false;
+	}
+
 	@Override
 	public boolean isEquipped( Hero hero ) {
 		return hero.belongings.weapon() == this;

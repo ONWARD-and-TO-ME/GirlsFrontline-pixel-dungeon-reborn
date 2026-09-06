@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class M1911 extends LongRange {
@@ -32,6 +33,11 @@ public class M1911 extends LongRange {
 		RCH = 3;    //lots of extra reach
         dmgBaseMul = 2;
         dmgBaseDiffer = 1;
+	}
+
+	@Override
+	public boolean hasTag( KindOfWeapon.Tag tag ) {
+		return tag == KindOfWeapon.Tag.HG;
 	}
 
 }

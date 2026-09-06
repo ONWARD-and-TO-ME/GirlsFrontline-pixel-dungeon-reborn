@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SA;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Random;
 
@@ -33,6 +34,11 @@ public class NagantRevolver extends SurpriseAttack {
 		image = ItemSpriteSheet.NAGANTREVOLVER;
         damageMin = 2/3F;
 		tier = 2;
+	}
+
+	@Override
+	public boolean hasTag( KindOfWeapon.Tag tag ) {
+		return tag == KindOfWeapon.Tag.HG;
 	}
 
 }

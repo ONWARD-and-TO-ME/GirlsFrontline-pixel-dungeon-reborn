@@ -29,6 +29,8 @@ import com.watabou.utils.Bundle;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 
+import java.util.Locale;
+
 public class StarShield extends ShieldBuff {
 	
 	{
@@ -69,39 +71,30 @@ public class StarShield extends ShieldBuff {
 
 	@Override
 	public boolean act() {
-		int shieldingValue = shielding();
-		int heroLevel = 0;
-		if(target instanceof Hero){
-			heroLevel = ((Hero)target).lvl;
-		}
-		
-		// 根据护盾值范围设置不同的衰减频率
-		turnsPassed++;
-		if(shieldingValue <= 0) {
+		if (shielding() <= 0) {
 			detach();
-		} else if (shieldingValue > 30*heroLevel) {
-			decShield(2);
-			turnsPassed=0;
-		} else if (shieldingValue >= 30) {
-			// 30-5000护盾每2回合减少1点
-			if (turnsPassed >= 2) {
+		} else {
+			int heroLevel = (target instanceof Hero) ? ((Hero)target).lvl : 0;
+
+			//分档周期衰减：<10层每5回合1点；10~30层每3回合1点；>30层每2回合1点
+			turnsPassed++;
+			int interval = shielding() < 10 ? 5 : (shielding() <= 30 ? 3 : 2);
+			if (turnsPassed >= interval && shielding() > 0) {
 				decShield(1);
 				turnsPassed = 0;
 			}
-		} else if (shieldingValue >= 10) {
-			// 10-30区间每3回合减少1点
-			if (turnsPassed >= 3) {
-				decShield(1);
-				turnsPassed = 0;
+
+			//护盾量超过 3×角色等级 层数时，每回合额外衰减2点（与分档衰减叠加，互不重置计数）
+			if (shielding() > 3 * heroLevel) {
+				decShield(Math.min(2, shielding()));
 			}
-		} else if (shieldingValue < 10) {
-			// 10护盾以下时，每5回合衰减1点
-			if (turnsPassed >= 5) {
-				decShield(1);
-				turnsPassed = 0;
+
+			//护盾被本回合衰减清空时立即移除，避免以0值多挂一回合
+			if (shielding() <= 0) {
+				detach();
 			}
 		}
-		
+
 		spend(TICK);
 		return true;
 	}
@@ -134,7 +127,31 @@ public class StarShield extends ShieldBuff {
 	
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", shielding());
+		return Messages.get(this, "desc", shielding(), turnDecayText());
+	}
+
+	//当前每回合实际衰减量：分档周期衰减 + 超限（>3×角色等级）每回合额外2点
+	private float turnDecay() {
+		int s = shielding();
+		float tier = s < 10 ? 1f / 5 : (s <= 30 ? 1f / 3 : 1f / 2);
+		int heroLevel = (target instanceof Hero) ? ((Hero)target).lvl : 0;
+		if (s > 3 * heroLevel) {
+			tier += 2;
+		}
+		return tier;
+	}
+
+	//衰减量可能带小数（如0.33、2.5），整数或末位为0时去掉多余的0
+	private String turnDecayText() {
+		float decay = turnDecay();
+		if (decay == Math.floor(decay)) {
+			return String.valueOf((int) decay);
+		}
+		String txt = String.format(Locale.ROOT, "%.2f", decay);
+		if (txt.endsWith("0")) {
+			txt = txt.substring(0, txt.length() - 1);
+		}
+		return txt;
 	}
 
 	private static final String TURNS_PASSED = "turns_passed";

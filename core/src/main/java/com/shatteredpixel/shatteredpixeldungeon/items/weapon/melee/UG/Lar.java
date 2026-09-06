@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Random;
 
@@ -45,6 +46,11 @@ public class Lar extends UniversaleGun {
     public int STRReq(int lvl) {
         // 调用父类方法计算标准力量需求，然后减1
         return super.STRReq(lvl) - 1;
+    }
+
+    @Override
+    public boolean hasTag( KindOfWeapon.Tag tag ) {
+        return tag == KindOfWeapon.Tag.HG;
     }
 
     @Override

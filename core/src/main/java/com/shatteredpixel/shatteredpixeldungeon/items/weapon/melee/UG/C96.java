@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Speed;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -49,6 +50,11 @@ public class C96 extends UniversaleGun {
 
         defaultAction = AC_SKILL;
         dmgBaseMul = 2;
+    }
+
+    @Override
+    public boolean hasTag( KindOfWeapon.Tag tag ) {
+        return tag == KindOfWeapon.Tag.HG;
     }
 
     @Override

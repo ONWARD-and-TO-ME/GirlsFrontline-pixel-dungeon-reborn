@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -148,7 +149,17 @@ public class AboutSceneV2 extends PixelScene {
 		//*** 项目仓库入口（点击弹出仓库窗口，避免在滚动列表中误触链接）***
 		//按钮本体须在滚动面板创建后构造（见下方 repoBtn 处），此处仅记录位置
 		float repoBtnY = y + 4;
-		y = repoBtnY + 18 + 8;
+		y = repoBtnY + 18 + 4;
+
+		//*** 下载支持说明（源码仓库按钮正下方，品红色）***
+		RenderedTextBlock dlNote = PixelScene.renderTextBlock(
+				Messages.get(AboutSceneV2.class, "download_support"), 6);
+		dlNote.align(RenderedTextBlock.CENTER_ALIGN);
+		dlNote.hardlight(0xFF00FF);
+		dlNote.maxWidth(w - 20);
+		dlNote.setPos((w - dlNote.width()) / 2f, y);
+		content.add(dlNote);
+		y = dlNote.bottom() + 8;
 
 		//*** 音乐版权 ***
 		y = addTextBlock(content, y,

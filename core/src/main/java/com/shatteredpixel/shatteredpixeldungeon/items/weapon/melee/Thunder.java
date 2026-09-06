@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class Thunder extends MeleeWeapon {
@@ -40,6 +41,10 @@ public class Thunder extends MeleeWeapon {
         dmgUpgradeMul = 3.5F;
     }
 
+    @Override
+    public boolean hasTag( KindOfWeapon.Tag tag ) {
+        return tag == KindOfWeapon.Tag.HG;
+    }
 
     @Override
     public int damageRoll(Char owner) {
