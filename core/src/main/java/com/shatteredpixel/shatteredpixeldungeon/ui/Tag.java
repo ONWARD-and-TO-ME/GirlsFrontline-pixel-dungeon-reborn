@@ -70,6 +70,16 @@ public class Tag extends Button {
 		lightness = 1f;
 	}
 
+	//运行时修改标签背景色（用于换枪按钮等动态配色）
+	public void setColor( int color ){
+		this.r = (color >> 16) / 255f;
+		this.g = ((color >> 8) & 0xFF) / 255f;
+		this.b = (color & 0xFF) / 255f;
+		if (bg != null) {
+			bg.hardlight( r, g, b );
+		}
+	}
+
 	public void flip(boolean value){
 		flipped = value;
 		bg.flipHorizontal(value);

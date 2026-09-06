@@ -47,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.HS2000_Shield;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
@@ -376,6 +377,10 @@ public class Hero extends Char {
 		// 如果是未来之星职业，自动添加天狼星心脏buff
 		if (subClass == HeroSubClass.FUTURE_STAR && buff(SiriusHeart.class) == null) {
 			Buff.affect(this, SiriusHeart.class);
+		}
+		// 未来之星读档时补挂副手换枪指示器
+		if (subClass == HeroSubClass.FUTURE_STAR && buff(GunSwap.class) == null) {
+			Buff.affect(this, GunSwap.class);
 		}
 	}
 	
@@ -801,6 +806,17 @@ public class Hero extends Char {
 		return true;
 	}
 
+	//未来之星专属：敌人在副手HG武器射程内、但不在主手武器射程内时，应使用副手武器攻击
+	private boolean shouldUseSecondary( Char enemy ){
+		if (subClass != HeroSubClass.FUTURE_STAR) return false;
+		KindOfWeapon second = belongings.secondWep();
+		if (second == null || !second.hasTag( KindOfWeapon.Tag.HG )) return false;
+		KindOfWeapon main = belongings.weapon();
+		boolean mainCanReach = main != null && main.canReach( this, enemy.pos );
+		boolean secondCanReach = second.canReach( this, enemy.pos );
+		return secondCanReach && !mainCanReach;
+	}
+
 	public boolean canAttack(Char enemy){
 		if (enemy == null || pos == enemy.pos || !Actor.chars().contains(enemy)) {
 			return false;
@@ -815,11 +831,12 @@ public class Hero extends Char {
 				return true;
 		}
 
-		if (wep != null){
-			return wep.canReach(this, enemy.pos);
-		} else {
-			return false;
+		if (wep != null && wep.canReach(this, enemy.pos)){
+			return true;
 		}
+
+		//未来之星：主手够不到时，若副手HG武器够得到，也允许攻击
+		return shouldUseSecondary( enemy );
 	}
 	
 	public float attackDelay() {
@@ -2185,6 +2202,17 @@ public class Hero extends Char {
 
 		AttackIndicator.target(enemy);
 
+		//未来之星：敌人在副手HG射程内但不在主手射程内时，临时交换主副手，
+		//使伤害、命中、攻速、附魔触发全部按副手武器计算
+		boolean useSecondary = shouldUseSecondary( enemy );
+		KindOfWeapon savedMain = null;
+		if (useSecondary){
+			sprite.showStatus( 0xFF99CC, Messages.get(this, "quick_attack") );
+			savedMain = belongings.weapon;
+			belongings.weapon = belongings.secondWep;
+			belongings.secondWep = savedMain;
+		}
+
 		boolean hit = attack( enemy );
 
 		Invisibility.dispel();
@@ -2200,13 +2228,19 @@ public class Hero extends Char {
 		}
 		
 		// GSH18天赋：天狼星心脏 - 攻击时附加伤害
-		if (hit&&(buff(Talent.SiriushHeartTracker.class) != null)) {
+		if (hit&&(buff(Talent.SiriusHeartTracker.class) != null)) {
 			com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SiriusHeart.onAttack(this, enemy);
 		}
         // 56天赋 - 攻击后移除buff
         if (hit&&(buff(Talent.Type56BookTracker.class) != null)) {
             buff(Talent.Type56BookTracker.class).detach();
         }
+
+		//恢复主副手
+		if (useSecondary){
+			belongings.secondWep = belongings.weapon;
+			belongings.weapon = savedMain;
+		}
 
 		curAction = null;
 

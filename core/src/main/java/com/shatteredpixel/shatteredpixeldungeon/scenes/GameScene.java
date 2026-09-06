@@ -193,6 +193,8 @@ public class GameScene extends PixelScene {
 	private AttackIndicator attack;
 	private LootIndicator loot;
 	private ActionIndicator action;
+	//天狼星心脏专属独立指示器，位于换枪按钮左侧，避免占位冲突
+	private ActionIndicator siriusAction;
 	private ResumeIndicator resume;
 
 	{
@@ -435,6 +437,12 @@ public class GameScene extends PixelScene {
 		action = new ActionIndicator();
 		action.camera = uiCamera;
 		add( action );
+
+		//天狼星心脏独立指示器：常驻于换枪按钮左侧
+		siriusAction = new ActionIndicator();
+		siriusAction.setSiriusSlot( true );
+		siriusAction.camera = uiCamera;
+		add( siriusAction );
 
 		resume = new ResumeIndicator();
 		resume.camera = uiCamera;
@@ -880,6 +888,7 @@ public class GameScene extends PixelScene {
 	private boolean tagAttack    = false;
 	private boolean tagLoot      = false;
 	private boolean tagAction    = false;
+	private boolean tagSirius    = false;
 	private boolean tagResume    = false;
 
 	public static void layoutTags() {
@@ -936,6 +945,26 @@ public class GameScene extends PixelScene {
 			scene.action.setRect( tagLeft, pos - Tag.SIZE, tagWidth, Tag.SIZE );
 			scene.action.flip(tagsOnLeft);
 			pos = scene.action.top();
+		}
+
+		//天狼星心脏指示器：
+		// - 换枪按钮可见时，放在其左侧（水平相邻、垂直对齐）；若贴左边缘越界则放右侧。
+		// - 换枪按钮不可见时，占回主指示器原位（tagLeft），避免悬空。
+		if (scene.siriusAction != null && scene.siriusAction.visible) {
+			float siriusX, siriusY;
+			if (scene.tagAction) {
+				siriusX = scene.action.left() - Tag.SIZE - 2;
+				if (siriusX < 0) {
+					siriusX = scene.action.right() + 2;
+				}
+				siriusY = scene.action.y;
+			} else {
+				siriusX = tagLeft;
+				siriusY = pos - Tag.SIZE;
+				pos = siriusY; // 接续 resume 的垂直排列
+			}
+			scene.siriusAction.setRect( siriusX, siriusY, Tag.SIZE, Tag.SIZE );
+			scene.siriusAction.flip( tagsOnLeft );
 		}
 
 		if (scene.tagResume) {

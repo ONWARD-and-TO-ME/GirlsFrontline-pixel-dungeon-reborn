@@ -27,13 +27,18 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -56,7 +61,53 @@ abstract public class KindOfWeapon extends EquipableItem {
 
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero.belongings.weapon() == this;
+		return hero.belongings.weapon() == this || hero.belongings.secondWep() == this;
+	}
+
+	//装备后恢复该武器原有的快捷栏位
+	private void restoreQuickslot(){
+		int slot = Dungeon.quickslot.getSlot( this );
+		if (slot != -1) {
+			Dungeon.quickslot.setSlot( slot, this );
+			updateQuickslot();
+		}
+	}
+
+	//未来之星装备 HG 武器时，弹窗选择装备到主手还是副手
+	@Override
+	public void execute( Hero hero, String action ) {
+		if (hero.subClass == HeroSubClass.FUTURE_STAR
+				&& action.equals( AC_EQUIP ) && hasTag( Tag.HG )){
+			usesTargeting = false;
+
+			String primaryName = Messages.titleCase(hero.belongings.weapon != null
+					? hero.belongings.weapon.trueName()
+					: Messages.get(KindOfWeapon.class, "empty"));
+			String secondaryName = Messages.titleCase(hero.belongings.secondWep != null
+					? hero.belongings.secondWep.trueName()
+					: Messages.get(KindOfWeapon.class, "empty"));
+			if (primaryName.length() > 18) primaryName = primaryName.substring(0, 15) + "...";
+			if (secondaryName.length() > 18) secondaryName = secondaryName.substring(0, 15) + "...";
+			GameScene.show(new WndOptions(
+					new ItemSprite(this),
+					Messages.titleCase(name()),
+					Messages.get(KindOfWeapon.class, "which_equip_msg"),
+					Messages.get(KindOfWeapon.class, "which_equip_primary", primaryName),
+					Messages.get(KindOfWeapon.class, "which_equip_secondary", secondaryName)
+			){
+				@Override
+				protected void onSelect(int index) {
+					super.onSelect(index);
+					if (index == 0 || index == 1){
+						if (index == 0) doEquip(hero);
+						else            equipSecondary(hero);
+						restoreQuickslot();
+					}
+				}
+			});
+		} else {
+			super.execute( hero, action );
+		}
 	}
 	
 	@Override
@@ -83,7 +134,46 @@ abstract public class KindOfWeapon extends EquipableItem {
 			return true;
 			
 		} else {
-			
+
+			collect( hero.belongings.backpack );
+			return false;
+		}
+	}
+
+	//装备到副手槽位（未来之星专属，仅限 HG 标签武器）
+	public boolean equipSecondary( Hero hero ){
+		if (hero.subClass != HeroSubClass.FUTURE_STAR || !hasTag( Tag.HG )){
+			return doEquip( hero );
+		}
+
+		Tracker(hero);
+		detachAll( hero.belongings.backpack );
+
+		if (hero.belongings.secondWep == null || hero.belongings.secondWep.doUnequip( hero, true )) {
+
+			hero.belongings.secondWep = this;
+			activate( hero );
+			Talent.onItemEquipped(hero, this);
+			ActionIndicator.updateIcon();
+			updateQuickslot();
+
+			cursedKnown = true;
+			if (cursed) {
+				equipCursed( hero );
+				GLog.n( Messages.get(KindOfWeapon.class, "equip_cursed") );
+			}
+
+			//尽快刷出换枪按钮
+			GunSwap swap = hero.buff(GunSwap.class);
+			if (swap != null) {
+				swap.refreshIndicator();
+			}
+
+			hero.spendAndNext( TIME_TO_EQUIP );
+			return true;
+
+		} else {
+
 			collect( hero.belongings.backpack );
 			return false;
 		}
@@ -96,13 +186,25 @@ abstract public class KindOfWeapon extends EquipableItem {
 
 	@Override
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
+		boolean second = hero.belongings.secondWep == this;
+
+		if (second){
+			//先置空腾出容量位，物品才能收回满背包；失败时回滚
+			hero.belongings.secondWep = null;
+		}
+
 		if (super.doUnequip( hero, collect, single )) {
 
-			hero.belongings.weapon = null;
+			if (!second){
+				hero.belongings.weapon = null;
+			}
 			return true;
 
 		} else {
 
+			if (second){
+				hero.belongings.secondWep = this;
+			}
 			return false;
 
 		}

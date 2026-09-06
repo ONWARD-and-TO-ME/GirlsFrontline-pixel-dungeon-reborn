@@ -285,16 +285,33 @@ public enum Talent {
 	public static class GSH18EnergizingMealTracker extends Buff{}
     
     //天狼星心脏 buff
-    public static class SiriushHeartTracker extends Buff {
+    public static class SiriusHeartTracker extends Buff {
         {
             // 设置为不会随时间自然消失，只在攻击后被移除
             revivePersists = true;
             //这个是爆了保修后是否保留buff
         }
+        //激活时快照的附加伤害值（由护盾量×倍率计算，攻击时直接取用，不再实时读护盾）
+        public int bonusDamage = 0;
+
+        private static final String BONUS_DAMAGE = "bonus_damage";
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(BONUS_DAMAGE, bonusDamage);
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            bonusDamage = bundle.getInt(BONUS_DAMAGE);
+        }
+
         public int icon() { return BuffIndicator.MOMENTUM; }
         public void tintIcon(Image icon) { icon.hardlight(0.8f, 0.2f, 0.8f); }
-        public String toString() { return Messages.get(this, "sirius_heart_name"); }
-        public String desc() { return Messages.get(this, "sirius_heart_desc"); }
+        public String toString() { return Messages.get(this, "name"); }
+        public String desc() { return Messages.get(this, "desc"); }
     }
     public static class Type56BookTracker extends Buff{
         {

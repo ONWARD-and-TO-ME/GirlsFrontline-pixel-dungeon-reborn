@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Preparation;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SiriusHeart;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -112,6 +113,8 @@ public class TengusMask extends Item {
         } else if (way == HeroSubClass.FUTURE_STAR) {
             // 当转职为未来之星时，自动附加天狼星心脏buff
             Buff.affect(curUser, SiriusHeart.class);
+            // 副手换枪指示器
+            Buff.affect(curUser, GunSwap.class);
         }
 
 		curUser.sprite.operate( curUser.pos );

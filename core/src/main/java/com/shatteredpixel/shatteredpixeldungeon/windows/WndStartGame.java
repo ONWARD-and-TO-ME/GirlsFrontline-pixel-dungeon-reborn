@@ -44,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
 import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.ColorBlock;
@@ -168,6 +169,7 @@ public class WndStartGame extends Window {
 				Dungeon.hero = null;
                 Dungeon.challenges = 0;
 				ActionIndicator.clearAll();
+				Toolbar.swappedQuickSlots = false; //新游戏重置快捷栏切换状态
 				GamesInProgress.curSlot = slot;
 				InterlevelScene.seedCode=SPDSettings.seedCode();
 				Dungeon.GameMode = (long) Math.pow(2, mode.code());

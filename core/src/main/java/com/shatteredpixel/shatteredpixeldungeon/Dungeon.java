@@ -84,6 +84,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -642,6 +643,7 @@ public class Dungeon {
     private static final String ROLLTIMES       = "ROLLTIMES";
 	private static final String GAME_MODE		= "Game_Mode";
 	public static final String GuessType		= "Guess_Type";
+	private static final String SWAPPED_QUICK_SLOTS = "swapped_quick_slots";
 	public static void saveGame( int save ) {
 		try {
 			Bundle bundle = new Bundle();
@@ -663,6 +665,8 @@ public class Dungeon {
 			bundle.put( DEPTH, depth );
             bundle.put( ROLLTIMES, RollTimes);
 			bundle.put( GAME_MODE, GameMode);
+			//持久化主副武器快捷栏切换状态（Toolbar.swappedQuickSlots 为静态全局变量，不保存则读档后丢失）
+			bundle.put( SWAPPED_QUICK_SLOTS, Toolbar.swappedQuickSlots );
 
 			bundle.put(GuessType, guessType.toArray(new Class[0]));
 
@@ -763,6 +767,9 @@ public class Dungeon {
 		if (bundle.getBoolean(LOCKXMAS))
 			GameMode += (long) Math.pow(2, WndStartGame.GameMode.CHRISTMAS.code());
 		Game.GameMode = GameMode;
+
+		//恢复主副武器快捷栏切换状态（旧存档无该键时默认为 false）
+		Toolbar.swappedQuickSlots = bundle.contains( SWAPPED_QUICK_SLOTS ) && bundle.getBoolean( SWAPPED_QUICK_SLOTS );
 
 		Actor.clear();
 		Actor.restoreNextID( bundle );

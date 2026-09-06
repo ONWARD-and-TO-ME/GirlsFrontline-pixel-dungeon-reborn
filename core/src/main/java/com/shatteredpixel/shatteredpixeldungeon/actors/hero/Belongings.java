@@ -57,6 +57,9 @@ public class Belongings implements Iterable<Item> {
 
 			if (Dungeon.hero != null && Dungeon.hero.belongings.secArmor != null)
 				cap--;
+			//副手武器同样占用一格背包容量
+			if (Dungeon.hero != null && Dungeon.hero.belongings.secondWep != null)
+				cap--;
 			return cap;
 		}
 	}
@@ -71,6 +74,8 @@ public class Belongings implements Iterable<Item> {
 	}
 
 	public KindOfWeapon weapon = null;
+	//副手武器槽位：未来之星（FUTURE_STAR）专属，仅可装备 HG（手枪）标签武器
+	public KindOfWeapon secondWep = null;
 	public Armor armor = null;
     public Armor secArmor = null;
 	public Artifact artifact = null;
@@ -91,6 +96,15 @@ public class Belongings implements Iterable<Item> {
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
 		if (!lostInvent || (weapon != null && weapon.keptThoughLostInvent)){
 			return weapon;
+		} else {
+			return null;
+		}
+	}
+
+	public KindOfWeapon secondWep(){
+		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
+		if (!lostInvent || (secondWep != null && secondWep.keptThoughLostInvent)){
+			return secondWep;
 		} else {
 			return null;
 		}
@@ -209,6 +223,7 @@ public class Belongings implements Iterable<Item> {
 	// ***
 	
 	private static final String WEAPON		= "weapon";
+	private static final String SECOND_WEP	= "secondWep";
     private static final String ARMOR		= "armor";
     private static final String SECOND_ARMOR = "secondArmor";
 	private static final String ARTIFACT   = "artifact";
@@ -220,6 +235,7 @@ public class Belongings implements Iterable<Item> {
 		backpack.storeInBundle( bundle );
 		
 		bundle.put( WEAPON, weapon );
+		bundle.put( SECOND_WEP, secondWep );
         bundle.put( ARMOR, armor );
         bundle.put( SECOND_ARMOR, secArmor );
 		bundle.put( ARTIFACT, artifact );
@@ -234,6 +250,12 @@ public class Belongings implements Iterable<Item> {
 		
 		weapon = (KindOfWeapon) bundle.get(WEAPON);
 		if (weapon() != null)       weapon().activate(owner);
+
+		//旧存档无该键时保持为 null
+		if (bundle.contains(SECOND_WEP)) {
+			secondWep = (KindOfWeapon) bundle.get(SECOND_WEP);
+			if (secondWep() != null)    secondWep().activate(owner);
+		}
 
         armor = (Armor)bundle.get( ARMOR );
         if (bundle.contains(SECOND_ARMOR))
@@ -450,7 +472,7 @@ public class Belongings implements Iterable<Item> {
 		
 		private Iterator<Item> backpackIterator = backpack.iterator();
 		
-		private Item[] equipped = {weapon, armor, artifact, misc, ring, secArmor};
+		private Item[] equipped = {weapon, armor, artifact, misc, ring, secArmor, secondWep};
 		private int backpackIndex = equipped.length;
 		
 		@Override
@@ -498,6 +520,9 @@ public class Belongings implements Iterable<Item> {
                 break;
             case 5:
                 equipped[5] = secArmor = null;
+                break;
+            case 6:
+                equipped[6] = secondWep = null;
                 break;
 			default:
 				backpackIterator.remove();

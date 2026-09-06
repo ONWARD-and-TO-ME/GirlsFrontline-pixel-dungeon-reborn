@@ -255,10 +255,17 @@ public class WndBag extends WndTabbed {
 		if (container != Dungeon.hero.belongings.backpack){
 			placeItem(container);
 			count--; //don't count this one, as it's not actually inside of itself
-		}else if (stuff.secArmor != null){
-            placeItem(stuff.secArmor);
-            equipped++;
-        }
+		} else {
+			//副护甲与副手武器均在主背包最前展示，可同时出现
+			if (stuff.secArmor != null){
+				placeItem(stuff.secArmor);
+				equipped++;
+			}
+			if (stuff.secondWep != null){
+				placeItem(stuff.secondWep);
+				equipped++;
+			}
+		}
 
 		// Items in the bag, except other containers (they have tags at the bottom)
 		for (Item item : container.items.toArray(new Item[0])) {

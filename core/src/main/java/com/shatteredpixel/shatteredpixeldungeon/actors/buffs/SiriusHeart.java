@@ -52,6 +52,15 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
     private float cooldown = 0f;
     private boolean boosted = false;
 
+    // 根据天赋等级返回冷却时间：+1=180 / +2=120 / +3=6（测试用，后续手动改为60）
+    public static float cooldownForLevel(int talentLevel) {
+        switch (talentLevel) {
+            case 2: return 120f;
+            case 3: return 60f;
+            default: return 180f;
+        }
+    }
+
     // 检查是否可以使用技能
     public boolean canUse() {
         if (!(target instanceof Hero)) return false;
@@ -68,25 +77,44 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
         return true;
     }
 
-    // 激活技能
+    // 激活技能：立即抽离护盾并快照为附加伤害
     public void activate() {
         if (!canUse()) return;
         
         Hero hero = (Hero) target;
         int talentLevel = hero.pointsInTalent(Talent.GSH18_SIRIUS_HEART);
-        
-        // 施加buff
-        Buff.affect(hero, Talent.SiriushHeartTracker.class);
+
+        // 获取当前星之护盾并立即抽离
+        StarShield starShield = hero.buff(StarShield.class);
+        if (starShield == null) return;
+        int shieldValue = starShield.shielding();
+        if (shieldValue <= 0) return;
+
+        // 根据天赋等级计算倍率（1级20% / 2级40% / 3级100%）
+        float multiplier = 0.2f;
+        switch (talentLevel) {
+            case 2: multiplier = 0.4f; break;
+            case 3: multiplier = 1.0f; break;
+        }
+        int bonusDamage = (int) Math.ceil(shieldValue * multiplier);
+        bonusDamage = Math.max(1, bonusDamage);
+
+        // 施加 tracker buff 并快照伤害
+        Talent.SiriusHeartTracker tracker = Buff.affect(hero, Talent.SiriusHeartTracker.class);
+        tracker.bonusDamage = bonusDamage;
+
+        // 立即抽离全部护盾
+        starShield.absorbDamage(shieldValue);
         
         // 设置冷却时间
-        cooldown = 300f;
+        cooldown = 50f;
         
-        GLog.p(Messages.get(this, "activated"));
+        GLog.p(Messages.get(this, "activated", bonusDamage));
         Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
         
         // 更新UI
         BuffIndicator.refreshHero();
-        ActionIndicator.setAction(this);
+        ActionIndicator.setSiriusAction(this);
     }
 
     @Override
@@ -98,7 +126,7 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
                 cooldown = 0;
                 // 检查是否可以显示技能按钮
                 if (canUse()) {
-                    ActionIndicator.setAction(this);
+                    ActionIndicator.setSiriusAction(this);
                 }
                 BuffIndicator.refreshHero();
             }
@@ -107,10 +135,10 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
         // 检查是否需要显示/隐藏技能按钮
         Hero hero = (Hero) target;
         if (hero != null) {
-            if (canUse() && !ActionIndicator.checkAction(this)) {
-                ActionIndicator.setAction(this);
-            } else if (!canUse() && ActionIndicator.checkAction(this)) {
-                ActionIndicator.clearAction(this);
+            if (canUse() && !ActionIndicator.checkSiriusAction(this)) {
+                ActionIndicator.setSiriusAction(this);
+            } else if (!canUse() && ActionIndicator.checkSiriusAction(this)) {
+				ActionIndicator.clearSiriusAction(this);
             }
         }
         
@@ -121,7 +149,7 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
     @Override
     public void detach() {
         super.detach();
-        ActionIndicator.clearAction(this);
+        ActionIndicator.clearSiriusAction(this);
     }
 
     // 获取冷却时间的视觉显示
@@ -160,8 +188,7 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
     // ActionIndicator.Action接口实现
     @Override
     public String actionName() {
-        // 先使用硬编码文本测试按钮文本显示功能
-        return "天狼星心脏";
+        return Messages.get(this, "action_name");
     }
 
     @Override
@@ -179,51 +206,29 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
         GameScene.show(new WndSiriusHeart(this));
     }
 
-    // 处理攻击时的效果
+    // 处理攻击时的效果：直接使用激活时快照的附加伤害
     public static void onAttack(Hero hero, Char enemy) {
-        // 检查是否有SiriushHeartTracker buff
-        Talent.SiriushHeartTracker tracker = hero.buff(Talent.SiriushHeartTracker.class);
+        // 检查是否有SiriusHeartTracker buff
+        Talent.SiriusHeartTracker tracker = hero.buff(Talent.SiriusHeartTracker.class);
         if (tracker == null) return;
+
+        int bonusDamage = tracker.bonusDamage;
         
         // 移除buff
         tracker.detach();
+
+        if (bonusDamage <= 0) return;
         
-        // 获取星之护盾
-        StarShield starShield = hero.buff(StarShield.class);
-        if (starShield == null) return;
-        
-        int shieldValue = starShield.shielding();
-        if (shieldValue <= 0) return;
-        
-        // 根据天赋等级计算附加伤害
-        int talentLevel = hero.pointsInTalent(Talent.GSH18_SIRIUS_HEART);
-        float multiplier = 0.2f;
-        switch (talentLevel) {
-            case 2:
-                multiplier = 0.4f;
-                break;
-            case 3:
-                multiplier = 1.0f;
-                break;
-        }
-        
-        int bonusDamage = (int) Math.ceil(shieldValue * multiplier);
-        // 确保最低伤害为1
-        bonusDamage = Math.max(1, bonusDamage);
-        
-        // 清除所有星之护盾
-        starShield.absorbDamage(shieldValue);
-        
-        // 对敌人造成附加伤害
+        // 对敌人造成附加伤害（激活时已抽离护盾，此处不再读取）
         enemy.damage(bonusDamage, hero);
         
         // 显示伤害信息
         GLog.p(Messages.get(SiriusHeart.class, "damage", bonusDamage));
         
-        // 设置冷却时间
+        // 设置冷却时间（根据天赋等级：+1=180 / +2=120 / +3=6）
         SiriusHeart siriusHeart = hero.buff(SiriusHeart.class);
         if (siriusHeart != null) {
-            siriusHeart.cooldown = 300f;
+            siriusHeart.cooldown = cooldownForLevel(hero.pointsInTalent(Talent.GSH18_SIRIUS_HEART));
         }
     }
 
@@ -254,10 +259,15 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
             Hero hero = (Hero) buff.target;
             int talentLevel = hero.pointsInTalent(Talent.GSH18_SIRIUS_HEART);
 
-            // 技能描述
-            String desc = Messages.get(this, "desc", 
-                    (talentLevel == 1 ? 20 : (talentLevel == 2 ? 40 : 100)),
-                    300
+            //当前护盾值与预计附加伤害
+            StarShield shield = hero.buff(StarShield.class);
+            int shieldValue = (shield != null) ? shield.shielding() : 0;
+            int percent = (talentLevel == 1 ? 20 : (talentLevel == 2 ? 40 : 100));
+            int expectedDmg = Math.max(1, (int) Math.ceil(shieldValue * percent / 100f));
+
+            // 技能描述（冷却时间根据天赋等级：+1=180 / +2=120 / +3=6）
+            String desc = Messages.get(this, "desc",
+                    shieldValue, percent, expectedDmg, (int) cooldownForLevel(talentLevel)
             );
 
             // 添加描述文本
