@@ -141,8 +141,21 @@ public class ThrowingSkill extends SkillItem {
                 if (Actor.findChar(cell) != null)
                     size++;
             }
-            for (int i = 0; i < size; i++)
-                dmg += CardAffect.tryCrit( 1 - (Math.min(5, size - 1)) * 0.1F, true );
+            float minimax = 1;
+            float maxMul = 1F;
+            if (hasCard(CommonCard.UNIVERSAL.Type56_1))
+                minimax *= 0.5F;
+            if (hasCard(FinalCard.WA2000.Python)){
+                minimax *= 0.5F;
+                maxMul += 0.75F;
+            }
+            for (int i = 0; i < size; i++) {
+                float d = CardCalculator.M4A1damageRoll(
+                        1 - minimax,
+                        maxMul,
+                        1 - (Math.min(5, size - 1)) * 0.1F);
+                dmg += CardAffect.tryCrit(d, true);
+            }
             return dmg;
         }
         @Override

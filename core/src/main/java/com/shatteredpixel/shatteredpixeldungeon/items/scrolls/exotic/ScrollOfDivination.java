@@ -140,7 +140,7 @@ public class ScrollOfDivination extends ExoticScroll {
 			
 			for (Item i : IDed){
 				
-				cur = new IconTitle(i);
+				cur = new IconTitle(new ItemSprite(i), i.trueName());
 				cur.setRect(0, pos, WIDTH, 0);
 				add(cur);
 				pos = cur.bottom() + 2;

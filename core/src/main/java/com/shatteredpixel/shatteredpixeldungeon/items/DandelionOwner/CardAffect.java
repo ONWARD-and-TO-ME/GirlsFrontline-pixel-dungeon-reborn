@@ -52,7 +52,9 @@ public class CardAffect {
         int d = tryCrit(dmg, wep instanceof M4A1);
         if (hasCard(RareCard.General_Liu.CZ75))
             d /= 2;
-        if (hasCard(RareCard.UNIVERSAL.Type_97_SHOTGUN))
+        if (hasCard(RareCard.UNIVERSAL.Type_97_SHOTGUN)
+                && hero.belongings.thrownWeapon == null)
+            //投武不触发此效果。
             d /= 2;
         affectAfterAttack(hero, enemy, baseDMG, wep);
         return d;
@@ -100,14 +102,17 @@ public class CardAffect {
     private static void addDoubleAttack(Hero hero, Char enemy, int damage, int code ){
         if (attackMask >> code != 0)
             return;
+        if (hero.belongings.thrownWeapon != null)
+            return;
 
         int mask = attackMask | (int) Math.pow(2, code);
-        Actor.add(new Actor() {
+        Actor.addDelayed(new Actor() {
             @Override
             protected boolean act() {
                 attackMask = mask;
                 try {
                     hero.attack(enemy, damage, 1F, 0F, Char.INFINITE_ACCURACY);
+                    hero.sprite.attack(enemy.pos);
                 } finally {
                     //虽然我感觉无需try-finally，但是AI推荐。
                     attackMask = 0;
@@ -115,7 +120,7 @@ public class CardAffect {
                 }
                 return true;
             }
-        });
+        }, -1);
     }
     public static void fireAllAffect(Char ch){
         if (hasCard(CommonCard.Vector.Type_64))

@@ -70,7 +70,7 @@ public class HS2000_Shield extends ShieldBuff {
 	@Override
 	public int shielding(){
 		int shielding = 0;
-		for (int i : list)
+		for (int i : list.toArray(new Integer[0]))
 			shielding += i;
 		return shielding;
 	}
