@@ -40,6 +40,7 @@ import java.util.ArrayList;
 public class C96 extends UniversaleGun {
     {
         BASE_COOLDOWN_TURNS = 150;
+        tag = Tag.HG;
     }
     {
         image = ItemSpriteSheet.C96;
@@ -50,11 +51,6 @@ public class C96 extends UniversaleGun {
 
         defaultAction = AC_SKILL;
         dmgBaseMul = 2;
-    }
-
-    @Override
-    public boolean hasTag( KindOfWeapon.Tag tag ) {
-        return tag == KindOfWeapon.Tag.HG;
     }
 
     @Override

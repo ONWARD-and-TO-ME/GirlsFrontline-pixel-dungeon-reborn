@@ -33,11 +33,6 @@ public class M1911 extends LongRange {
 		RCH = 3;    //lots of extra reach
         dmgBaseMul = 2;
         dmgBaseDiffer = 1;
+		tag = Tag.HG;
 	}
-
-	@Override
-	public boolean hasTag( KindOfWeapon.Tag tag ) {
-		return tag == KindOfWeapon.Tag.HG;
-	}
-
 }

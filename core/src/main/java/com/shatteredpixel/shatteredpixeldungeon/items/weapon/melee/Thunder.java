@@ -39,11 +39,7 @@ public class Thunder extends MeleeWeapon {
         dmgBaseMul = 5.5F;
         dmgBaseDiffer = 9;
         dmgUpgradeMul = 3.5F;
-    }
-
-    @Override
-    public boolean hasTag( KindOfWeapon.Tag tag ) {
-        return tag == KindOfWeapon.Tag.HG;
+        tag = Tag.HG;
     }
 
     @Override

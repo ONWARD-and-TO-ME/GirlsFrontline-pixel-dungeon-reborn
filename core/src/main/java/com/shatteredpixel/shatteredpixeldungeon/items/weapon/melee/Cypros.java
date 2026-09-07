@@ -87,12 +87,6 @@ public class Cypros extends MeleeWeapon {
     private static Mode mode;
     public Mode getMode() { return mode; }
 
-    //仅「马格南婚礼」手枪形态视为HG手枪，特拉维（霰弹）与康菲尔（步枪）形态不算
-    @Override
-    public boolean hasTag( KindOfWeapon.Tag tag ) {
-        return tag == KindOfWeapon.Tag.HG && mode == Mode.MAGNUM;
-    }
-
     public static final String AC_ZAP	= "ZAP";
     public static final String AC_SWITCH= "SWITCH";
     private static final float STAFF_SCALE_FACTOR = 0.75f;
@@ -131,8 +125,8 @@ public class Cypros extends MeleeWeapon {
                 dmgUpgradeMul = 1.1F;
                 surpriseMultiplier = 0;
                 ACC = 1.1f;
-                timeChange = 2f;
-                timeChange += 3.0f;
+                timeChange = 5f;
+                tag = Tag.NONE;
                 break;
             case CONFIRE:
                 image = ItemSpriteSheet.CONFIRE;
@@ -144,6 +138,7 @@ public class Cypros extends MeleeWeapon {
                 surpriseMultiplier = 0.333F;
                 ACC = 1.5f;
                 timeChange += 1f;
+                tag = Tag.NONE;
                 break;
             case MAGNUM:
                 image = ItemSpriteSheet.MAGNUMWEDDING;
@@ -153,9 +148,9 @@ public class Cypros extends MeleeWeapon {
                 dmgBaseMul = 4.5F;
                 dmgUpgradeMul = 2;
                 surpriseMultiplier = 0.667F;
-                timeChange = 1f;
+                timeChange = 1.5f;
                 ACC = 1.25f;
-                timeChange += 0.5f;
+                tag = Tag.HG;
                 break;
         }
         updateQuickslot();

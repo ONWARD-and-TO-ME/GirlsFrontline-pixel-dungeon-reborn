@@ -39,18 +39,13 @@ public class Lar extends UniversaleGun {
         RCH = 3; // 射程为3格
         dmgBaseMul = 2;
         dmgUpgradeMul = 0.5F;
+        tag = Tag.HG;
     }
-    
     // 我加的，重写STRReq方法，让初始力量需求减少1点
     @Override
     public int STRReq(int lvl) {
         // 调用父类方法计算标准力量需求，然后减1
         return super.STRReq(lvl) - 1;
-    }
-
-    @Override
-    public boolean hasTag( KindOfWeapon.Tag tag ) {
-        return tag == KindOfWeapon.Tag.HG;
     }
 
     @Override

@@ -34,11 +34,7 @@ public class NagantRevolver extends SurpriseAttack {
 		image = ItemSpriteSheet.NAGANTREVOLVER;
         damageMin = 2/3F;
 		tier = 2;
-	}
-
-	@Override
-	public boolean hasTag( KindOfWeapon.Tag tag ) {
-		return tag == KindOfWeapon.Tag.HG;
+		tag = Tag.HG;
 	}
 
 }

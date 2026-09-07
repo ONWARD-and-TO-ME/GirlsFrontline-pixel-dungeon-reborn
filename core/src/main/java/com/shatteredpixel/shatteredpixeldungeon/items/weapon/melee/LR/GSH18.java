@@ -43,11 +43,7 @@ public class GSH18 extends LongRange {
 		RCH = 2; // 默认射程2格
         defaultAction = AC_SWITCH_MODE;
         dmgBaseMul = 4;
-	}
-
-	@Override
-	public boolean hasTag( KindOfWeapon.Tag tag ) {
-		return tag == KindOfWeapon.Tag.HG;
+		tag = Tag.HG;
 	}
 
 	@Override

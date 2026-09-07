@@ -36,11 +36,7 @@ public class Welrod extends SurpriseAttack {
 		tier = 1;
 		damageMin = 0.85F;
 		bones = false;
-	}
-
-	@Override
-	public boolean hasTag( KindOfWeapon.Tag tag ) {
-		return tag == KindOfWeapon.Tag.HG;
+		tag = Tag.HG;
 	}
 
 }
