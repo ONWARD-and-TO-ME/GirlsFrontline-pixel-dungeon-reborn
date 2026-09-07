@@ -438,12 +438,6 @@ public class GameScene extends PixelScene {
 		action.camera = uiCamera;
 		add( action );
 
-		//天狼星心脏独立指示器：常驻于换枪按钮左侧
-		siriusAction = new ActionIndicator();
-		siriusAction.setSiriusSlot( true );
-		siriusAction.camera = uiCamera;
-		add( siriusAction );
-
 		resume = new ResumeIndicator();
 		resume.camera = uiCamera;
 		add( resume );

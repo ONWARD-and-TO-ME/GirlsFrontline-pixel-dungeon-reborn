@@ -21,68 +21,35 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.utils.Color;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.NinePatch;
 
 import java.util.ArrayList;
 
 public class ActionIndicator extends Tag {
 
 	//默认黄色 / 换枪按钮粉色（与星之护盾光环同色 0xFF99CC）
-	private static final int COLOR_DEFAULT = 0xFFFF4C;
-	private static final int COLOR_GUNSWAP = 0xFF99CC;
-
+	private static final int COLOR_DEFAULT = Color.YELLOW;
     Image icon;
-
-	//主指示器槽位（Combo / Momentum / 换枪 GunSwap 等共用，长按轮换）
+	int bgColor = COLOR_DEFAULT;
 	private static Action action;
 	private static final ArrayList<Action> actions = new ArrayList<>();
 	public static ActionIndicator instance;
 
-	//天狼星心脏专属独立指示器槽位，避免与换枪按钮占位冲突
-	private static Action siriusAction;
-	private static final ArrayList<Action> siriusActions = new ArrayList<>();
-	private static ActionIndicator siriusInstance;
-
-	//当前实例是否为天狼星心脏槽位
-	private boolean siriusSlot = false;
-
 	public ActionIndicator() {
-		super( 0xFFFF4C );
+		super( COLOR_DEFAULT );
 
-		//仅首个（主）指示器占用 instance，避免天狼星心脏实例覆盖主指示器引用
-		if (instance == null) {
-			instance = this;
-		}
-
+		instance = this;
 		setSize( SIZE, SIZE );
 		visible = false;
 	}
-
-	//标记当前实例为天狼星心脏专用槽位
-	public void setSiriusSlot( boolean v ){
-		this.siriusSlot = v;
-		if (v) {
-			siriusInstance = this;
-		}
-	}
-
-	private Action curAction(){
-		return siriusSlot ? siriusAction : action;
-	}
-	private ArrayList<Action> curActions(){
-		return siriusSlot ? siriusActions : actions;
-	}
-	private void setCurAction( Action a ){
-		if (siriusSlot) siriusAction = a;
-		else            action = a;
-	}
-
 	@Override
 	public GameAction keyAction() {
 		return SPDAction.TAG_ACTION;
@@ -91,21 +58,48 @@ public class ActionIndicator extends Tag {
 	@Override
 	public void destroy() {
 		super.destroy();
-		if (siriusSlot) {
-			siriusInstance = null;
-		} else if (instance == this) {
-			instance = null;
-		}
+		instance = null;
 	}
-	
+	protected NinePatch otherBG;
+	@Override
+	protected void createChildren() {
+		otherBG = Chrome.get( Chrome.Type.TAG );
+		otherBG.hardlight( Color.DARK_PURPLE );
+		add(otherBG);
+		super.createChildren();
+
+	}
+
 	@Override
 	protected synchronized void layout() {
 		super.layout();
-		
+		otherBG.x = bg.x;
+		otherBG.y = bg.y;
+		otherBG.size( width, height );
+		otherBG.visible = actions.size() > 1;
+		if (otherBG.visible){
+			if (!flipped) {
+				bg.x -= 3;
+				hotArea.x -= 3;
+			}
+			else {
+				bg.x += 3;
+				hotArea.x += 3;
+			}
+			bg.y -= 3;
+			hotArea.y -= 3;
+			hotArea.height += 3;
+			hotArea.width += 3;
+		}
+		setColor(bgColor);
 		if (icon != null){
-			if (!flipped)   icon.x = x + (SIZE - icon.width()) / 2f + 1;
-			else            icon.x = x + width - (SIZE + icon.width()) / 2f - 1;
-			icon.y = y + (height - icon.height()) / 2f;
+			if (!flipped) {
+				icon.x = bg.x + (SIZE - icon.width()) / 2f + 1;
+			}
+			else {
+				icon.x = bg.x + width - (SIZE + icon.width()) / 2f - 1;
+			}
+			icon.y = bg.y + (height - icon.height()) / 2f;
 			PixelScene.align(icon);
 			if (!members.contains(icon))
 				add(icon);
@@ -124,13 +118,12 @@ public class ActionIndicator extends Tag {
 			if (icon != null) icon.alpha(1f);
 		}
 
-		Action cur = curAction();
-		if (!visible && cur != null){
+		if (!visible && action != null){
 			visible = true;
-			updateIconForThis();
+			updateIcon();
 			flash();
 		} else {
-			visible = cur != null;
+			visible = action != null;
 		}
 		
 		if (needsLayout){
@@ -141,122 +134,75 @@ public class ActionIndicator extends Tag {
 
 	@Override
 	protected void onClick() {
-		Action cur = curAction();
-		if (cur != null && Dungeon.hero.ready) {
-			cur.doAction();
-		}
+		if (action != null && Dungeon.hero.ready)
+			action.doAction();
 	}
 	@Override
 	public boolean onLongClick(){
-		ArrayList<Action> curList = curActions();
-		if (curList.size() <= 1)
+		if (actions.size() <= 1)
 			return false;
 		else{
-			Action cur = curAction();
-			if (cur == null){
-				setCurAction( curList.get(0) );
+			if (action == null){
+				setAction( actions.get(0) );
 				return false;
 			}
-			int index = curList.indexOf(cur);
-			if (index == curList.size() - 1)
+			int index = actions.indexOf(action);
+			if (index == actions.size() - 1)
 				index = 0;
 			else
 				index++;
-			setCurAction( curList.get(index) );
+			setAction( actions.get(index) );
 			return true;
 		}
 	}
 	@Override
 	protected String hoverText() {
-		Action cur = curAction();
-		String text = (cur == null ? null : cur.actionName());
+		String text = (action == null ? null : action.actionName());
 		if (text != null){
 			return Messages.titleCase(text);
 		} else {
 			return null;
 		}
 	}
-
-	//更新当前实例自己的图标
-	private void updateIconForThis(){
-		synchronized (this) {
-			if (icon != null) {
-				icon.killAndErase();
-				icon = null;
-			}
-			Action cur = curAction();
-			if (cur != null) {
-				icon = cur.actionIcon();
-				needsLayout = true;
-			}
-		}
-	}
-
-	// ===== 主指示器槽位静态 API（保持原有行为，供 Combo/Momentum/GunSwap 等使用） =====
-
 	public static void setAction(Action action){
 		ActionIndicator.action = action;
 		if (!actions.contains(action))
 			actions.add(action);
-		//换枪按钮用粉色（与星之护盾同色），其余技能恢复默认黄色
-		if (instance != null) {
-			instance.setColor( action instanceof GunSwap ? COLOR_GUNSWAP : COLOR_DEFAULT );
-		}
 		updateIcon();
 	}
 	public static void clearAction(Action action){
-		if (checkAction(action))
-			ActionIndicator.action = null;
-        actions.remove(action);
-		//清空后恢复默认黄色
-		if (instance != null && ActionIndicator.action == null) {
-			instance.setColor( COLOR_DEFAULT );
+		actions.remove(action);
+		if (checkAction(action)) {
+			if (actions.isEmpty())
+				ActionIndicator.action = null;
+			else
+				ActionIndicator.action = actions.get(0);
 		}
+		updateIcon();
 	}
 	public static boolean checkAction(Action action){
 		return ActionIndicator.action == action;
 	}
-	//指示器当前是否空闲（未被任何动作占用）
-	public static boolean actionIsFree(){
-		return action == null;
-	}
 	public static void clearAll(){
 		action = null;
 		actions.clear();
+		updateIcon();
 	}
 	public static void updateIcon(){
 		if (instance != null){
-			instance.updateIconForThis();
+			synchronized (instance) {
+				if (instance.icon != null) {
+					instance.icon.killAndErase();
+					instance.icon = null;
+				}
+				if (action != null) {
+					instance.icon = action.actionIcon();
+					instance.bgColor = action.bgColor();
+					instance.needsLayout = true;
+				}
+			}
 		}
 	}
-
-	// ===== 天狼星心脏专属槽位静态 API =====
-
-	public static void setSiriusAction(Action a){
-		siriusAction = a;
-		if (!siriusActions.contains(a))
-			siriusActions.add(a);
-		if (siriusInstance != null) {
-			siriusInstance.updateIconForThis();
-		}
-	}
-	public static void clearSiriusAction(Action a){
-		if (checkSiriusAction(a))
-			siriusAction = null;
-		siriusActions.remove(a);
-	}
-	public static boolean checkSiriusAction(Action a){
-		return siriusAction == a;
-	}
-	public static boolean siriusActionIsFree(){
-		return siriusAction == null;
-	}
-	public static void updateSiriusIcon(){
-		if (siriusInstance != null) {
-			siriusInstance.updateIconForThis();
-		}
-	}
-
 	public interface Action{
 
 		String actionName();
@@ -264,6 +210,9 @@ public class ActionIndicator extends Tag {
 		Image actionIcon();
 
 		void doAction();
+		default int bgColor(){
+			return COLOR_DEFAULT;
+		}
 
 	}
 

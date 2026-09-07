@@ -65,7 +65,7 @@ public class GunSwap extends Buff implements ActionIndicator.Action {
 			if (ActionIndicator.checkAction(this)) {
 				ActionIndicator.clearAction(this);
 			}
-		} else if (!ActionIndicator.checkAction(this) && ActionIndicator.actionIsFree()) {
+		} else if (!ActionIndicator.checkAction(this)) {
 			//仅在指示器空闲时占用，避免与天狼星心脏等其他动作互抢
 			ActionIndicator.setAction(this);
 		}
@@ -76,7 +76,7 @@ public class GunSwap extends Buff implements ActionIndicator.Action {
 
 	//装备/卸下副手后由 KindOfWeapon 调用，尽快刷出换枪按钮
 	public void refreshIndicator() {
-		if (canSwap() && !ActionIndicator.checkAction(this) && ActionIndicator.actionIsFree()) {
+		if (canSwap() && !ActionIndicator.checkAction(this)) {
 			ActionIndicator.setAction(this);
 		}
 	}
@@ -133,5 +133,9 @@ public class GunSwap extends Buff implements ActionIndicator.Action {
 		ActionIndicator.setAction(this); //重建图标（主手已变化）
 		Item.updateQuickslot();
 		AttackIndicator.updateState();
+	}
+	@Override
+	public int bgColor(){
+		return 0xFF99CC;
 	}
 }

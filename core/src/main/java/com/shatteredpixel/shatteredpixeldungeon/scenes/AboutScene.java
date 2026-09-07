@@ -310,16 +310,18 @@ public class AboutScene extends PixelScene {
         ScrollPane list = new ScrollPane(content){
             @Override
             public void onClick(float x, float y) {
-                if (x>=onw.left()&&x<=onw.right()&&y>=onw.top()&&y<= onw.bottom()) {
-                    Game.unlockClickTime++;
-//                    if (Game.unlockClickTime==5)
-//                        SeedFinder.SeedFinding = true; else
-                    if (Game.unlockClickTime==10)
-                        Game.isDebug = true;
-                    else if (Game.unlockClickTime==100)
-                        Badges.unlockForPlay();
-                    else if (Game.unlockClickTime==1000)
-                        Badges.validateHappyEnd();
+                if (x >= onw.left()
+						&& x <= onw.right()
+						&& y >= onw.top()
+						&& y <= onw.bottom()) {
+					switch (++Game.unlockClickTime) {
+						case 100:
+							Badges.validateHappyEnd();
+						case 50:
+							Badges.unlockForPlay();
+						case 10:
+							Game.isDebug = true;
+					}
                 }
             }
         };

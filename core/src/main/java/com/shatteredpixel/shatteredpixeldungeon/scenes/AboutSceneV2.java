@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.utils.Color;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
@@ -61,12 +62,12 @@ public class AboutSceneV2 extends PixelScene {
 	//图标传 null 则不引用贴图，仅预留头像占位
 	//人员变动时只需增删这里的条目，排版会自动换行
 	private static final Object[][] TEAM_MAIN = {
-			{"程 序 编 码", 0x008AC1, Icons.ONWARD, "tome"},
-			{"贴 图 美 术", 0xCF3227, Icons.CHOCOSUKI, "choco"},
+			{"程 序 编 码", -1, Icons.ONWARD, "to me", true},
+			{"贴 图 美 术", 0xCF3227, Icons.CHOCOSUKI, "choco", false},
 	};
 	//协力人员名单暂未确定，先保留占位条目，后续编辑此处即可
 	private static final Object[][] TEAM_HELP = {
-			{"协力", 0xB9F0FD, null, "待编辑"},
+			{"协力", 0xB9F0FD, null, "待编辑", false},
 	};
 
 	//项目开源仓库地址（点击可跳转）
@@ -215,14 +216,18 @@ public class AboutSceneV2 extends PixelScene {
 			@Override
 			public void onClick(float x, float y) {
 				//彩蛋：连点徽标解锁（与旧版致谢界面逻辑一致）
-				if (x >= logo.x && x <= logo.x + logo.width() && y >= logo.y && y <= logo.y + logo.height()) {
-					Game.unlockClickTime++;
-					if (Game.unlockClickTime == 10)
-						Game.isDebug = true;
-					else if (Game.unlockClickTime == 100)
-						Badges.unlockForPlay();
-					else if (Game.unlockClickTime == 1000)
-						Badges.validateHappyEnd();
+				if (x >= logo.x
+						&& x <= logo.x + logo.width()
+						&& y >= logo.y
+						&& y <= logo.y + logo.height()) {
+					switch (++Game.unlockClickTime) {
+						case 100:
+							Badges.validateHappyEnd();
+						case 50:
+							Badges.unlockForPlay();
+						case 10:
+							Game.isDebug = true;
+					}
 				}
 			}
 		};
@@ -327,6 +332,8 @@ public class AboutSceneV2 extends PixelScene {
 		int w = Camera.main.width;
 
 		int color = (Integer) members[0][1];
+		if (color == -1)
+			color = Color.random();
 
 		RenderedTextBlock header = PixelScene.renderTextBlock(title, 8);
 		header.hardlight(color);
@@ -347,7 +354,7 @@ public class AboutSceneV2 extends PixelScene {
 			for (int c = 0; c < inRow; c++, i++) {
 				Object[] m = members[i];
 				MemberCard card = new MemberCard(
-						(String) m[0], (Integer) m[1], (Icons) m[2], (String) m[3]);
+						(String) m[0], (Integer) m[1], (Icons) m[2], (String) m[3], (boolean) m[4]);
 				card.setSize(CARD_W, 0);
 				card.setPos(startX + c * (CARD_W + CARD_GAP), y);
 				content.add(card);
@@ -366,10 +373,12 @@ public class AboutSceneV2 extends PixelScene {
 		private final RenderedTextBlock name;
 		private final Flare flare;
 
-		MemberCard(String roleText, int color, Icons icon, String nameText) {
+		MemberCard(String roleText, int color, Icons icon, String nameText, boolean flare_change) {
 			super();
 
 			role = PixelScene.renderTextBlock(roleText, 6);
+			if (color == -1)
+				color = Color.random();
 			role.hardlight(color);
 			add(role);
 
@@ -378,7 +387,7 @@ public class AboutSceneV2 extends PixelScene {
 				add(avatar);
 
 				//show() 会自动把光晕挂到 avatar 的 parent 上，需在 add(avatar) 之后调用
-				flare = new Flare(7, 24).color(color, true).show(avatar, 0);
+				flare = new Flare(7, 24).color(color, true).show(avatar, 0).change(flare_change);
 				flare.angularSpeed = 20;
 			} else {
 				flare = null;

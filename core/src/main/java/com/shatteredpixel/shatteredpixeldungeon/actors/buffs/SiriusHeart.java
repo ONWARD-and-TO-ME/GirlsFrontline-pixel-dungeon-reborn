@@ -114,7 +114,7 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
         
         // 更新UI
         BuffIndicator.refreshHero();
-        ActionIndicator.setSiriusAction(this);
+        ActionIndicator.setAction(this);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
                 cooldown = 0;
                 // 检查是否可以显示技能按钮
                 if (canUse()) {
-                    ActionIndicator.setSiriusAction(this);
+                    ActionIndicator.setAction(this);
                 }
                 BuffIndicator.refreshHero();
             }
@@ -135,10 +135,10 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
         // 检查是否需要显示/隐藏技能按钮
         Hero hero = (Hero) target;
         if (hero != null) {
-            if (canUse() && !ActionIndicator.checkSiriusAction(this)) {
-                ActionIndicator.setSiriusAction(this);
-            } else if (!canUse() && ActionIndicator.checkSiriusAction(this)) {
-				ActionIndicator.clearSiriusAction(this);
+            if (canUse() && !ActionIndicator.checkAction(this)) {
+                ActionIndicator.setAction(this);
+            } else if (!canUse() && ActionIndicator.checkAction(this)) {
+				ActionIndicator.clearAction(this);
             }
         }
         
@@ -149,7 +149,7 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
     @Override
     public void detach() {
         super.detach();
-        ActionIndicator.clearSiriusAction(this);
+        ActionIndicator.clearAction(this);
     }
 
     // 获取冷却时间的视觉显示
