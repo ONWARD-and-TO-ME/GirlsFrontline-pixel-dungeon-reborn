@@ -87,6 +87,21 @@ public interface CommonCard extends Card {
         public String title(){
             return FirstCard.Vector.cardName() + " " + CommonCard.super.title();
         }
+        @Override
+        public float chance( Hero hero ){
+            switch (this) {
+                case UKM_2000:
+                    return 0.05F;
+            }
+            return 0F;
+        }
+        @Override
+        public void onSelect(){
+            if (this == UKM_2000)
+                CardPoint.fireChance.pointUp(CardAffect.kiloTimes(
+                        (int) Math.floor(CardSelector.INSTANCE().upgradeTime() / 1000F),
+                                this));
+        }
     }
     enum VHS implements CommonCard{
         Ak5, EM_2, IDW, M82, MP_446, P7, PM1910, SAR_21, SPP_1, Thunder, Spitfire;
@@ -105,8 +120,17 @@ public interface CommonCard extends Card {
             switch (this) {
                 case PM1910:
                     return 0.4F * (hero.HT - hero.HP);
+                case SAR_21:
+                    return 0.08F;
             }
             return 0F;
+        }
+        @Override
+        public void onSelect(){
+            if (this == SAR_21)
+                CardPoint.VHS_Factor.pointUp(CardAffect.kiloTimes(
+                        (int) Math.floor(CardSelector.INSTANCE().upgradeTime() / 1000F),
+                                this));
         }
     }
     enum WA2000 implements CommonCard{
@@ -134,9 +158,13 @@ public interface CommonCard extends Card {
         @Override
         public void onSelect(){
             if (this == Super_SASS)
-                Card.CardPoint.AttackDamage_Add.pointUp(0.04F * (float) Math.floor(CardSelector.INSTANCE().upgradeTime() / 1000F));
+                CardPoint.AttackDamage_Add.pointUp(CardAffect.kiloTimes(
+                        (int) Math.floor(CardSelector.INSTANCE().upgradeTime() / 1000F),
+                                this));
             else if (this == FX_05)
-                Card.CardPoint.AttackDelay_Add.pointUp(0.04F * (float) Math.floor(CardSelector.INSTANCE().upgradeTime() / 1000F));
+                CardPoint.AttackDelay_Add.pointUp(CardAffect.kiloTimes(
+                        (int) Math.floor(CardSelector.INSTANCE().upgradeTime() / 1000F),
+                                this));
         }
         @Override
         public String extra(){
@@ -167,6 +195,9 @@ public interface CommonCard extends Card {
         @Override
         public float chance( Hero hero ){
             switch (this){
+                case FX_05:
+                case Super_SASS:
+                    return 0.04F;
                 case _9A91:
                     return 0.3F;
                 case AEK_999:

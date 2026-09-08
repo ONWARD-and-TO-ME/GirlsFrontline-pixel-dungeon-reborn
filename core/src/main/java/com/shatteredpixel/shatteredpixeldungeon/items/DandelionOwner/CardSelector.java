@@ -131,7 +131,7 @@ public class CardSelector extends Item {
     private void selectCards(){
         ArrayList<canScrollRedButton> buttons = new ArrayList<>();
         for (Card c : curCards)
-            buttons.add(new canScrollRedButton(c.getCard(), c.title()){
+            buttons.add(new canScrollRedButton(c.title()){
                 @Override
                 public void onClick(){
                     super.onClick();
@@ -187,7 +187,7 @@ public class CardSelector extends Item {
     }
     private void addCheckCardsBtn(ArrayList<? extends Card> list, ArrayList<canScrollRedButton> buttons){
         for (Card c : list)
-            buttons.add(new canScrollRedButton(c.getCard(), c.title()){
+            buttons.add(new canScrollRedButton(c.title()){
                 @Override
                 public void onClick(){
                     super.onClick();
@@ -266,8 +266,9 @@ public class CardSelector extends Item {
         }
         @Override
         public boolean act() {
-            LockedFloor lock = target.buff(LockedFloor.class);
-            if (coolDownLeft > 0 && (lock == null || lock.regenOn()))
+            LockedFloor locked = target.buff(LockedFloor.class);
+            boolean lock = locked != null && !locked.regenOn();
+            if (coolDownLeft > 0 && !lock)
                 coolDownLeft--;
             updateQuickslot();
             duration++;
@@ -277,9 +278,9 @@ public class CardSelector extends Item {
                     curCardNum = i;
             }
             if (duration % 500 == 0)
-                CardAffect.halfKilo();
+                CardAffect.halfKilo(lock);
             if (duration % 1000 == 0)
-                CardAffect.kiloTimes();
+                CardAffect.kiloTimes(lock);
             spend(TICK);
             return true;
         }

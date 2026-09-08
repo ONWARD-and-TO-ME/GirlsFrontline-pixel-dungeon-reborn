@@ -134,6 +134,21 @@ public interface RareCard extends Card {
             }
             return null;
         }
+        @Override
+        public void onSelect(){
+            if (this == MOSIN_NAGANT)
+                CardPoint.critChance.pointUp(CardAffect.kiloTimes(
+                        (int) Math.floor(CardSelector.INSTANCE().upgradeTime() / 1000F),
+                                this));
+        }
+        @Override
+        public float chance( Hero hero ){
+            switch (this) {
+                case MOSIN_NAGANT:
+                    return 0.02F;
+            }
+            return 0;
+        }
     }
     enum General_Liu implements RareCard{
         C_93, CZ75, M26_ASW, QBU_88, X95, Contender, COLT_SAA, STECHKIN, SAIGA;

@@ -87,6 +87,9 @@ public interface Card {
     String extraKey = ".extra";
     default String failText(){ return Messages.get(Card.class, "fail"); }
     Class<? extends Card> getCardClass();
+    default float chance() {
+        return chance(Dungeon.hero);
+    }
     default float chance( Hero hero ){
         return 0;
     }
@@ -95,20 +98,16 @@ public interface Card {
     }
     enum CardPoint{
         R93_HitPoint,
+        lock,
+        fireChance, VHS_Factor, critChance,
         AttackDamage_Add, AttackDelay_Add;
         private float point;
         private static final String CardPointBundle = "Card_Point_Bd";
         public void pointUp(){
             point++;
         }
-        public void pointDown(){
-            point--;
-        }
         public void pointUp( float p ){
             point += p;
-        }
-        public void pointDown( float p ){
-            point -= p;
         }
         public void pointClear(){
             point = 0;
@@ -134,19 +133,19 @@ public interface Card {
         }
     }
     default String damageFactor(){
-        return EnumString(this, extraKey, (int) (CardCalculator.everDamageFactor_Add(true) * 100));
+        return EnumString(this, extraKey, Math.round(CardCalculator.everDamageFactor_Add(true) * 100));
     }
     default String delayFactor(){
-        return EnumString(this, extraKey, (int) (CardCalculator.everDelayFactor_Add(true) * 100));
+        return EnumString(this, extraKey, Math.round(CardCalculator.everDelayFactor_Add(true) * 100));
     }
     default String critFactor(){
-        return EnumString(this, extraKey, (int) (CardCalculator.critFactor() * 100));
+        return EnumString(this, extraKey, Math.round(CardCalculator.critFactor() * 100));
     }
     default String crit(){
-        return EnumString(this, extraKey, (int) (CardCalculator.crit() * 100));
+        return EnumString(this, extraKey, Math.round(CardCalculator.crit() * 100));
     }
     default String normalChance(){
-        return EnumString(this, extraKey, Math.round(chance(hero()) * 100));
+        return EnumString(this, extraKey, Math.round(chance() * 100));
     }
     static int shield( Hero hero ){
         int shield = 0;

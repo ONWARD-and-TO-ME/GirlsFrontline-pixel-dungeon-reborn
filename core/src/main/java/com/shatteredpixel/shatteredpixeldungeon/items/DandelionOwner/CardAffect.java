@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -274,7 +275,7 @@ public class CardAffect {
                     }
         }
     }
-    public static void halfKilo(){
+    public static void halfKilo( boolean lock ){
         if (hasCard(RareCard.General_Liu.QBU_88)){
             for (Mob m : Dungeon.level.mobs)
                 if (m instanceof Puppet){
@@ -283,17 +284,56 @@ public class CardAffect {
                         Buff.affect(m, HS2000_Shield.class).incShield(m.HT - m.HP);
                 }
         }
+        if (!lock)
+            Card.CardPoint.lock.pointClear();
     }
-    public static void kiloTimes(){
-        if (hasCard(CommonCard.UNIVERSAL.FX_05))
-            Card.CardPoint.AttackDelay_Add.pointUp(0.04F);
-        if (hasCard(CommonCard.UNIVERSAL.Super_SASS))
-            Card.CardPoint.AttackDamage_Add.pointUp(0.04F);
+    public static void kiloTimes( boolean lock ){
+        if (lock) {
+            if (Random.Int((int) GameMath.gate(0, Card.CardPoint.lock.point(), 10)) != 0)
+                return;
+            Card.CardPoint.lock.pointUp();
+        }
+        else
+            Card.CardPoint.lock.pointClear();
+        Card card;
+        if (hasCard((card = CommonCard.Vector.UKM_2000)))
+            Card.CardPoint.fireChance.pointUp(card.chance());
+        if (hasCard((card = CommonCard.VHS.SAR_21)))
+            Card.CardPoint.VHS_Factor.pointUp(card.chance());
+        if (hasCard((card = RareCard.WA2000.MOSIN_NAGANT)))
+            Card.CardPoint.critChance.pointUp(card.chance());
+        if (hasCard((card = CommonCard.UNIVERSAL.FX_05)))
+            Card.CardPoint.AttackDelay_Add.pointUp(card.chance());
+        if (hasCard((card = CommonCard.UNIVERSAL.Super_SASS)))
+            Card.CardPoint.AttackDamage_Add.pointUp(card.chance());
+    }
+    public static float kiloTimes( int times, Card card ) {
+        float baseChance = card.chance();
+        float values = 0;
+        int t = 0;
+        for (int i = 0; i < times; i++) {
+            if (Random.Int((int) GameMath.gate(0, t, 10)) == 0)
+                values += baseChance;
+            t++;
+        }
+        return values;
+    }
+    public static void kiloTimesVersionUpdate() {
+        Card card;
+        if (hasCard((card = CommonCard.Vector.UKM_2000)))
+            card.onSelect();
+        if (hasCard((card = CommonCard.VHS.SAR_21)))
+            card.onSelect();
+        if (hasCard((card = RareCard.WA2000.MOSIN_NAGANT)))
+            card.onSelect();
+        if (hasCard((card = CommonCard.UNIVERSAL.FX_05)))
+            card.onSelect();
+        if (hasCard((card = CommonCard.UNIVERSAL.Super_SASS)))
+            card.onSelect();
     }
     private static boolean hasCard( Card card ){
         return CardSelector.INSTANCE().hasCard(card);
     }
-
     public static<T extends Buff> T affect( Char target, Class<T> buffClass ) {
         Buff.affect(target, Buff_Statistics.class);
         return Buff.affect(target, buffClass);

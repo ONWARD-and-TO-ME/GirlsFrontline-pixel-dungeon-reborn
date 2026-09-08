@@ -67,15 +67,15 @@ public class CardCalculator {
     public static float cardAttackProc_Mul( Hero hero, float damage, boolean isM4A1 ){
         float add = 0;
         if (hasCard(CommonCard.HS2000.Sten_II))
-            add += dmgIncrease(damage, CommonCard.HS2000.Sten_II.chance(hero), isM4A1);
+            add += dmgIncrease(damage, CommonCard.HS2000.Sten_II.chance(), isM4A1);
         if (hasCard(CommonCard.UNIVERSAL.AEK_999))
-            add += dmgIncrease(damage, CommonCard.UNIVERSAL.AEK_999.chance(hero), isM4A1);
+            add += dmgIncrease(damage, CommonCard.UNIVERSAL.AEK_999.chance(), isM4A1);
         if (hasCard(CommonCard.UNIVERSAL.K31) && hero.buff(IntensifySkill.Intensify.class) != null)
-            add += dmgIncrease(damage, CommonCard.UNIVERSAL.K31.chance(hero), isM4A1);
+            add += dmgIncrease(damage, CommonCard.UNIVERSAL.K31.chance(), isM4A1);
         if (hasCard(RareCard.HS2000.Type_64_Auto) && Card.shield(hero) > hero.HP)
-            add += dmgIncrease(damage, RareCard.HS2000.Type_64_Auto.chance(hero), isM4A1);
+            add += dmgIncrease(damage, RareCard.HS2000.Type_64_Auto.chance(), isM4A1);
         if (hasCard(RareCard.HS2000.AA_12))
-            add += dmgIncrease(damage, RareCard.HS2000.AA_12.chance(hero), isM4A1);
+            add += dmgIncrease(damage, RareCard.HS2000.AA_12.chance(), isM4A1);
 
         add += dmgIncrease(damage, everDamageFactor_Add(true), isM4A1);
 
@@ -187,8 +187,7 @@ public class CardCalculator {
                 chance += 0.2F;
             if (hasCard(RareCard.Vector.K2))
                 chance += 0.5F;
-            if (hasCard(CommonCard.Vector.UKM_2000))
-                chance += (float) Math.floor(upgradeTimes() / 1000F) * 0.05F;
+            chance += Card.CardPoint.fireChance.point();
             return chance;
         }
         else
@@ -221,7 +220,7 @@ public class CardCalculator {
         if (hasCard(CommonCard.VHS.Ak5))
             add += 5;
         if (hasCard(CommonCard.VHS.PM1910))
-            add += Math.min(CommonCard.VHS.PM1910.chance(hero), CardCalculator.M4A1max(isM4A1 ? 2 : wep.mulByDelay(hero)));
+            add += Math.min(CommonCard.VHS.PM1910.chance(), CardCalculator.M4A1max(isM4A1 ? 2 : wep.mulByDelay(hero)));
         if (hasCard(CommonCard.VHS.Thunder))
             add += Math.min(enemy.HT * 0.02F, 15);
         if (hasCard(RareCard.VHS.TAC_50))
@@ -316,8 +315,7 @@ public class CardCalculator {
         float factor = 0.5F;
         if (hasCard(CommonCard.VHS.EM_2))
             factor += 0.5F;
-        if (hasCard(CommonCard.VHS.SAR_21))
-            factor += (float) Math.floor(upgradeTimes() / 1000F) * 0.08F;
+        factor += Card.CardPoint.VHS_Factor.point();
         return factor;
     }
     public static float crit(){
@@ -333,8 +331,7 @@ public class CardCalculator {
             rate += 0.6F;
         if (hasCard(RareCard.WA2000.PKP))
             rate += 0.5F;
-        if (hasCard(RareCard.WA2000.MOSIN_NAGANT))
-            rate += (float) Math.floor(upgradeTimes() / 1000F) * 0.02F;
+        rate += Card.CardPoint.critChance.point();
         return rate;
     }
     public static int critDamage( float baseDmg, boolean isM4A1 ){
@@ -378,8 +375,5 @@ public class CardCalculator {
     }
     private static boolean hasFailCard(Card card){
         return CardSelector.INSTANCE().failureCards.contains(card);
-    }
-    private static int upgradeTimes(){
-        return CardSelector.INSTANCE().upgradeTime();
     }
 }
