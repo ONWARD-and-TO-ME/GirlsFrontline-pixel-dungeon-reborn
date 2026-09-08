@@ -19,7 +19,7 @@ public abstract class  SurpriseAttack extends MeleeWeapon {
     public int damageRoll(Char owner) {
         if (owner instanceof Hero) {
             Hero hero = (Hero)owner;
-            Char enemy = hero.enemy();
+            Char enemy = hero.enemy;
             if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) {
                 int diff = max() - min();
                 int damage = augment.damageFactor(Random.NormalIntRange(

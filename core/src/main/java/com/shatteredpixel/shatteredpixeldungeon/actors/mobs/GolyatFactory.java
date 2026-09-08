@@ -358,7 +358,7 @@ public class GolyatFactory extends Mob {
 			spriteClass = FactoryGolyatSprite.class;
 			
 			//no loot or exp
-			maxLvl = -40;
+			maxLvl = -2;
 			
 			//20/25 health to start
 			HP = 20;

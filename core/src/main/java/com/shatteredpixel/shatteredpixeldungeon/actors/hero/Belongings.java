@@ -46,7 +46,7 @@ import java.util.Iterator;
 
 public class Belongings implements Iterable<Item> {
 
-	private Hero owner;
+	private final Hero owner;
 
 	public static class Backpack extends Bag {
 		public int capacity(){

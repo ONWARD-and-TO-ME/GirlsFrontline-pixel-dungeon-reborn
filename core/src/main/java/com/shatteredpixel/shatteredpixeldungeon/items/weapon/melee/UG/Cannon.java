@@ -24,16 +24,11 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Speed;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elphelt;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Game;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -82,7 +77,7 @@ public class Cannon extends UniversaleGun {
     public int damageRoll(Char owner) {
         if (owner instanceof Hero) {
             Hero hero = (Hero)owner;
-            Char enemy = hero.enemy();
+            Char enemy = hero.enemy;
             Buff.affect(hero, Light.class, 10);
             //Dungeon.Flag = true;
             if (enemy instanceof Mob){

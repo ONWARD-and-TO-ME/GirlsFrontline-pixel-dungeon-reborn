@@ -33,7 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
-public class ActHPtoGetFood extends CounterBuff implements ActionIndicator.Action {
+public class ActHPtoGetFood extends Buff implements ActionIndicator.Action {
 
     {
         revivePersists = true;

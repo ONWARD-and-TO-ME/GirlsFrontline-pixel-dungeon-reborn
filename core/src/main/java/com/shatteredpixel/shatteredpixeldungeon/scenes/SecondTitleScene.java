@@ -356,12 +356,6 @@ public class SecondTitleScene extends PixelScene {
 							WndCake.this.day = num;
 						GirlsFrontlinePixelDungeon.scene().addToFront(new WndCake(WndCake.this));
 					}
-
-					@Override
-					public void layout(){
-						super.layout();
-						hotArea.width = hotArea.height = 0;
-					}
 				};
 				buttons.add(cb);
 			}

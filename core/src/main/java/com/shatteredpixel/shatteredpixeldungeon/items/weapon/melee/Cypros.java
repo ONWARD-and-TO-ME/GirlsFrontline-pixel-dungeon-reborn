@@ -25,9 +25,11 @@ import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
@@ -38,19 +40,21 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.RabbitWeaponGenoise;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.ui.canScrollRedButton;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndWithCanScrollButton;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Cypros extends MeleeWeapon {
     {
-        mode = Mode.TRAVAILLER;
+        name = Messages.get(this, "name", (mode = Mode.TRAVAILLER).title());
         image = ItemSpriteSheet.TRAVAILLER;
         defaultAction = AC_ZAP;
         usesTargeting = true;
@@ -61,7 +65,6 @@ public class Cypros extends MeleeWeapon {
         tier= 2;
         ACC = 1.1f;
 
-        name = Messages.get(this, "name", mode.title());
     }
 
     public Wand wand;
@@ -84,9 +87,8 @@ public class Cypros extends MeleeWeapon {
         }
     }
 
-    private static Mode mode;
+    private Mode mode;
     public Mode getMode() { return mode; }
-
     public static final String AC_ZAP	= "ZAP";
     public static final String AC_SWITCH= "SWITCH";
     private static final float STAFF_SCALE_FACTOR = 0.75f;
@@ -166,16 +168,9 @@ public class Cypros extends MeleeWeapon {
     @Override
     public int damageRoll(Char owner) {
 
-        Char enemy;
-        if (owner instanceof Hero){
-            enemy = ((Hero) owner).enemy();
-        }
-        else if (owner instanceof Mob){
-            enemy = ((Mob) owner).enemy;
-        }
-        else {
-            enemy = null;
-        }
+        Char enemy = owner == null
+                ? null
+                : owner.enemy;
 
         if (owner != null && enemy != null) {
             switch (mode) {
@@ -277,34 +272,40 @@ public class Cypros extends MeleeWeapon {
     public void execute(Hero hero, String action) {
 
         super.execute(hero, action);
-
-        if (action.equals(AC_ZAP)){
+        if (action.equals(AC_ZAP))
             wand.execute(hero, AC_ZAP);
+        if (action.equals(AC_SWITCH))
+            wndSetMode(hero);
+    }
+    private static WndWithCanScrollButton INSTANCE = null;
+    private void wndSetMode( Hero hero ) {
+        ArrayList<Mode> modes = new ArrayList<>(Arrays.asList(Mode.values()));
+        GunSwap swap = hero.buff(GunSwap.class);
+        if (swap != null && swap.getEquipment() != null && !swap.getEquipment(KindOfWeapon.class).hasTag(Tag.HG)) {
+            modes.remove(Mode.TRAVAILLER);
+            modes.remove(Mode.CONFIRE);
+            //副手非HG且Cypros在主手，那就必定是HG模式，那就禁止其切换至非HG模式
         }
-        if (action.equals(AC_SWITCH)) {
-            WndOptions wndOptions = new WndOptions( Messages.get(Cypros.class, "options.title"),
-                                                    Messages.get(this, "options.message", mode.title()),
-                                                    Mode.TRAVAILLER.title(), Mode.CONFIRE.title(), Mode.MAGNUM.title()
-            ) {
+        ArrayList<canScrollRedButton> buttons = new ArrayList<>();
+        for (Mode m : modes) {
+            buttons.add(new canScrollRedButton(m.title()) {
                 @Override
-                protected void onSelect( int index ) {
-                    Mode newMode;
-                    switch (index) {
-                        case 0: default:
-                            newMode = Mode.TRAVAILLER;
-                            break;
-                        case 1:
-                            newMode = Mode.CONFIRE;
-                            break;
-                        case 2:
-                            newMode = Mode.MAGNUM;
-                            break;
+                public void onClick() {
+                    super.onClick();
+                    if (INSTANCE != null) {
+                        INSTANCE.hide();
+                        INSTANCE = null;
                     }
-                    setMode(newMode,true);
+                    setMode(m, true);
                 }
-            };
-            GameScene.show(wndOptions);
+            });
         }
+        INSTANCE = new WndWithCanScrollButton(
+                new ItemSprite(this),
+                Messages.get(Cypros.class, "options.title"),
+                Messages.get(this, "options.message", mode.title()),
+                buttons);
+        GirlsFrontlinePixelDungeon.scene().addToFront(INSTANCE);
     }
 
     @Override

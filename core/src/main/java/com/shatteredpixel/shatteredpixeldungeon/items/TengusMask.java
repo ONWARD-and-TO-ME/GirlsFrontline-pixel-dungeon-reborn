@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ActHPtoGetFood;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Preparation;
@@ -108,9 +109,13 @@ public class TengusMask extends Item {
 
         curUser.subClass = way;
 		Talent.initSubclassTalents(curUser);
-        if (way == HeroSubClass.ASSASSIN && curUser.invisible > 0) {
+        if (way == HeroSubClass.ASSASSIN && curUser.invisible > 0)
             Buff.affect(curUser, Preparation.class);
-        } else if (way == HeroSubClass.FUTURE_STAR) {
+		else if (way == HeroSubClass.GUN_MASTER)
+			//如果转职是枪械时，给予动作按钮
+			Buff.affect(curUser, ActHPtoGetFood.class);
+
+		else if (way == HeroSubClass.FUTURE_STAR) {
             // 当转职为未来之星时，自动附加天狼星心脏buff
             Buff.affect(curUser, SiriusHeart.class);
             // 副手换枪指示器

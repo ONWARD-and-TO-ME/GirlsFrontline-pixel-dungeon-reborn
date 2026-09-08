@@ -212,8 +212,6 @@ public class Hero extends Char {
 	private boolean damageInterrupt = true;
 	public HeroAction curAction = null;
 	public HeroAction lastAction = null;
-
-	private Char enemy;
 	
 	public boolean resting = false;
 	
@@ -1445,11 +1443,6 @@ public class Hero extends Char {
 
 		}
 	}
-
-	public Char enemy(){
-		return enemy;
-	}
-	
 	public void rest( boolean fullRest ) {
 		spendAndNext( TIME_TO_REST );
 		if (!fullRest) {
@@ -2196,7 +2189,6 @@ public class Hero extends Char {
 			}
 		}
 	}
-
 	@Override
 	public void onAttackComplete() {
 

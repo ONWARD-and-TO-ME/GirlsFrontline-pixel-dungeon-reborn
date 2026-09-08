@@ -42,7 +42,7 @@ public class SR3 extends UniversaleGun {
     public int damageRoll(Char owner) {
         if (owner instanceof Hero) {
             Hero hero = (Hero)owner;
-            Char enemy = hero.enemy();
+            Char enemy = hero.enemy;
             if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) {
                 //deals 75% toward max to max on surprise, instead of min to max.
                 int diff = max() - min();

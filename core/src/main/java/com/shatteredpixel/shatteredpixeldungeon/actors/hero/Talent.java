@@ -1236,7 +1236,7 @@ public enum Talent {
                     if (renamed.containsKey(talentName)) talentName = renamed.get(talentName);
                     if (!removed.contains(talentName)) {
                         try {
-                            Talent talent = Talent.valueOf(talentName);//mark
+                            Talent talent = Talent.valueOf(talentName);
                             if (tier.containsKey(talent)) {
                                 int point = Math.min(points, talent.maxPoints());
                                 if (restoreInRanking)

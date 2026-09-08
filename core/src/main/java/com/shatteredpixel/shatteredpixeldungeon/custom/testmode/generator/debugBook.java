@@ -199,11 +199,11 @@ public class debugBook extends TestItem {
         ArrayList<canScrollRedButton> buttons = new ArrayList<>();
         for (Mode e : Mode.values()){
             if (e != Mode.NONE)
-                buttons.add(new canScrollRedButton(e, e.modeName()){
+                buttons.add(new canScrollRedButton(e.modeName()){
                     @Override
                     public void onClick(){
                         super.onClick();
-                        modeChange((Mode) anEnum);
+                        modeChange(e);
                     }
                 });
         }
@@ -391,12 +391,6 @@ public class debugBook extends TestItem {
                 workingNum = num;
                 defaultAction = AC_APPLY;
                 updateQuickslot();
-            }
-
-            @Override
-            public void layout(){
-                super.layout();
-                hotArea.width = hotArea.height = 0;
             }
         });
     }

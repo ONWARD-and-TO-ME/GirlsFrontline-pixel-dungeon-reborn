@@ -29,10 +29,13 @@ import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
@@ -328,28 +331,10 @@ public class WndRanking extends WndTabbed {
 		
 		public ItemsTab() {
 			super();
-			
-			Belongings stuff = Dungeon.hero.belongings;
-
 			ArrayList<Item> items = new ArrayList<>();
-			if (stuff.weapon != null) {
-				items.add( stuff.weapon );
-			}
-			if (stuff.FirstArmor() != null) {
-				items.add( stuff.FirstArmor() );
-			}
-			if (stuff.SecondArmor() != null) {
-				items.add( stuff.SecondArmor() );
-			}
-			if (stuff.artifact != null) {
-				items.add( stuff.artifact );
-			}
-			if (stuff.misc != null) {
-				items.add( stuff.misc );
-			}
-			if (stuff.ring != null) {
-				items.add( stuff.ring );
-			}
+			for (Item item : Dungeon.hero.belongings)
+				if (item.isEquipped(Dungeon.hero))
+					items.add(item);
 			addEquipment(items);
 
 			pos = 0;
@@ -391,7 +376,33 @@ public class WndRanking extends WndTabbed {
 			pos += slotWidth + 1;
 
 		}
-		private void addEquipment( ArrayList<Item> items ) {
+		private void addEquipment( ArrayList<Item> list ) {
+			ArrayList<Item> items = new ArrayList<>();
+			while (!list.isEmpty()) {
+				for (Item item : list.toArray(new Item[0])) {
+					//强行限制顺序。
+					if (item instanceof KindOfWeapon) {
+						items.add(item);
+						list.remove(item);
+						break;
+					}
+					if (item instanceof Armor) {
+						items.add(item);
+						list.remove(item);
+						break;
+					}
+					if (item instanceof Artifact) {
+						items.add(item);
+						list.remove(item);
+						break;
+					}
+					if (item instanceof Ring) {
+						items.add(item);
+						list.remove(item);
+						break;
+					}
+				}
+			}
 			float size = 5F / Math.max(5, items.size());
 			float height = ItemButton.HEIGHT * size;
 			EquipmentItemButton.BtnSize = size;

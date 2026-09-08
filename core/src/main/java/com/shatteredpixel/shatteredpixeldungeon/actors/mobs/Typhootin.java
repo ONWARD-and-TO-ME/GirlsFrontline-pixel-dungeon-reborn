@@ -69,7 +69,7 @@ public class Typhootin extends Mob {
         if(bleeding && Dungeon.isChallenged(Challenges.STRONGER_BOSSES) && buff(Cooldown.class) == null){
             Mob army =Army();
             army.state = army.HUNTING;
-            army.maxLvl = -40;
+            army.maxLvl = -2;
             if(army instanceof Hydra){
                 army.HP = army.HT = 140;
             }
@@ -81,7 +81,7 @@ public class Typhootin extends Mob {
             if(Random.Int(4)==0){
                 Cyclops cyclops = new Cyclops();
                 cyclops.state = cyclops.HUNTING;
-                cyclops.maxLvl = -40;
+                cyclops.maxLvl = -2;
                 GameScene.add(cyclops);
                 int cyclopsrandomPosIndex = Random.Int(ArmyPos.length);
                 int cyclopsrandomPos = ArmyPos[cyclopsrandomPosIndex];
@@ -120,7 +120,7 @@ public class Typhootin extends Mob {
             EXP = 17;
             defenseSkill = 30;
             baseSpeed = 1f;
-            maxLvl = -40;
+            maxLvl = -2;
             properties.add(Property.ARMO);
         }
 

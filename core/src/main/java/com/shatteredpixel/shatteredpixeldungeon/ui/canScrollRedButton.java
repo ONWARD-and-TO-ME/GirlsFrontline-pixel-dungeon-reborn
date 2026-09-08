@@ -6,15 +6,9 @@ public class canScrollRedButton extends RedButton implements canScrollButton {
         super(label);
     }
     public canScrollRedButton(Enum<?> anEnum) {
-        super(anEnum.name());
-        this.anEnum = anEnum;
-    }
-    public canScrollRedButton(Enum<?> anEnum, String name) {
-        super(name);
-        this.anEnum = anEnum;
+        super(anEnum.toString());
     }
     public int num;
-    public Enum<?> anEnum;
     public canScrollRedButton(String title, int num) {
         super(title);
         this.num = num;

@@ -132,6 +132,7 @@ public abstract class Char extends Actor {
 	public boolean rooted		= false;
 	public boolean flying		= false;
 	public int invisible		= 0;
+	public Char enemy;
 
 	//these are relative to the hero
 	public enum Alignment{
@@ -320,7 +321,6 @@ public abstract class Char extends Actor {
 		return attack(enemy, Integer.MIN_VALUE, dmgMulti, dmgBonus, accMulti);
 	}
 	public boolean attack( Char enemy, int baseDmg, float dmgMulti, float dmgBonus, float accMulti ) {
-
 		if (enemy == null) return false;
 
 		boolean visibleFight = Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[enemy.pos];

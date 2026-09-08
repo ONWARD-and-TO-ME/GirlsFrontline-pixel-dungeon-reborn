@@ -596,7 +596,7 @@ public class YogDzewa extends Mob {
 			viewDistance = Light.DISTANCE;
 
 			EXP = 5;
-			maxLvl = -40;
+			maxLvl = -2;
 
 			properties.add(Property.DEMONIC);
 		}
@@ -622,12 +622,12 @@ public class YogDzewa extends Mob {
 	public static class YogRipper extends RipperDemon {}
 	public static class YogEye extends Eye {
 		{
-			maxLvl = -40;
+			maxLvl = -2;
 		}
 	}
 	public static class YogScorpio extends Scorpio {
 		{
-			maxLvl = -40;
+			maxLvl = -2;
 		}
 	}
 }

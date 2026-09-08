@@ -52,7 +52,7 @@ public class Lar extends UniversaleGun {
     public int damageRoll(Char owner) {
         if (owner instanceof Hero) { // 当持有者是英雄时
             Hero hero = (Hero)owner;
-            Char enemy = hero.enemy();
+            Char enemy = hero.enemy;
             if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) { // 当敌人是怪物且被突袭时
                 int diff = max() - min();
                 // 造成75%-100%的最大伤害区间
