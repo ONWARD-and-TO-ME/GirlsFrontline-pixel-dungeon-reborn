@@ -24,7 +24,6 @@ import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
@@ -40,15 +39,12 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.FncSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
 
 // 在导入部分添加CounterBuff类的导入
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Holidays;
-
-import java.io.IOException;
 
 public class RatKing extends NPC {
 
@@ -113,7 +109,11 @@ public class RatKing extends NPC {
     @Override
     protected void onAdd() {
         super.onAdd();
-        if (Dungeon.depth != 5){
+        if (Dungeon.depth == 0){
+            //0层营地FNC：使用独立占位文本
+            yell(Messages.get(this, "zero_spawn"));
+        }
+        else if (Dungeon.depth != 5){
             yell(Messages.get(this, "confused"));
         }
     }
@@ -162,6 +162,16 @@ public class RatKing extends NPC {
             notice();
             yell( Messages.get(this, "not_sleeping") );
             state = WANDERING;
+        }
+        else if (Dungeon.depth == 0) {
+            //0层营地FNC：不直接开启新存档，仅指引玩家前往右侧消毒通道
+            if (hintCount < 3) {
+                yell(Messages.get(this, "zero_" + hintCount));
+                Buff.count(hero, HintTracker.class, 1);
+            }
+            else {
+                yellNormal(Messages.get(this, "zero_guide"));
+            }
         }
         else if (crown != null){
             if (hero.belongings.armor() == null) {
@@ -227,10 +237,7 @@ public class RatKing extends NPC {
             //重置点击次数以获取特色文案
         }
         else if (hintCount < 3) {
-            if (Dungeon.depth==0){
-                yell(Messages.get(this,"zero_"+hintCount));
-            }
-            else if(hasGivenSugar){
+            if(hasGivenSugar){
                 // FNC获得礼物后的诚挚祝福
                 yellGood(Messages.get(this,"wish_"+hintCount));
 //                if (hintCount == 0) {
@@ -253,22 +260,6 @@ public class RatKing extends NPC {
             }
                 // 增加提示计数器
                 Buff.count(hero, HintTracker.class, 1);
-        }
-        else if (Dungeon.depth == 0){
-
-            if(GamesInProgress.firstEmpty() == -1)
-                yellNormal(Messages.get(WndStartGame.class, "clear"));
-            else {
-                try {
-                    Dungeon.saveAll();
-                } catch (IOException ignored) {}
-                Game.runOnRenderThread(new Callback() {
-                    @Override
-                    public void call() {
-                        GameScene.show(new WndStartGame(GamesInProgress.firstEmpty(), true, WndStartGame.GameMode.CHRISTMAS));
-                    }
-                });
-            }
         }
         else if (hero.armorAbility instanceof Ratmogrify) {
             yellGood( Messages.get(this, "crown_after") );

@@ -52,7 +52,7 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
     private float cooldown = 0f;
     private boolean boosted = false;
 
-    // 根据天赋等级返回冷却时间：+1=180 / +2=120 / +3=6（测试用，后续手动改为60）
+    // 根据天赋等级返回冷却时间：+1=180 / +2=120 / +3=60
     public static float cooldownForLevel(int talentLevel) {
         switch (talentLevel) {
             case 2: return 120f;
@@ -225,7 +225,7 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
         // 显示伤害信息
         GLog.p(Messages.get(SiriusHeart.class, "damage", bonusDamage));
         
-        // 设置冷却时间（根据天赋等级：+1=180 / +2=120 / +3=6）
+        // 设置冷却时间（根据天赋等级：+1=180 / +2=120 / +3=60）
         SiriusHeart siriusHeart = hero.buff(SiriusHeart.class);
         if (siriusHeart != null) {
             siriusHeart.cooldown = cooldownForLevel(hero.pointsInTalent(Talent.GSH18_SIRIUS_HEART));
@@ -265,7 +265,7 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
             int percent = (talentLevel == 1 ? 20 : (talentLevel == 2 ? 40 : 100));
             int expectedDmg = Math.max(1, (int) Math.ceil(shieldValue * percent / 100f));
 
-            // 技能描述（冷却时间根据天赋等级：+1=180 / +2=120 / +3=6）
+            // 技能描述（冷却时间根据天赋等级：+1=180 / +2=120 / +3=60）
             String desc = Messages.get(this, "desc",
                     shieldValue, percent, expectedDmg, (int) cooldownForLevel(talentLevel)
             );

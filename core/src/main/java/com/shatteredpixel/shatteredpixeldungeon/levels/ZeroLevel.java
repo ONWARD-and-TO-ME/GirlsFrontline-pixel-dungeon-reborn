@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DEL;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.levels.ZeroLevelSub;
@@ -10,6 +11,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.triggers.Teleporter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.triggers.Trigger;
 import com.shatteredpixel.shatteredpixeldungeon.minigames.BlackJack;
 import com.shatteredpixel.shatteredpixeldungeon.minigames.WndBlackJack;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndSelectGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
@@ -17,7 +20,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.SnakeScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.MatchThreeScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.ChessScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.SavesScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.BadgesScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.RankingsScene;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
@@ -219,7 +221,7 @@ public class ZeroLevel extends Level {
         }
     }
 
-    // 消毒通道 - 用于展示存档页面
+    // 消毒通道 - 相邻点击后直接弹出存档界面窗口（背景保持为0层游戏画面，不切换场景）
     public static class DecontaminationCorridor extends WindowTrigger {
         @Override
         public boolean canInteract(Char ch) {
@@ -227,43 +229,15 @@ public class ZeroLevel extends Level {
             return Dungeon.hero == ch && Dungeon.level.adjacent(pos, ch.pos);
         }
 
-        public class WndDecontaminationCorridor extends Window {
-            private static final int WIDTH = 120;
-            private static final int BTN_HEIGHT = 20;
-            private static final int GAP = 2;
-
-            private int pos;
-
-            public WndDecontaminationCorridor() {
-                //settings
-                RedButton curBtn;
-
-                addButton(curBtn = new RedButton("进入") {/*mark*/
-                    @Override
-                    protected void onClick() {
-                        try {
-                            Dungeon.saveAll();
-                        } catch (IOException e) {
-                            GirlsFrontlinePixelDungeon.reportException(e);
-                        }
-                        Game.switchScene(SavesScene.class);
-                    }
-                });
-                curBtn.icon(Icons.get(Icons.DISPLAY));
-
-                resize(WIDTH, pos);
-            }
-
-            private void addButton(RedButton btn) {
-                add(btn);
-                btn.setRect(0, pos > 0 ? pos += GAP : 0, WIDTH, BTN_HEIGHT);
-                pos += BTN_HEIGHT;
-            }
-        }
-
         @Override
         protected Window getWindow() {
-            return new WndDecontaminationCorridor();
+            //与SavesScene内容一致：无存档时弹新建角色窗口，有存档时弹存档选择窗口
+            //在游戏内直接弹出，关闭窗口即返回0层
+            if (GamesInProgress.checkAll().isEmpty()){
+                return new WndStartGame(1, false, WndStartGame.GameMode.NONE);
+            } else {
+                return new WndSelectGameInProgress();
+            }
         }
     }
 
@@ -363,7 +337,7 @@ public class ZeroLevel extends Level {
         placeTrigger(new ComputerTriger().create(computerPos4));
         placeTrigger(new ComputerTriger().create(computerPos5));
 
-        // 放置消毒通道触发器
+        // 放置消毒通道触发器（相邻点击直接弹出存档界面窗口，背景为0层画面）
         placeTrigger(new DecontaminationCorridor().create(decontaminationCorridorPos));
 
         // 放置成就按钮触发器
