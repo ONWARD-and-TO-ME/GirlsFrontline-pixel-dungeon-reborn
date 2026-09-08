@@ -82,13 +82,16 @@ public class Hunger extends Buff implements Hero.Doom {
 
 			if (isStarving()) {
 
-				partialDamage += STEP * target.HT/1000f;
+				//战地配给生效期间，极度饥饿不会造成生命值损失
+				if (target.buff(FieldRation.class) == null) {
+					partialDamage += STEP * target.HT/1000f;
 
-				if (partialDamage > 1){
-					target.damage( (int)partialDamage, this);
-					partialDamage -= (int)partialDamage;
+					if (partialDamage > 1){
+						target.damage( (int)partialDamage, this);
+						partialDamage -= (int)partialDamage;
+					}
 				}
-				
+
 			} else {
 
 				float newLevel = level + STEP;

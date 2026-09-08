@@ -828,24 +828,31 @@ public class ItemSpriteSheet {
 	public static final  int NIGHTVISIONHELMET =GUN561_NUKE+8;
 	public static final  int NIGHTVISIONHELMET2=GUN561_NUKE+9;
 	public static final  int UMP9              =GUN561_NUKE+11;
+	public static final  int M320              =GUN561_NUKE+13;
+	public static final  int HK269             =GUN561_NUKE+15;
 		
 	static {
-		assignItemRect(GUN561,            14, 16);
-		assignItemRect(GUN562,            16, 15);
-		assignItemRect(GUN562ACCESSORIES, 16, 15);
-		assignItemRect(GSH18,             16, 16);
-		assignItemRect(GUN64,             12, 16);
-		assignItemRect(NIGHTVISIONHELMET, 16, 16);
+		assignItemRect(GUN561,             14, 16);
+		assignItemRect(GUN562,             16, 15);
+		assignItemRect(GUN562ACCESSORIES,  16, 15);
+		assignItemRect(GSH18,              16, 16);
+		assignItemRect(GUN64,              12, 16);
+		assignItemRect(NIGHTVISIONHELMET,  16, 16);
 		assignItemRect(NIGHTVISIONHELMET2, 16, 16);
-		assignItemRect(UMP9,              16, 16);
+		assignItemRect(UMP9,               16, 16);
+		assignItemRect(M320,               16, 16);
+		assignItemRect(HK269,              16, 16);
+
 	}                                                               
 
 	//M4A1 行
 	private static final int GUN_M4A1         =xy(1, 39);
 	public static final  int M4A1              =GUN_M4A1+3;
+	public static final  int P90               =GUN_M4A1+4;
 	
 	static {
 	    assignItemRect(M4A1,              16, 16);
+	    assignItemRect(P90,               16, 16);
 	}
 	//16 free slots
 

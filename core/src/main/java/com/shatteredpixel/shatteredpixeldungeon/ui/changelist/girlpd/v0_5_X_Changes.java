@@ -154,6 +154,16 @@ public class v0_5_X_Changes {
         "_-_ 喝下_神意合剂_时可随机获得一个天赋。\n"+
         "_-_ 丹德莱拥有专属的_嬗变机制_：依据行动类型来减速，不同行动有不同影响。"
         ));
+        changes.addButton(new ChangeButton(Icons.get(Icons.DISPLAY),
+                "设计文档系统",
+        "_-_ 新增_设计文档系统_：将角色设计文档显示到游戏内，可直接将txt文件放入对应文件夹进行自动识别。\n"+
+        "_-_ 新增_言凌_绘制的德尔NPC贴图。"
+        ));
+        changes.addButton(new ChangeButton(Icons.get(Icons.DISPLAY),
+                "系统时间",
+        "_-_ UI新增_系统时间_显示。\n"+
+        "_-_ 新增_上次进入存档时间_记录。\n"
+        ));
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
@@ -177,6 +187,17 @@ public class v0_5_X_Changes {
         changes.addButton(new ChangeButton(Icons.get(Icons.WARNING),
                 "自定义GLog颜色",
         "_-_ 新增自定义颜色GLog工具，支持更多颜色输出，方便模组开发与调试。"
+        ));
+        changes.addButton(new ChangeButton(new Hero(HeroClass.GSH18), 0.8F,
+                "GSH18增强",
+        "_-_ GSH18新增天赋_天狼星心脏_：激活后立刻抽离星之护盾并快照为下次攻击的附加伤害，附加伤害按天赋等级为护盾值的20%/40%/100%。\n"+
+        "_-_ 天狼星心脏冷却时间改为阶梯式：+1为180回合，+2为120回合，+3为60回合。\n"+
+        "_-_ _未来星_副武器系统：装备HG标签武器时可放入副手，当目标在主武器射程外但在副武器射程内时，自动使用副武器进行快速攻击（粉色文本标识）。\n"+
+        "_-_ 新增_GunSwap_换枪buff：可在主副武器间切换，仅当主手为HG标签武器或空手时允许换枪。换枪按钮为粉色标识。"
+        ));
+        changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.GSH18),
+                "HG武器标签",
+        "_-_ 给现有手枪武器添加了_HG_标签（GSH18、M1911、纳甘左轮、Welrod、雷霆、C96、LAR、赛普罗斯），为副武器系统提供基础判定。"
         ));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
@@ -213,6 +234,16 @@ public class v0_5_X_Changes {
                     + "_-_ 修复了_图鉴_显示局内标签文本的问题。\n"
                     + "_-_ 修复了之前不小心改掉的一些东西。\n"
                     + "_-_ 主动拆除_NDB防御塔_（哨卫）时，现在可回收一定的充能。"
+            );
+            miscChanges.add(
+                    "_-_ 提高红雷的替换率，将每区尾层概率刷出的下一区的怪从固定改成随机抽取。\n"
+                    + "_-_ 未鉴定的武器/护甲也正常显示依据buffedLevel的伤害及对于level的力量。\n"
+                    + "_-_ 丹德莱_插卡系统_进一步完善，新增WeaponToCard相关功能。"
+            );
+            miscChanges.add(
+                    "_-_ 修复了丹德莱选择FAL之后仍可用M4A1近战攻击的bug。\n"
+                    + "_-_ 修复了主副武器切换状态在进入存档时丢失的问题，现在切换状态可在存档中正确保存和恢复。\n"
+                    + "_-_ 修复了HS2000护盾、卡牌效果、投掷技能、占卜卷轴的部分bug。"
             );
         }
         changes.addButton(new ChangeButton(new BlacksmithSprite(), 0.8F,

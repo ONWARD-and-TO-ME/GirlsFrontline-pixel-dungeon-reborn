@@ -19,11 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR;
+package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FieldRation;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.P90FullAuto;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -32,23 +33,23 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 
 import java.util.ArrayList;
 
-public class M16 extends DesignatedMarksmanRifle {
+public class P90 extends SubMachineGun {
 
     {
         BASE_COOLDOWN_TURNS = 100;
     }
+    {
+        image = ItemSpriteSheet.P90;
 
-	{
-		image = ItemSpriteSheet.M16;
-
-		tier = 2;
-        DEF = 3;
+        tier = 5;
+        DLY = 0.5f;     //极高的射速
+        ACC = 1.2f;     //20%命中加成
+        DEF = 2;        //可吸收少量伤害
         DEFUPGRADE = 1;
-        dmgBaseMul = 2;
-        dmgBaseDiffer = 1;
-        dmgUpgradeMul = 0.8F;
+        dmgBaseMul = 3; //单发伤害较低，以平衡高射速
+
         defaultAction = AC_SKILL;
-	}
+    }
 
     @Override
     public ArrayList<String> actions( Hero hero ) {
@@ -59,28 +60,28 @@ public class M16 extends DesignatedMarksmanRifle {
 
     @Override
     public void execute( Hero hero, String action ) {
-
         super.execute(hero, action);
+
         if (action.equals(AC_SKILL)) {
             //检查是否装备，复制的TimekeepersHourglass
-            if (!isEquipped(hero)) {
+            if (!isEquipped( hero )) {
                 GLog.w(Messages.get(this, "must_hold"));
             }
-            //检查是否有毒，同上
+            //检查是否诅咒
             else if (cursed) {
-                GLog.i(Messages.get(this, "curse"));
+                GLog.i( Messages.get(this, "curse") );
             }
-            //检查是否超力，灵刀
+            //检查是否超力
             else if (hero.STR() < STRReq()) {
                 GLog.w(Messages.get(Weapon.class, "too_heav"));
             }
-            //检查是否cd，灵刀
+            //检查是否cd
             else if (coolDownLeft > 0) {
                 GLog.w(Messages.get(this, "cooldown", coolDownLeft));
             }
             //没有进入上述if，即满足全部要求之后，进入此处执行技能
             else {
-                Buff.affect(hero, FieldRation.class, FieldRation.DURATION);
+                Buff.affect(hero, P90FullAuto.class, P90FullAuto.DURATION);
                 // 消耗固定回合
                 hero.spendAndNext(Actor.TICK);
                 // 设置冷却时间（固定为基础冷却时间，不受天赋影响）
@@ -89,6 +90,16 @@ public class M16 extends DesignatedMarksmanRifle {
                 updateQuickslot();
             }
         }
+    }
+
+    @Override
+    public float delayFactor( Char owner ) {
+        float delay = super.delayFactor( owner );
+        //全弹发射生效期间，攻击速度翻倍
+        if (owner instanceof Hero && ((Hero) owner).buff(P90FullAuto.class) != null) {
+            delay /= 2;
+        }
+        return delay;
     }
 
 }

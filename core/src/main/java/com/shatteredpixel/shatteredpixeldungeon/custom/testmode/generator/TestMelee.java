@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampir
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.NAGANT;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.P90;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -118,6 +119,8 @@ public class TestMelee extends TestItem {
             for (int i = 0; i < Generator.Category.WEP_T5.classes.length; i++) {
                 t5_WeaponList.add((Class<? extends MeleeWeapon>) Generator.Category.WEP_T5.classes[i]);
             }
+            //P90不加入生成池，仅在测试模式生成器中可获取
+            t5_WeaponList.add(P90.class);
         }
 
         if(t6_WeaponList.isEmpty()) {
