@@ -30,6 +30,12 @@ import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.ThrowingSkill;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.GSH18;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.IntroScene;
@@ -530,6 +536,18 @@ public class WndStartGame extends Window {
 						heroItem.icon(new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null));
 						heroLoadout.icon(new ItemSprite(ItemSpriteSheet.M9, null));
 						heroMisc.icon(new ItemSprite(ItemSpriteSheet.SEED_SUNGRASS, null));
+						break;
+					case GSH18:
+						//展示角色实际携带的道具与武器：疫苗磁盘、GSh-18手枪、治疗药水
+						heroItem.icon(new ItemSprite(new ScrollOfRemoveCurse()));
+						heroLoadout.icon(new ItemSprite(new GSH18()));
+						heroMisc.icon(new ItemSprite(new PotionOfHealing()));
+						break;
+					case Dandelion:
+						//展示角色实际携带的道具与武器：指令·卡牌部署、M4A1突击步枪、技能·投掷
+						heroItem.icon(new ItemSprite(new CardSelector()));
+						heroLoadout.icon(new ItemSprite(new M4A1()));
+						heroMisc.icon(new ItemSprite(new ThrowingSkill()));
 						break;
 				}
 
