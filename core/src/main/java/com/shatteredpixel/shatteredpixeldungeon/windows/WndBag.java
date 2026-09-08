@@ -261,10 +261,6 @@ public class WndBag extends WndTabbed {
 				placeItem(stuff.secArmor);
 				equipped++;
 			}
-			if (stuff.secondWep != null){
-				placeItem(stuff.secondWep);
-				equipped++;
-			}
 		}
 
 		// Items in the bag, except other containers (they have tags at the bottom)

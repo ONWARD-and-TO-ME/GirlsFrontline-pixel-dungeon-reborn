@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ItemBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -57,9 +58,6 @@ public class Belongings implements Iterable<Item> {
 
 			if (Dungeon.hero != null && Dungeon.hero.belongings.secArmor != null)
 				cap--;
-			//副手武器同样占用一格背包容量
-			if (Dungeon.hero != null && Dungeon.hero.belongings.secondWep != null)
-				cap--;
 			return cap;
 		}
 	}
@@ -74,8 +72,6 @@ public class Belongings implements Iterable<Item> {
 	}
 
 	public KindOfWeapon weapon = null;
-	//副手武器槽位：未来之星（FUTURE_STAR）专属，仅可装备 HG（手枪）标签武器
-	public KindOfWeapon secondWep = null;
 	public Armor armor = null;
     public Armor secArmor = null;
 	public Artifact artifact = null;
@@ -96,15 +92,6 @@ public class Belongings implements Iterable<Item> {
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
 		if (!lostInvent || (weapon != null && weapon.keptThoughLostInvent)){
 			return weapon;
-		} else {
-			return null;
-		}
-	}
-
-	public KindOfWeapon secondWep(){
-		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
-		if (!lostInvent || (secondWep != null && secondWep.keptThoughLostInvent)){
-			return secondWep;
 		} else {
 			return null;
 		}
@@ -223,7 +210,6 @@ public class Belongings implements Iterable<Item> {
 	// ***
 	
 	private static final String WEAPON		= "weapon";
-	private static final String SECOND_WEP	= "secondWep";
     private static final String ARMOR		= "armor";
     private static final String SECOND_ARMOR = "secondArmor";
 	private static final String ARTIFACT   = "artifact";
@@ -235,7 +221,6 @@ public class Belongings implements Iterable<Item> {
 		backpack.storeInBundle( bundle );
 		
 		bundle.put( WEAPON, weapon );
-		bundle.put( SECOND_WEP, secondWep );
         bundle.put( ARMOR, armor );
         bundle.put( SECOND_ARMOR, secArmor );
 		bundle.put( ARTIFACT, artifact );
@@ -250,12 +235,6 @@ public class Belongings implements Iterable<Item> {
 		
 		weapon = (KindOfWeapon) bundle.get(WEAPON);
 		if (weapon() != null)       weapon().activate(owner);
-
-		//旧存档无该键时保持为 null
-		if (bundle.contains(SECOND_WEP)) {
-			secondWep = (KindOfWeapon) bundle.get(SECOND_WEP);
-			if (secondWep() != null)    secondWep().activate(owner);
-		}
 
         armor = (Armor)bundle.get( ARMOR );
         if (bundle.contains(SECOND_ARMOR))
@@ -336,7 +315,7 @@ public class Belongings implements Iterable<Item> {
 		}
 		return null;
 	}
-
+	@SuppressWarnings("unchecked")
 	public<T extends Item> ArrayList<T> getAllItems( Class<T> itemClass ) {
 		ArrayList<T> result = new ArrayList<>();
 
@@ -469,63 +448,66 @@ public class Belongings implements Iterable<Item> {
 	private class ItemIterator implements Iterator<Item> {
 
 		private int index = 0;
-		
-		private Iterator<Item> backpackIterator = backpack.iterator();
-		
-		private Item[] equipped = {weapon, armor, artifact, misc, ring, secArmor, secondWep};
-		private int backpackIndex = equipped.length;
-		
+		private int iterIndex = 0;
+		private final Iterator<Item> backpackIterator = backpack.iterator();
+		private final Iterator<ItemBuff> itemBuffIterator = owner.buffs(ItemBuff.class).iterator();
+		private final Item[] equipped = {weapon, armor, artifact, misc, ring, secArmor};
 		@Override
 		public boolean hasNext() {
-			
-			for (int i=index; i < backpackIndex; i++) {
+
+			for (int i=index; i < equipped.length; i++) {
 				if (equipped[i] != null) {
 					return true;
 				}
 			}
-			
-			return backpackIterator.hasNext();
+
+			return itemBuffIterator.hasNext() || backpackIterator.hasNext();
 		}
 
 		@Override
 		public Item next() {
-			
-			while (index < backpackIndex) {
+			iterIndex = 0;
+			while (index < equipped.length) {
 				Item item = equipped[index++];
 				if (item != null) {
 					return item;
 				}
 			}
-			
+			iterIndex = 1;
+			if (itemBuffIterator.hasNext())
+				return itemBuffIterator.next().item();
+
+			iterIndex = 2;
 			return backpackIterator.next();
 		}
 
 		@Override
 		public void remove() {
-			switch (index) {
-			case 0:
-				equipped[0] = weapon = null;
-				break;
-			case 1:
-				equipped[1] = armor = null;
-				break;
-			case 2:
-				equipped[2] = artifact = null;
-				break;
-			case 3:
-				equipped[3] = misc = null;
-				break;
-            case 4:
-                equipped[4] = ring = null;
-                break;
-            case 5:
-                equipped[5] = secArmor = null;
-                break;
-            case 6:
-                equipped[6] = secondWep = null;
-                break;
-			default:
-				backpackIterator.remove();
+			switch (iterIndex) {
+				case 0:
+					switch (index) {
+						case 0:
+							equipped[0] = weapon = null;
+							break;
+						case 1:
+							equipped[1] = armor = null;
+							break;
+						case 2:
+							equipped[2] = artifact = null;
+							break;
+						case 3:
+							equipped[3] = misc = null;
+							break;
+						case 4:
+							equipped[4] = ring = null;
+							break;
+						case 5:
+							equipped[5] = secArmor = null;
+							break;
+					}
+					break;
+				case 1: itemBuffIterator.remove(); break;
+				case 2: backpackIterator.remove(); break;
 			}
 		}
 	}

@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ItemBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
@@ -168,9 +169,9 @@ public enum Rankings {
 		ArrayList<Item> allItems = new ArrayList<>(belongings.backpack.items);
 
 		//remove all buffs (ones tied to equipment will be re-applied)
-		for(Buff b : Dungeon.hero.buffs()){
-			Dungeon.hero.remove(b);
-		}
+		for(Buff b : Dungeon.hero.buffs())
+			if (!(b instanceof ItemBuff))
+				Dungeon.hero.remove(b);
 
 		rec.gameData.put( HERO, Dungeon.hero );
 

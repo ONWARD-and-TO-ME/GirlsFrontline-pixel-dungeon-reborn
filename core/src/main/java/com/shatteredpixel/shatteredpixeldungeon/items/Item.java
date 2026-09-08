@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ItemBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -102,7 +103,7 @@ public class Item implements Bundlable {
     public boolean sold = false;
     protected int quantity = 1;
 	public boolean dropsDownHeap = false;
-	
+	public ItemBuff ownerBuff;
 	private int level = 0;
 	private int guessingLevel = Integer.MIN_VALUE;
     public int BuffLevelPoint = Integer.MIN_VALUE;

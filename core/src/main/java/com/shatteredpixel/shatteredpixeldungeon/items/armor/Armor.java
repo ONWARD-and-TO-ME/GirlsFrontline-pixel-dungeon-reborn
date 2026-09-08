@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipmentBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
@@ -566,7 +567,8 @@ public class Armor extends EquipableItem {
 	
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero.belongings.armor() == this || hero.belongings.SecondArmor() == this;
+		return hero.belongings.armor() == this || hero.belongings.SecondArmor() == this
+                || ownerBuff instanceof EquipmentBuff && ownerBuff.target == hero;
 	}
 
 	public final int DRMax(){

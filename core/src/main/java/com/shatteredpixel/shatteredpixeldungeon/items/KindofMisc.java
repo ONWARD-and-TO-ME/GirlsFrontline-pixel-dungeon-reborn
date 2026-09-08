@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipmentBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
@@ -181,7 +182,8 @@ public abstract class KindofMisc extends EquipableItem {
 	public boolean isEquipped( Hero hero ) {
 		return hero.belongings.artifact() == this
 				|| hero.belongings.misc() == this
-				|| hero.belongings.ring() == this;
+				|| hero.belongings.ring() == this
+				|| ownerBuff instanceof EquipmentBuff && ownerBuff.target == hero;
 	}
 
 }

@@ -27,10 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.Guidebook;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -88,7 +85,6 @@ public abstract class EquipableItem extends Item {
 			doUnequip( hero, true );
 		}
 	}
-
 	@Override
 	public void doDrop( Hero hero ) {
 		if (!isEquipped( hero ) || doUnequip( hero, false, false )) {
@@ -126,18 +122,25 @@ public abstract class EquipableItem extends Item {
         if (DELUnEquipable)
             return true;
         // 魔免buff下、复活未选中，允许被脱下
-        return !cursed || hero.buff(MagicImmune.class) != null ||
-                hero.buff(LostInventory.class)!=null && !keptThoughLostInvent;
+        return !cursed || hero.buff(MagicImmune.class) != null || notWorking(hero);
     }
-
+	protected boolean notWorking(Hero hero){
+		return hero.buff(LostInventory.class) != null && !keptThoughLostInvent;
+	}
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
+		return doUnequip_copy(hero, collect, single);
+	}
 
+	final public boolean doUnequip( Hero hero, boolean collect ) {
+		return doUnequip( hero, collect, true );
+	}
+	final protected boolean doUnequip_copy( Hero hero, boolean collect, boolean single ){
 		if ( !unEquipable(hero) ) {
-            GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
-            return false;
+			GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
+			return false;
 		}
-
-        DELUnEquipable = false;
+		ownerBuff = null;
+		DELUnEquipable = false;
 		if (single) {
 			hero.spendAndNext( time2equip() );
 		} else {
@@ -156,10 +159,6 @@ public abstract class EquipableItem extends Item {
 		keptThoughLostInvent = wasKept;
 
 		return true;
-	}
-
-	final public boolean doUnequip( Hero hero, boolean collect ) {
-		return doUnequip( hero, collect, true );
 	}
 
 	public void activate( Char ch ){}

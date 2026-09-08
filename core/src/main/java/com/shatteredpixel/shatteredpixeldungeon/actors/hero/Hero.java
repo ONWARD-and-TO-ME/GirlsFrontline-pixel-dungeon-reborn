@@ -371,14 +371,20 @@ public class Hero extends Char {
 		
 		STR = bundle.getInt( STRENGTH );
 		belongings.restoreFromBundle( bundle );
-		
-		// 如果是未来之星职业，自动添加天狼星心脏buff
-		if (subClass == HeroSubClass.FUTURE_STAR && buff(SiriusHeart.class) == null) {
-			Buff.affect(this, SiriusHeart.class);
-		}
-		// 未来之星读档时补挂副手换枪指示器
-		if (subClass == HeroSubClass.FUTURE_STAR && buff(GunSwap.class) == null) {
-			Buff.affect(this, GunSwap.class);
+
+		restoreUpdateByVersion(bundle);
+	}
+	private void restoreUpdateByVersion( Bundle bundle ) {
+		if (Dungeon.version < 670) {
+			// 如果是未来之星职业，自动添加天狼星心脏buff
+			if (subClass == HeroSubClass.FUTURE_STAR) {
+				Buff.affect(this, SiriusHeart.class);
+			}
+			// 未来之星读档时补挂副手换枪指示器
+			if (subClass == HeroSubClass.FUTURE_STAR) {
+				Buff.affect(this, GunSwap.class);
+			}
+			CardAffect.kiloTimesVersionUpdate();
 		}
 	}
 	
@@ -803,18 +809,6 @@ public class Hero extends Char {
 		//ak47无法偷袭了
 		return true;
 	}
-
-	//未来之星专属：敌人在副手HG武器射程内、但不在主手武器射程内时，应使用副手武器攻击
-	private boolean shouldUseSecondary( Char enemy ){
-		if (subClass != HeroSubClass.FUTURE_STAR) return false;
-		KindOfWeapon second = belongings.secondWep();
-		if (second == null || !second.hasTag( KindOfWeapon.Tag.HG )) return false;
-		KindOfWeapon main = belongings.weapon();
-		boolean mainCanReach = main != null && main.canReach( this, enemy.pos );
-		boolean secondCanReach = second.canReach( this, enemy.pos );
-		return secondCanReach && !mainCanReach;
-	}
-
 	public boolean canAttack(Char enemy){
 		if (enemy == null || pos == enemy.pos || !Actor.chars().contains(enemy)) {
 			return false;
@@ -832,9 +826,7 @@ public class Hero extends Char {
 		if (wep != null && wep.canReach(this, enemy.pos)){
 			return true;
 		}
-
-		//未来之星：主手够不到时，若副手HG武器够得到，也允许攻击
-		return shouldUseSecondary( enemy );
+		return false;
 	}
 	
 	public float attackDelay() {
@@ -844,16 +836,15 @@ public class Hero extends Char {
 		}
 
         float delay;
-		if (belongings.weapon() != null) {
-			
-			delay = belongings.weapon().delayFactor( this );
-			
-		} else {
+		KindOfWeapon weapon = belongings.weapon();
+		if (weapon != null)
+			delay = weapon.delayFactor( this );
+
+		else
 			//Normally putting furor speed on unarmed attacks would be unnecessary
 			//But there's going to be that one guy who gets a furor+force ring combo
 			//This is for that one guy, you shall get your fists of fury!
 			delay = 1f/RingOfFuror.attackSpeedMultiplier(this);
-		}
 
 		Ring.guessSignalRing(this, RingOfFuror.class, true);
 
@@ -2194,17 +2185,6 @@ public class Hero extends Char {
 
 		AttackIndicator.target(enemy);
 
-		//未来之星：敌人在副手HG射程内但不在主手射程内时，临时交换主副手，
-		//使伤害、命中、攻速、附魔触发全部按副手武器计算
-		boolean useSecondary = shouldUseSecondary( enemy );
-		KindOfWeapon savedMain = null;
-		if (useSecondary){
-			sprite.showStatus( 0xFF99CC, Messages.get(this, "quick_attack") );
-			savedMain = belongings.weapon;
-			belongings.weapon = belongings.secondWep;
-			belongings.secondWep = savedMain;
-		}
-
 		boolean hit = attack( enemy );
 
 		Invisibility.dispel();
@@ -2227,12 +2207,6 @@ public class Hero extends Char {
         if (hit&&(buff(Talent.Type56BookTracker.class) != null)) {
             buff(Talent.Type56BookTracker.class).detach();
         }
-
-		//恢复主副手
-		if (useSecondary){
-			belongings.secondWep = belongings.weapon;
-			belongings.weapon = savedMain;
-		}
 
 		curAction = null;
 

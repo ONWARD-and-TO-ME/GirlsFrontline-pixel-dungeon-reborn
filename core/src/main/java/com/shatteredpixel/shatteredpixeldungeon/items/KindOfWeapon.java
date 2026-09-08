@@ -27,18 +27,15 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipmentBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -61,150 +58,140 @@ abstract public class KindOfWeapon extends EquipableItem {
 
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero.belongings.weapon() == this || hero.belongings.secondWep() == this;
+		return hero.belongings.weapon() == this || ownerBuff instanceof EquipmentBuff && ownerBuff.target == hero;
 	}
 
-	//装备后恢复该武器原有的快捷栏位
-	private void restoreQuickslot(){
-		int slot = Dungeon.quickslot.getSlot( this );
-		if (slot != -1) {
-			Dungeon.quickslot.setSlot( slot, this );
-			updateQuickslot();
-		}
-	}
-
-	//未来之星装备 HG 武器时，弹窗选择装备到主手还是副手
 	@Override
 	public void execute( Hero hero, String action ) {
-		if (hero.subClass == HeroSubClass.FUTURE_STAR
-				&& action.equals( AC_EQUIP ) && hasTag( Tag.HG )){
-			usesTargeting = false;
-
-			String primaryName = Messages.titleCase(hero.belongings.weapon != null
-					? hero.belongings.weapon.trueName()
-					: Messages.get(KindOfWeapon.class, "empty"));
-			String secondaryName = Messages.titleCase(hero.belongings.secondWep != null
-					? hero.belongings.secondWep.trueName()
-					: Messages.get(KindOfWeapon.class, "empty"));
-			if (primaryName.length() > 18) primaryName = primaryName.substring(0, 15) + "...";
-			if (secondaryName.length() > 18) secondaryName = secondaryName.substring(0, 15) + "...";
-			GameScene.show(new WndOptions(
-					new ItemSprite(this),
-					Messages.titleCase(name()),
-					Messages.get(KindOfWeapon.class, "which_equip_msg"),
-					Messages.get(KindOfWeapon.class, "which_equip_primary", primaryName),
-					Messages.get(KindOfWeapon.class, "which_equip_secondary", secondaryName)
-			){
-				@Override
-				protected void onSelect(int index) {
-					super.onSelect(index);
-					if (index == 0 || index == 1){
-						if (index == 0) doEquip(hero);
-						else            equipSecondary(hero);
-						restoreQuickslot();
+		if (action.equals( AC_EQUIP )) {
+			GunSwap swap = hero.buff(GunSwap.class);
+			if (swap != null) {
+				swapWeapon(hero, swap);
+				return;
+			}
+		}
+		super.execute( hero, action );
+	}
+	private void swapWeapon( Hero hero, GunSwap swap ){
+		final String action = AC_EQUIP;
+		KindOfWeapon other = swap.getEquipment(KindOfWeapon.class);
+		KindOfWeapon main = hero.belongings.weapon;
+		if (other == null) {
+			if (main == null || main.notWorking(hero))
+				super.execute(hero, action);
+			else if (main.hasTag(Tag.HG)) {
+				swap.setEquipment(main);
+				hero.belongings.weapon = null;
+				super.execute(hero, action);
+			}
+			else if (hasTag(Tag.HG)) {
+				swap.setEquipment((EquipableItem) detachAll(hero.belongings.backpack));
+				afterEquip(hero);
+			}
+			else
+				super.execute(hero, action);
+		}
+		else {
+			if (main == null || main.notWorking(hero)) {
+				//有一方为HG那不产生限制，走即可常规super即可
+				if (!hasTag(Tag.HG) && !other.hasTag(Tag.HG)) {
+					//均不是HG，那就将主副手交换再走super
+					hero.belongings.weapon = other;
+					swap.setEquipment(main);
+				}
+				super.execute(hero, action);
+			}
+			//双非空
+			else {
+				//留空收集
+				detachAll(hero.belongings.backpack);
+				if (hasTag(Tag.HG)) {
+					if (main.hasTag(Tag.HG) && main.doUnequip_copy(hero, true, false)) {
+						//优先交换主手HG
+						hero.belongings.weapon = this;
+						afterEquip(hero);
+						return;
+					}
+					else if (other.doUnequip_copy(hero, true, false)) {
+						//主手非HG或者主手取下失败时，尝试副手
+						swap.setEquipment(this);
+						afterEquip(hero);
+						return;
+					}
+					else if (main.doUnequip_copy(hero, true, false)) {
+						//副手也失败时，替换可能的可取下的主手非HG
+						hero.belongings.weapon = this;
+						afterEquip(hero);
+						return;
 					}
 				}
-			});
-		} else {
-			super.execute( hero, action );
+				else {
+					if (other.hasTag(Tag.HG) && main.doUnequip_copy(hero, true, false)) {
+						//进非HG的槽，双HG时优先进主手
+						hero.belongings.weapon = this;
+						afterEquip(hero);
+						return;
+					}
+					else if (main.hasTag(Tag.HG) && other.doUnequip_copy(hero, true, false)) {
+						//进副手的分支，顺手将这个非HG挪到主手
+						swap.setEquipment(main);
+						hero.belongings.weapon = this;
+						afterEquip(hero);
+						return;
+					}
+				}
+				//装备失败，收回去
+				collect(hero.belongings.backpack);
+			}
 		}
 	}
-	
 	@Override
 	public boolean doEquip( Hero hero ) {
 
-        Tracker(hero);
 		detachAll( hero.belongings.backpack );
-		
-		if (hero.belongings.weapon == null || hero.belongings.weapon.doUnequip( hero, true )) {
-			
+
+		if (hero.belongings.weapon == null
+				|| hero.belongings.weapon.doUnequip( hero, true )) {
+
 			hero.belongings.weapon = this;
-			activate( hero );
-			Talent.onItemEquipped(hero, this);
-			ActionIndicator.updateIcon();
-			updateQuickslot();
-			
-			cursedKnown = true;
-			if (cursed) {
-				equipCursed( hero );
-				GLog.n( Messages.get(KindOfWeapon.class, "equip_cursed") );
-			}
-			
-			hero.spendAndNext( TIME_TO_EQUIP );
+			afterEquip(hero);
 			return true;
-			
+
 		} else {
 
 			collect( hero.belongings.backpack );
+			Tracker(hero);
 			return false;
 		}
 	}
-
-	//装备到副手槽位（未来之星专属，仅限 HG 标签武器）
-	public boolean equipSecondary( Hero hero ){
-		if (hero.subClass != HeroSubClass.FUTURE_STAR || !hasTag( Tag.HG )){
-			return doEquip( hero );
-		}
-
+	private void afterEquip( Hero hero ){
+		activate( hero );
 		Tracker(hero);
-		detachAll( hero.belongings.backpack );
+		Talent.onItemEquipped(hero, this);
+		ActionIndicator.updateIcon();
+		updateQuickslot();
 
-		if (hero.belongings.secondWep == null || hero.belongings.secondWep.doUnequip( hero, true )) {
-
-			hero.belongings.secondWep = this;
-			activate( hero );
-			Talent.onItemEquipped(hero, this);
-			ActionIndicator.updateIcon();
-			updateQuickslot();
-
-			cursedKnown = true;
-			if (cursed) {
-				equipCursed( hero );
-				GLog.n( Messages.get(KindOfWeapon.class, "equip_cursed") );
-			}
-
-			//尽快刷出换枪按钮
-			GunSwap swap = hero.buff(GunSwap.class);
-			if (swap != null) {
-				swap.refreshIndicator();
-			}
-
-			hero.spendAndNext( TIME_TO_EQUIP );
-			return true;
-
-		} else {
-
-			collect( hero.belongings.backpack );
-			return false;
+		cursedKnown = true;
+		if (cursed) {
+			equipCursed( hero );
+			GLog.n( Messages.get(KindOfWeapon.class, "equip_cursed") );
 		}
+		hero.spendAndNext( TIME_TO_EQUIP );
 	}
     @Override
     public boolean unEquipable(Hero hero){
         // +2级允许取下被诅咒的武器
         return  super.unEquipable(hero) || hero.pointsInTalent(Talent.GSH18_DOCTOR_INTUITION) >= 2;
     }
-
 	@Override
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
-		boolean second = hero.belongings.secondWep == this;
-
-		if (second){
-			//先置空腾出容量位，物品才能收回满背包；失败时回滚
-			hero.belongings.secondWep = null;
-		}
-
 		if (super.doUnequip( hero, collect, single )) {
 
-			if (!second){
-				hero.belongings.weapon = null;
-			}
+			hero.belongings.weapon = null;
 			return true;
 
 		} else {
 
-			if (second){
-				hero.belongings.secondWep = this;
-			}
 			return false;
 
 		}
@@ -223,10 +210,9 @@ abstract public class KindOfWeapon extends EquipableItem {
 
 	public int damageRoll( Char owner ) {
         int dmg = Random.NormalIntRange( min(), max() );
-        if (owner instanceof Hero) {
-            Hero heroA = (Hero)owner;
-            Char enemyA = heroA.enemy();
-            if (enemyA instanceof Mob && ((Mob) enemyA).surprisedBy(heroA)) {
+        if (owner instanceof Hero && hero.enemy instanceof Mob) {
+			Mob enemy = (Mob) hero.enemy;
+            if (enemy.surprisedBy(hero)) {
                 if (hero.hasTalent(Talent.Type56Two_Damage)) {
                     int diff = max() - min();
                     dmg = Random.NormalIntRange(min() + Math.round(0.2f * hero.pointsInTalent(Talent.Type56Two_Damage) * diff), max());
@@ -238,15 +224,15 @@ abstract public class KindOfWeapon extends EquipableItem {
 	public float mulByDelay( Char owner ){
 		float delay = delayFactor( owner );
 		if (delay > 2F)
-			return delay/2F;
+			return delay / 2F;
 		if (delay < 0.5F)
-			return delay*2F;
+			return delay * 2F;
 		return 1F;
 	}
 	public float accuracyFactor( Char owner ) {
 		return 1f;
 	}
-	
+
 	public float delayFactor(Char owner ) {
 		return 1f;
 	}
@@ -257,7 +243,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 	public int reachFactor( Char owner ){
 		return 1;
 	}
-	
+
 	public boolean canReach( Char owner, int target){
 		if (Dungeon.level.distance( owner.pos, target ) > reachFactor(owner)){
 			return false;
@@ -266,9 +252,9 @@ abstract public class KindOfWeapon extends EquipableItem {
 			for (Char ch : Actor.chars()) {
 				if (ch != owner) passable[ch.pos] = false;
 			}
-			
+
 			PathFinder.buildDistanceMap(target, passable, reachFactor(owner));
-			
+
 			return PathFinder.distance[owner.pos] <= reachFactor(owner);
 		}
 	}
@@ -276,7 +262,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 	public int defenseFactor( Char owner ) {
 		return 0;
 	}
-	
+
 	public int proc( Char attacker, Char defender, int damage ) {
 		return damage;
 	}
@@ -284,5 +270,5 @@ abstract public class KindOfWeapon extends EquipableItem {
 	public void hitSound( float pitch ){
 		Sample.INSTANCE.play(hitSound, 1, pitch * hitSoundPitch);
 	}
-	
+
 }
