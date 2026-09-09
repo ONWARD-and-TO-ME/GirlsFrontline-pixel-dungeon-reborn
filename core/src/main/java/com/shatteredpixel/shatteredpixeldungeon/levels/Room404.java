@@ -21,8 +21,8 @@ public class Room404 extends Level {
     // 定义了传送触发器的位置
     public static final int toZeroLevelSub = (HEIGHT-2)*WIDTH+(WIDTH-3);
 
-    // 德尔的位置：右下角区域，四邻均为空地、不贴墙体(第7行第7列)
-    private static final int delPos = 7 * WIDTH + 7;
+    // 德尔的位置：第7行第2列(由第7行第7列向左移动5格)
+    private static final int delPos = 7 * WIDTH + 2;
 
     @Override
     public String tilesTex() {
