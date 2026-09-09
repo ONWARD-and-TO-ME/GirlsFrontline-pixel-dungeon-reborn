@@ -63,6 +63,10 @@ public class WndOptions extends Window {
 		this(title, message, titleHighlighting, 1, options);
 	}
 	public WndOptions( String title, String message, boolean titleHighlighting, int btnPerRow, String... options ) {
+		this(title, message, titleHighlighting, TITLE_COLOR, btnPerRow, options);
+	}
+	//可自定义标题颜色（例如丹德莱插卡卡牌按稀有度着色）
+	public WndOptions( String title, String message, boolean titleHighlighting, int titleColor, int btnPerRow, String... options ) {
 		super();
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
@@ -71,7 +75,7 @@ public class WndOptions extends Window {
 		if (title != null) {
 			RenderedTextBlock tfTitle = PixelScene.renderTextBlock(title, 9);
 			tfTitle.setHightlighting(titleHighlighting);
-			tfTitle.hardlight(TITLE_COLOR);
+			tfTitle.hardlight(titleColor);
 			tfTitle.setPos(MARGIN, pos);
 			tfTitle.maxWidth(width - MARGIN * 2);
 			add(tfTitle);

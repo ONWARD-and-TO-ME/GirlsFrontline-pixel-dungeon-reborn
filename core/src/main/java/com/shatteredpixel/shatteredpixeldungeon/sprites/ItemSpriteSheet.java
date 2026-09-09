@@ -316,6 +316,11 @@ public class ItemSpriteSheet {
 	public static final int GROZA           = WEP_TIER6+5;
 	public static final int MOSINNAGANT		= WEP_TIER6+6;
 	public static final int cz75axe			= WEP_TIER6+7;
+	//axe 右侧第二格为采购币、第三格为电池
+	public static final int PROCUREMENT_COIN = WEP_TIER6+9;
+	public static final int BATTERY          = WEP_TIER6+10;
+	//电池小图标（全局货币 HUD 用）：与电池同格的独立虚拟帧，裁剪区域单独指定
+	public static final int BATTERY_ICON     = 1000;
 	static{
 		assignItemRect(GROZA,    		 16, 17);
 		assignItemRect(MG42,     	 	 16, 17);
@@ -324,6 +329,14 @@ public class ItemSpriteSheet {
 		assignItemRect(NTW20,      		 19, 19);
 		assignItemRect(MOSINNAGANT,      16, 17);
 		assignItemRect(cz75axe,    		 14, 14);
+		assignItemRect(PROCUREMENT_COIN, 12, 13);
+		assignItemRect(BATTERY,          9,  4);
+		//电池小图标：与电池处于同一 16x16 格，横向第1像素、纵向第7像素起裁，尺寸 7x3
+		film.add( BATTERY_ICON,
+				(BATTERY % WIDTH) * SIZE,
+				(BATTERY / WIDTH) * SIZE + 6,
+				(BATTERY % WIDTH) * SIZE + 7,
+				(BATTERY / WIDTH) * SIZE + 9 );
 	}
 
 

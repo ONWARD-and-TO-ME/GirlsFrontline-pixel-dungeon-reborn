@@ -592,7 +592,8 @@ public class Toolbar extends Component {
                     icons[i] = null;
                 }
                 if (items[i] != null){
-                    icons[i] = new ItemSprite(items[i]);
+                    Image custom = items[i].customIcon();
+                    icons[i] = custom != null ? custom : new ItemSprite(items[i]);
                     icons[i].scale.set(PixelScene.align(0.45f));
                     if (Dungeon.quickslot.isPlaceholder(slot)) icons[i].alpha(0.29f);
                     add(icons[i]);

@@ -120,10 +120,12 @@ public class QuickSlotButton extends Button {
 			@Override
 			protected void onPointerDown() {
 				sprite.lightness( 0.7f );
+				if (customIcon != null) customIcon.lightness( 0.7f );
 			}
 			@Override
 			protected void onPointerUp() {
 				sprite.resetColor();
+				if (customIcon != null) customIcon.resetColor();
 			}
 
 			@Override

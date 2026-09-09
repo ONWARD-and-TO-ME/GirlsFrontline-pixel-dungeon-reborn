@@ -251,6 +251,7 @@ public class Dungeon {
 
 	public static int gold;
 	public static int energy;
+	public static int battery;
     //public static boolean ExtractSummoned;提取升级是否生成的计数
 
     public static int RollTimes     = 0;
@@ -329,6 +330,8 @@ public class Dungeon {
         CreateId = 0;
 		gold = 0;
 		energy = 0;
+		//电池为全局资源货币：新局继承跨局余额（通关/返程奖励已持久化到 SPDSettings）
+		battery = SPDSettings.battery();
         //ExtractSummoned = false;初始化计数为未生成
 
 		droppedItems = new SparseArray<>();
@@ -629,6 +632,7 @@ public class Dungeon {
 	private static final String DEPTH		    = "depth";
 	private static final String GOLD		    = "gold";
 	private static final String ENERGY		    = "energy";
+	private static final String BATTERY		    = "battery";
     //private static final String Summoned		    = "ExtractSummoned";
 	private static final String DROPPED         = "dropped%d";
 	private static final String PORTED          = "ported%d";
@@ -672,6 +676,7 @@ public class Dungeon {
 
             bundle.put( GOLD, gold );
 			bundle.put( ENERGY, energy );
+			bundle.put( BATTERY, battery );
             //bundle.put( Summoned, ExtractSummoned );保存计数
 
 			for (int d : droppedItems.keyArray()) {
@@ -847,6 +852,7 @@ public class Dungeon {
 
 		gold = bundle.getInt( GOLD );
 		energy = bundle.getInt( ENERGY );
+		battery = bundle.getInt( BATTERY );
 
 		Generator.restoreFromBundle( bundle );
 

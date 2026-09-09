@@ -87,6 +87,18 @@ public interface Card {
         return Dungeon.hero;
     }
     String extraKey = ".extra";
+    //四种稀有度卡牌的字体颜色：初始（白）/普通（绿）/稀有（蓝）/终阶（金）
+    int CARD_COLOR_FIRST  = 0xFFFFFF;
+    int CARD_COLOR_COMMON = 0x77E977;
+    int CARD_COLOR_RARE   = 0x5FB8FF;
+    int CARD_COLOR_FINAL  = 0xFFC23D;
+    /** 返回该卡牌稀有度对应的字体颜色 */
+    default int cardColor(){
+        if (this instanceof FinalCard)  return CARD_COLOR_FINAL;
+        if (this instanceof RareCard)   return CARD_COLOR_RARE;
+        if (this instanceof CommonCard) return CARD_COLOR_COMMON;
+        return CARD_COLOR_FIRST;
+    }
     default String failText(){ return Messages.get(Card.class, "fail"); }
     Class<? extends Card> getCardClass();
     default float chance() {

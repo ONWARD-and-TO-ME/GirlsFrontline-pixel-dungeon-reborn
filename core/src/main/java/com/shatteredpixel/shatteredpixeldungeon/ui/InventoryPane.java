@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
@@ -76,6 +77,9 @@ public class InventoryPane extends Component {
 	private BitmapText goldTxt;
 	private Image energy;
 	private BitmapText energyTxt;
+	//电池（全局货币）小图标与数量
+	private ItemSprite battery;
+	private BitmapText batteryTxt;
 	private RenderedTextBlock promptTxt;
 
 	private ArrayList<BagButton> bags;
@@ -174,6 +178,13 @@ public class InventoryPane extends Component {
 		energyTxt = new BitmapText(PixelScene.pixelFont);
 		energyTxt.hardlight(0x44CCFF);
 		add(energyTxt);
+
+		//电池全局货币：PC(横屏)底部空白带使用大电池物品图标（9x4）
+		battery = new ItemSprite(ItemSpriteSheet.BATTERY, null);
+		add(battery);
+		batteryTxt = new BitmapText(PixelScene.pixelFont);
+		batteryTxt.hardlight(0xFFCC33);
+		add(batteryTxt);
 
 		promptTxt = PixelScene.renderTextBlock(6);
 		promptTxt.hardlight(Window.TITLE_COLOR);
@@ -321,6 +332,19 @@ public class InventoryPane extends Component {
 			}
 		}
 
+		// 电池（全局货币）：背包物品格只占约两排，其下方到底部是整排空白。
+		// PC(横屏)侧边背包里把电池小图标+数量放在该底部空白带的右下角。
+		if (battery.visible && batteryTxt.visible) {
+			batteryTxt.visible = battery.visible = true;
+			float cy = y + height - 12;
+			battery.x = x + width - 4 - battery.width();
+			battery.y = cy + (batteryTxt.height() - battery.height()) / 2f;
+			batteryTxt.x = battery.x - batteryTxt.width() - 1;
+			batteryTxt.y = cy;
+			PixelScene.align(battery);
+			PixelScene.align(batteryTxt);
+		}
+
 		super.layout();
 	}
 
@@ -379,12 +403,18 @@ public class InventoryPane extends Component {
 			energyTxt.text(Integer.toString(Dungeon.energy));
 			energyTxt.measure();
 			energyTxt.visible = energy.visible = Dungeon.energy > 0;
+
+			batteryTxt.text(Integer.toString(Dungeon.battery));
+			batteryTxt.measure();
+			batteryTxt.visible = battery.visible = true;
 		} else {
 			promptTxt.text(selector.textPrompt());
 			promptTxt.visible = true;
 
 			goldTxt.visible = gold.visible = false;
 			energyTxt.visible = energy.visible = false;
+
+			batteryTxt.visible = battery.visible = false;
 		}
 
 		ArrayList<Bag> inventBags = stuff.getBags();
@@ -417,6 +447,8 @@ public class InventoryPane extends Component {
 		gold.alpha( lastEnabled ? 1f : 0.3f );
 		energyTxt.alpha( lastEnabled ? 1f : 0.3f );
 		energy.alpha( lastEnabled ? 1f : 0.3f );
+		batteryTxt.alpha( lastEnabled ? 1f : 0.3f );
+		battery.alpha( lastEnabled ? 1f : 0.3f );
 
 		layout();
 	}

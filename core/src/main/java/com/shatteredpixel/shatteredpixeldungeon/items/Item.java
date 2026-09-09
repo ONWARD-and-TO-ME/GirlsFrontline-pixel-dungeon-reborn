@@ -61,6 +61,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
@@ -628,6 +629,12 @@ public class Item implements Bundlable {
 	
 	public int image() {
 		return image;
+	}
+
+	//某些功能道具没有标准物品贴图（image = itemSpriteNeedDraw），可重写此方法返回一个来自
+	//其它图集（如 hero_icons）的自定义图标，用于在物品格/快捷栏中显示；返回 null 表示使用默认物品贴图。
+	public Image customIcon() {
+		return null;
 	}
 	
 	public ItemSprite.Glowing glowing() {

@@ -84,8 +84,8 @@ public class StarShield extends ShieldBuff {
 				turnsPassed = 0;
 			}
 
-			//护盾量超过 3×角色等级 层数时，每回合额外衰减2点（与分档衰减叠加，互不重置计数）
-			if (shielding() > 3 * heroLevel) {
+			//护盾量超过 10×角色等级 层数时，每回合额外衰减2点（与分档衰减叠加，互不重置计数）
+			if (shielding() > 10 * heroLevel) {
 				decShield(Math.min(2, shielding()));
 			}
 

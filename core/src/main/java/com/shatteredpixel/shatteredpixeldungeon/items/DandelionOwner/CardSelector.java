@@ -11,9 +11,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.canScrollRedButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndWithCanScrollButton;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
@@ -167,6 +169,7 @@ public class CardSelector extends Item {
         ArrayList<canScrollRedButton> buttons = new ArrayList<>();
         for (Card c : curCards)
             buttons.add(new canScrollRedButton(c.title()){
+                { textColor( c.cardColor() ); }  //按卡牌稀有度设置字体颜色
                 @Override
                 public void onClick(){
                     super.onClick();
@@ -174,6 +177,7 @@ public class CardSelector extends Item {
                         selecting.hide();
                     GirlsFrontlinePixelDungeon.scene().addToFront(
                             selecting = new WndOptions(c.title(), c.info(), false,
+                                    c.cardColor(), 1,
                                     Messages.get(CardSelector.class, "Entry"),
                                     Messages.get(CardSelector.class, "Cancel")){
                                 @Override
@@ -223,10 +227,12 @@ public class CardSelector extends Item {
     private void addCheckCardsBtn(ArrayList<? extends Card> list, ArrayList<canScrollRedButton> buttons){
         for (Card c : list)
             buttons.add(new canScrollRedButton(c.title()){
+                { textColor( c.cardColor() ); }  //按卡牌稀有度设置字体颜色
                 @Override
                 public void onClick(){
                     super.onClick();
-                    GirlsFrontlinePixelDungeon.scene().addToFront(new WndOptions(c.title(), c.info(), false));
+                    GirlsFrontlinePixelDungeon.scene().addToFront(
+                            new WndOptions(c.title(), c.info(), false, c.cardColor(), 1));
                 }
             });
     }
@@ -294,6 +300,12 @@ public class CardSelector extends Item {
     @Override
     public boolean isIdentified() {
         return true;
+    }
+
+    //丹德莱抽卡器的常驻图标（hero_icons 中第 27 格的“?”卡牌）
+    @Override
+    public Image customIcon() {
+        return new HeroIcon(HeroIcon.CARD_DRAW_RANDOM);
     }
     public class CoolDownTracker extends Buff{
         {

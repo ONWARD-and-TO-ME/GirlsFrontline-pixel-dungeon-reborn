@@ -24,10 +24,12 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.hero;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -78,6 +80,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
+import com.shatteredpixel.shatteredpixeldungeon.items.Battery;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardAffect;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
@@ -798,6 +801,24 @@ public class Hero extends Char {
 		//ak47无法偷袭了
 		return true;
 	}
+	//未来之星专属：副手武器（HG手枪）存放在GunSwap换枪buff中
+	private KindOfWeapon secondaryWeapon(){
+		GunSwap swap = buff( GunSwap.class );
+		if (swap == null) return null;
+		return swap.getEquipment( KindOfWeapon.class );
+	}
+
+	//未来之星专属：敌人在副手HG武器射程内、但不在主手武器射程内时，应使用副手武器快速攻击
+	private boolean shouldUseSecondary( Char enemy ){
+		if (subClass != HeroSubClass.FUTURE_STAR) return false;
+		KindOfWeapon second = secondaryWeapon();
+		if (second == null || !second.hasTag( KindOfWeapon.Tag.HG )) return false;
+		KindOfWeapon main = belongings.weapon();
+		boolean mainCanReach = main != null && main.canReach( this, enemy.pos );
+		boolean secondCanReach = second.canReach( this, enemy.pos );
+		return secondCanReach && !mainCanReach;
+	}
+
 	public boolean canAttack(Char enemy){
 		if (enemy == null || pos == enemy.pos || !Actor.chars().contains(enemy)) {
 			return false;
@@ -815,7 +836,9 @@ public class Hero extends Char {
 		if (wep != null && wep.canReach(this, enemy.pos)){
 			return true;
 		}
-		return false;
+
+		//未来之星：主手够不到时，若副手HG武器够得到，也允许攻击（快速攻击）
+		return shouldUseSecondary( enemy );
 	}
 	
 	public float attackDelay() {
@@ -1335,6 +1358,12 @@ public class Hero extends Char {
 					ready();
 				} else {
 					Badges.silentValidateHappyEnd();
+				//返程成功（持护符回到地面）：在通关奖励之外额外获得电池。
+				//基础3电池；种子局额外仅1电池；每开启一个挑战+1，开启10个挑战再+10；测试模式不发放
+				if (!Dungeon.isChallenged(Challenges.TEST_MODE)) {
+					Dungeon.battery += Battery.returnReward();
+					SPDSettings.battery( Dungeon.battery );
+				}
 					Dungeon.win( Amulet.class );
 					Dungeon.deleteGame( GamesInProgress.curSlot, true );
 					Game.switchScene( SurfaceScene.class );
@@ -2174,6 +2203,16 @@ public class Hero extends Char {
 
 		AttackIndicator.target(enemy);
 
+		//未来之星：敌人在副手HG射程内但不在主手射程内时，临时改用副手武器，
+		//使伤害、命中、攻速、攻击距离、附魔触发全部按副手武器计算
+		boolean useSecondary = shouldUseSecondary( enemy );
+		KindOfWeapon savedMain = belongings.weapon;
+		if (useSecondary) {
+			//粉色文本，与星之护盾（ShieldHalo）同色
+			sprite.showStatus( 0xFF99CC, Messages.get(this, "quick_attack") );
+			belongings.weapon = secondaryWeapon();
+		}
+
 		boolean hit = attack( enemy );
 
 		Invisibility.dispel();
@@ -2187,7 +2226,7 @@ public class Hero extends Char {
 		if (hit) {
 			GSH18Talent.onAttackHit(this);
 		}
-		
+
 		// GSH18天赋：天狼星心脏 - 攻击时附加伤害
 		if (hit&&(buff(Talent.SiriusHeartTracker.class) != null)) {
 			com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SiriusHeart.onAttack(this, enemy);
@@ -2196,6 +2235,11 @@ public class Hero extends Char {
         if (hit&&(buff(Talent.Type56BookTracker.class) != null)) {
             buff(Talent.Type56BookTracker.class).detach();
         }
+
+		//恢复主手武器
+		if (useSecondary) {
+			belongings.weapon = savedMain;
+		}
 
 		curAction = null;
 

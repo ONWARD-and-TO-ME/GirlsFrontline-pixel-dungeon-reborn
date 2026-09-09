@@ -56,7 +56,8 @@ public class RightClickMenu extends Component {
 		}
 		String[] options = actions.toArray(new String[0]);
 		this.item = item;
-		setup(new ItemSprite(item), Messages.titleCase(item.name()), options);
+		Image icon = item.customIcon();
+		setup(icon != null ? icon : new ItemSprite(item), Messages.titleCase(item.name()), options);
 	}
 
 	public RightClickMenu(Image icon, String title, String... options){

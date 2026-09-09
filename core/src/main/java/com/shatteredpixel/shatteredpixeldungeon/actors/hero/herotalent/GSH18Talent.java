@@ -167,13 +167,11 @@ public final class GSH18Talent {
 		if (!hero.hasTalent(Talent.GSH18_MEAL_TREATMENT)){
 			return;
 		}
-		// +1:进食恢复2点生命
-		if (hero.pointsInTalent(Talent.GSH18_MEAL_TREATMENT) >= 1) {
-			hero.HP = Math.min(hero.HP + 2, hero.HT);
-			if (hero.sprite != null) {
-				Emitter e = hero.sprite.emitter();
-				if (e != null) e.burst(Speck.factory(Speck.HEALING), 2);
-			}
+		// +1:进食恢复2点生命（入口 hasTalent 已保证天赋点数≥1，此处无需再判断 >=1）
+		hero.HP = Math.min(hero.HP + 2, hero.HT);
+		if (hero.sprite != null) {
+			Emitter e = hero.sprite.emitter();
+			if (e != null) e.burst(Speck.factory(Speck.HEALING), 2);
 		}
 		// +2:进食获得2点星之护盾值
 		if (hero.pointsInTalent(Talent.GSH18_MEAL_TREATMENT) >= 2) {

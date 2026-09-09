@@ -48,6 +48,10 @@ public class HeroIcon extends Image {
 	public static final int EMP_BOMB   = 21;
 	public static final int GUN_MASTER= 22;
 
+	//Dandelion card drawer (丹德莱抽卡器) persistent icons
+	public static final int CARD_DRAW_FIRST  = 26; //卡牌“1”
+	public static final int CARD_DRAW_RANDOM = 27; //卡牌“?”（抽卡常驻图标）
+
 	//abilities
 	public static final int HEROIC_LEAP     = 8;
 	public static final int SHOCKWAVE       = 9;
@@ -64,19 +68,19 @@ public class HeroIcon extends Image {
 	public static final int RATMOGRIFY      = 20;
 
 	public HeroIcon(HeroSubClass subCls){
-		super( Assets.Interfaces.HERO_ICONS );
-		if (film == null){
-			film = new TextureFilm(texture, SIZE, SIZE);
-		}
-		frame(film.get(subCls.icon()));
+		this( subCls.icon() );
 	}
 
 	public HeroIcon(ArmorAbility abil){
+		this( abil.icon() );
+	}
+
+	public HeroIcon(int icon){
 		super( Assets.Interfaces.HERO_ICONS );
 		if (film == null){
 			film = new TextureFilm(texture, SIZE, SIZE);
 		}
-		frame(film.get(abil.icon()));
+		frame(film.get(icon));
 	}
 
 }

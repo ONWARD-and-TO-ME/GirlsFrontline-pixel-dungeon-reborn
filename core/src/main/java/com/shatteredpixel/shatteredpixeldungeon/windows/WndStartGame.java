@@ -32,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
-import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.ThrowingSkill;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.GSH18;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
@@ -44,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
+import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -545,9 +545,9 @@ public class WndStartGame extends Window {
 						break;
 					case Dandelion:
 						//展示角色实际携带的道具与武器：指令·卡牌部署、M4A1突击步枪、技能·投掷
-						heroItem.icon(new ItemSprite(new CardSelector()));
-						heroLoadout.icon(new ItemSprite(new M4A1()));
-						heroMisc.icon(new ItemSprite(new ThrowingSkill()));
+					heroItem.icon(new HeroIcon(HeroIcon.CARD_DRAW_RANDOM));
+					heroLoadout.icon(new ItemSprite(new M4A1()));
+					heroMisc.icon(new ItemSprite(new ThrowingSkill()));
 						break;
 				}
 

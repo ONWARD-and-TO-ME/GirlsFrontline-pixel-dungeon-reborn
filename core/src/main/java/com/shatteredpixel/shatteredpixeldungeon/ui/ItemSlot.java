@@ -55,6 +55,7 @@ public class ItemSlot extends Button {
 	protected BitmapText status;
 	protected BitmapText extra;
 	protected Image      itemIcon;
+	protected Image      customIcon;
 	protected BitmapText level;
 	
 	private static final String TXT_STRENGTH	= ":%d";
@@ -121,6 +122,13 @@ public class ItemSlot extends Button {
 		sprite.x = x + margin.left + (width - sprite.width - (margin.left + margin.right)) / 2f * size;
 		sprite.y = y + margin.top + (height - sprite.height - (margin.top + margin.bottom)) / 2f * size;
 		PixelScene.align(sprite);
+
+		if (customIcon != null) {
+			customIcon.scale.set(size);
+			customIcon.x = x + margin.left + (width - customIcon.width - (margin.left + margin.right)) / 2f * size;
+			customIcon.y = y + margin.top + (height - customIcon.height - (margin.top + margin.bottom)) / 2f * size;
+			PixelScene.align(customIcon);
+		}
 		
 		if (status != null) {
 			status.scale.set(size);
@@ -186,6 +194,12 @@ public class ItemSlot extends Button {
 
 		this.item = item;
 
+		//物品切换时重建来自其它图集的自定义图标
+		if (customIcon != null){
+			remove(customIcon);
+			customIcon = null;
+		}
+
 		if (item == null) {
 
 			enable(false);
@@ -196,10 +210,18 @@ public class ItemSlot extends Button {
 		} else {
 			
 			enable(true);
-			sprite.visible(true);
 
 			sprite.view( item );
 			sprite.scale.set(size);
+
+			customIcon = item.customIcon();
+			if (customIcon != null){
+				add(customIcon);
+				sprite.visible(false);
+			} else {
+				sprite.visible(true);
+			}
+
 			updateText();
 		}
 	}
@@ -286,6 +308,7 @@ public class ItemSlot extends Button {
 		extra.alpha( alpha );
 		level.alpha( alpha );
 		if (itemIcon != null) itemIcon.alpha( alpha );
+		if (customIcon != null) customIcon.alpha( alpha );
 	}
 
 	public void showExtraInfo( boolean show ){

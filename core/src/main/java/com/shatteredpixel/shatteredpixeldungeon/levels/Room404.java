@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.triggers.Teleporter;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DEL;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.watabou.noosa.Game;
@@ -19,6 +20,9 @@ public class Room404 extends Level {
 
     // 定义了传送触发器的位置
     public static final int toZeroLevelSub = (HEIGHT-2)*WIDTH+(WIDTH-3);
+
+    // 德尔的位置：右下角区域，四邻均为空地、不贴墙体(第7行第7列)
+    private static final int delPos = 7 * WIDTH + 7;
 
     @Override
     public String tilesTex() {
@@ -68,6 +72,11 @@ public class Room404 extends Level {
 
         // 添加向上的楼梯(连接回ZeroLevelSub)
         placeTrigger(new Teleporter().create(toZeroLevelSub,ZeroLevelSub.toRoom404,1000));
+
+        // 放置德尔(由前进营地移入)；本层levelDepth仍为0，初次见面与对话发挑战的行为保持不变
+        DEL del = new DEL();
+        del.pos = delPos;
+        mobs.add(del);
 
         // 添加底部覆盖贴图
         CustomTilemap customBottomTile = new CustomBottomTile();

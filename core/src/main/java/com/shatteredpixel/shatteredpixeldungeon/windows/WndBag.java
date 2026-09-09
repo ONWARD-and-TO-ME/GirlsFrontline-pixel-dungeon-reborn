@@ -227,6 +227,22 @@ public class WndBag extends WndTabbed {
 			titleWidth = Math.min(titleWidth, amt.x);
 		}
 
+		//电池（全局货币）：手机(竖屏)背包为弹窗，物品网格占满窗口，空白处位于标题栏、
+		//金币/能量货币组的左侧。在这里放电池小图标+数量，并把标题文字宽度收窄以避免重叠。
+		ItemSprite battery = new ItemSprite(ItemSpriteSheet.BATTERY_ICON, null);
+		BitmapText battAmt = new BitmapText(Integer.toString(Dungeon.battery), PixelScene.pixelFont);
+		battAmt.hardlight(0xFFCC33);
+		battAmt.measure();
+		battAmt.y = (TITLE_HEIGHT - battAmt.baseLine()) / 2f - 1;
+		battery.y = (TITLE_HEIGHT - battery.height()) / 2f;
+		battery.x = titleWidth - 2 - battery.width();
+		battAmt.x = battery.x - battAmt.width() - 1;
+		PixelScene.align(battery);
+		PixelScene.align(battAmt);
+		add(battery);
+		add(battAmt);
+		titleWidth = battAmt.x;
+
 		String title = selector != null ? selector.textPrompt() : null;
 		RenderedTextBlock txtTitle = PixelScene.renderTextBlock(
 				title != null ? Messages.titleCase(title) : Messages.titleCase( bag.name() ), 8 );

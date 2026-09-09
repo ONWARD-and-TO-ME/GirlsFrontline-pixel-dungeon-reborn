@@ -49,6 +49,18 @@ public class SPDSettings extends GameSettings {
 	public static int version() {
 		return getInt( KEY_VERSION, 0 );
 	}
+
+	//Meta currency: battery（全局资源货币，跨局保留；拾取与通关/返程奖励都会累计）
+
+	public static final String KEY_BATTERY   = "meta_battery";
+
+	public static void battery( int value ) {
+		put( KEY_BATTERY, value );
+	}
+
+	public static int battery() {
+		return getInt( KEY_BATTERY, 0 );
+	}
 	
 	//Graphics
 	
