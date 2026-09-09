@@ -810,45 +810,8 @@ public enum Talent {
 			}
 		}
 
-		// GSH18 T2天赋：锁链冲击
-		if(hero.hasTalent(GSH18_CHAIN_SHOCK) && enemy.isAlive()){
-			int points = hero.pointsInTalent(GSH18_CHAIN_SHOCK);
-			float damageMultiplier = points == 1 ? 0.1f : 0.2f; // +1为10%，+2为20%
-			int splashDamage = Math.round(dmg * damageMultiplier);
-
-			// 获取目标周围3x3范围的所有格子
-			for (int i : PathFinder.NEIGHBOURS9) {
-				int cell = enemy.pos + i;
-				if (Dungeon.level.insideMap(cell) && cell != enemy.pos) { // 排除目标自身
-					Char ch = Actor.findChar(cell);
-					if (ch != null && ch.alignment != Char.Alignment.ALLY && ch.isAlive()) {
-						// 对范围内非友方单位造成伤害
-						ch.damage(splashDamage, hero);
-						ch.sprite.flash();
-
-						// +2级时，有20%概率对临近可移动单位造成1格击退
-						if (points >= 2 && Dungeon.level.adjacent(enemy.pos, cell) && !ch.properties().contains(Char.Property.IMMOVABLE)) {
-							// 20%概率触发击退
-							if (Random.Float() < 0.2f) {
-								int pushDir = ch.pos - enemy.pos;
-								Ballistica path = new Ballistica(ch.pos, ch.pos + pushDir, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET);
-								
-								// 如果路径有效且长度足够
-								if (path.path.size() > 1) {
-									int newPos = path.path.get(1);
-									// 检查目标位置是否可行走且没有其他角色
-									if (Dungeon.level.passable[newPos] && Actor.findChar(newPos) == null) {
-										// 执行击退
-										ch.pos = newPos;
-										ch.sprite.move(ch.pos - pushDir, ch.pos);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		// GSH18 T2天赋：锁链冲击（具体实现见 ChainShock；天狼星心脏附加伤害在 SiriusHeart.onAttack 中同样调用）
+		ChainShock.splash(hero, enemy, dmg);
 		
 		// GSH18天赋：双星守护
 		if(hero.hasTalent(GSH18_STAR_SHIELD)) {
@@ -903,6 +866,7 @@ public enum Talent {
 
         return dmg;
 	}
+
     public static class JIEFANGCI_Tracker extends FlavourBuff{}
 
 	public static void onShielding(Hero hero){
