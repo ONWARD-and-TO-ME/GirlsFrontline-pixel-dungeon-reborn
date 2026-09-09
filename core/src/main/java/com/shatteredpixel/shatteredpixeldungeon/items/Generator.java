@@ -140,6 +140,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.M99;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.Sass;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.AN94;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.Ump40;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cypros;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gun561;
@@ -382,9 +383,10 @@ public class Generator {
                     Ump40.class,
 					SRS.class,
 					Thunder.class,
-					GSH18.class
+					GSH18.class,
+					M4A1.class
 			};
-			WEP_T1.probs = new float[]{ 0, 1, 0, 1, 1, 1, 1, 1, 1, 0.5f, 0.75f };
+			WEP_T1.probs = new float[]{ 0, 1, 0, 1, 1, 1, 1, 1, 1, 0.5f, 0.75f, 1 };
 			
 			WEP_T2.classes = new Class<?>[]{
 					M16.class,

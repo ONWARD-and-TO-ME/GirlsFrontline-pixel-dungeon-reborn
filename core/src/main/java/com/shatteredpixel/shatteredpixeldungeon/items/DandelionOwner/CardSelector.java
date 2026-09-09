@@ -32,9 +32,53 @@ public class CardSelector extends Item {
     public ArrayList<FinalCard> FinalCards      = new ArrayList<>();
     public ArrayList<Card> curCards   = new ArrayList<>();
     public ArrayList<Card> failureCards   = new ArrayList<>();
-    private static final String AC_SELECT  = "SELECT_CARD";
-    private static final String AC_CHECK   = "CHECK_CARD";
-    private static final String AC_ADD = "ADD_CARD";
+    public enum actionsList {
+        SELECT_CARD, CHECK_CARD, ADD_CARD, DEBUG;
+        public boolean addAction( CardSelector selector ) {
+            switch (this) {
+                case SELECT_CARD:
+                    return selector.curCardNum < 8 && selector.coolDownLeft <= 0
+                            || !selector.curCards.isEmpty();
+                case CHECK_CARD:
+                    return !selector.FirstCards.isEmpty();
+                case ADD_CARD:
+                    return true;
+                case DEBUG:
+                    return Dungeon.isChallenged(Challenges.TEST_MODE);
+                default: return false;
+            }
+        }
+        public void doAction( CardSelector selector ){
+            switch (this) {
+                case SELECT_CARD:
+                    if (selector.curCards.isEmpty())
+                        Card.random(selector);
+                    selector.selectCards();
+                    return;
+                case CHECK_CARD:
+                    selector.checkCards();
+                    return;
+                case ADD_CARD:
+                    GameScene.selectItem(WeaponToCard.weaponSelector);
+                    return;
+                case DEBUG:
+                    selector.debug();
+            }
+        }
+        @Override
+        public String toString() {
+            return Messages.get(CardSelector.class, "ac_" + this.name());
+        }
+        public String bodyMessages( CardSelector selector ) {
+            return this + ":\n" +Messages.get(CardSelector.class, name() + ".body", selector.cardCD());
+        }
+    }
+    private int cardCD() {
+        if (duration < 33333)
+            return 2000 + curCardNum * 500;
+        else
+            return 4500;
+    }
     public static CardSelector INSTANCE(){
         if (Dungeon.hero == null)
             return new CardSelector();
@@ -72,34 +116,25 @@ public class CardSelector extends Item {
     }
     @Override
     public String desc(){
-        return super.desc() + "\n" + curCardNum + "\n" + duration;
+        return Messages.get(this, "desc", coolDownLeft, curCardNum, duration);
     }
     @Override
     public ArrayList<String> actions( Hero hero ){
         ArrayList<String> actions = super.actions(hero);
-        if (curCardNum < 8 && coolDownLeft <= 0
-                || !curCards.isEmpty())
-            actions.add(AC_SELECT);
-        if (!FirstCards.isEmpty())
-            actions.add(AC_CHECK);
-        actions.add(AC_ADD);
-        if (Dungeon.isChallenged(Challenges.TEST_MODE))
-            actions.add(AC_DEBUG);
+        for (actionsList a : actionsList.values())
+            if (a.addAction(this))
+                actions.add(a.name());
         return actions;
     }
     @Override
     public void execute( Hero hero, String action ) {
-        super.execute(hero, action);
-        if (action.equals(AC_CHECK))
-            checkCards();
-        else if (action.equals(AC_SELECT)){
-            if (curCards.isEmpty())
-                Card.random(this);
-            selectCards();
+        for (actionsList a : actionsList.values()) {
+            if (action.equals(a.name())) {
+                a.doAction(this);
+                return;
+            }
         }
-        else if (action.equals(AC_ADD))
-            GameScene.selectItem(WeaponToCard.weaponSelector);
-
+        super.execute(hero, action);
     }
     @Override
     public void debug(){

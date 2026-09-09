@@ -77,8 +77,10 @@ public class WeaponToCard {
         map.put(Kar98.class,         FinalCard.UNIVERSAL.Kar98k);       // Kar98k → Kar98k
         map.put(Mg42.class,          FinalCard.UNIVERSAL.MG5);          // H&K MG4 (Mg42) → MG5
     }
-    private static boolean containCard( Card card ){
-        return CardSelector.INSTANCE().contain(card);
+    private static boolean canSelect(Item item) {
+        Card card = map.get(item.getClass());
+        CardSelector selector = CardSelector.INSTANCE();
+        return !selector.contain(card) || selector.curCards.contains(card);
     }
     public static WndBag.ItemSelector weaponSelector = new WndBag.ItemSelector() {
 
@@ -98,7 +100,7 @@ public class WeaponToCard {
                 return false;
             if (!map.containsKey(item.getClass()))
                 return false;
-            return !containCard(map.get(item.getClass()));
+            return canSelect(item);
         }
 
         @Override
@@ -122,6 +124,8 @@ public class WeaponToCard {
                                     else if (c instanceof FinalCard)
                                         selector.FinalCards.add((FinalCard) c);
                                     c.onSelect();
+                                    if (selector.curCards.remove(c))
+                                        Card.addSignalCard(selector);
                                     selector.coolDownLeft += Random.NormalIntRange(300, 600);
                                     hide();
                                     Item.updateQuickslot();

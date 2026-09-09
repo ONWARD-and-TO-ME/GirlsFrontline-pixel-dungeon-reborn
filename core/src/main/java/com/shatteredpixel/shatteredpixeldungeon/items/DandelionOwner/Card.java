@@ -17,22 +17,24 @@ public interface Card {
         FinalCard.getAllCard(selector);
     }
     static void random(CardSelector selector){
-        Card card;
-        int num = selector.curCardNum;
-        if (num == 0) {
+        if (selector.curCardNum == 0) {
             for (int i = 0; i < 5; i++)
-                if ((card = randomCard(selector)) != null)
-                    selector.curCards.add(card);
+                addSignalCard(selector);
         }
         else {
             for (int i = 0; i < 3; i++)
-                if ((card = randomCard(selector)) != null)
-                    selector.curCards.add(card);
+                addSignalCard(selector);
+            Card card;
             if ((card = signalCard(selector)) != null)
                 selector.curCards.add(card);
-            else if ((card = randomCard(selector)) != null)
-                selector.curCards.add(card);
+            else
+                addSignalCard(selector);
         }
+    }
+    static void addSignalCard(CardSelector selector) {
+        Card card;
+        if ((card = randomCard(selector)) != null)
+            selector.curCards.add(card);
     }
     static Card signalCard(CardSelector selector){
         int curCardNum = selector.curCardNum;
