@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.GSH18Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
@@ -566,33 +567,8 @@ public enum Talent {
             Buff.prolong(hero, Haste.class, 0.67f + hero.pointsInTalent(INVIGORATING_MEAL));
         }
 
-        // GSH18天赋：疗养一餐
-        if (hero.hasTalent(GSH18_MEAL_TREATMENT)) {
-            // +1:进食恢复2点生命
-            if (hero.pointsInTalent(GSH18_MEAL_TREATMENT) >= 1) {
-                hero.HP = Math.min(hero.HP + 2, hero.HT);
-                if (hero.sprite != null) {
-                    Emitter e = hero.sprite.emitter();
-                    if (e != null) e.burst(Speck.factory(Speck.HEALING), 2);
-                }
-            }
-            // +2:进食获得2点星之护盾值
-            if (hero.pointsInTalent(GSH18_MEAL_TREATMENT) >= 2) {
-                StarShield starShield = hero.buff(StarShield.class);
-                if (starShield == null) {
-                    // 如果角色还没有星之护盾buff，创建一个新的
-                    starShield = Buff.affect(hero, StarShield.class);
-                }
-                starShield.incShield(2);
-                if (hero.sprite != null) {
-                    hero.sprite.centerEmitter().burst(MagicMissile.WardParticle.FACTORY, 2);
-                }
-            }
-        }
-        // GSH18天赋：元气一餐
-        if (hero.hasTalent(GSH18_ENERGIZING_MEAL))
-            // 进食后添加buff，用于跟踪下次攻击必定命中和增加攻击范围
-            Buff.affect(hero, GSH18EnergizingMealTracker.class);
+        // GSH18角色进食相关天赋（疗养一餐/元气一餐，实现见 GSH18Talent）
+        GSH18Talent.onFoodEaten(hero);
 
         if (Dungeon.hero.hasTalent(Talent.Type56_21V2)){
             if (Dungeon.hero.HP < Dungeon.hero.HT) {
@@ -644,18 +620,8 @@ public enum Talent {
                 shield.setShield(shieldToGive);
             }
 		}
-		// GSH18天赋：医护兼容
-		if (mul == 1.25F && hero.hasTalent(GSH18_MEDICAL_COMPATIBILITY)){
-			StarShield starShield = Buff.affect(hero, StarShield.class);
-			// 计算应回复的护盾层数：治疗药水恢复量的20%/50%
-			int healAmount = PotionOfHealing.getHealAmount(hero.HT);
-			float shieldPercent = -0.1f + 0.3f * hero.pointsInTalent(GSH18_MEDICAL_COMPATIBILITY);
-			int shieldToAdd = Math.round(healAmount * shieldPercent);
-			starShield.incShield(shieldToAdd);
-			if (hero.sprite != null) {
-				hero.sprite.centerEmitter().burst(MagicMissile.WardParticle.FACTORY, 2);
-			}
-		}
+		// GSH18角色药水相关天赋（医护兼容，实现见 GSH18Talent）
+		GSH18Talent.onPotionUsed(hero, mul);
 		if (hero.hasTalent(RESTORED_NATURE)){
 			ArrayList<Integer> grassCells = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8){
@@ -810,27 +776,9 @@ public enum Talent {
 			}
 		}
 
-		// GSH18 T2天赋：锁链冲击（具体实现见 ChainShock；天狼星心脏附加伤害在 SiriusHeart.onAttack 中同样调用）
-		ChainShock.splash(hero, enemy, dmg);
-		
-		// GSH18天赋：双星守护
-		if(hero.hasTalent(GSH18_STAR_SHIELD)) {
-            StarShieldTracker tracker = Buff.affect(hero, StarShieldTracker.class);
-            int shieldPerHit = hero.pointsInTalent(GSH18_STAR_SHIELD); // +1回1点，+2回2点
-
-            // 如果是GSH18，正常上限；否则，上限减半
-            int maxPerTurn = 5 * hero.pointsInTalent(GSH18_STAR_SHIELD); // +1每回合最多5点，+2每回合最多10点
-
-            if (hero.heroClass != HeroClass.GSH18)
-                maxPerTurn /= 2; // 非GSH18角色上限减半
-
-            if (tracker.count() < maxPerTurn) {
-                Buff.affect(hero, StarShield.class).incShield(shieldPerHit);
-                tracker.countUp(shieldPerHit);
-                if (hero.sprite != null)
-                    hero.sprite.centerEmitter().burst(MagicMissile.WardParticle.FACTORY, 2);
-            }
-        }
+		// GSH18角色攻击命中相关天赋（锁链冲击溅射/双星守护回盾，实现见 GSH18Talent；
+		// 天狼星心脏的附加伤害在 SiriusHeart.onAttack 中同样调用 GSH18Talent.chainShock）
+		GSH18Talent.onAttackProc(hero, enemy, dmg);
 
         if(hero.hasTalent(HOW_DARE_YOU)){
             float chance  =0.15f;
@@ -870,23 +818,8 @@ public enum Talent {
     public static class JIEFANGCI_Tracker extends FlavourBuff{}
 
 	public static void onShielding(Hero hero){
-		if(hero.hasTalent(GSH18_INTELLIGENCE_AWARENESS)){
-			IntelligenceAwarenessCooldown cooldownBuff = hero.buff(IntelligenceAwarenessCooldown.class);
-			if(cooldownBuff == null){
-				float cooldownTurns = 125.0f-25.0f*hero.pointsInTalent(GSH18_INTELLIGENCE_AWARENESS);
-				Buff.affect(hero, IntelligenceAwarenessCooldown.class, cooldownTurns);
-				int distance = -1+3*hero.pointsInTalent(GSH18_INTELLIGENCE_AWARENESS);
-				Buff.affect(hero, MindVision.class, 1.0f).distance = distance;
-			}
-		}
-
-		if(hero.hasTalent(GSH18_AGILE_MOVEMENT)){
-			AgileMovementCooldown cooldownBuff = hero.buff(AgileMovementCooldown.class);
-			if(cooldownBuff == null){
-				Buff.affect(hero, AgileMovementCooldown.class, 50.0f);
-				Buff.affect(hero, AgileMovement.class, 1.0f);
-			}
-		}
+		// GSH18角色获得护盾相关天赋（情报感知/敏捷移动，实现见 GSH18Talent）
+		GSH18Talent.onShielding(hero);
 	}
 
 	public static final int MAX_TALENT_TIERS = 4;

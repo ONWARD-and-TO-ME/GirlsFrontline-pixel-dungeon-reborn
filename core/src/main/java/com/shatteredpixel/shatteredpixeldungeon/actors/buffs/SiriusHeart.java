@@ -23,7 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.ChainShock;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.GSH18Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -223,8 +223,8 @@ public class SiriusHeart extends Buff implements ActionIndicator.Action {
         // 对敌人造成附加伤害（激活时已抽离护盾，此处不再读取）
         enemy.damage(bonusDamage, hero);
 
-        // 天狼星心脏的附加伤害同样计入锁链冲击的溅射判定（实现见 ChainShock）
-        ChainShock.splash(hero, enemy, bonusDamage);
+        // 天狼星心脏的附加伤害同样计入锁链冲击的溅射判定（实现见 GSH18Talent）
+        GSH18Talent.chainShock(hero, enemy, bonusDamage);
 
         // 显示伤害信息
         GLog.p(Messages.get(SiriusHeart.class, "damage", bonusDamage));

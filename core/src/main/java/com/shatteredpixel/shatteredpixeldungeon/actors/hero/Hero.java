@@ -58,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SiriusHeart;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.StarShield;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.GSH18Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TalentSecondSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WellFed;
@@ -565,17 +566,9 @@ public class Hero extends Char {
         if (acc != null)
             accuracy *= acc.percent();
 
-		// GSH18天赋：短线作战
-		if (hasTalent(Talent.GSH18_CLOSE_COMBAT) && Dungeon.level.adjacent(pos, target.pos)) {
-			switch(pointsInTalent(Talent.GSH18_CLOSE_COMBAT)){
-				case 1:accuracy*=1.2f;break; // +1级：攻击距离为1的敌人时，命中率增加20%
-				case 2:accuracy*=1.45f;break;  // +2级：攻击距离为1的敌人时，命中率增加45%
-			}
-		}
-		
-		// GSH18天赋：元气一餐 +1级效果
-		if (hasTalent(Talent.GSH18_ENERGIZING_MEAL)
-				&& buff(Talent.GSH18EnergizingMealTracker.class) != null) {
+		// GSH18天赋：短线作战命中加成 / 元气一餐必中（实现见 GSH18Talent）
+		accuracy *= GSH18Talent.accuracyMultiplier(this, target);
+		if (GSH18Talent.guaranteedHit(this)) {
 			// 下次攻击必定命中，设置一个非常高的accuracy值，变成测试枪了（）
 			return 1_000_000;
 		}
@@ -612,18 +605,9 @@ public class Hero extends Char {
 			return INFINITE_EVASION;
 		}
 
-		if(buff(Talent.AgileMovement.class) != null){
-			int level = pointsInTalent(Talent.GSH18_AGILE_MOVEMENT);
-			float chance = 0.15f;
-			if(level >= 3){
-				chance = 0.4f;
-			}else if(level == 2){
-				chance = 0.25f;
-			}
-
-			if(Random.Float() < chance){
-				return INFINITE_EVASION;
-			}
+		// GSH18天赋：敏捷移动闪避判定（实现见 GSH18Talent）
+		if (GSH18Talent.tryEvade(this)){
+			return INFINITE_EVASION;
 		}
 		
 		float evasion = defenseSkill;
@@ -793,10 +777,8 @@ public class Hero extends Char {
 			speed *= (2f + 0.25f*pointsInTalent(Talent.GROWING_POWER));
 		}
 		
-		// 后勤保证天赋效果：拥有星之护盾时增加移动速度
-		if (hasTalent(Talent.GSH18_LOGISTICS_SUPPORT) && buff(StarShield.class) != null && buff(StarShield.class).shielding() > 0) {
-			speed *= (1f + 0.1f * pointsInTalent(Talent.GSH18_LOGISTICS_SUPPORT));
-		}
+		// GSH18天赋：后勤支援——拥有星之护盾时增加移动速度（实现见 GSH18Talent）
+		speed *= GSH18Talent.speedMultiplier(this);
 		
 		return speed;
 		
@@ -2194,9 +2176,9 @@ public class Hero extends Char {
 			Buff.affect( this, Combo.class ).hit( enemy );
 		}
 
-		// GSH18天赋：元气一餐 - 攻击后移除buff
-		if (hit && (buff(Talent.GSH18EnergizingMealTracker.class) != null)) {
-			buff(Talent.GSH18EnergizingMealTracker.class).detach();
+		// GSH18天赋：元气一餐 - 攻击命中后消耗增益（实现见 GSH18Talent）
+		if (hit) {
+			GSH18Talent.onAttackHit(this);
 		}
 		
 		// GSH18天赋：天狼星心脏 - 攻击时附加伤害
