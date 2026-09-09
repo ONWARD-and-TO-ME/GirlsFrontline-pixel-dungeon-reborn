@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipmentBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.GSH18Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
@@ -180,8 +181,8 @@ abstract public class KindOfWeapon extends EquipableItem {
 	}
     @Override
     public boolean unEquipable(Hero hero){
-        // +2级允许取下被诅咒的武器
-        return  super.unEquipable(hero) || hero.pointsInTalent(Talent.GSH18_DOCTOR_INTUITION) >= 2;
+        // 医生直觉 +2级允许取下被诅咒的武器（实现见 GSH18Talent）
+        return  super.unEquipable(hero) || GSH18Talent.canUnequipWeapon(hero);
     }
 	@Override
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {

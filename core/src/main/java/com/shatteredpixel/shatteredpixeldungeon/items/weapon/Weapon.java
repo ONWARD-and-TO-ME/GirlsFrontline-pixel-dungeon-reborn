@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.GSH18Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardCalculator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
@@ -328,17 +329,9 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public int reachFactor(Char owner) {
 		int reach = reach(owner);
-		// GSH18天赋：漫画之心 - 根据武器等级增加攻击距离
+		// GSH18天赋：漫画之心/元气一餐射程加成（实现见 GSH18Talent）
 		if (owner instanceof Hero) {
-			Hero hero = (Hero) owner;
-			if (hero.hasTalent(Talent.GSH18_COMIC_HEART)) {
-				if (tier <= hero.pointsInTalent(Talent.GSH18_COMIC_HEART))
-					reach++;
-			}
-			// GSH18天赋：元气一餐 +2级效果 - 攻击范围增加1格
-			if (hero.pointsInTalent(Talent.GSH18_ENERGIZING_MEAL) >= 2
-					&& hero.buff(Talent.GSH18EnergizingMealTracker.class) != null)
-				reach++;
+			reach += GSH18Talent.reachBonus((Hero) owner, tier);
 		}
 		
 		return reach;

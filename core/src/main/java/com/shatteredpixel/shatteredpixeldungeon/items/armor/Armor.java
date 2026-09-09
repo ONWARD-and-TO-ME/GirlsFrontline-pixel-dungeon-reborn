@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.GSH18Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
@@ -400,8 +401,8 @@ public class Armor extends EquipableItem {
     }
     @Override
     public boolean unEquipable(Hero hero){
-        // +1级允许取下被诅咒的防具
-        return  super.unEquipable(hero) || hero.pointsInTalent(Talent.GSH18_DOCTOR_INTUITION) >= 1;
+        // 医生直觉 +1级允许取下被诅咒的防具（实现见 GSH18Talent）
+        return  super.unEquipable(hero) || GSH18Talent.canUnequipArmor(hero);
     }
     private void changeFirst(Hero hero){
         BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
