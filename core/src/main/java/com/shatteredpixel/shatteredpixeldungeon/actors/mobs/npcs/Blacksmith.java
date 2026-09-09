@@ -133,11 +133,10 @@ public class Blacksmith extends NPC {
 					}
 					pick.detach( Dungeon.hero.belongings.backpack );
 					gold.detachAll( Dungeon.hero.belongings.backpack );
+					CardSelector.INSTANCE().coolDown(1000);
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.L1())));
 					
 					Quest.completed = true;
-
-					CardSelector.INSTANCE().coolDown(1000);
 					Quest.reforged = false;
 				}
 				

@@ -26,6 +26,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.CardSelectorBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Education;
@@ -64,7 +66,6 @@ import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator.TestPo
 import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator.TestRing;
 import com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator.debugBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
-import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
@@ -80,6 +81,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SaltyZongzi;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SugarZongzi;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
@@ -93,6 +95,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
@@ -155,10 +158,6 @@ public enum HeroClass {
 		
 		Waterskin waterskin = new Waterskin();
 		waterskin.collect();
-
-//		if (DeviceCompat.isDebug()){
-//			new MapEditor().collect();
-//		}
 
         LevelTeleporter LevelTP = new LevelTeleporter();
         TestBomb testBomb       = new TestBomb();
@@ -384,10 +383,10 @@ public enum HeroClass {
 		hero.subClass = HeroSubClass.EMPTY;
 		M4A1 m = new M4A1();
 		(hero.belongings.weapon = m).identify();
-		CardSelector selector = new CardSelector();
-		selector.collect();
-		Dungeon.quickslot.setSlot(0, selector);
-		Dungeon.quickslot.setSlot(1, m);
+		Buff.affect(hero, CardSelectorBuff.class);
+		Dungeon.quickslot.setSlot(0, m);
+		new PotionOfExperience().identify();
+		new ScrollOfTransmutation().identify();
 		for (int i = 0; i < 5; i++){
 			PotionOfDivineInspiration.addTalent(hero, 0);
 			PotionOfDivineInspiration.addTalent(hero, 1);

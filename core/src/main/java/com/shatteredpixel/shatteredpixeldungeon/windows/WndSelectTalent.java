@@ -45,10 +45,10 @@ public class WndSelectTalent extends Window {
 
         pane = new TalentsPane(TalentButton.Mode.DEBUG_CHOOSE, talents);
         add(pane);
-        pane.setPos(0, top);
-        pane.setSize(120, pane.content().height());
-        resize((int)pane.width(), (int)pane.bottom());
-        pane.setPos(0, top);
+        pane.setRect(0, top, 120, pane.content().height());
+        resize((int)pane.width(), (int)Math.min(144, top + pane.content().height()));
+        pane.setRect(0, top, 120, this.height - top);
+        pane.scrollTo(0, 0);
     }
 
     @Override

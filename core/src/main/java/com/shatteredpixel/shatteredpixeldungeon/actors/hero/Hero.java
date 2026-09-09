@@ -44,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.CardSelectorBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.HS2000_Shield;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
@@ -375,7 +376,7 @@ public class Hero extends Char {
 		restoreUpdateByVersion(bundle);
 	}
 	private void restoreUpdateByVersion( Bundle bundle ) {
-		if (Dungeon.version < 670) {
+		if (Dungeon.version < 671) {
 			// 如果是未来之星职业，自动添加天狼星心脏buff
 			if (subClass == HeroSubClass.FUTURE_STAR) {
 				Buff.affect(this, SiriusHeart.class);
@@ -385,6 +386,12 @@ public class Hero extends Char {
 				Buff.affect(this, GunSwap.class);
 			}
 			CardAffect.kiloTimesVersionUpdate();
+			CardSelector selector = null;
+			for (Item item : belongings)
+				if (item instanceof CardSelector)
+					selector = (CardSelector) item;
+			if (selector != null)
+				Buff.affect(this, CardSelectorBuff.class).item(selector.detachAll(belongings.backpack));
 		}
 	}
 	

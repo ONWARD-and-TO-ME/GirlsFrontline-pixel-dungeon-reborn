@@ -142,10 +142,10 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 			pane = new TalentsPane(TalentButton.Mode.METAMORPH_CHOOSE, talents);
 			add(pane);
-			pane.setPos(0, top);
-			pane.setSize(120, pane.content().height());
-			resize((int)pane.width(), (int)pane.bottom());
-			pane.setPos(0, top);
+			pane.setRect(0, top, 120, pane.content().height());
+			resize((int)pane.width(), (int)Math.min(144, top + pane.content().height()));
+			pane.setRect(0, top, 120, this.height - top);
+			pane.scrollTo(0, pane.content().height() - pane.height());
 		}
 
 		@Override
@@ -230,14 +230,10 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 			LinkedHashMap<Talent, Integer> options = new LinkedHashMap<>();
 
-            for (HeroClass cls : HeroClass.values()){
-				Talent newTalent = null;
-				for (int i = 0; i < 100; i++)
-					if ((newTalent = newTalent(cls, replacing, tier, options.keySet())) != null)
-						break;
-				if (newTalent != null)
+			Talent newTalent;
+            for (HeroClass cls : HeroClass.values())
+				if ((newTalent = newTalent(cls, replacing, tier, options.keySet())) != null)
 					options.put(newTalent, hero.pointsInTalent(replacing));
-			}
 
 			replaceOptions = options;
 			setup(replacing, tier, options);
@@ -316,14 +312,12 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 			top = text.bottom() + 2;
 
-			TalentsPane.TalentTierPane optionsPane = new TalentsPane.TalentTierPane(replaceOptions, tier, TalentButton.Mode.METAMORPH_REPLACE);
-			add(optionsPane);
-			optionsPane.title.text(" ");
-			optionsPane.setPos(0, top);
-			optionsPane.setSize(120, optionsPane.height());
-			resize((int)optionsPane.width(), (int)optionsPane.bottom());
-
-			resize(120, (int)optionsPane.bottom());
+			TalentsPane list = new TalentsPane(replaceOptions, tier, TalentButton.Mode.METAMORPH_REPLACE, true);
+			add(list);
+			list.setRect(0, top, 120, list.content().height());
+			resize(120, (int)Math.min(144, top + list.content().height()));
+			list.setRect(0, top, 120, this.height - top);
+			list.scrollTo(0, 0);
 		}
 
 		@Override

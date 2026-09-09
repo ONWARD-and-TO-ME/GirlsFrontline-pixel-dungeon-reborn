@@ -7,7 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMet
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentsPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -76,19 +75,12 @@ public class WndReplaceTalent extends Window {
 
         top = text.bottom() + 2;
 
-        TalentsPane.TalentTierPane optionsPane = new TalentsPane.TalentTierPane(replaceOptions, tier, TalentButton.Mode.DEBUG_REPLACE);
-        optionsPane.title.text(" ");
-        optionsPane.setSize(120, optionsPane.height());
-        ScrollPane list = new ScrollPane(optionsPane){
-            @Override
-            public void onClick( float x, float y ) {
-                content.onClickB(x, y);
-            }
-        };
+        TalentsPane list = new TalentsPane(replaceOptions, tier, TalentButton.Mode.DEBUG_REPLACE, true);
         add(list);
-        list.setRect(-62, -50, 120, Math.min(125, list.height()));
-        list.scrollTo(0,0);
-        resize(120, (int) Math.min(144, list.height()));
+        list.setRect(0, top, 120, list.content().height());
+        resize(120, (int)Math.min(144, top + list.content().height()));
+        list.setRect(0, top, 120, this.height - top);
+        list.scrollTo(0, 0);
     }
 
     @Override

@@ -11,6 +11,13 @@ public class ItemBuff extends Buff {
         revivePersists = true;
     }
     protected Item item;
+    public void item( Item item ) {
+        this.item = item;
+        if (item != null) {
+            item.ownerBuff = this;
+            item.Tracker(target);
+        }
+    }
     public Item item(){
         return item;
     }
@@ -30,6 +37,12 @@ public class ItemBuff extends Buff {
         }
     }
     @Override
+    public boolean attachTo(Char target) {
+        if (item != null)
+            item.Tracker(target);
+        return super.attachTo(target);
+    }
+    @Override
     public void detach(){
         super.detach();
         if (item != null) {
@@ -40,11 +53,5 @@ public class ItemBuff extends Buff {
                 Dungeon.level.drop(item, target.pos);
         }
         //这种buff甚至在进入排行榜都不移除，但姑且写一下好了
-    }
-    @Override
-    public boolean attachTo(Char target) {
-        if (item != null)
-            item.Tracker(target);
-        return super.attachTo(target);
     }
 }

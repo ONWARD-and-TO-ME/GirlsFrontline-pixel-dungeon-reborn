@@ -49,6 +49,34 @@ public class TalentsPane extends ScrollPane {
 		this( mode, Dungeon.hero.talents );
 	}
 
+	//单层构造，用于Replace窗口（确保ScrollPane的controller先于TalentButton注册，使按钮能正常高亮）
+	public TalentsPane( LinkedHashMap<Talent, Integer> talents, int tier, TalentButton.Mode mode, boolean hideTitle ) {
+		super(new Component());
+
+		Ratmogrify.useRatroicEnergy = Dungeon.hero != null && Dungeon.hero.armorAbility instanceof Ratmogrify;
+
+		TalentTierPane pane = new TalentTierPane(talents, tier, mode);
+		if (hideTitle) pane.title.text(" ");
+		panes.add(pane);
+		content.add(pane);
+
+		ColorBlock sep = new ColorBlock(0, 1, 0xFF000000);
+		separators.add(sep);
+		content.add(sep);
+
+		sep = new ColorBlock(0, 1, 0xFF000000);
+		content.add(sep);
+
+		blocker = new ColorBlock(0, 0, 0xFF222222);
+		content.add(blocker);
+
+		blockText = null;
+
+		for (int i = panes.size()-1; i >= 0; i--){
+			content.bringToFront(panes.get(i));
+		}
+	}
+
 	public TalentsPane( TalentButton.Mode mode, ArrayList<LinkedHashMap<Talent, Integer>> talents ) {
 		super(new Component());
 
