@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.journal.BuffCatalog;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
@@ -141,6 +142,7 @@ public class Buff extends Actor {
 	public static<T extends Buff> T append( Char target, Class<T> buffClass ) {
 		T buff = Reflection.newInstance(buffClass);
 		buff.attachTo( target );
+		BuffCatalog.setSeen( buffClass );
 		return buff;
 	}
 
@@ -154,6 +156,7 @@ public class Buff extends Actor {
 	public static<T extends Buff> T affect( Char target, Class<T> buffClass ) {
 		T buff = target.buff( buffClass );
 		if (buff != null) {
+			BuffCatalog.setSeen( buffClass );
 			return buff;
 		} else {
 			return append( target, buffClass );

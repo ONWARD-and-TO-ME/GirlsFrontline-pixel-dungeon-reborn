@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
@@ -52,6 +53,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Launcher.Laun
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SA.SurpriseAttack;
+import com.shatteredpixel.shatteredpixeldungeon.journal.BuffCatalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -66,6 +68,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesGrid;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesList;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CustomNoteButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickRecipe;
@@ -107,6 +110,7 @@ public class WndJournal extends WndTabbed {
 	private CatalogTab catalogTab;
     private BadgesTab badgesTab;
     private DesignTab designTab;
+    private BuffCatalogTab buffCatalogTab;
 	
 	public static int last_index = 0;
 	private static WndJournal INSTANCE = null;
@@ -155,6 +159,11 @@ public class WndJournal extends WndTabbed {
 		add(designTab);
 		designTab.setRect(0, 0, width, height);
 		designTab.updateList();
+
+		buffCatalogTab = new BuffCatalogTab();
+		add(buffCatalogTab);
+		buffCatalogTab.setRect(0, 0, width, height);
+		buffCatalogTab.updateList();
 
 		ArrayList<Tab> tabs = new ArrayList<>();
 		int page = 0;
@@ -223,6 +232,20 @@ public class WndJournal extends WndTabbed {
 						return Messages.get(designTab, "title");
 					}
 				});
+		page++;
+		int finalPage6 = page;
+		tabs.add(new IconTab( Icons.get(Icons.BUFFS) ) {
+					protected void select( boolean value ) {
+						super.select( value );
+						buffCatalogTab.active = buffCatalogTab.visible = value;
+						if (value) last_index = finalPage6;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(buffCatalogTab, "title");
+					}
+				});
 
 		for (Tab tab : tabs) {
 			add( tab );
@@ -242,6 +265,7 @@ public class WndJournal extends WndTabbed {
 		alchemyTab.layout();
 		catalogTab.layout();
 		designTab.layout();
+		buffCatalogTab.layout();
 		if (!TitleScene)
 			notesTab.layout();
 	}
@@ -1482,5 +1506,90 @@ public class WndJournal extends WndTabbed {
 			}
 		}
 
+	}
+
+	public static class BuffCatalogTab extends Component {
+
+		private ScrollingGridPane grid;
+
+		@Override
+		protected void createChildren() {
+			grid = new ScrollingGridPane(false);
+			add(grid);
+		}
+
+		@Override
+		protected void layout() {
+			super.layout();
+			grid.setRect(x, y, width, height);
+		}
+
+		public void updateList() {
+			grid.clear();
+
+			int totalBuffs = BuffCatalog.totalBuffs();
+			int totalSeen = BuffCatalog.totalSeen();
+			grid.addHeader("_" + Messages.get(this, "title") + "_ (" + totalSeen + "/" + totalBuffs + ")", 9, true);
+
+			int[] categories = {BuffCatalog.POSITIVE, BuffCatalog.NEGATIVE, BuffCatalog.NEUTRAL};
+			for (int cat : categories) {
+				int catTotal = BuffCatalog.categoryTotal(cat);
+				int catSeen = BuffCatalog.categorySeen(cat);
+				grid.addHeader("_" + Messages.titleCase(BuffCatalog.title(cat)) + "_ (" + catSeen + "/" + catTotal + "):");
+				addGridBuffs(grid, BuffCatalog.categoryBuffs(cat));
+			}
+
+			grid.setRect(x, y, width, height);
+			grid.scrollTo(0, 0);
+		}
+
+		private static void addGridBuffs(ScrollingGridPane grid, Collection<Class<? extends Buff>> classes) {
+			for (Class<? extends Buff> buffClass : classes) {
+				boolean seen = BuffCatalog.isSeen(buffClass);
+				Buff buff = Reflection.newInstance(buffClass);
+				if (buff == null) continue;
+
+				Image buffIcon = new BuffIcon(buff, false);
+				String title;
+				String desc;
+
+				if (seen) {
+					title = Messages.titleCase(buff.toString());
+					desc = buff.desc();
+				} else {
+					buffIcon.lightness(0f);
+					title = "???";
+					desc = Messages.get(BuffCatalogTab.class, "not_seen_buff");
+				}
+
+				String finalTitle = title;
+				String finalDesc = desc;
+				ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(buffIcon) {
+					@Override
+					public boolean onClick(float x, float y) {
+						if (inside(x, y)) {
+							Window window;
+							if (seen) {
+								window = new WndInfoBuff(buff);
+							} else {
+								window = new WndJournalElse(new Image(icon), finalTitle, finalDesc);
+							}
+							if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
+								GameScene.show(window);
+							} else {
+								GirlsFrontlinePixelDungeon.scene().addToFront(window);
+							}
+							return true;
+						} else {
+							return false;
+						}
+					}
+				};
+				if (!seen) {
+					gridItem.hardLightBG(2f, 1f, 2f);
+				}
+				grid.addItem(gridItem);
+			}
+		}
 	}
 }

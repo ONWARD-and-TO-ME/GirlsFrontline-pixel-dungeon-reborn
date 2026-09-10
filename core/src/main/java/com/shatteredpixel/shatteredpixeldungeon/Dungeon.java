@@ -252,6 +252,14 @@ public class Dungeon {
 	public static int gold;
 	public static int energy;
 	public static int battery;
+
+	//电池为全局资源货币，全局存储(SPDSettings)是唯一真相源。
+	//所有增加电池的地方都必须走这里：先重读全局最新值再加增量写回，
+	//避免多个存档并行时，某存档用自己加载时的旧快照覆盖掉其他存档已获得的电池。
+	public static void addBattery( int delta ){
+		battery = SPDSettings.battery() + delta;
+		SPDSettings.battery( battery );
+	}
     //public static boolean ExtractSummoned;提取升级是否生成的计数
 
     public static int RollTimes     = 0;
@@ -852,7 +860,8 @@ public class Dungeon {
 
 		gold = bundle.getInt( GOLD );
 		energy = bundle.getInt( ENERGY );
-		battery = bundle.getInt( BATTERY );
+		//电池为全局货币：以全局存储为准，忽略存档内可能过期的快照
+		battery = SPDSettings.battery();
 
 		Generator.restoreFromBundle( bundle );
 

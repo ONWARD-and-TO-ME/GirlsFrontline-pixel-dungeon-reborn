@@ -164,6 +164,22 @@ public class v0_5_X_Changes {
         "_-_ UI新增_系统时间_显示。\n"+
         "_-_ 新增_上次进入存档时间_记录。\n"
         ));
+        changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.BATTERY),
+                "电池",
+        "_-_ 新增全局资源货币_电池_，跨局保留，当前数量显示在背包界面（PC端侧栏右下角、移动端背包窗口标题栏）。\n"+
+        "_-_ 获取规则：\n"+
+        "_-_ 通关（取得护符）获得_2_电池，持护符返程额外获得_3_电池。\n"+
+        "_-_ 使用自定义种子通关仅获得_1_电池，使用种子返程仅额外获得_1_电池。\n"+
+        "_-_ 每开启一个挑战，通关与返程各额外获得_1_电池；开启全部10个挑战时，通关与返程再各额外获得_10_电池。\n"+
+        "_-_ _测试模式_下不会获得电池。\n"
+        ));
+        changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.P90),
+                "新武器与武器技能",
+        "_-_ 新增5阶冲锋枪_P90_：拥有极高射速与命中加成，并可吸收少量伤害。\n"+
+        "_-_ P90武器技能_全弹发射_：10回合内攻击速度翻倍，冷却100回合。\n"+
+        "_-_ P90当前仅能在_测试模式_中获取。\n"+
+        "_-_ _M16A1_新增武器技能_战地配给_：30回合内即使极度饥饿也不会损失生命值，冷却100回合。\n"
+        ));
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
         changes.hardlight( CharSprite.POSITIVE );
         changeInfos.add(changes);
@@ -199,6 +215,18 @@ public class v0_5_X_Changes {
         changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.GSH18),
                 "HG武器标签",
         "_-_ 给现有手枪武器添加了_HG_标签（GSH18、M1911、纳甘左轮、维尔德、雷电、C96、灰熊、赛普罗斯），为副武器系统提供基础判定。"
+        ));
+        changes.addButton(new ChangeButton(new Hero(HeroClass.Dandelion), 0.8F,
+                "丹德莱系统更新",
+        "_-_ _抽卡器_改为常驻的卡牌指令行动按钮（buff化），不再占用背包格位，点击即可展开部署卡牌、查看卡牌、武器化卡的操作窗口。\n"+
+        "_-_ 常驻行动按钮与“部署卡牌”按钮使用了全新的卡牌图标。\n"+
+        "_-_ 卡牌名称现在按稀有度显示不同字体颜色：初始_白_、普通_绿_、稀有_蓝_、终阶_金_。\n"+
+        "_-_ _M4A1_加入1阶武器生成池与嬗变池。\n"+
+        "_-_ 成长型卡牌在楼层被封锁时，改为以越来越低的概率继续成长。\n"
+        ));
+        changes.addButton(new ChangeButton(Icons.get(Icons.DISPLAY),
+                "主副手系统",
+        "_-_ 重制了主副武器装备与_GunSwap_换枪的底层逻辑，换枪判定更加清晰，并修复了切换状态可能出现的异常问题。\n"
         ));
 
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
@@ -246,6 +274,12 @@ public class v0_5_X_Changes {
                     "_-_ 修复了丹德莱选择FAL之后仍可用M4A1近战攻击的bug。\n"
                     + "_-_ 修复了主副武器切换状态在进入存档时丢失的问题，现在切换状态可在存档中正确保存和恢复。\n"
                     + "_-_ 修复了HS2000护盾、卡牌效果、投掷技能、占卜卷轴的部分bug。"
+            );
+            miscChanges.add(
+                    "_-_ 修复了_蜕变协议_的天赋选择/替换窗口在选项过多时无法滑动的问题，窗口现在可以正常滚动。\n"
+                    + "_-_ 修复了一处贴图为空可能导致的闪退问题。\n"
+                    + "_-_ 冒险指南与炼金指南文本更新：相关术语统一为瞄准镜、模块、磁盘、协议等。\n"
+                    + "_-_ 整理了0层与角色选择界面的显示，角色选择界面的物品图标现在与局内实际外观保持一致。"
             );
         }
         changes.addButton(new ChangeButton(new BlacksmithSprite(), 0.8F,

@@ -50,6 +50,7 @@ public class Journal {
 		Catalog.restore( bundle );
 		Bestiary.restore( bundle );
 		Document.restore( bundle );
+		BuffCatalog.restore( bundle );
 		
 		loaded = true;
 	}
@@ -67,6 +68,7 @@ public class Journal {
 		Catalog.store(bundle);
 		Bestiary.store(bundle);
 		Document.store(bundle);
+		BuffCatalog.store(bundle);
 		
 		try {
 			FileUtils.bundleToFile( JOURNAL_FILE, bundle );
