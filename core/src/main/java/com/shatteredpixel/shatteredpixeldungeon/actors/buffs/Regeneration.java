@@ -38,6 +38,10 @@ public class Regeneration extends Buff {
 	
 	@Override
 	public boolean act() {
+		if (target.buff(FieldRation.class) != null) {
+			spend(TICK);
+			return true;
+		}
 		if (target.isAlive()) {
 
 			if (target.HP < regencap() && !((Hero)target).isStarving()) {

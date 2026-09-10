@@ -71,7 +71,8 @@ public class Hunger extends Buff implements Hero.Doom {
 
 		if (Dungeon.level.locked
 				|| target.buff(WellFed.class) != null
-				|| target.buff(ScrollOfChallenge.ChallengeArena.class) != null){
+				|| target.buff(ScrollOfChallenge.ChallengeArena.class) != null
+                || target.buff(FieldRation.class) != null){
 			spend(STEP);
 			return true;
 		}
@@ -83,16 +84,14 @@ public class Hunger extends Buff implements Hero.Doom {
 			if (isStarving()) {
 
 				//战地配给生效期间，极度饥饿不会造成生命值损失
-				if (target.buff(FieldRation.class) == null) {
-					partialDamage += STEP * target.HT/1000f;
+                partialDamage += STEP * target.HT / 1000f;
 
-					if (partialDamage > 1){
-						target.damage( (int)partialDamage, this);
-						partialDamage -= (int)partialDamage;
-					}
-				}
+                if (partialDamage > 1){
+                    target.damage( (int)partialDamage, this);
+                    partialDamage -= (int)partialDamage;
+                }
 
-			} else {
+            } else {
 
 				float newLevel = level + STEP;
 				if (newLevel >= STARVING) {
@@ -116,7 +115,7 @@ public class Hunger extends Buff implements Hero.Doom {
 				level = newLevel;
 
 			}
-			
+
 			spend( target.buff( Shadows.class ) == null ? STEP : STEP * 1.5f );
 
 		} else {
