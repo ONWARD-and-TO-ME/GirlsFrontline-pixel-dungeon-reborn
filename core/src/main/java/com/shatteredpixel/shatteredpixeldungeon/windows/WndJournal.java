@@ -53,7 +53,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Launcher.Laun
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SA.SurpriseAttack;
-import com.shatteredpixel.shatteredpixeldungeon.journal.BuffCatalog;
+import com.shatteredpixel.shatteredpixeldungeon.custom.utils.BuffScanner;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -69,6 +69,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesGrid;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesList;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CustomNoteButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickRecipe;
@@ -87,6 +88,7 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -110,8 +112,7 @@ public class WndJournal extends WndTabbed {
 	private CatalogTab catalogTab;
     private BadgesTab badgesTab;
     private DesignTab designTab;
-    private BuffCatalogTab buffCatalogTab;
-	
+
 	public static int last_index = 0;
 	private static WndJournal INSTANCE = null;
 	
@@ -159,11 +160,6 @@ public class WndJournal extends WndTabbed {
 		add(designTab);
 		designTab.setRect(0, 0, width, height);
 		designTab.updateList();
-
-		buffCatalogTab = new BuffCatalogTab();
-		add(buffCatalogTab);
-		buffCatalogTab.setRect(0, 0, width, height);
-		buffCatalogTab.updateList();
 
 		ArrayList<Tab> tabs = new ArrayList<>();
 		int page = 0;
@@ -232,20 +228,6 @@ public class WndJournal extends WndTabbed {
 						return Messages.get(designTab, "title");
 					}
 				});
-		page++;
-		int finalPage6 = page;
-		tabs.add(new IconTab( Icons.get(Icons.BUFFS) ) {
-					protected void select( boolean value ) {
-						super.select( value );
-						buffCatalogTab.active = buffCatalogTab.visible = value;
-						if (value) last_index = finalPage6;
-					}
-
-					@Override
-					protected String hoverText() {
-						return Messages.get(buffCatalogTab, "title");
-					}
-				});
 
 		for (Tab tab : tabs) {
 			add( tab );
@@ -265,7 +247,6 @@ public class WndJournal extends WndTabbed {
 		alchemyTab.layout();
 		catalogTab.layout();
 		designTab.layout();
-		buffCatalogTab.layout();
 		if (!TitleScene)
 			notesTab.layout();
 	}
@@ -974,18 +955,24 @@ public class WndJournal extends WndTabbed {
 	public static class CatalogTab extends Component{
 
 		private RedButton[] itemButtons;
-		private static final int NUM_BUTTONS = 3;
+	private static final int NUM_BUTTONS = 4;
 
-		public static int currentItemIdx   = 0;
-		private static float[] scrollPositions = new float[NUM_BUTTONS];
+	public static int currentItemIdx   = 0;
+	private static float[] scrollPositions = new float[NUM_BUTTONS];
 
-		//sprite locations
-		private static final int EQUIP_IDX = 0;
-		private static final int CONSUM_IDX = 1;
-		private static final int BESTIARY_IDX = 2;
-		private static final int LORE_IDX = 3;
+	//sprite locations
+	private static final int EQUIP_IDX = 0;
+	private static final int CONSUM_IDX = 1;
+	private static final int BESTIARY_IDX = 2;
+	private static final int BUFF_IDX = 3;
 
-		private ScrollingGridPane grid;
+	public static ArrayList<Class<?>> positiveBuffs = new ArrayList<>();
+	public static ArrayList<Class<?>> negativeBuffs = new ArrayList<>();
+	public static ArrayList<Class<?>> neutralBuffs = new ArrayList<>();
+
+	public static ArrayList<Class<? extends Buff>> buffClasses = BuffScanner.getAllBuffClasses();
+
+	private ScrollingGridPane grid;
 
 		@Override
 		protected void createChildren() {
@@ -1002,9 +989,9 @@ public class WndJournal extends WndTabbed {
 				add( itemButtons[i] );
 			}
 			itemButtons[EQUIP_IDX].icon(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER));
-			itemButtons[CONSUM_IDX].icon(new ItemSprite(ItemSpriteSheet.POTION_HOLDER));
-			itemButtons[BESTIARY_IDX].icon(new ItemSprite(ItemSpriteSheet.CATA_HOLDER));
-//			itemButtons[LORE_IDX].icon(new ItemSprite(ItemSpriteSheet.SPELL_HOLDER));
+		itemButtons[CONSUM_IDX].icon(new ItemSprite(ItemSpriteSheet.POTION_HOLDER));
+		itemButtons[BESTIARY_IDX].icon(new ItemSprite(ItemSpriteSheet.CATA_HOLDER));
+		itemButtons[BUFF_IDX].icon(Icons.get(Icons.BUFFS));
 
 			grid = new ScrollingGridPane(false){
 				@Override
@@ -1097,6 +1084,52 @@ public class WndJournal extends WndTabbed {
 					addGridEntities(grid, bestiary.entities());
 				}
 
+			} else if (currentItemIdx == BUFF_IDX) {
+				positiveBuffs.clear();
+				negativeBuffs.clear();
+				neutralBuffs.clear();
+
+				for (Class<?> buffClass : buffClasses) {
+					Buff buff;
+					try {
+						buff = (Buff) buffClass.getDeclaredConstructor().newInstance();
+						if (buff.icon() == BuffIndicator.NONE) continue;
+					} catch (Throwable t) {
+						continue;
+					}
+
+					if (buff.type == Buff.buffType.POSITIVE) {
+						positiveBuffs.add(buffClass);
+					} else if (buff.type == Buff.buffType.NEGATIVE) {
+						negativeBuffs.add(buffClass);
+					} else {
+						neutralBuffs.add(buffClass);
+					}
+				}
+
+				int buffCount = positiveBuffs.size() + negativeBuffs.size() + neutralBuffs.size();
+				grid.addHeader("_" + Messages.get(this, "title_buffs") + "_ (" + buffCount + "/" + buffClasses.size() + ")", 9, true);
+
+				if (!positiveBuffs.isEmpty()) {
+					grid.addHeader("_" + Messages.get(this, "title_positive_buffs") + "_ (" + positiveBuffs.size() + "):");
+					for (Class<?> buffClass : positiveBuffs) {
+						addGridBuff(grid, buffClass);
+					}
+				}
+
+				if (!negativeBuffs.isEmpty()) {
+					grid.addHeader("_" + Messages.get(this, "title_negative_buffs") + "_ (" + negativeBuffs.size() + "):");
+					for (Class<?> buffClass : negativeBuffs) {
+						addGridBuff(grid, buffClass);
+					}
+				}
+
+				if (!neutralBuffs.isEmpty()) {
+					grid.addHeader("_" + Messages.get(this, "title_neutral_buffs") + "_ (" + neutralBuffs.size() + "):");
+					for (Class<?> buffClass : neutralBuffs) {
+						addGridBuff(grid, buffClass);
+					}
+				}
 			}
 
 			grid.setRect(x, itemButtons[NUM_BUTTONS-1].bottom() + 1, width,
@@ -1419,8 +1452,72 @@ public class WndJournal extends WndTabbed {
 					gridItem.hardLightBG(2f, 1f, 2f);
 				}
 				grid.addItem(gridItem);
+		}
+	}
+
+	private static void addGridBuff(ScrollingGridPane grid, Class<?> buffClass) {
+		Buff buff;
+		try {
+			buff = (Buff) buffClass.getDeclaredConstructor().newInstance();
+		} catch (Exception e) {
+			return;
+		}
+		int iconID;
+		try {
+			iconID = buff.icon();
+		} catch (Exception e) {
+			return;
+		}
+
+		//直接读取 properties 原始文本，不经过 buff.desc()/toString()，
+		//避免 FlavourBuff 等传入格式化参数导致 Messages.format 崩溃
+		String title = Messages.get(buffClass, "name");
+		if (title == null || title.startsWith("Ms:")) {
+			title = buffClass.getSimpleName();
+		}
+		title = Messages.titleCase(title);
+
+		String desc = Messages.get(buffClass, "desc");
+		if (desc == null || desc.startsWith("Ms:")) {
+			desc = "";
+		} else {
+			//去掉格式化占位符，图鉴中不需要具体数值
+			desc = desc.replaceAll("%[\\d.]*[df]", "?")
+					.replace("%s", "?")
+					.replace("%%", "%");
+		}
+
+		Image icons = new BuffIcon(iconID, true);
+		try {
+			Method tintMethod = buffClass.getMethod("tintIcon", Image.class);
+			tintMethod.invoke(buff, icons);
+		} catch (Exception ignored) {
+		}
+
+		ScrollingGridPane.GridItem gridItem = getGridItem(title, desc, icons);
+		grid.addItem(gridItem);
+	}
+
+	private static ScrollingGridPane.GridItem getGridItem(String title, String desc, Image icon) {
+		return new ScrollingGridPane.GridItem(icon) {
+			@Override
+			public boolean onClick(float x, float y) {
+				if (inside(x, y) && icon != null) {
+					Image sprite = new Image();
+					sprite.copy(icon);
+					Window window = new WndTitledMessage(sprite, title, desc);
+					if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene){
+						GameScene.show(window);
+					} else {
+						GirlsFrontlinePixelDungeon.scene().addToFront(window);
+					}
+					return true;
+				} else {
+					return false;
+				}
 			}
 		};
+	}
 	}
 
 	public static class BadgesTab extends Component {
@@ -1506,90 +1603,5 @@ public class WndJournal extends WndTabbed {
 			}
 		}
 
-	}
-
-	public static class BuffCatalogTab extends Component {
-
-		private ScrollingGridPane grid;
-
-		@Override
-		protected void createChildren() {
-			grid = new ScrollingGridPane(false);
-			add(grid);
-		}
-
-		@Override
-		protected void layout() {
-			super.layout();
-			grid.setRect(x, y, width, height);
-		}
-
-		public void updateList() {
-			grid.clear();
-
-			int totalBuffs = BuffCatalog.totalBuffs();
-			int totalSeen = BuffCatalog.totalSeen();
-			grid.addHeader("_" + Messages.get(this, "title") + "_ (" + totalSeen + "/" + totalBuffs + ")", 9, true);
-
-			int[] categories = {BuffCatalog.POSITIVE, BuffCatalog.NEGATIVE, BuffCatalog.NEUTRAL};
-			for (int cat : categories) {
-				int catTotal = BuffCatalog.categoryTotal(cat);
-				int catSeen = BuffCatalog.categorySeen(cat);
-				grid.addHeader("_" + Messages.titleCase(BuffCatalog.title(cat)) + "_ (" + catSeen + "/" + catTotal + "):");
-				addGridBuffs(grid, BuffCatalog.categoryBuffs(cat));
-			}
-
-			grid.setRect(x, y, width, height);
-			grid.scrollTo(0, 0);
-		}
-
-		private static void addGridBuffs(ScrollingGridPane grid, Collection<Class<? extends Buff>> classes) {
-			for (Class<? extends Buff> buffClass : classes) {
-				boolean seen = BuffCatalog.isSeen(buffClass);
-				Buff buff = Reflection.newInstance(buffClass);
-				if (buff == null) continue;
-
-				Image buffIcon = new BuffIcon(buff, false);
-				String title;
-				String desc;
-
-				if (seen) {
-					title = Messages.titleCase(buff.toString());
-					desc = buff.desc();
-				} else {
-					buffIcon.lightness(0f);
-					title = "???";
-					desc = Messages.get(BuffCatalogTab.class, "not_seen_buff");
-				}
-
-				String finalTitle = title;
-				String finalDesc = desc;
-				ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(buffIcon) {
-					@Override
-					public boolean onClick(float x, float y) {
-						if (inside(x, y)) {
-							Window window;
-							if (seen) {
-								window = new WndInfoBuff(buff);
-							} else {
-								window = new WndJournalElse(new Image(icon), finalTitle, finalDesc);
-							}
-							if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
-								GameScene.show(window);
-							} else {
-								GirlsFrontlinePixelDungeon.scene().addToFront(window);
-							}
-							return true;
-						} else {
-							return false;
-						}
-					}
-				};
-				if (!seen) {
-					gridItem.hardLightBG(2f, 1f, 2f);
-				}
-				grid.addItem(gridItem);
-			}
-		}
 	}
 }
