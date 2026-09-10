@@ -54,11 +54,11 @@ public class SPDSettings extends GameSettings {
 
 	public static final String KEY_BATTERY   = "meta_battery";
 
-	public static void battery( int value ) {
-		put( KEY_BATTERY, value );
+	public static void batteryAdd( int value ) {
+		put( KEY_BATTERY, value + batteryLeft() );
 	}
 
-	public static int battery() {
+	public static int batteryLeft() {
 		return getInt( KEY_BATTERY, 0 );
 	}
 	

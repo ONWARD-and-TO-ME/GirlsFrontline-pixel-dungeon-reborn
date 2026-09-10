@@ -56,7 +56,7 @@ public class NoelShopkeeper extends ImpShopkeeper {
                 String[] options = new String[3];
                 int i = 0;
                 options[i++] = Messages.get(rabbitShopkeeper, "sell");
-                options[i++] = Messages.get(rabbitShopkeeper, "roll", NoelShopkeeper.RollNeed *(Dungeon.RollTimes +1));
+                options[i++] = Messages.get(rabbitShopkeeper, "roll", rollNeed(rollTimes));
                 options[i++] = Messages.get(rabbitShopkeeper, "play");
 
                 GameScene.show(new WndOptions(rabbitShopkeeper.sprite(), Messages.titleCase(rabbitShopkeeper.name()), rabbitShopkeeper.WndInfo(), options) {
@@ -65,8 +65,7 @@ public class NoelShopkeeper extends ImpShopkeeper {
                         if (index == 0) {
                             Shopkeeper.sell();
                         } else if (index == 1) {
-                            Dungeon.gold-= NoelShopkeeper.RollNeed *(Dungeon.RollTimes +1);
-                            Dungeon.RollTimes++;
+                            Dungeon.gold-= rollNeed(rollTimes++);
                             Item item;
                             do {
                                 item = Generator.randomUsingDefaults();
@@ -91,9 +90,9 @@ public class NoelShopkeeper extends ImpShopkeeper {
                         if (index == 0) {
                             return true;
                         } else if (index == 1){
-                            return Dungeon.gold>= NoelShopkeeper.RollNeed *(Dungeon.RollTimes +1);
+                            return Dungeon.gold >= rollNeed(rollTimes);
                         } else if (index == 2){
-                            return Dungeon.gold>= NoelShopkeeper.PlayNeed;
+                            return Dungeon.gold >= NoelShopkeeper.PlayNeed;
                         }else
                             return super.enabled(index);
                     }

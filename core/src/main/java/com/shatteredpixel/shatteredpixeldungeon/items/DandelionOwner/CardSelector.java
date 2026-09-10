@@ -74,6 +74,12 @@ public class CardSelector extends Item {
         public String bodyMessages( CardSelector selector ) {
             return this + ":\n" +Messages.get(CardSelector.class, name() + ".body", selector.cardCD());
         }
+        public Image actionImage( CardSelector selector ) {
+            switch (this) {
+                case SELECT_CARD: return new HeroIcon(HeroIcon.CARD_DRAW_FIRST);
+                default: return selector.customIcon();
+            }
+        }
     }
     private int cardCD() {
         if (duration < 33333)

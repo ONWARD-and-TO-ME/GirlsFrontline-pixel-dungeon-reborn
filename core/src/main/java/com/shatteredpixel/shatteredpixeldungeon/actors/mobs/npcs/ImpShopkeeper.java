@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.P7Sprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -44,7 +45,7 @@ public class ImpShopkeeper extends Shopkeeper {
 	
 	private boolean seenBefore = false;
 
-    public static final int RollNeed = 1200;
+    public static final int RollNeed = 600;
     public static final int PlayNeed = 600;
 
     @Override
@@ -67,11 +68,11 @@ public class ImpShopkeeper extends Shopkeeper {
                 if (Dungeon.depth==20)
                     Shopkeeper.sell();
                 else {
-                    ImpShopkeeper impShopkeeper = new ImpShopkeeper();
+                    ImpShopkeeper impShopkeeper = ImpShopkeeper.this;
                     String[] options = new String[2];
                     int i = 0;
                     options[i++] = Messages.get(impShopkeeper, "sell");
-                    options[i++] = Messages.get(impShopkeeper, "roll", RollNeed *(Dungeon.RollTimes +1));
+                    options[i++] = Messages.get(impShopkeeper, "roll", rollNeed(rollTimes));
 
                     GameScene.show(new WndOptions(impShopkeeper.sprite(), Messages.titleCase(impShopkeeper.name()), impShopkeeper.WndInfo(), options) {
                         protected void onSelect(int index) {
@@ -83,8 +84,7 @@ public class ImpShopkeeper extends Shopkeeper {
                                     impShopkeeper.yellNormal("谢谢惠顾~");
                                 }
                                 else {
-                                    Dungeon.gold -= RollNeed * (Dungeon.RollTimes + 1);
-                                    Dungeon.RollTimes++;
+                                    Dungeon.gold -= rollNeed(rollTimes++);
                                     Item item;
                                     do {
                                         item = Generator.randomUsingDefaults();
@@ -106,7 +106,7 @@ public class ImpShopkeeper extends Shopkeeper {
                             if (index == 0) {
                                 return true;
                             } else if (index == 1){
-                                return Dungeon.gold>= RollNeed *(Dungeon.RollTimes +1);
+                                return Dungeon.gold >= rollNeed(rollTimes);
                             }
                             else
                                 return super.enabled(index);
@@ -117,5 +117,21 @@ public class ImpShopkeeper extends Shopkeeper {
             }
         });
         return true;
+    }
+    protected int rollNeed( int times ){
+        return 1200 + RollNeed * times;
+    }
+    protected int rollTimes;
+    private static final String ROLL_TIMES       = "ROLL_TIMES";
+    @Override
+    public void storeInBundle( Bundle bundle ) {
+        super.storeInBundle(bundle);
+        bundle.put(ROLL_TIMES, rollTimes);
+    }
+    @Override
+    public void restoreFromBundle( Bundle bundle ){
+        super.restoreFromBundle(bundle);
+        rollTimes = bundle.getInt(ROLL_TIMES);
+
     }
 }

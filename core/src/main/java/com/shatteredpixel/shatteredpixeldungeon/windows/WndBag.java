@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -230,7 +231,7 @@ public class WndBag extends WndTabbed {
 		//电池（全局货币）：手机(竖屏)背包为弹窗，物品网格占满窗口，空白处位于标题栏、
 		//金币/能量货币组的左侧。在这里放电池小图标+数量，并把标题文字宽度收窄以避免重叠。
 		ItemSprite battery = new ItemSprite(ItemSpriteSheet.BATTERY_ICON, null);
-		BitmapText battAmt = new BitmapText(Integer.toString(Dungeon.battery), PixelScene.pixelFont);
+		BitmapText battAmt = new BitmapText(Integer.toString(SPDSettings.batteryLeft()), PixelScene.pixelFont);
 		battAmt.hardlight(0xFFCC33);
 		battAmt.measure();
 		battAmt.y = (TITLE_HEIGHT - battAmt.baseLine()) / 2f - 1;

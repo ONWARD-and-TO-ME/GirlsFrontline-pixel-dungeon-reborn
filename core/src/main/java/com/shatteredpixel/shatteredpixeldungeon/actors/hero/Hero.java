@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -1357,18 +1358,17 @@ public class Hero extends Char {
 					ready();
 				} else {
 					Badges.silentValidateHappyEnd();
-				//返程成功（持护符回到地面）：在通关奖励之外额外获得电池。
-				//基础3电池；种子局额外仅1电池；每开启一个挑战+1，开启10个挑战再+10；测试模式不发放
-				if (!Dungeon.isChallenged(Challenges.TEST_MODE)) {
-				Dungeon.addBattery( Battery.returnReward() );
-			}
+					//返程成功（持护符回到地面）：在通关奖励之外额外获得电池。
+					//基础3电池；种子局额外仅1电池；每开启一个挑战+1，开启10个挑战再+10；测试模式不发放
+					if (!Dungeon.isChallenged(Challenges.TEST_MODE))
+						SPDSettings.batteryAdd( Battery.returnReward() );
 					Dungeon.win( Amulet.class );
 					Dungeon.deleteGame( GamesInProgress.curSlot, true );
 					Game.switchScene( SurfaceScene.class );
 				}
 				
 			}
-			  else if (Dungeon.level instanceof RabbitBossLevel){
+			else if (Dungeon.level instanceof RabbitBossLevel){
                 Game.runOnRenderThread(new Callback() {
                     @Override
                     public void call() {
@@ -1399,7 +1399,7 @@ public class Hero extends Char {
                 });
                 ready();
             }
-              else {
+			else {
 				
 				curAction = null;
 

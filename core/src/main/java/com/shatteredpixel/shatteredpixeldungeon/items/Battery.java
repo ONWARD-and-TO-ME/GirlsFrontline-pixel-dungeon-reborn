@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -98,7 +99,7 @@ public class Battery extends Item {
 			return true;
 		}
 
-		Dungeon.addBattery( quantity );
+		SPDSettings.batteryAdd( quantity );
 
 		GameScene.pickUp( this, pos );
 		hero.sprite.showStatus( 0xFFCC33, TXT_VALUE, quantity );

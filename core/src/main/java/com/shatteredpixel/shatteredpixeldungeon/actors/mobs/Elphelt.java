@@ -405,7 +405,7 @@ public class Elphelt extends Mob {
 
 		if (pos >= 0)
 			GameScene.add( Blob.seedStrict( pos, Math.round(1 + TIME_TO_EXPLODE), GenoiseWarn.class )
-					.add(new Elphelt_Genoise( pos, TIME_TO_EXPLODE )) );
+					.add(new Elphelt_Genoise( pos, 1 + TIME_TO_EXPLODE )) );
 
 		curGenoiseStack--;
 	}

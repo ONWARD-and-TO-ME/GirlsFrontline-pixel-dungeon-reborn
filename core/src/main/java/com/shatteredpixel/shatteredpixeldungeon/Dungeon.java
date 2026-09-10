@@ -251,18 +251,7 @@ public class Dungeon {
 
 	public static int gold;
 	public static int energy;
-	public static int battery;
 
-	//电池为全局资源货币，全局存储(SPDSettings)是唯一真相源。
-	//所有增加电池的地方都必须走这里：先重读全局最新值再加增量写回，
-	//避免多个存档并行时，某存档用自己加载时的旧快照覆盖掉其他存档已获得的电池。
-	public static void addBattery( int delta ){
-		battery = SPDSettings.battery() + delta;
-		SPDSettings.battery( battery );
-	}
-    //public static boolean ExtractSummoned;提取升级是否生成的计数
-
-    public static int RollTimes     = 0;
 	public static HashSet<Integer> chapters;
 
 	public static SparseArray<ArrayList<Item>> droppedItems;
@@ -338,10 +327,6 @@ public class Dungeon {
         CreateId = 0;
 		gold = 0;
 		energy = 0;
-		//电池为全局资源货币：新局继承跨局余额（通关/返程奖励已持久化到 SPDSettings）
-		battery = SPDSettings.battery();
-        //ExtractSummoned = false;初始化计数为未生成
-
 		droppedItems = new SparseArray<>();
 		portedItems = new SparseArray<>();
 
@@ -641,7 +626,6 @@ public class Dungeon {
 	private static final String GOLD		    = "gold";
 	private static final String ENERGY		    = "energy";
 	private static final String BATTERY		    = "battery";
-    //private static final String Summoned		    = "ExtractSummoned";
 	private static final String DROPPED         = "dropped%d";
 	private static final String PORTED          = "ported%d";
 	public static final String LEVEL		    = "level";
@@ -652,7 +636,6 @@ public class Dungeon {
     private static final String NOTESAVEA       = "NOTESAVEA";
     private static final String NOTESAVEB       = "NOTESAVEB";
     private static final String LOCKXMAS       = "LOCKXMAS";
-    private static final String ROLLTIMES       = "ROLLTIMES";
 	private static final String GAME_MODE		= "Game_Mode";
 	public static final String GuessType		= "Guess_Type";
 	private static final String SWAPPED_QUICK_SLOTS = "swapped_quick_slots";
@@ -675,7 +658,6 @@ public class Dungeon {
 			bundle.put( MOBS_TO_CHAMPION, mobsToChampion );
 			bundle.put( HERO, hero );
 			bundle.put( DEPTH, depth );
-            bundle.put( ROLLTIMES, RollTimes);
 			bundle.put( GAME_MODE, GameMode);
 			//持久化主副武器快捷栏切换状态（Toolbar.swappedQuickSlots 为静态全局变量，不保存则读档后丢失）
 			bundle.put( SWAPPED_QUICK_SLOTS, Toolbar.swappedQuickSlots );
@@ -684,9 +666,6 @@ public class Dungeon {
 
             bundle.put( GOLD, gold );
 			bundle.put( ENERGY, energy );
-			bundle.put( BATTERY, battery );
-            //bundle.put( Summoned, ExtractSummoned );保存计数
-
 			for (int d : droppedItems.keyArray()) {
 				bundle.put(Messages.format(DROPPED, d), droppedItems.get(d));
 			}
@@ -769,7 +748,6 @@ public class Dungeon {
         levelId = bundle.getInt( LEVEL_ID );
 
 		version = bundle.getInt( VERSION );
-        RollTimes = bundle.getInt( ROLLTIMES );
 		seed = bundle.contains( SEED ) ? bundle.getLong( SEED ) : DungeonSeed.randomSeed();
 		Game.Seed = seed;
         customSeedText = bundle.contains( SEED_CODE ) ? bundle.getString( SEED_CODE ) : "";
@@ -860,9 +838,6 @@ public class Dungeon {
 
 		gold = bundle.getInt( GOLD );
 		energy = bundle.getInt( ENERGY );
-		//电池为全局货币：以全局存储为准，忽略存档内可能过期的快照
-		battery = SPDSettings.battery();
-
 		Generator.restoreFromBundle( bundle );
 
 		droppedItems = new SparseArray<>();

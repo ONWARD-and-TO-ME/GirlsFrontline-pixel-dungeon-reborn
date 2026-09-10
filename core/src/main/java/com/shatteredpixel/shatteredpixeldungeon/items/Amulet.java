@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -79,7 +80,7 @@ public class Amulet extends Item {
 				//通关奖励：基础2电池；种子局仅1电池；每开启一个挑战+1，开启10个挑战再+10；测试模式不发放
 			if (!Dungeon.isChallenged(Challenges.TEST_MODE)) {
 				int reward = Battery.winReward();
-				Dungeon.addBattery( reward );
+				SPDSettings.batteryAdd( reward );
 				hero.sprite.showStatus( 0xFFCC33, "%+d", reward );
 			}
 

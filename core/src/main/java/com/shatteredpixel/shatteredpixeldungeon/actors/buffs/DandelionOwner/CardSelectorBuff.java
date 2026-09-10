@@ -4,9 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ItemBuff;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
-import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -35,8 +33,7 @@ public class CardSelectorBuff extends ItemBuff implements ActionIndicator.Action
     @Override
     public Image actionIcon() {
         //常驻动作按钮使用 hero_icons 中的卡牌图标，而非物品贴图占位（变色核心）
-        Image icon = selector().customIcon();
-        return icon != null ? icon : new ItemSprite(selector());
+        return selector().customIcon();
     }
 
     @Override
@@ -69,15 +66,10 @@ public class CardSelectorBuff extends ItemBuff implements ActionIndicator.Action
             add(messages);
             pos = messages.bottom() + 3*MARGIN;
 
-            Image icon = selector.customIcon();
-            if (icon == null) icon = new ItemSprite(selector);
-            //“部署卡牌”按钮使用“1”卡牌图标，其余按钮沿用默认卡牌图标
-            Image firstIcon = new HeroIcon(HeroIcon.CARD_DRAW_FIRST);
-
             for (CardSelector.actionsList a : CardSelector.actionsList.values()) {
                 if (a == CardSelector.actionsList.DEBUG && !a.addAction(selector))
                     continue;
-                Image ic = new Image(a == CardSelector.actionsList.SELECT_CARD ? firstIcon : icon);
+                Image ic = a.actionImage(selector);
                 RedButton button = new RedButton(a.bodyMessages(selector), 6) {
                     @Override
                     protected void onClick() {

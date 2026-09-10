@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
@@ -404,7 +405,7 @@ public class InventoryPane extends Component {
 			energyTxt.measure();
 			energyTxt.visible = energy.visible = Dungeon.energy > 0;
 
-			batteryTxt.text(Integer.toString(Dungeon.battery));
+			batteryTxt.text(Integer.toString(SPDSettings.batteryLeft()));
 			batteryTxt.measure();
 			batteryTxt.visible = battery.visible = true;
 		} else {

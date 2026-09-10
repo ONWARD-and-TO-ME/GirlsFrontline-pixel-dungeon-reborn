@@ -37,7 +37,7 @@ public class RabbitWeaponGenoise extends Wand {
 
         if (beam.collisionPos >= 0)
             GameScene.add( Blob.seedStrict( beam.collisionPos, Math.round(1 + TIME_TO_EXPLODE), GenoiseWarn.class )
-                    .add(new Genoise( beam.collisionPos, min(level()), max(level()), TIME_TO_EXPLODE )) );
+                    .add(new Genoise( beam.collisionPos, min(level()), max(level()), 1 + TIME_TO_EXPLODE )) );
     }
 
     @Override
