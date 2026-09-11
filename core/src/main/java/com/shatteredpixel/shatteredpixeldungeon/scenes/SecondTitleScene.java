@@ -197,7 +197,7 @@ public class SecondTitleScene extends PixelScene {
 		//Do nothing
 	}
 
-    private static void enterMainGame(){
+    public static void enterMainGame(){
         Dungeon.hero = null;
         ActionIndicator.clearAll();
         GamesInProgress.curSlot = 0;
@@ -220,7 +220,8 @@ public class SecondTitleScene extends PixelScene {
             Game.switchScene(GameScene.class);
         }
     }
-	private static class WndCake extends WndOptions {
+	//公开：0层电脑窗口（windows.WndComputer）也会打开节日蛋糕窗口
+	public static class WndCake extends WndOptions {
 		public int month;
 		public int day;
 		public String message;

@@ -24,6 +24,8 @@ import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
@@ -39,8 +41,11 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.FncSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
+
+import java.io.IOException;
 
 // 在导入部分添加CounterBuff类的导入
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
@@ -172,6 +177,8 @@ public class RatKing extends NPC {
             else {
                 yellNormal(Messages.get(this, "zero_guide"));
             }
+            //弹出圣诞节彩蛋开关窗口（全局开关，对新开的探索生效）
+            showXmasEggWindow();
         }
         else if (crown != null){
             if (hero.belongings.armor() == null) {
@@ -277,6 +284,62 @@ public class RatKing extends NPC {
 
     private void SetLast(int i) {
         Buff.count(hero,LastTracker.class,i);
+    }
+
+    //0层营地FNC：圣诞节彩蛋开关窗口
+    private void showXmasEggWindow() {
+        Game.runOnRenderThread(new Callback() {
+            @Override
+            public void call() {
+                final boolean enabled = SPDSettings.xmasEgg();
+                GameScene.show(new WndOptions(
+                        sprite(),
+                        Messages.titleCase(name()),
+                        Messages.get(RatKing.this, "xmas_egg_prompt"),
+                        Messages.get(RatKing.this, enabled ? "xmas_egg_disable" : "xmas_egg_enable"),
+                        Messages.get(RatKing.this, "xmas_egg_cancel")
+                ) {
+                    @Override
+                    protected void onSelect(int index) {
+                        if (index == 0) {
+                            toggleXmasEgg();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    //切换全局圣诞节彩蛋开关，并立即同步当前0层存档与FNC外观
+    private void toggleXmasEgg() {
+        boolean enabled = !SPDSettings.xmasEgg();
+        SPDSettings.xmasEgg(enabled);
+
+        long xmasBit = (long) Math.pow(2, WndStartGame.GameMode.CHRISTMAS.code());
+        if (enabled) {
+            Dungeon.GameMode |= xmasBit;
+        } else {
+            Dungeon.GameMode &= ~xmasBit;
+        }
+        Game.GameMode = Dungeon.GameMode;
+
+        //立即刷新FNC的节日皮肤
+        if (sprite instanceof FncSprite) {
+            ((FncSprite) sprite).resetAnims();
+        }
+
+        if (enabled) {
+            yellGood(Messages.get(this, "xmas_egg_enabled"));
+        } else {
+            yellNormal(Messages.get(this, "xmas_egg_disabled"));
+        }
+
+        //立即持久化当前0层存档的GameMode
+        try {
+            Dungeon.saveAll();
+        } catch (IOException e) {
+            GirlsFrontlinePixelDungeon.reportException(e);
+        }
     }
 
     private void GetChock(){

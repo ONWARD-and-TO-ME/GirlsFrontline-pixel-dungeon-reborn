@@ -53,6 +53,7 @@ import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Music;
+import com.watabou.utils.ColorMath;
 import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
@@ -78,6 +79,13 @@ public class SurfaceScene extends PixelScene {
 	private static final int NCLOUDS	= 5;
 
 	private Pet[] rats;
+
+	//“返回0层”按钮文字在红色与灰色之间渐变高亮
+	private static final int ZERO_BTN_TEXT_RED   = 0xFFFF5555;
+	private static final int ZERO_BTN_TEXT_GREY  = 0xFFC8C8C8;
+	private RedButton btnZeroLevel;
+	//初始相位偏移，使第一帧文字正好处于纯红色
+	private float zeroLevelColorTimer = -(float)(Math.PI / 7f);
 
 	private Camera viewport;
 	@Override
@@ -242,13 +250,26 @@ public class SurfaceScene extends PixelScene {
 			frame.hardlight( 0xDDEEFF );
 		}
 
+		//两个按钮平分相框宽度：返回0层（前进营地） / 游戏结束
+		float btnWidth = (FRAME_WIDTH - 2) / 2f;
+
+		btnZeroLevel = new RedButton( Messages.get(this, "zero_level") ) {
+			protected void onClick() {
+				//复用第二标题页“返回地表”的入口逻辑：有0层存档则继续，否则弹出角色选择
+				SecondTitleScene.enterMainGame();
+			}
+		};
+		btnZeroLevel.setSize( btnWidth, BUTTON_HEIGHT );
+		btnZeroLevel.setPos( frame.x, frame.y + frame.height + 4 );
+		add( btnZeroLevel );
+
 		RedButton gameOver = new RedButton( Messages.get(this, "exit") ) {
 			protected void onClick() {
 				Game.switchScene( RankingsScene.class );
 			}
 		};
-		gameOver.setSize( SKY_WIDTH - FRAME_MARGIN_X * 2, BUTTON_HEIGHT );
-		gameOver.setPos( frame.x + FRAME_MARGIN_X * 2, frame.y + frame.height + 4 );
+		gameOver.setSize( btnWidth, BUTTON_HEIGHT );
+		gameOver.setPos( btnZeroLevel.right() + 2, btnZeroLevel.top() );
 		add( gameOver );
 		
 		Badges.validateHappyEnd();
@@ -259,6 +280,13 @@ public class SurfaceScene extends PixelScene {
 	private float ratJumpTimer = 0.02f;
 	@Override
 	public void update() {
+		if (btnZeroLevel != null) {
+			//正弦渐变，约每1.8秒完成一次红→灰→红循环
+			zeroLevelColorTimer += Game.elapsed;
+			float p = (float)(Math.sin( zeroLevelColorTimer * 3.5f ) + 1f) / 2f;
+			btnZeroLevel.textColor( ColorMath.interpolate( ZERO_BTN_TEXT_RED, ZERO_BTN_TEXT_GREY, p ) );
+		}
+
 		if (rats != null) {
 			ratJumpTimer -= Game.elapsed;
 			while (ratJumpTimer <= 0f) {

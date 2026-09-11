@@ -61,6 +61,18 @@ public class SPDSettings extends GameSettings {
 	public static int batteryLeft() {
 		return getInt( KEY_BATTERY, 0 );
 	}
+
+	//Holiday easter egg: 圣诞节彩蛋全局开关（由0层营地FNC对话切换，对新开的存档生效）
+
+	public static final String KEY_XMAS_EGG    = "xmas_easter_egg";
+
+	public static void xmasEgg( boolean value ) {
+		put( KEY_XMAS_EGG, value );
+	}
+
+	public static boolean xmasEgg() {
+		return getBoolean( KEY_XMAS_EGG, false );
+	}
 	
 	//Graphics
 	

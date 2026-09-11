@@ -271,6 +271,10 @@ public class Dungeon {
 		guessType	= new HashSet<>();
 		version = Game.versionCode;
 		challenges = paramChallenges;
+		//全局圣诞节彩蛋开关（0层营地FNC对话切换）：所有新开的存档（含0层基地）生效
+		if (SPDSettings.xmasEgg()){
+			GameMode |= (long) Math.pow(2, WndStartGame.GameMode.CHRISTMAS.code());
+		}
 		if (isGameMode(WndStartGame.GameMode.IDENTIFY)){
 			if (Challenges.activeChallenges() < 4
 					&& !isChallenged(Challenges.NO_FOOD))
