@@ -76,7 +76,7 @@ public class AboutSceneV2 extends PixelScene {
 	//人员变动时只需增删这里的条目，排版会自动换行
 	private static final Object[][] TEAM_MAIN = {
 			{"程 序 编 码", -1, Icons.ONWARD, "to me", true},
-			{"贴 图 美 术", 0xCF3227, Icons.CHOCOSUKI, "choco", false},
+			{"贴 图 美 术", 0xe6739b, Icons.CHOCOSUKI, "choco", false},
 	};
 	//协力人员名单暂未确定，先保留占位条目，后续编辑此处即可
 	private static final Object[][] TEAM_HELP = {
