@@ -119,12 +119,24 @@ public class SPDSettings extends GameSettings {
 		return getBoolean( KEY_POWER_SAVER, false );
 	}
 	
+	//显示比例以半步长存储（值=缩放倍数×2，如6=3X、7=3.5X、8=4X；0=自动），桌面端可选3.5X半档
+	public static final String KEY_SCALE_HALVES = "scale_halves";
+
 	public static void scale( int value ) {
-		put( KEY_SCALE, value );
+		put( KEY_SCALE_HALVES, value );
 	}
-	
+
 	public static int scale() {
-		return getInt( KEY_SCALE, 0 );
+		if (contains( KEY_SCALE_HALVES )) {
+			return getInt( KEY_SCALE_HALVES, 0 );
+		}
+		//迁移旧版本的整数缩放档（旧值3 → 半步长6，即3X）
+		if (contains( KEY_SCALE )) {
+			int halves = getInt( KEY_SCALE, 0 ) * 2;
+			put( KEY_SCALE_HALVES, halves );
+			return halves;
+		}
+		return 0;
 	}
 	
 	public static void zoom( int value ) {

@@ -72,6 +72,8 @@ public class PixelScene extends Scene {
 	public static final float MIN_HEIGHT_FULL = 200;
 
 	public static int defaultZoom = 0;
+	//相机实际缩放倍数，可为半档（如3.5X）；defaultZoom为取整后的纹理渲染基准
+	public static float cameraZoom = 0;
 	public static int maxDefaultZoom = 0;
 	public static int maxScreenZoom = 0;
 	public static float minZoom;
@@ -126,22 +128,30 @@ public class PixelScene extends Scene {
 
 		maxDefaultZoom = (int)Math.min(Game.width/minWidth, Game.height/minHeight);
 		maxScreenZoom = (int)Math.min(Game.dispWidth/minWidth, Game.dispHeight/minHeight);
-		defaultZoom = SPDSettings.scale();
 
-		if (defaultZoom < Math.ceil( Game.density * 2 ) || defaultZoom > maxDefaultZoom){
-			defaultZoom = (int)GameMath.gate(2, (int)Math.ceil( Game.density * scaleFactor ), maxDefaultZoom);
+		//显示比例以半步长存储（倍数×2），桌面端允许3.5X等半档；0或越界时回退自动档位
+		int scaleHalves = SPDSettings.scale();
+		int minScale = (int)Math.ceil( Game.density * 2 );
+		if (scaleHalves >= minScale * 2 && scaleHalves <= maxDefaultZoom * 2){
+			cameraZoom = scaleHalves / 2f;
+		} else {
+			int autoZoom = (int)GameMath.gate(2, (int)Math.ceil( Game.density * scaleFactor ), maxDefaultZoom);
 
-			if (SPDSettings.interfaceSize() > 0 && defaultZoom < (maxDefaultZoom+1)/2){
-				defaultZoom = (maxDefaultZoom+1)/2;
+			if (SPDSettings.interfaceSize() > 0 && autoZoom < (maxDefaultZoom+1)/2){
+				autoZoom = (maxDefaultZoom+1)/2;
 			}
+			cameraZoom = autoZoom;
 		}
 
+		//纹理/字体以取整后的倍数渲染（半档时向上取整超采样），再由相机按实际倍数采样
+		defaultZoom = Math.round( cameraZoom );
+
 		minZoom = 1;
-		maxZoom = defaultZoom * 2;
+		maxZoom = cameraZoom * 2;
 
-		Camera.reset( new PixelCamera( defaultZoom ) );
+		Camera.reset( new PixelCamera( cameraZoom ) );
 
-		float uiZoom = defaultZoom;
+		float uiZoom = cameraZoom;
 		uiCamera = Camera.createFullscreen( uiZoom );
 		Camera.add( uiCamera );
 
@@ -185,8 +195,8 @@ public class PixelScene extends Scene {
 				virtualCursorPos = PointerEvent.currentHoverPos();
 			}
 			//cursor moves 500 scaled pixels per second at full speed, 100 at minimum speed
-			virtualCursorPos.x += defaultZoom * 500 * Game.elapsed * ControllerHandler.rightStickPosition.x;
-			virtualCursorPos.y += defaultZoom * 500 * Game.elapsed * ControllerHandler.rightStickPosition.y;
+			virtualCursorPos.x += cameraZoom * 500 * Game.elapsed * ControllerHandler.rightStickPosition.x;
+			virtualCursorPos.y += cameraZoom * 500 * Game.elapsed * ControllerHandler.rightStickPosition.y;
 			virtualCursorPos.x = GameMath.gate(0, virtualCursorPos.x, Game.width);
 			virtualCursorPos.y = GameMath.gate(0, virtualCursorPos.y, Game.height);
 			PointerEvent.addPointerEvent(new PointerEvent((int) virtualCursorPos.x, (int) virtualCursorPos.y, 10_000, PointerEvent.Type.HOVER, PointerEvent.NONE));
@@ -205,8 +215,8 @@ public class PixelScene extends Scene {
 				cursor = new Image(Cursor.Type.CONTROLLER.file);
 			}
 
-			cursor.x = (virtualCursorPos.x / defaultZoom) - cursor.width()/2f;
-			cursor.y = (virtualCursorPos.y / defaultZoom) - cursor.height()/2f;
+			cursor.x = (virtualCursorPos.x / cameraZoom) - cursor.width()/2f;
+			cursor.y = (virtualCursorPos.y / cameraZoom) - cursor.height()/2f;
 			cursor.camera = uiCamera;
 			align(cursor);
 			cursor.draw();
@@ -272,7 +282,7 @@ public class PixelScene extends Scene {
 	 */
 
 	public static float align( float pos ) {
-		return Math.round(pos * defaultZoom) / (float)defaultZoom;
+		return Math.round(pos * cameraZoom) / cameraZoom;
 	}
 
 	public static float align( Camera camera, float pos ) {

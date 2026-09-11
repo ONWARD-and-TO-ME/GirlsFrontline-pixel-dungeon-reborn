@@ -98,7 +98,7 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		camera = new Camera( 0, 0,
 			(int)chrome.width,
 			(int)chrome.height,
-			PixelScene.defaultZoom );
+			PixelScene.cameraZoom );
 		camera.x = (int)(Game.width - camera.width * camera.zoom) / 2;
 		camera.y = (int)(Game.height - camera.height * camera.zoom) / 2;
 		camera.y -= yOffset * camera.zoom;

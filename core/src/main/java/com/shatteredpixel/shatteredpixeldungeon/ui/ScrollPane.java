@@ -49,7 +49,7 @@ public class ScrollPane extends Component {
 		width = content.width();
 		height = content.height();
 
-		content.camera = new Camera( 0, 0, 1, 1, PixelScene.defaultZoom );
+		content.camera = new Camera( 0, 0, 1, 1, PixelScene.cameraZoom );
 		Camera.add( content.camera );
 	}
 
@@ -118,7 +118,7 @@ public class ScrollPane extends Component {
 
 		public PointerController() {
 			super( 0, 0, 0, 0 );
-			dragThreshold = PixelScene.defaultZoom * 8;
+			dragThreshold = PixelScene.cameraZoom * 8;
 		}
 		
 		@Override

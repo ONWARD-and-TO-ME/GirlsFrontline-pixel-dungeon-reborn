@@ -51,9 +51,9 @@ public abstract class WndComputerGrid extends Window {
 
 	protected WndComputerGrid(int cols, int rows) {
 		//窗口相机坐标系下的可用空间，减去 WINDOW 边框和屏幕安全边距
-		int maxW = (int)(Game.width  / (float) PixelScene.defaultZoom)
+		int maxW = (int)(Game.width  / (float) PixelScene.cameraZoom)
 				- chrome.marginHor() - SCREEN_MARGIN * 2;
-		int maxH = (int)(Game.height / (float) PixelScene.defaultZoom)
+		int maxH = (int)(Game.height / (float) PixelScene.cameraZoom)
 				- chrome.marginVer() - SCREEN_MARGIN * 2;
 
 		//由屏幕与行列数反推单个格子边长（正方形格子），再反算窗口内容尺寸

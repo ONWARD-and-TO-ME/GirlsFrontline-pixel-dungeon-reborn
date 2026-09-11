@@ -43,7 +43,7 @@ public class CellSelectorPro extends ScrollArea {
         super( map );
         camera = map.camera();
 
-        dragThreshold = PixelScene.defaultZoom * DungeonTilemap.SIZE / 2f;
+        dragThreshold = PixelScene.cameraZoom * DungeonTilemap.SIZE / 2f;
 
         mouseZoom = camera.zoom;
     }
@@ -183,7 +183,7 @@ public class CellSelectorPro extends ScrollArea {
     private float zoom( float value ) {
 
         value = GameMath.gate( PixelScene.minZoom, value, PixelScene.maxZoom );
-        SPDSettings.zoom((int) (value - PixelScene.defaultZoom));
+        SPDSettings.zoom((int) (value - PixelScene.cameraZoom));
         camera.zoom( value );
 
         //Resets char and item sprite positions with the new camera zoom

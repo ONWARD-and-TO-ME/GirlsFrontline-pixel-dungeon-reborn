@@ -221,21 +221,34 @@ public class WndSettings extends WndTabbed {
 			}
 			add(chkFullscreen);
 
-			if ((int)Math.ceil(2* Game.density) < PixelScene.maxDefaultZoom) {
+			int minScale = (int)Math.ceil(2* Game.density);
+			if (minScale < PixelScene.maxDefaultZoom) {
+				//桌面端滑条以半步长取值（如3X与4X之间可选3.5X），移动端仍只提供整数档
+				final boolean halfSteps = DeviceCompat.isDesktop();
+				final int sliderMin = halfSteps ? minScale * 2 : minScale;
+				final int sliderMax = halfSteps ? PixelScene.maxDefaultZoom * 2 : PixelScene.maxDefaultZoom;
 				optScale = new OptionSlider(Messages.get(this, "scale"),
-						(int)Math.ceil(2* Game.density)+ "X",
+						minScale + "X",
 						PixelScene.maxDefaultZoom + "X",
-						(int)Math.ceil(2* Game.density),
-						PixelScene.maxDefaultZoom ) {
+						sliderMin,
+						sliderMax ) {
 					@Override
 					protected void onChange() {
-						if (getSelectedValue() != SPDSettings.scale()) {
-							SPDSettings.scale(getSelectedValue());
+						int halves = halfSteps ? getSelectedValue() : getSelectedValue() * 2;
+						if (halves != SPDSettings.scale()) {
+							SPDSettings.scale(halves);
 							GirlsFrontlinePixelDungeon.seamlessResetScene();
 						}
 					}
 				};
-				optScale.setSelectedValue(PixelScene.defaultZoom);
+				int curHalves = SPDSettings.scale();
+				if (curHalves >= sliderMin && curHalves <= sliderMax && (halfSteps || curHalves % 2 == 0)) {
+					optScale.setSelectedValue(curHalves);
+				} else {
+					//自动档位（或半档设置在移动端）下，滑条定位到当前实际生效的缩放
+					optScale.setSelectedValue(halfSteps ?
+							Math.round(PixelScene.cameraZoom * 2) : PixelScene.defaultZoom);
+				}
 				add(optScale);
 			}
 

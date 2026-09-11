@@ -284,7 +284,7 @@ public class GameScene extends PixelScene {
 		SPDSettings.lastClass(Dungeon.hero.heroClass.ordinal());
 		
 		super.create();
-		Camera.main.zoom( GameMath.gate(minZoom, defaultZoom + SPDSettings.zoom(), maxZoom));
+		Camera.main.zoom( GameMath.gate(minZoom, cameraZoom + SPDSettings.zoom(), maxZoom));
 
 		scene = this;
 
@@ -559,10 +559,10 @@ public class GameScene extends PixelScene {
 
 		switch (InterlevelScene.mode){
 			case FALL: case DESCEND: case CONTINUE:
-				Camera.main.snapTo(hero.center().x, hero.center().y - DungeonTilemap.SIZE * (defaultZoom/Camera.main.zoom));
+				Camera.main.snapTo(hero.center().x, hero.center().y - DungeonTilemap.SIZE * (cameraZoom/Camera.main.zoom));
 				break;
 			case ASCEND:
-				Camera.main.snapTo(hero.center().x, hero.center().y + DungeonTilemap.SIZE * (defaultZoom/Camera.main.zoom));
+				Camera.main.snapTo(hero.center().x, hero.center().y + DungeonTilemap.SIZE * (cameraZoom/Camera.main.zoom));
 				break;
 			default:
 				Camera.main.snapTo(hero.center().x, hero.center().y);
