@@ -185,6 +185,22 @@ public class WndHeroInfo extends WndTabbed {
 							new ItemSprite(ItemSpriteSheet.M9),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
+				case TYPE561:
+					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.REDBOOK),
+							new ItemSprite(ItemSpriteSheet.GUN561),
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+					break;
+				case GSH18:
+					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.GSH18),
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ),
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ),
+							Icons.get(Icons.WARNING)};
+					break;
+				case Dandelion:
+					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.M4A1),
+							new ItemSprite(ItemSpriteSheet.M4A1),
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+					break;
 			}
 			for (Image im : icons) {
 				add(im);
