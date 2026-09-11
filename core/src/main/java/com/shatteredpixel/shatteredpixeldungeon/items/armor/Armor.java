@@ -718,10 +718,8 @@ public class Armor extends EquipableItem {
             //down at 200, 200+300, 200+300+400, ...
             level -= (int) ((Math.sqrt(200*broken + 22500) - 150)/100);
             level += RingOfKing.updateMultiplier(hero);
-			return level;
-		} else {
-			return level();
 		}
+		return level;
 	}
 	
 	@Override

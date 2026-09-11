@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.RenderedText;
 import com.watabou.noosa.ui.Component;
@@ -61,11 +62,30 @@ public class RenderedTextBlock extends Component {
 		this.size = size;
 		text(text);
 	}
+	final ArrayList<Integer> textLength = new ArrayList<>();
+	final ArrayList<Integer> colorList = new ArrayList<>();
 
 	public void text(String text){
 		this.text = text;
 
 		if (text != null && !text.equals("")) {
+			String[] list;
+			colorList.add(hightlightColor);
+			if ((list = text.split(GLog.DIY_COLOR)).length % 2 == 1) {
+				StringBuilder t = new StringBuilder();
+				for (int i = 0; i < list.length; i++) {
+					if (i % 2 == 0) {
+						String str = list[i];
+						t.append(str);
+						textLength.add(str.length());
+					}
+					else
+						colorList.add(Integer.parseInt(list[i]));
+				}
+				this.text = text = t.toString();
+			}
+			else
+				textLength.add(text.length());
 			
 			tokens = Game.platform.splitforTextBlock(text, multiline);
 			
@@ -112,9 +132,16 @@ public class RenderedTextBlock extends Component {
 		
 		clear();
 		words = new ArrayList<>();
+		int index = 0;
+		int length = textLength.get(index);
+		int highLightColor = colorList.get(index);
 		boolean highlighting = false;
 		for (String str : tokens){
-			
+			while (length-- < 0) {
+				index++;
+				length = textLength.get(index);
+				highLightColor = colorList.get(index);
+			}
 			if (str.equals("_") && highlightingEnabled){
 				highlighting = !highlighting;
 			} else if (str.equals("\n")){
@@ -124,7 +151,7 @@ public class RenderedTextBlock extends Component {
 			} else {
 				RenderedText word = new RenderedText(str, size);
 				
-				if (highlighting) word.hardlight(hightlightColor);
+				if (highlighting) word.hardlight(highLightColor);
 				else if (color != -1) word.hardlight(color);
 				word.scale.set(zoom);
 				

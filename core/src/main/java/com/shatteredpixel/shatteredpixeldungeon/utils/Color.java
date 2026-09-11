@@ -30,12 +30,13 @@ public class Color {
     public static final int LIGHT_PURPLE  = 0xFF55FF;
     public static final int LIGHT_GRAY    = 0x999999;
     public static final int LIGHT_BLUE    = 0x6699D8;
+    public static final int LIGHT_GOLD    = 0xFFC23D;
 
     public static final int JADE_RED      = 0xC04851;
     public static int random(){
         Integer[] color = {DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, DARK_GRAY,
                 BLACK, GOLD, GRAY, BLUE, GREEN, AQUA, RED, YELLOW, BROWN, ORANGE, LIME, CYAN, PURPLE, MAGENTA, PINK,
-                LIGHT_PURPLE, LIGHT_GRAY, LIGHT_BLUE, JADE_RED};
+                LIGHT_PURPLE, LIGHT_GRAY, LIGHT_BLUE, LIGHT_GOLD, JADE_RED};
         return Random.element(color);
     }
 }

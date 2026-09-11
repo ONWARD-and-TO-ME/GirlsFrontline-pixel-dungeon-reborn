@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.addAll;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.utils.Color;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -10,6 +11,10 @@ import java.util.HashMap;
 
 public interface CommonCard extends Card {
     // 子枚举覆写保持不变（阵营前缀 + 稀有度前缀 + 本地化卡名）
+    @Override
+    default int color() {
+        return Color.DARK_GREEN;
+    }
     @Override
     default String title(){
         return "Common：" + cardName();
@@ -150,7 +155,7 @@ public interface CommonCard extends Card {
     enum UNIVERSAL implements CommonCard{
         Type56_1, _9A91, AEK_999, C96, FAMAS, FX_05, GSh_18, HK512,
         K31, LWMMG, M1014, Mk12, Mk48, PK, PP_19, SPAS_12,
-        Super_SASS, USAS_12, V_PM5, Nagant_M1895, Shipka;
+        Super_SASS, USAS_12, V_PM5, Nagant_M1895, Shipka, /*AN94*/;
         @Override
         public String title(){
             return "Universal " + CommonCard.super.title();

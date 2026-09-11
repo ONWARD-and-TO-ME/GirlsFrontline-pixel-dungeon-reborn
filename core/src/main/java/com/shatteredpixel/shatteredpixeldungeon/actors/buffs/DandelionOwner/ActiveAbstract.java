@@ -25,8 +25,10 @@ public interface ActiveAbstract {
             return workVenue();
         }
         default boolean workVenue(){
+            if (Dungeon.level == null || Dungeon.level.blobs == null)
+                return false;
             Vector_FireBomb_Warning fire = (Vector_FireBomb_Warning) Dungeon.level.blobs.get( Vector_FireBomb_Warning.class );
-            if (fire != null && fire.cur[target().pos] > 0)
+            if (fire != null && fire.cur != null && fire.cur.length > 0 && fire.cur[target().pos] > 0)
                 return true;
 
             Vector_Fire_Aura aura = null;

@@ -466,16 +466,14 @@ public class Belongings implements Iterable<Item> {
 
 		@Override
 		public Item next() {
+			Item item;
 			iterIndex = 0;
-			while (index < equipped.length) {
-				Item item = equipped[index++];
-				if (item != null) {
+			while (index < equipped.length && (item = equipped[index++]) != null)
 					return item;
-				}
-			}
+				
 			iterIndex = 1;
-			if (itemBuffIterator.hasNext())
-				return itemBuffIterator.next().item();
+			while (itemBuffIterator.hasNext() && (item = itemBuffIterator.next().item()) != null)
+				return item;
 
 			iterIndex = 2;
 			return backpackIterator.next();

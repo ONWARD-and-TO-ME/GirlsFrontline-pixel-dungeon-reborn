@@ -46,6 +46,7 @@ public class P90 extends SubMachineGun {
         ACC = 1.2f;     //20%命中加成
         DEF = 2;        //可吸收少量伤害
         DEFUPGRADE = 1;
+        dmgUpgradeMul = 0.75F;
         dmgBaseMul = 3; //单发伤害较低，以平衡高射速
 
         defaultAction = AC_SKILL;

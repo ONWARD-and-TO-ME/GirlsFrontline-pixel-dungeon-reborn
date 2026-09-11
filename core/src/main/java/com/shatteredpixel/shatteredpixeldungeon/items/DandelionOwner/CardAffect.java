@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.AttackDMG_Add;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.AttackDelay_Add;
@@ -53,6 +54,9 @@ public class CardAffect {
         int d = tryCrit(dmg, wep instanceof M4A1);
         if (hasCard(RareCard.General_Liu.CZ75))
             d /= 2;
+//        AN94_Tracker an94 = enemy.buff(AN94_Tracker.class);
+//        if (hasCard(CommonCard.UNIVERSAL.AN94) && (an94 == null || an94.count() <= 0) && hero.belongings.thrownWeapon == null)
+//            d /= 2;
         if (hasCard(RareCard.UNIVERSAL.Type_97_SHOTGUN)
                 && hero.belongings.thrownWeapon == null)
             //投武不触发此效果。
@@ -81,6 +85,10 @@ public class CardAffect {
         if (hasCard(CommonCard.UNIVERSAL.USAS_12))
             affect(enemy, MoveSpeed.SM_USAS_12.class).upgrade().setActiveTime(5F);
 
+//        if (hasCard(CommonCard.UNIVERSAL.AN94) && enemy.buff(AN94_Tracker.class) == null) {
+//            Buff.affect(enemy, AN94_Tracker.class);
+//            addDoubleAttack(hero, enemy, Integer.MIN_VALUE, 0);
+//        }
         if (hasCard(RareCard.UNIVERSAL.Type_97_SHOTGUN)) {
             ArrayList<Mob> mobs = new ArrayList<>();
             for (Mob m : hero.getVisibleEnemies()) {
@@ -93,13 +101,20 @@ public class CardAffect {
                 if (enemy instanceof Mob)
                     mobs.add((Mob) enemy);
             if (!mobs.isEmpty())
-                addDoubleAttack(hero, Random.element(mobs), baseDMG, 0);
+                addDoubleAttack(hero, Random.element(mobs), baseDMG, 1);
         }
         if (hasCard(FinalCard.UNIVERSAL.Kar98k))
-            addDoubleAttack(hero, enemy, baseDMG, 1);
+            addDoubleAttack(hero, enemy, baseDMG, 2);
         if (hasCard(RareCard.UNIVERSAL.FP_6) && Random.Float() < 0.15F)
             throwChar(enemy, hero.pos, 2, false, false);
     }
+//    public static class AN94_Tracker extends CounterBuff {
+//        @Override
+//        public boolean act() {
+//            countUp(1);
+//            return super.act();
+//        }
+//    }
     private static void addDoubleAttack(Hero hero, Char enemy, int damage, int code ){
         if (attackMask >> code != 0)
             return;
@@ -108,12 +123,14 @@ public class CardAffect {
 
         int mask = attackMask | (int) Math.pow(2, code);
         Actor.addDelayed(new Actor() {
+            {
+                actPriority = HERO_PRIO - code;
+            }
             @Override
             protected boolean act() {
                 attackMask = mask;
                 try {
                     hero.attack(enemy, damage, 1F, 0F, Char.INFINITE_ACCURACY);
-                    hero.sprite.attack(enemy.pos);
                 } finally {
                     //虽然我感觉无需try-finally，但是AI推荐。
                     attackMask = 0;

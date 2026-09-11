@@ -4,12 +4,17 @@ import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.addAll;
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.hero;
 
+import com.shatteredpixel.shatteredpixeldungeon.utils.Color;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public interface FinalCard extends Card {
+    @Override
+    default int color() {
+        return Color.LIGHT_GOLD;
+    }
     @Override
     default String title(){
         return "Final：" + cardName();

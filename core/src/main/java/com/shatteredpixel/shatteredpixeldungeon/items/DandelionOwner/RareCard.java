@@ -5,12 +5,17 @@ import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card
 import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card.addAll;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.utils.Color;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public interface RareCard extends Card {
+    @Override
+    default int color() {
+        return Color.LIGHT_BLUE;
+    }
     @Override
     default String title(){
         return "Rare：" + cardName();

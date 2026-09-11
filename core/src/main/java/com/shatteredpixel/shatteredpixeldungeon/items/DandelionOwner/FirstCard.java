@@ -6,6 +6,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.VHS_Hack;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Vector_Fire_Aura;
+import com.shatteredpixel.shatteredpixeldungeon.utils.Color;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -23,6 +24,10 @@ public enum FirstCard implements Card {
                 continue;
             selector.curCards.add(f);
         }
+    }
+    @Override
+    public int color() {
+        return Color.WHITE;
     }
     @Override
     public String title(){

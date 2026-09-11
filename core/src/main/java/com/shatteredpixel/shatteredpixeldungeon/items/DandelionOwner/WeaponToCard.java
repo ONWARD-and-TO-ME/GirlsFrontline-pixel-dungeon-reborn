@@ -5,8 +5,10 @@ import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.AN94;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gun561;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MG.Mg42;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.P90;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Thunder;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.AR.G36;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BP.Mos;
@@ -48,6 +50,7 @@ public class WeaponToCard {
         // ========== 三、VHS 阵营（骇入） ==========
         // —— CommonCard ——
         map.put(Thunder.class,       CommonCard.VHS.Thunder);           // 雷电 → 雷电
+        map.put(P90.class,              RareCard.VHS.P90);
 
         // ========== 四、WA2000 阵营（暴击/爆伤） ==========
         // —— 首卡 ——
@@ -66,16 +69,17 @@ public class WeaponToCard {
 
         // ========== 六、UNIVERSAL 通用阵营 ==========
         // —— CommonCard ——
-        map.put(GSH18.class,         CommonCard.UNIVERSAL.GSh_18);      // GSh-18 → GSh-18
-        map.put(Sass.class,          CommonCard.UNIVERSAL.Super_SASS);  // Super SASS → Super SASS
-        map.put(GUA91.class,         CommonCard.UNIVERSAL._9A91);       // 9A-91 → 9A-91
-        map.put(C96.class,           CommonCard.UNIVERSAL.C96);         // 毛瑟C96 → C96
-        map.put(Usas12.class,        CommonCard.UNIVERSAL.USAS_12);     // S&T USAS-12 → USAS-12
-        map.put(NagantRevolver.class, CommonCard.UNIVERSAL.Nagant_M1895); // 纳甘左轮 M1895 → 纳甘左轮
-        map.put(Gun561.class,        CommonCard.UNIVERSAL.Type56_1);    // Type 56-1 → 56-1式
+        map.put(GSH18.class,            CommonCard.UNIVERSAL.GSh_18);      // GSh-18 → GSh-18
+        map.put(Sass.class,             CommonCard.UNIVERSAL.Super_SASS);  // Super SASS → Super SASS
+        map.put(GUA91.class,            CommonCard.UNIVERSAL._9A91);       // 9A-91 → 9A-91
+        map.put(C96.class,              CommonCard.UNIVERSAL.C96);         // 毛瑟C96 → C96
+        map.put(Usas12.class,           CommonCard.UNIVERSAL.USAS_12);     // S&T USAS-12 → USAS-12
+        map.put(NagantRevolver.class,   CommonCard.UNIVERSAL.Nagant_M1895); // 纳甘左轮 M1895 → 纳甘左轮
+        map.put(Gun561.class,           CommonCard.UNIVERSAL.Type56_1);    // Type 56-1 → 56-1式
+//        map.put(AN94.class,             CommonCard.UNIVERSAL.AN94);
         // —— FinalCard ——
-        map.put(Kar98.class,         FinalCard.UNIVERSAL.Kar98k);       // Kar98k → Kar98k
-        map.put(Mg42.class,          FinalCard.UNIVERSAL.MG5);          // H&K MG4 (Mg42) → MG5
+        map.put(Kar98.class,            FinalCard.UNIVERSAL.Kar98k);       // Kar98k → Kar98k
+        map.put(Mg42.class,             FinalCard.UNIVERSAL.MG5);          // H&K MG4 (Mg42) → MG5
     }
     private static boolean canSelect(Item item) {
         Card card = map.get(item.getClass());
@@ -108,7 +112,7 @@ public class WeaponToCard {
             if (item != null) {
                 Card c = map.get(item.getClass());
                 CardSelector selector = CardSelector.INSTANCE();
-                GirlsFrontlinePixelDungeon.scene().addToFront( new WndOptions(c.title(), c.info(), false,
+                GirlsFrontlinePixelDungeon.scene().addToFront( new WndOptions(c.colorTitle(), c.info(),
                                 Messages.get(WeaponToCard.class, "Entry"),
                                 Messages.get(WeaponToCard.class, "Cancel")){
                             @Override

@@ -396,9 +396,8 @@ abstract public class Weapon extends KindOfWeapon {
 						? Dungeon.hero.pointsInTalent(Talent.Type56FourTwoTwo)
 						: 1;
 			level += RingOfKing.updateMultiplier(hero);
-			return level;
 		}
-        return level();
+        return level;
 	}
 	
 	@Override

@@ -164,6 +164,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SG.Usas12;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SG.Win97;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.M1a1;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.M9;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.P90;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.SAIGA;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.Ump45;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SR.AWP;
@@ -430,9 +431,10 @@ public class Generator {
 					Usas12.class,
 					M99.class,
 					SakuraBlade.class,
-					SaigaPlate.class
+					SaigaPlate.class,
+					P90.class
 			};
-			WEP_T5.probs = new float[]{ 6, 3, 5, 4, 6, 4 };
+			WEP_T5.probs = new float[]{ 6, 3, 5, 4, 6, 4, 5 };
 
 			WEP_T6.classes = new Class<?>[]{
 					SAIGA.class,

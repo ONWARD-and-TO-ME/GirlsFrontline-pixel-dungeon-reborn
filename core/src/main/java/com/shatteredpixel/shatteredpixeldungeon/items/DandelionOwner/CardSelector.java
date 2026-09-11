@@ -174,16 +174,14 @@ public class CardSelector extends Item {
     private void selectCards(){
         ArrayList<canScrollRedButton> buttons = new ArrayList<>();
         for (Card c : curCards)
-            buttons.add(new canScrollRedButton(c.title()){
-                { textColor( c.cardColor() ); }  //按卡牌稀有度设置字体颜色
+            buttons.add(new canScrollRedButton(c.colorTitle()){
                 @Override
                 public void onClick(){
                     super.onClick();
                     if (selecting != null)
                         selecting.hide();
                     GirlsFrontlinePixelDungeon.scene().addToFront(
-                            selecting = new WndOptions(c.title(), c.info(), false,
-                                    c.cardColor(), 1,
+                            selecting = new WndOptions(c.colorTitle(), c.info(),
                                     Messages.get(CardSelector.class, "Entry"),
                                     Messages.get(CardSelector.class, "Cancel")){
                                 @Override
@@ -232,13 +230,12 @@ public class CardSelector extends Item {
     }
     private void addCheckCardsBtn(ArrayList<? extends Card> list, ArrayList<canScrollRedButton> buttons){
         for (Card c : list)
-            buttons.add(new canScrollRedButton(c.title()){
-                { textColor( c.cardColor() ); }  //按卡牌稀有度设置字体颜色
+            buttons.add(new canScrollRedButton(c.colorTitle()){
                 @Override
                 public void onClick(){
                     super.onClick();
                     GirlsFrontlinePixelDungeon.scene().addToFront(
-                            new WndOptions(c.title(), c.info(), false, c.cardColor(), 1));
+                            new WndOptions(c.colorTitle(), c.info()));
                 }
             });
     }

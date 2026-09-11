@@ -38,7 +38,7 @@ public class ItemBuff extends Buff {
     }
     @Override
     public boolean attachTo(Char target) {
-        if (item != null)
+        if (item != null && (target.buff(LostInventory.class) == null || item.keptThoughLostInvent))
             item.Tracker(target);
         return super.attachTo(target);
     }

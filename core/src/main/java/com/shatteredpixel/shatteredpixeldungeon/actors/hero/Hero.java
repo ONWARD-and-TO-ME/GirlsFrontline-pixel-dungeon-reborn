@@ -53,6 +53,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ItemBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
@@ -2084,7 +2085,12 @@ public class Hero extends Char {
 		super.die( cause );
 		reallyDie( cause );
 	}
-
+	@Override
+	protected synchronized void onRemove() {
+		for (Buff buff : buffs.toArray(new Buff[0]))
+			if (!(buff instanceof ItemBuff))
+				buff.detach();
+	}
 	public static void reallyDie( Object cause ) {
 
 		int length = Dungeon.level.length();

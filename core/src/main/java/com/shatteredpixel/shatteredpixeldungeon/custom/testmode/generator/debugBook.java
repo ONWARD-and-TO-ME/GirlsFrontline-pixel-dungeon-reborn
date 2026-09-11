@@ -354,6 +354,7 @@ public class debugBook extends TestItem {
                     item.cursedKnown = false;
                 }
                 item.resetGuessingLevel();
+                item.BuffLevelPoint = Integer.MIN_VALUE;
                 Sample.INSTANCE.play( Assets.Sounds.READ );
             }
             else {

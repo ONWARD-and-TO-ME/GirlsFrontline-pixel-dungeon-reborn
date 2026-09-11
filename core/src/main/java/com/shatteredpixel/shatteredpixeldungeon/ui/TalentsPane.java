@@ -290,15 +290,5 @@ public class TalentsPane extends ScrollPane {
 			height = buttons.get(0).bottom() + col*30 - y ;
 
 		}
-
-		@Override
-		public void onClickB( float x, float y ) {
-			for (TalentButton button : buttons){
-				if (button.inside(x, y)){
-					button.onClick();
-					break;
-				}
-			}
-		}
 	}
 }

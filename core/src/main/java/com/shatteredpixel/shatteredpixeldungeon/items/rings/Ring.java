@@ -103,6 +103,11 @@ public class Ring extends KindofMisc implements ColorItem {
 		return lvl;
 	}
 
+	@Override
+	public int buffedVisiblyUpgraded() {
+		return buffedLvl(visiblyUpgraded());
+	}
+
 	//anonymous rings are always IDed, do not affect ID status,
 	//and their sprite is replaced by a placeholder if they are not known,
 	//useful for items that appear in UIs, or which are only spawned for their effects

@@ -20,7 +20,7 @@ public class EquipmentBuff extends ItemBuff {
     }
     @Override
     public boolean attachTo(Char target) {
-        if (item != null)
+        if (item != null && (target.buff(LostInventory.class) == null || item.keptThoughLostInvent))
             getEquipment().activate(target);
         return super.attachTo(target);
     }

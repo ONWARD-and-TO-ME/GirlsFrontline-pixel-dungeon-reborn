@@ -60,6 +60,7 @@ import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
@@ -331,6 +332,8 @@ public class WndRanking extends WndTabbed {
 		
 		public ItemsTab() {
 			super();
+			//构造期尚未被加入场景，需显式指定camera，否则ScrollPane.layout()中camera()为null
+			camera = WndRanking.this.camera;
 			ArrayList<Item> items = new ArrayList<>();
 			for (Item item : Dungeon.hero.belongings)
 				if (item.isEquipped(Dungeon.hero))
@@ -377,44 +380,49 @@ public class WndRanking extends WndTabbed {
 
 		}
 		private void addEquipment( ArrayList<Item> list ) {
+			ArrayList<Item> weapons = new ArrayList<>();
+			ArrayList<Item> armors = new ArrayList<>();
+			ArrayList<Item> artifacts = new ArrayList<>();
+			ArrayList<Item> rings = new ArrayList<>();
+			for (Item item : list) {
+				if (item instanceof KindOfWeapon)
+					weapons.add(item);
+				else if (item instanceof Armor)
+					armors.add(item);
+				else if (item instanceof Artifact)
+					artifacts.add(item);
+				else if (item instanceof Ring)
+					rings.add(item);
+			}
+			//强行排序
 			ArrayList<Item> items = new ArrayList<>();
-			while (!list.isEmpty()) {
-				for (Item item : list.toArray(new Item[0])) {
-					//强行限制顺序。
-					if (item instanceof KindOfWeapon) {
-						items.add(item);
-						list.remove(item);
-						break;
-					}
-					if (item instanceof Armor) {
-						items.add(item);
-						list.remove(item);
-						break;
-					}
-					if (item instanceof Artifact) {
-						items.add(item);
-						list.remove(item);
-						break;
-					}
-					if (item instanceof Ring) {
-						items.add(item);
-						list.remove(item);
-						break;
-					}
-				}
-			}
-			float size = 5F / Math.max(5, items.size());
-			float height = ItemButton.HEIGHT * size;
-			EquipmentItemButton.BtnSize = size;
-			for (Item item : items) {
-            	item.canNote =false;
-            	item.showSelf = true;
-				EquipmentItemButton slot = new EquipmentItemButton(item, true);
-				slot.setRect(0, pos, width, height);
-				add(slot);
+			items.addAll(weapons);
+			items.addAll(armors);
+			items.addAll(artifacts);
+			items.addAll(rings);
 
-				pos += slot.height() + 1 * size;
+			//按钮保持原始大小，使用ScrollPane承载，过多时可滚动，避免按钮被压缩得过小
+			EquipmentItemButton.BtnSize = 1F;
+			ScrollPane pane = new ScrollPane(new Component());
+			add(pane);
+			Component content = pane.content();
+
+			float pos = 0;
+			for (Item item : items) {
+				item.canNote = false;
+				item.showSelf = true;
+				EquipmentItemButton slot = new EquipmentItemButton(item, true);
+				slot.setRect(0, pos, WIDTH, ItemButton.HEIGHT);
+				content.add(slot);
+
+				pos += slot.height() + 1;
 			}
+			content.setSize(WIDTH, pos - 1);
+
+			//装备区域：从顶部到快捷栏之前（快捷栏固定在 y=120）
+			float maxHeight = 119;
+			pane.setRect(0, 0, WIDTH, Math.min(content.height(), maxHeight));
+			pane.scrollTo(0, 0);
 		}
 	}
 	
@@ -442,6 +450,8 @@ public class WndRanking extends WndTabbed {
 		}
 		public EquipmentItemButton(Item item, boolean identify) {
 			super(item, identify);
+			//NEVER_BLOCK使从按钮上发起的拖拽也能滚动ScrollPane，同时保留按下高亮与点击
+			hotArea.blockLevel = PointerArea.NEVER_BLOCK;
 		}
 	}
 	private static class ItemButton extends Button {
@@ -526,15 +536,12 @@ public class WndRanking extends WndTabbed {
     private static class canScrollItemButton extends ItemButton implements canScrollButton {
         public canScrollItemButton( Item item, boolean identify ) {
             super(item, identify);
+            //NEVER_BLOCK使从按钮上发起的拖拽也能滚动ScrollPane，同时保留按下高亮与点击
+            hotArea.blockLevel = PointerArea.NEVER_BLOCK;
         }
 		@Override
 		public void onClick() {
 			super.onClick();
-		}
-		@Override
-		protected void layout(){
-			super.layout();
-			hotArea.width = hotArea.height = 0;
 		}
     }
 
@@ -595,13 +602,15 @@ public class WndRanking extends WndTabbed {
 		}
 	}
     public static class ItemList extends Window {
-        private final ArrayList<canScrollItemButton> Button = new ArrayList<>();
 		public ItemList(Bag bag, boolean identify){
 			this(bag.items, identify);
 		}
         public ItemList(Collection<Item> items, boolean identify) {
             int width = 120;
-            Component content = new Component();
+            //先创建ScrollPane（controller先注册），再创建按钮（hotArea后注册、优先接收事件，按钮可正常高亮）
+            ScrollPane pane = new ScrollPane(new Component());
+            add(pane);
+            Component content = pane.content();
             float pos = 0;
             for (Item item : items){
 				if (identify) {
@@ -612,26 +621,14 @@ public class WndRanking extends WndTabbed {
                 canScrollItemButton button = new canScrollItemButton(item, identify);
                 button.setRect( 0, pos, width, ItemButton.HEIGHT );
                 content.add( button );
-                Button.add( button );
 
                 pos += button.height() + 1;
             }
-            content.setSize(120, Button.get(Button.size()-1).bottom());
-            ScrollPane pane = new ScrollPane(content) {
-
-                @Override
-                public void onClick(float x, float y) {
-                    int max_size = Button.size();
-                    for (int i = 0; i < max_size; ++i) {
-                        if (Button.get(i).onClick(x, y))
-                            break;
-                    }
-                }
-            };
-            add(pane);
-            pane.setRect( -62, -78, 120, Math.min(153, (int)content.height() + 1));
-            pane.scrollTo(0,0);
-            resize(width, 153);
+            content.setSize(width, pos - 1);
+            pane.setRect(0, 0, width, content.height());
+            resize(width, (int)Math.min(153, content.height()));
+            pane.setRect(0, 0, width, this.height);
+            pane.scrollTo(0, 0);
         }
     }
 }
