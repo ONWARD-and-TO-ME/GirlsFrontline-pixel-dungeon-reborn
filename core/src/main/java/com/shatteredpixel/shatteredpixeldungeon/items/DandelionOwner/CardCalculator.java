@@ -139,8 +139,9 @@ public class CardCalculator {
     }
     public static float onM4A1damageRoll( Hero hero, float damage ){
         //外部因素产生的固定伤害就不加给M4A1了。
-        damage = cardAttackProc_Add(hero, damage, true);
-        damage = cardAttackProc_Mul(hero, damage, true);
+//        damage = cardAttackProc_Add(hero, damage, true);
+//        damage = cardAttackProc_Mul(hero, damage, true);
+        //作为限制用的M4A1攻击上限就不计算卡牌增伤了，以免没有产生限制作用。
         return damage;
     }
     public static float M4A1damageRoll( float minimax, float maxMul, float lastMul ){

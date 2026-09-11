@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.RedBook;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 
@@ -90,7 +91,11 @@ public class BookSpell implements ActionIndicator.Action {
         RedBook book;
         if (hero == null || (book = hero.belongings.getItem(RedBook.class)) == null)
             return;
-        onCast(book, hero);
+
+        if (!book.canCast(this))
+            GLog.w(Messages.get(RedBook.class, "no_spell"));
+        else
+            onCast(book, hero);
     }
     public void setAction(){
         ActionIndicator.setAction(this);

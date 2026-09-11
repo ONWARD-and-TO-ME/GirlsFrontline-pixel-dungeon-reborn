@@ -46,8 +46,9 @@ public class CardAffect {
         if (hasCard(FirstCard.VHS))
             dmg = CardCalculator.VHS_Hack_Proc(hero, enemy, dmg, wep);
         dmg += CardCalculator.cardAttackProc_NormalAdd(hero, wep);
-        if (!(wep instanceof M4A1)) {
+        if (!(wep instanceof M4A1) || true) {
             //此二者已在M4A1damageRoll执行。
+            //作为限制的M4A1上限不再执行此二者，所以将对M4A1的放在这里执行了
             dmg = CardCalculator.cardAttackProc_Add(hero, dmg, false);
             dmg = CardCalculator.cardAttackProc_Mul(hero, dmg, false);
         }

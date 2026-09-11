@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.Atta
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardAffect;
+import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardCalculator;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Dummy_Core;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -78,12 +79,15 @@ public abstract class Puppet extends DirectableAlly {
     @Override
     public int damageRoll() {
         float damage;
+        float delayPercent = 1F;
         Hero hero = hero();
-        if (hero.belongings.weapon() != null)
+        if (hero.belongings.weapon() != null) {
             damage = hero.belongings.weapon().damageRoll(this);
+            delayPercent = hero.belongings.weapon().mulByDelay(this);
+        }
         else
             damage = hero.damageRoll(); //handles ring of force
-        return (int) (damage * damageMul);
+        return (int) Math.min(damage * damageMul, CardCalculator.M4A1max(2 * delayPercent));
     }
     @Override
     public int attackSkill( Char target ) {
