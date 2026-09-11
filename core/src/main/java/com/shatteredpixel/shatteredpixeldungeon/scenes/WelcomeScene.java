@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndHardNotification;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Music;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 
 public class WelcomeScene extends PixelScene {
@@ -108,11 +109,29 @@ public class WelcomeScene extends PixelScene {
 				Notes.reset();
 			}
 		};
-		float buttonY = Math.min(topRegion + (PixelScene.landscape() ? 60 : 120), h - 24);
+		//0层基地需在打出好结局（带获救的M4A1从1层上楼）后解锁，debug版本始终可用
+		final boolean zeroUnlocked = Badges.isUnlocked(Badges.Badge.HAPPY_END) || DeviceCompat.isDebug();
+
+		float buttonY = Math.min(topRegion + (PixelScene.landscape() ? 60 : 120), h - (zeroUnlocked ? 46 : 24));
 		okay.text(Messages.get(this,"enter"));
 		okay.setRect(title.x, buttonY, title.width(), 20);
 		okay.icon(Icons.get(Icons.ENTER));
 		add(okay);
+
+		if (zeroUnlocked) {
+			StyledButton btnZeroLevel = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "enter_zero")){
+				@Override
+				protected void onClick() {
+					super.onClick();
+					//复用第二标题页“返回地表”的入口逻辑：有0层存档则继续，否则弹出角色选择
+					SecondTitleScene.enterMainGame();
+				}
+			};
+			btnZeroLevel.icon(Icons.get(Icons.DEPTH));
+			btnZeroLevel.setRect(title.x, buttonY + 22, title.width(), 20);
+			align(btnZeroLevel);
+			add(btnZeroLevel);
+		}
 
 		RenderedTextBlock text = PixelScene.renderTextBlock(6);
 		String message;
