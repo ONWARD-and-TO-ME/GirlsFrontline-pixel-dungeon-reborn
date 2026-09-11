@@ -67,7 +67,8 @@ public class CardAffect {
     private static void affectAfterAttack( Hero hero, Char enemy, int baseDMG, KindOfWeapon wep ){
         if (hasCard(FirstCard.HS2000)){
             float s = CardCalculator.shieldPerHit();
-            if (!(wep instanceof M4A1))
+            //空手攻击（wep 为 null）时按默认攻速倍率 1F 处理，避免空指针
+            if (wep != null && !(wep instanceof M4A1))
                 s *= wep.mulByDelay(hero);
             partialShield += s;
             int shield = (int) Math.floor(partialShield);

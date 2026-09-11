@@ -37,17 +37,19 @@ public class CardCalculator {
         return (int) Math.max(0, Math.ceil(dmg * chance));
     }
     public static float cardAttackProc_NormalAdd( Hero hero, KindOfWeapon wep ){
+        //空手攻击（未装备武器，或延迟攻击结算期间武器被切换）时按默认攻速倍率 1F 处理
+        float mulByDelay = wep == null ? 1F : wep.mulByDelay(hero);
         int m4Add = 0;
         int add = 0;
         if (hasCard(RareCard.HS2000.DESERT_EAGLE)) {
             int dmg = shieldAttack(Dungeon.hero, 1);
             m4Add += dmg;
-            add += GameMath.gate(0.25F, wep.mulByDelay(hero) / 3F, 0.5F) * dmg;
+            add += GameMath.gate(0.25F, mulByDelay / 3F, 0.5F) * dmg;
         }
         if (hasCard(FinalCard.HS2000.CAWS)) {
             int dmg = shieldAttack(Dungeon.hero, 3);
             m4Add += dmg;
-            add += GameMath.gate(0.25F, wep.mulByDelay(hero) / 3F, 0.5F) * dmg;
+            add += GameMath.gate(0.25F, mulByDelay / 3F, 0.5F) * dmg;
         }
         if (wep instanceof M4A1)
             return m4Add;
@@ -207,7 +209,8 @@ public class CardCalculator {
     public static float VHS_Hack_Proc(Hero hero, Char enemy, float damage, KindOfWeapon wep ){
         VHS_Hack hack = Buff.affect(hero, VHS_Hack.class);
         boolean isM4A1 = wep instanceof M4A1;
-        float delay = wep.delayFactor(hero);
+        //空手攻击（未装备武器，或延迟攻击结算期间武器被切换）时按默认攻速 1F 处理，避免空指针
+        float delay = wep == null ? 1F : wep.delayFactor(hero);
         if (!hack.isHacking()){
             if (isM4A1)
                 hack.charge(1F);
@@ -220,7 +223,7 @@ public class CardCalculator {
         if (hasCard(CommonCard.VHS.Ak5))
             add += 5;
         if (hasCard(CommonCard.VHS.PM1910))
-            add += Math.min(CommonCard.VHS.PM1910.chance(), CardCalculator.M4A1max(isM4A1 ? 2 : wep.mulByDelay(hero)));
+            add += Math.min(CommonCard.VHS.PM1910.chance(), CardCalculator.M4A1max(isM4A1 ? 2 : (wep == null ? 1F : wep.mulByDelay(hero))));
         if (hasCard(CommonCard.VHS.Thunder))
             add += Math.min(enemy.HT * 0.02F, 15);
         if (hasCard(RareCard.VHS.TAC_50))
