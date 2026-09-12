@@ -98,6 +98,15 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 		Tracker(ch);
 	}
 	@Override
+	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
+		if (super.doUnequip( hero, collect, single )) {
+			//卸下武器时清除动作指针上残留的投技动作
+			ActionIndicator.clearAction(this);
+			return true;
+		}
+		return false;
+	}
+	@Override
 	public void execute( Hero hero, String action ) {
 		super.execute( hero, action );
 		if (action.equals(SkillItem_THROWING)) {
