@@ -83,7 +83,7 @@ public abstract class Puppet extends DirectableAlly {
         Hero hero = hero();
         if (hero.belongings.weapon() != null) {
             damage = hero.belongings.weapon().damageRoll(this);
-            delayPercent = hero.belongings.weapon().mulByDelay(this);
+            delayPercent = hero.belongings.weapon().puppetMulByDelay(this);
         }
         else
             damage = hero.damageRoll(); //handles ring of force

@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.triggers.WindowTrigger;
 import com.shatteredpixel.shatteredpixeldungeon.levels.triggers.Teleporter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.triggers.Trigger;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndComputer;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBlackMarket;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSelectGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -56,6 +57,10 @@ public class ZeroLevel extends Level {
     private static final int decontaminationCorridorPos = 5 * WIDTH + 13;
     // 定义了成就按钮的位置（消毒通道上方一格向左移动两格，再向上移动两格）
     private static final int achievementButtonPos = 2 * WIDTH + 11;
+
+    // 定义了机密商店桌子的位置（左下角：从下往上第3行的第2、3格）
+    private static final int blackMarketTablePos0 = 9 * WIDTH + 1;
+    private static final int blackMarketTablePos1 = 9 * WIDTH + 2;
 
     // 定义地形常量，用于构建硬编码地图
     private static final int W = Terrain.WALL;      // 墙
@@ -127,6 +132,21 @@ public class ZeroLevel extends Level {
         protected Window getWindow() {
             //独立的九宫格电脑窗口，见 windows.WndComputer
             return new WndComputer();
+        }
+    }
+
+    // 机密商店桌子触发器 - 用于打开机密商店窗口
+    public static class BlackMarketTriger extends WindowTrigger {
+        @Override
+        public boolean canInteract(Char ch) {
+            //相邻格子均可触发，与电脑一致
+            return Dungeon.hero == ch && Dungeon.level.adjacent(pos, ch.pos);
+        }
+
+        @Override
+        protected Window getWindow() {
+            //机密商店风格全屏窗口，见 windows.WndBlackMarket
+            return new WndBlackMarket();
         }
     }
 
@@ -250,6 +270,10 @@ public class ZeroLevel extends Level {
         // 放置成就按钮触发器
         placeTrigger(new AchievementButton().create(achievementButtonPos));
 
+        // 放置机密商店桌子触发器（左下角桌子，相邻点击打开机密商店窗口）
+        placeTrigger(new BlackMarketTriger().create(blackMarketTablePos0));
+        placeTrigger(new BlackMarketTriger().create(blackMarketTablePos1));
+
         // 添加向下的楼梯触发器
         placeTrigger(new Teleporter().create(toZeroLevelSub, ZeroLevelSub.toForwardCamp, 1000));
 
@@ -307,6 +331,9 @@ public class ZeroLevel extends Level {
                 return Messages.get(this, "decontamination_corridor.name");
             } else if ((tileY * WIDTH + tileX) == achievementButtonPos) {
                 return Messages.get(this, "achievement_button.name");
+            } else if ((tileY * WIDTH + tileX) == blackMarketTablePos0
+                    || (tileY * WIDTH + tileX) == blackMarketTablePos1) {
+                return Messages.get(this, "black_market_table.name");
             }
 
             return super.name(tileX, tileY);
@@ -331,6 +358,9 @@ public class ZeroLevel extends Level {
                 return Messages.get(this, "decontamination_corridor.desc");
             } else if ((tileY * WIDTH + tileX) == achievementButtonPos) {
                 return Messages.get(this, "achievement_button.desc");
+            } else if ((tileY * WIDTH + tileX) == blackMarketTablePos0
+                    || (tileY * WIDTH + tileX) == blackMarketTablePos1) {
+                return Messages.get(this, "black_market_table.desc");
             }
 
             return super.desc(tileX, tileY);

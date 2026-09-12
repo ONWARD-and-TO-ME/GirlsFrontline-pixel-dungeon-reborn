@@ -230,6 +230,15 @@ abstract public class KindOfWeapon extends EquipableItem {
 			return delay * 2F;
 		return 1F;
 	}
+	//供丹德莱傀儡（Puppet）使用：攻速倍率钳制为 0.5~2
+	public float puppetMulByDelay( Char owner ){
+		float delay = delayFactor( owner );
+		if (delay > 2F)
+			return 2F;
+		if (delay < 0.5F)
+			return 0.5F;
+		return 1F;
+	}
 	public float accuracyFactor( Char owner ) {
 		return 1f;
 	}
