@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.StarShield;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -32,7 +33,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.PathFinder;
@@ -158,6 +161,74 @@ public final class GSH18Talent {
 	/** 医生直觉+1：允许取下被诅咒的防具 */
 	public static boolean canUnequipArmor( Hero hero ){
 		return hero.pointsInTalent(Talent.GSH18_DOCTOR_INTUITION) >= 1;
+	}
+
+	// ===================== 伴星同调（GSH18·未来之星 T3） =====================
+
+	/**
+	 * 快速攻击窗口内暂存的主武器。
+	 * 快速攻击时副武器HG会被临时挂到 belongings.weapon，主武器不在任何装备槽中、
+	 * 无法通过槽位找到，故在攻击期间一次性暂存（attack() 为同步过程）。
+	 */
+	private static KindOfWeapon quickAttackMainWeapon = null;
+
+	/** 快速攻击开始前调用：暂存被换下的主武器（仅在拥有伴星同调时记录） */
+	public static void beginQuickAttack( Hero hero, KindOfWeapon mainWeapon ){
+		if (hero != null && hero.hasTalent(Talent.GSH18_COMPANION_SYNC)){
+			quickAttackMainWeapon = mainWeapon;
+		}
+	}
+
+	/** 快速攻击结束后调用：清除暂存 */
+	public static void endQuickAttack(){
+		quickAttackMainWeapon = null;
+	}
+
+	/**
+	 * 伴星同调：副武器（便携手枪套件中的武器）的有效等级向主武器的真实等级看齐。
+	 * +1/+2：副武器低于主武器时有效等级 +1/+2，同步后不得超过主武器真实等级；
+	 * +3：直接补足至主武器真实等级。
+	 *
+	 * 唯一加成通路：仅由 Weapon.buffedLvl 调用——伤害（min/max 都走 buffedLvl）
+	 * 与面板显示统一经此聚合，不在攻击流程等其它地方重复加层。
+	 *
+	 * @return 应增加的有效等级（&gt;=0）
+	 */
+	public static int companionStarSyncBonus( Hero hero, Weapon weapon ){
+		if (hero == null || weapon == null || !hero.hasTalent(Talent.GSH18_COMPANION_SYNC)){
+			return 0;
+		}
+		GunSwap swap = hero.buff(GunSwap.class);
+		if (swap == null){
+			return 0;
+		}
+		KindOfWeapon holstered = swap.getEquipment(KindOfWeapon.class);
+		KindOfWeapon equipped = hero.belongings.weapon();
+
+		KindOfWeapon mainWeapon;
+		if (weapon == holstered){
+			//静置在副武器槽；快速攻击期间同一件HG会同时被临时挂到主手槽
+			mainWeapon = (equipped != weapon) ? equipped : quickAttackMainWeapon;
+		} else if (weapon == equipped && weapon.hasTag(KindOfWeapon.Tag.HG) && holstered != null){
+			//手动换枪后：HG在主手、主武器被收进便携手枪套件
+			mainWeapon = holstered;
+		} else {
+			return 0;
+		}
+
+		if (!(mainWeapon instanceof Weapon)){
+			return 0;
+		}
+		int mainLevel = ((Weapon) mainWeapon).level();   //主武器真实等级（不含临时升级buff）
+		int secondaryLevel = weapon.level();            //副武器真实等级
+		int gap = mainLevel - secondaryLevel;
+		if (gap <= 0){
+			return 0;
+		}
+		int points = hero.pointsInTalent(Talent.GSH18_COMPANION_SYNC);
+		//+3直接拉平；+1/+2最多补对应点数；钳制保证不超过主武器真实等级
+		int bonus = points >= 3 ? gap : Math.min(points, gap);
+		return Math.max(0, bonus);
 	}
 
 	// ===================== 各天赋具体实现 =====================

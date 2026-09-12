@@ -2215,9 +2215,16 @@ public class Hero extends Char {
 			//粉色文本，与星之护盾（ShieldHalo）同色
 			sprite.showStatus( 0xFF99CC, Messages.get(this, "quick_attack") );
 			belongings.weapon = secondaryWeapon();
+			//伴星同调：快速攻击期间主武器不在任何装备槽中，暂存以供副武器等级同调判定
+			GSH18Talent.beginQuickAttack(this, savedMain);
 		}
 
-		boolean hit = attack( enemy );
+		boolean hit;
+		try {
+			hit = attack( enemy );
+		} finally {
+			GSH18Talent.endQuickAttack();
+		}
 
 		Invisibility.dispel();
 		spend( attackDelay() );

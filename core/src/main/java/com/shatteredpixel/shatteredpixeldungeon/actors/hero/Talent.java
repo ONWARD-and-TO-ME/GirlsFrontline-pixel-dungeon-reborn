@@ -202,6 +202,8 @@ public enum Talent {
 	GSH18_INTELLIGENCE_AWARENESS(169, 3), GSH18_AGILE_MOVEMENT(170, 3),
 	//GSH18未来之星专属天赋 - 天狼星心脏
 	GSH18_SIRIUS_HEART(171, 3),
+	//GSH18 未来之星 T3
+	GSH18_COMPANION_SYNC(172, 3),
 
     //初始通用
     //t1
@@ -1012,7 +1014,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, GUN_1V2, GUN_2V2, GUN_3);
 				break;
 			case FUTURE_STAR:
-				Collections.addAll(tierTalents, GSH18_INTELLIGENCE_AWARENESS, GSH18_SIRIUS_HEART);
+				Collections.addAll(tierTalents, GSH18_INTELLIGENCE_AWARENESS, GSH18_SIRIUS_HEART, GSH18_COMPANION_SYNC);
 				break;
 			case MOBILE_MEDICALTABLE:
 				Collections.addAll(tierTalents, GSH18_AGILE_MOVEMENT);
