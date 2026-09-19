@@ -83,6 +83,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CheckedCell;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
+import com.shatteredpixel.shatteredpixeldungeon.effects.SpeedLine;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Battery;
@@ -171,6 +172,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ElpheltSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.AttackIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
@@ -189,6 +191,7 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
+import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -1808,15 +1811,66 @@ public class Hero extends Char {
 			}
 
 			float speed = speed();
-			
-			sprite.move(pos, step);
-			move(step);
 
-			spend( 1 / speed );
+			SuperAiFlight flight = buff( SuperAiFlight.class );
+			boolean dashing = flight != null && flight.isDashing();
+
+			if (dashing) {
+				//飞升自由+3：高速冲刺，一次性跨越最多 dashDistance 格，总耗时为单格的 1/dashDistance
+				int startPos = pos;
+				int dashEnd = step;
+				int steps = 0;
+				int maxDash = flight.dashDistance();
+				ArrayList<Integer> dashCells = new ArrayList<>();
+				dashCells.add( startPos );
+
+				int curStep = step;
+				while (steps < maxDash) {
+					move( curStep );
+					dashEnd = curStep;
+					dashCells.add( dashEnd );
+					search( false );
+					steps++;
+
+					if (steps >= maxDash || path == null || path.isEmpty()) {
+						break;
+					}
+					int next = path.getFirst();
+					if ( (Dungeon.level.passable[next] || Dungeon.level.avoid[next])
+							&& Actor.findChar( next ) == null ) {
+						path.removeFirst();
+						curStep = next;
+					} else {
+						break;
+					}
+				}
+
+				//用一次性的快速位移动画跨越整段距离
+				float savedInterval = CharSprite.getMoveInterval();
+				CharSprite.setMoveInterval( 0.08f );
+				sprite.move( startPos, dashEnd );
+				CharSprite.setMoveInterval( savedInterval );
+
+				//总耗时仅为单格移动的耗时（5格≈原来1格的时间）
+				spend( 1 / speed );
+
+				//沿冲刺路径生成速度线
+				spawnDashSpeedLines( dashCells );
+
+			} else {
+
+				sprite.move(pos, step);
+				move(step);
+
+				spend( 1 / speed );
+			}
+
 			justMoved = true;
 			CardAffect.onMove(this);
-			
-			search(false);
+
+			if (!dashing) {
+				search(false);
+			}
 
 			return true;
 
@@ -1826,6 +1880,22 @@ public class Hero extends Char {
 			
 		}
 
+	}
+
+	/** 沿冲刺路径的每一格喷射速度线粒子，营造高速飞行感 */
+	private void spawnDashSpeedLines( ArrayList<Integer> cells ) {
+		if (cells == null || cells.size() < 2) {
+			return;
+		}
+		int from = cells.get( 0 );
+		int to = cells.get( cells.size() - 1 );
+		PointF a = DungeonTilemap.tileToWorld( from );
+		PointF b = DungeonTilemap.tileToWorld( to );
+		float angle = (float) Math.atan2( b.y - a.y, b.x - a.x );
+
+		for (int cell : cells) {
+			CellEmitter.get( cell ).burst( SpeedLine.factory( angle ), 3 );
+		}
 	}
 	
 	public boolean handle( int cell ) {

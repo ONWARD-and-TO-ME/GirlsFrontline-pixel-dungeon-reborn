@@ -566,7 +566,7 @@ public abstract class Char extends Actor {
 		if ( buff( Haste.class ) != null) speed *= 3f;
 		if ( buff( Dread.class ) != null) speed *= 2f;
 		SuperAiFlight flight = buff( SuperAiFlight.class );
-		if (flight != null && flight.isActive()) speed *= 1.2f;
+		if (flight != null && flight.isActive()) speed *= flight.speedMultiplier();
 		return speed;
 	}
 

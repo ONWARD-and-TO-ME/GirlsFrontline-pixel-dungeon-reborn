@@ -254,6 +254,10 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	public static void setMoveInterval( float interval){
 		moveInterval = interval;
 	}
+
+	public static float getMoveInterval(){
+		return moveInterval;
+	}
 	
 	//returns where the center of this sprite will be after it completes any motion in progress
 	public PointF destinationCenter(){

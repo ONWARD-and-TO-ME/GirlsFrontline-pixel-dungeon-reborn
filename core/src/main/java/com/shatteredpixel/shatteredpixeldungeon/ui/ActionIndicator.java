@@ -28,6 +28,8 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Color;
 import com.watabou.input.GameAction;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 
@@ -37,8 +39,19 @@ public class ActionIndicator extends Tag {
 
 	//默认黄色 / 换枪按钮粉色（与星之护盾光环同色 0xFF99CC）
 	private static final int COLOR_DEFAULT = Color.YELLOW;
+
+	//动作按钮能量加载条：空槽白色，填充蓝色
+	private static final int COLOR_CHARGE_BG   = 0xFFFFFFFF;
+	private static final int COLOR_CHARGE_FILL = 0xFF3DA3FF;
+	private static final float CHARGE_BAR_HEIGHT = 2f;
+
     Image icon;
 	int bgColor = COLOR_DEFAULT;
+
+	//动作按钮上的能量加载条（可选，由 Action.actionCharge() 驱动）
+	private ColorBlock chargeBg;
+	private ColorBlock chargeFill;
+	private float chargeX, chargeY, chargeW;
 	private static Action action;
 	private static final ArrayList<Action> actions = new ArrayList<>();
 	public static ActionIndicator instance;
@@ -67,6 +80,10 @@ public class ActionIndicator extends Tag {
 		otherBG.hardlight( Color.DARK_PURPLE );
 		add(otherBG);
 		super.createChildren();
+
+		chargeBg = new ColorBlock( 1, 1, COLOR_CHARGE_BG );
+		chargeFill = new ColorBlock( 1, 1, COLOR_CHARGE_FILL );
+		chargeBg.visible = chargeFill.visible = false;
 
 	}
 
@@ -104,6 +121,18 @@ public class ActionIndicator extends Tag {
 			if (!members.contains(icon))
 				add(icon);
 		}
+
+		//能量加载条：置于按钮底部居中，位于图标之上渲染
+		chargeW = SIZE - 8;
+		chargeX = bg.x + (width - chargeW) / 2f;
+		chargeY = bg.y + height - 4;
+		chargeBg.x = chargeFill.x = chargeX;
+		chargeBg.y = chargeFill.y = chargeY;
+		chargeBg.size( chargeW, CHARGE_BAR_HEIGHT );
+		if (!members.contains(chargeBg)){
+			add(chargeBg);
+			add(chargeFill);
+		}
 	}
 	
 	private boolean needsLayout = false;
@@ -125,7 +154,21 @@ public class ActionIndicator extends Tag {
 		} else {
 			visible = action != null;
 		}
-		
+
+		//更新动作按钮上的能量加载条（-1 表示不显示）
+		float charge = (action == null ? -1f : action.actionCharge());
+		boolean barVisible = visible && charge >= 0f && chargeW > 0f;
+		chargeBg.visible = chargeFill.visible = barVisible;
+		if (barVisible){
+			if (charge > 1f) charge = 1f;
+			//向上取整到最近像素，保证窄条也至少有1像素填充
+			float pixelWidth = chargeW;
+			Camera cam = camera();
+			if (cam != null) pixelWidth *= cam.zoom;
+			float fillW = chargeW * (float)Math.ceil( charge * pixelWidth ) / pixelWidth;
+			chargeFill.size( fillW, CHARGE_BAR_HEIGHT );
+		}
+
 		if (needsLayout){
 			layout();
 			needsLayout = false;
@@ -212,6 +255,14 @@ public class ActionIndicator extends Tag {
 		void doAction();
 		default int bgColor(){
 			return COLOR_DEFAULT;
+		}
+
+		/**
+		 * 动作按钮上加载条的填充比例。
+		 * @return 0~1 显示加载条（空槽白色、填充蓝色）；负数（默认 -1）表示不显示加载条。
+		 */
+		default float actionCharge(){
+			return -1f;
 		}
 
 	}

@@ -169,6 +169,8 @@ public enum Talent {
 	GSH18_SIRIUS_HEART(171, 3),
 	//GSH18 未来之星 T3
 	GSH18_COMPANION_SYNC(172, 3),
+	//Huntress 超级小爱 T3 - 飞升自由
+	FLIGHT_FREEDOM(173, 3),
 
     //初始通用
     //t1
@@ -747,7 +749,9 @@ public enum Talent {
 			case WARDEN:
 			Collections.addAll(tierTalents, DURABLE_TIPS, BARKSKIN, SHIELDING_DEW);
 			break;
-		case SUPER_AI: break; // 超级小爱：天赋暂时为空
+		case SUPER_AI:
+			Collections.addAll(tierTalents, FLIGHT_FREEDOM);
+			break;
 			case EMP_BOMB:
 				Collections.addAll(tierTalents, EMP_One, EMP_Two, EMP_Three);
 				break;
