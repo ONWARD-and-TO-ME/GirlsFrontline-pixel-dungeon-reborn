@@ -46,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SuperAiFlight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HK416Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HuntressTalent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.Type561Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
@@ -1282,6 +1283,8 @@ public abstract class Level implements Bundlable {
 				viewDist += Type561Talent.viewDistanceBonus((Hero) c);
 				// 女猎（隼）远视视野乘数（实现见 HuntressTalent）
 				viewDist *= HuntressTalent.farsightMultiplier((Hero) c);
+				// HK416天赋：2.5x ACOG镜视野加成
+				viewDist += HK416Talent.acogVisionBonus((Hero) c);
 			}
 			
 			ShadowCaster.castShadow( cx, cy, fieldOfView, blocking, viewDist );

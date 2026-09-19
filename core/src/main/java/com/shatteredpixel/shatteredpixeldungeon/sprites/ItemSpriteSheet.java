@@ -848,7 +848,7 @@ public class ItemSpriteSheet {
 	public static final  int NIGHTVISIONHELMET2=GUN561_NUKE+9;
 	public static final  int UMP9              =GUN561_NUKE+11;
 	public static final  int M320              =GUN561_NUKE+13;
-	public static final  int HK269             =GUN561_NUKE+15;
+	public static final  int HK269             =GUN561_NUKE+14;
 		
 	static {
 		assignItemRect(GUN561,             14, 16);

@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TalentSecondSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HK416Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HuntressTalent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.Type561Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
@@ -952,6 +953,8 @@ public class Dungeon {
 		int dist = Math.max(Dungeon.hero.viewDistance, 8);
 		// 女猎（隼）远视视野距离乘数（实现见 HuntressTalent）
 		dist *= HuntressTalent.farsightMultiplier(Dungeon.hero);
+		// HK416天赋：2.5x ACOG镜视野加成
+		dist += HK416Talent.acogVisionBonus(Dungeon.hero);
 
 		if (Dungeon.hero.buff(MagicalSight.class) != null){
 			dist = Math.max( dist, MagicalSight.DISTANCE );

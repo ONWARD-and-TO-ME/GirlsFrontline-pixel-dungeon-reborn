@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Empulse;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Erosion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FireImbue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FrostImbue;
@@ -65,6 +66,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Speed;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Stamina;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.StickyAdhesion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SuperAiFlight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
@@ -74,6 +76,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HK416Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.MageTalent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.RogueTalent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.DeathMark;
@@ -516,6 +519,14 @@ public abstract class Char extends Actor {
 			defRoll *= buff.evasionAndAccuracyFactor();
 		}
 
+		//HK416天赋：侵蚀使被附着的敌人命中降低（T3-5A，实现见 Erosion.attackSkillFactor）
+		acuRoll *= Erosion.attackSkillFactor(attacker);
+		//HK416特工：黏弹震慑降低命中（攻击者侧）与闪避（防御者侧）
+		StickyAdhesion.StickyDeter attackerDeter = attacker.buff(StickyAdhesion.StickyDeter.class);
+		if (attackerDeter != null) acuRoll *= attackerDeter.factor();
+		StickyAdhesion.StickyDeter defenderDeter = defender.buff(StickyAdhesion.StickyDeter.class);
+		if (defenderDeter != null) defRoll *= defenderDeter.factor();
+
 		return (acuRoll * accMulti) >= defRoll;
 	}
 
@@ -727,6 +738,12 @@ public abstract class Char extends Actor {
 	public void die( Object src ) {
 		destroy();
 		if (src != Chasm.class) sprite.die();
+		//HK416（寄生榴弹）：拥有侵蚀的单位死亡时自爆（实现见 Erosion.onDeath）
+		Erosion.onDeath(this);
+		//HK416天赋：实战经验击杀积累（发射榴弹后重置）
+		if (src instanceof Hero && ((Hero)src).hasTalent(Talent.HK416_EXPERIENCE)){
+			HK416Talent.onKill((Hero)src);
+		}
 	}
 
     public void MustDie( Object cause ){

@@ -63,6 +63,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SiriusHeart;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SuperAiFlight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.GSH18Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HK416Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HuntressTalent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.MageTalent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.RogueTalent;
@@ -628,6 +629,8 @@ public class Hero extends Char {
 		}
         // 56-1式天赋：知识的力量（读书后精度提升，实现见 Type561Talent）
         accuracy *= Type561Talent.accuracyMultiplier(this);
+        // HK416天赋：2.5x ACOG镜命中加成
+        accuracy *= HK416Talent.acogAccuracyMultiplier(this);
         // 56天赋：1-4V2
         if (buff(ShootGun.ShootTracker.class) != null) {
             accuracy *= 1.1F + 0.2F * pointsInTalent(Talent.Type56_14V2);

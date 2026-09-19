@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.GSH18Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HK416Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HuntressTalent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.MageTalent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.RogueTalent;
@@ -171,6 +172,17 @@ public enum Talent {
 	GSH18_COMPANION_SYNC(172, 3),
 	//Huntress 超级小爱 T3 - 飞升自由
 	FLIGHT_FREEDOM(173, 3),
+
+	//HK416 T1
+	HK416_EXTRA_SUPPLY(192), HK416_ELITE_TROOPER(193), HK416_WEAK_POINT(194), HK416_SHIELD_COMBO(195),
+	//HK416 T2
+	HK416_SPECIAL_SUPPLY(196), HK416_STEADY_PROTOCOL(197), HK416_CRIPPLING_STRIKE(198), HK416_PREPARED(199), HK416_SHRAPNEL(200),
+	//HK416 T3（通用）
+	HK416_FAST_SUPPLY(201, 3), HK416_ACOG(202, 3),
+	//HK416 寄生榴弹 T3
+	HK416_EROSION_INHERIT(203, 3), HK416_EXPERIENCE(204, 3), HK416_EROSION_WEAKEN(205, 3),
+	//HK416 特工 T3
+	HK416_BLAST_DETER(206, 3), HK416_UPGRADE_PROBE(207, 3), HK416_SCRAP_USE(208, 3),
 
     //初始通用
     //t1
@@ -376,6 +388,10 @@ public enum Talent {
 					return 90;
 				case HUNTRESS:
 					return 122;
+				case HK416:
+					return 218; //隐藏能源（HK416专属图标）
+				case GSH18:
+					return 26;
 			}
 		} else {
 			return icon;
@@ -420,6 +436,40 @@ public enum Talent {
     public static class ZongziDropped extends CounterBuff{{revivePersists = true;}}
 	public static class NatureBerriesAvailable extends CounterBuff{{revivePersists = true;}}
 
+	// ===================== HK416 天赋 tracker（需序列化，按项目约定放在本类中） =====================
+
+	/**
+	 * HK416 寄生榴弹：攻击积累（内部以0.1%为单位）。
+	 * 每次攻击+25（2.5%），攻击侵蚀目标额外+15（1.5%），发射榴弹后清零。
+	 */
+	public static class HK416AttackChargeTracker extends CounterBuff{}
+
+	/** HK416 弱点看破：对同一敌人的命中次数（附加在敌人身上） */
+	public static class HK416WeakPointTracker extends CounterBuff{}
+
+	/** HK416 经验积累：击杀数（发射榴弹后清零） */
+	public static class KillMomentumTracker extends CounterBuff{{revivePersists = true;}}
+
+	/**
+	 * HK416 护盾连携：记录当前由天赋提供的护盾值（上限20），每回合衰减1点。
+	 */
+	public static class HK416ShieldComboTracker extends CounterBuff{
+		@Override
+		public boolean act() {
+			if (count() > 0){
+				countDown(1);
+				Barrier barrier = target.buff(Barrier.class);
+				if (barrier != null && barrier.shielding() > 0){
+					barrier.incShield(-1);
+				}
+			} else {
+				detach();
+			}
+			spend(TICK);
+			return true;
+		}
+	}
+
 	public static void onFoodEaten(Hero hero, float foodVal, Item foodSource) {
         // 战士（UMP45）进食天赋（丰盛大餐/铁胃，实现见 WarriorTalent）
         WarriorTalent.onFoodEaten(hero);
@@ -432,6 +482,9 @@ public enum Talent {
 
         // GSH18角色进食相关天赋（疗养一餐/元气一餐，实现见 GSH18Talent）
         GSH18Talent.onFoodEaten(hero);
+
+        // HK416角色进食相关天赋（额外补给/特殊补给，实现见 HK416Talent）
+        HK416Talent.onFoodEaten(hero, foodVal);
 
         // 56-1式角色进食相关天赋（饭饱为钢旧版回血，实现见 Type561Talent）
         Type561Talent.onFoodEaten(hero);
@@ -453,6 +506,8 @@ public enum Talent {
 		factor = RogueTalent.itemIDSpeedFactor(hero, item, factor);
 		// 56-1式角色鉴定速度（百战老兵/战场老兵旧版，实现见 Type561Talent）
 		factor *= Type561Talent.itemIDSpeedFactor(hero, item);
+		// HK416角色鉴定速度（精锐人型，实现见 HK416Talent）
+		factor = HK416Talent.itemIDSpeedFactor(hero, factor);
 		return factor;
 	}
 
@@ -541,6 +596,9 @@ public enum Talent {
 		// 56-1式角色攻击命中天赋（轻装简从/胆敢向我还击/解放刺/侦查部队，实现见 Type561Talent）
 		dmg = Type561Talent.onAttackProc(hero, enemy, dmg);
 
+		// HK416角色攻击命中天赋（弱点看破/致残打击/寄生榴弹攻击积累，实现见 HK416Talent）
+		dmg = HK416Talent.onAttackProc(hero, enemy, dmg);
+
         return dmg;
 	}
 
@@ -597,8 +655,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, GSH18_MEAL_TREATMENT, GSH18_DOCTOR_INTUITION, GSH18_CLOSE_COMBAT, GSH18_STAR_SHIELD);
 				break;
 			case HK416:
-				// 占位天赋：暂用战士的基础天赋
-				Collections.addAll(tierTalents, HEARTY_MEAL, ARMSMASTERS_INTUITION, TEST_SUBJECT, IRON_WILL);
+				Collections.addAll(tierTalents, HK416_EXTRA_SUPPLY, HK416_ELITE_TROOPER, HK416_WEAK_POINT, HK416_SHIELD_COMBO);
 				break;
             case Dandelion: break;
             case PUBLIC_1:
@@ -644,8 +701,7 @@ public enum Talent {
                 Collections.addAll(tierTalents, GSH18_ENERGIZING_MEAL, GSH18_CHAIN_SHOCK, GSH18_LOGISTICS_SUPPORT, GSH18_COMIC_HEART, GSH18_MEDICAL_COMPATIBILITY);
                 break;
             case HK416:
-                // 占位天赋：暂用战士的T2天赋
-                Collections.addAll(tierTalents, IRON_STOMACH, RESTORED_WILLPOWER, RUNIC_TRANSFERENCE, LETHAL_MOMENTUM, IMPROVISED_PROJECTILES);
+                Collections.addAll(tierTalents, HK416_SPECIAL_SUPPLY, HK416_STEADY_PROTOCOL, HK416_CRIPPLING_STRIKE, HK416_PREPARED, HK416_SHRAPNEL);
                 break;
             case Dandelion: break;
             case PUBLIC_1:
@@ -686,8 +742,7 @@ public enum Talent {
                 Collections.addAll(tierTalents,GSH18_INTELLIGENCE_AWARENESS,GSH18_AGILE_MOVEMENT);
                 break;
             case HK416:
-                // 占位天赋：暂用战士的T3天赋
-                Collections.addAll(tierTalents, HOLD_FAST, STRONGMAN);
+                Collections.addAll(tierTalents, HK416_FAST_SUPPLY, HK416_ACOG);
                 break;
             case Dandelion: break;
             case PUBLIC_1:
@@ -712,6 +767,23 @@ public enum Talent {
 
 	public static void initSubclassTalents( Hero hero ){
 		initSubclassTalents( hero.subClass, hero.talents );
+
+		// HK416 寄生榴弹转职：获得HK269榴弹发射器（防止重复发放）
+		if (hero.subClass == HeroSubClass.PARASITIC_GRENADE
+				&& hero.heroClass == HeroClass.HK416
+				&& hero.belongings.getItem(com.shatteredpixel.shatteredpixeldungeon.items.weapon.special.HK269.class) == null){
+			com.shatteredpixel.shatteredpixeldungeon.items.weapon.special.HK269 hk269 = new com.shatteredpixel.shatteredpixeldungeon.items.weapon.special.HK269();
+			if (!hk269.doPickUp(hero)) {
+				Dungeon.level.drop(hk269, hero.pos);
+			}
+		}
+
+		// HK416 特工转职：启动自动黏弹标记
+		if (hero.subClass == HeroSubClass.AGENT
+				&& hero.heroClass == HeroClass.HK416
+				&& hero.buff(com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AgentMarker.class) == null){
+			Buff.affect(hero, com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AgentMarker.class);
+		}
 	}
 
 	public static void initSubclassTalents( HeroSubClass cls, ArrayList<LinkedHashMap<Talent, Integer>> talents ){
@@ -768,6 +840,14 @@ public enum Talent {
 				break;
 			case MOBILE_MEDICALTABLE:
 				Collections.addAll(tierTalents, GSH18_AGILE_MOVEMENT);
+				break;
+			case PARASITIC_GRENADE:
+				//HK416 寄生榴弹 T3
+				Collections.addAll(tierTalents, HK416_EROSION_INHERIT, HK416_EXPERIENCE, HK416_EROSION_WEAKEN);
+				break;
+			case AGENT:
+				//HK416 特工 T3
+				Collections.addAll(tierTalents, HK416_BLAST_DETER, HK416_UPGRADE_PROBE, HK416_SCRAP_USE);
 				break;
             case EMPTY: break;
 		}

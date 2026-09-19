@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HK416Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -320,6 +321,8 @@ public class Potion extends Item implements ColorItem {
 	protected float mulOnTalentUsed = 1F;
 	public void apply( Hero hero ) {
         Talent.onPotionUsed(hero, mulOnTalentUsed);
+		// HK416天赋：稳态协议（喝非减益药水获得净化，实现见 HK416Talent）
+		HK416Talent.onPotionQuaffed(hero, this);
 		shatter( hero.pos );
 	}
 	

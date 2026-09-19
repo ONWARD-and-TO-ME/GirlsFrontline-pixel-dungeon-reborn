@@ -87,6 +87,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.SaltyZongzi;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SugarZongzi;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHaste;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
@@ -110,6 +111,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SA.Welrod;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.M9;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SMG.Ump45;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.GSH18;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LR.HKUSP;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.special.M320;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.UG.Cannon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
@@ -169,8 +172,8 @@ public enum HeroClass {
 				person.add(HeroSubClass.MOBILE_MEDICALTABLE);
 				break;
 			case HK416:
-				person.add(HeroSubClass.NONE);
-				person.add(HeroSubClass.NONE);
+				person.add(HeroSubClass.PARASITIC_GRENADE);
+				person.add(HeroSubClass.AGENT);
 				break;
 			default:
 				person.add(HeroSubClass.NONE);
@@ -485,9 +488,16 @@ public enum HeroClass {
 	}
 
 	private static void initHK416( Hero hero ) {
-		// 占位：初始武器暂用M9
-		(hero.belongings.weapon = new M9()).identify();
-		new PotionOfHealing().identify().collect();
+		// 初始武器 HK USP（贴图暂用占位，绘制后替换）
+		(hero.belongings.weapon = new HKUSP()).identify();
+
+		// 专属特殊装备：M320 下挂榴弹发射器
+		M320 m320 = new M320();
+		m320.identify().collect();
+		Dungeon.quickslot.setSlot(0, m320);
+
+		new PotionOfHaste().identify().collect();
+		new ScrollOfUpgrade().identify();
 	}
 	private static void initDandelion( Hero hero ){
 		hero.subClass = HeroSubClass.EMPTY;
@@ -601,11 +611,11 @@ public enum HeroClass {
 		};
 	case HK416:
 		return new String[]{
-				Messages.get(HeroClass.class, "warrior_perk1"),
-				Messages.get(HeroClass.class, "warrior_perk2"),
-				Messages.get(HeroClass.class, "warrior_perk3"),
-				Messages.get(HeroClass.class, "warrior_perk4"),
-				Messages.get(HeroClass.class, "warrior_perk5"),
+				Messages.get(HeroClass.class, "hk416_perk1"),
+				Messages.get(HeroClass.class, "hk416_perk2"),
+				Messages.get(HeroClass.class, "hk416_perk3"),
+				Messages.get(HeroClass.class, "hk416_perk4"),
+				Messages.get(HeroClass.class, "hk416_perk5"),
 		};
 	case Dandelion:
 		return new String[]{

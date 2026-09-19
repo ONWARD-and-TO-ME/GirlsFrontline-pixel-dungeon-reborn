@@ -50,6 +50,9 @@ public enum HeroSubClass {
 	// GSH18子职业
 	FUTURE_STAR(HeroIcon.BERSERKER), // 未来之星
 	MOBILE_MEDICALTABLE(HeroIcon.GLADIATOR), // 行走手术台
+	// HK416子职业（图标暂用占位，专属图标绘制后替换）
+	PARASITIC_GRENADE(HeroIcon.SNIPER), // 寄生榴弹
+	AGENT(HeroIcon.ASSASSIN), // 特工
 	EMPTY(HeroIcon.NONE);
 
     public static final HashMap<String, String> rename = new HashMap<>();
