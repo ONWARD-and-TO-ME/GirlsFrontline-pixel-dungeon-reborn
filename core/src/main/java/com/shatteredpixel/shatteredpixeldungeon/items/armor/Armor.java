@@ -351,6 +351,8 @@ public class Armor extends EquipableItem {
 					Armor a = (Armor) item;
 					if (a.tier() >= tier())
 						return false;
+					if (a.inside != null)
+						return false;
 					if (!a.cursedKnown)
 						return false;
 					return !a.isEquipped(hero) || a.unEquipable(hero);
@@ -399,7 +401,6 @@ public class Armor extends EquipableItem {
         super.stopTrack();
         if (mixArmorTracker != null) {
             mixArmorTracker.detach();
-            mixArmorTracker = null;
         }
         if (inside != null)
             inside.stopTrack();
@@ -512,7 +513,7 @@ public class Armor extends EquipableItem {
 	
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero.belongings.armor() == this || hero.belongings.armor() != null && hero.belongings.armor().inside == this
+		return hero.belongings.armor() == this || outside != null && outside.inside == this && outside.isEquipped(hero)
                 || ownerBuff instanceof EquipmentBuff && ownerBuff.target == hero;
 	}
 
@@ -1117,6 +1118,12 @@ public class Armor extends EquipableItem {
                 duration = CooldownTracker.updateTime;
             }
             return true;
+        }
+
+        @Override
+        public void detach() {
+            super.detach();
+            mixArmorTracker = null;
         }
 
         @Override

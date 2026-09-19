@@ -166,7 +166,6 @@ public class CardSelector extends Item {
         super.stopTrack();
         if (coolDownTracker != null){
             coolDownTracker.detach();
-            coolDownTracker = null;
         }
     }
     private static WndWithCanScrollButton INSTANCE = null;
@@ -313,6 +312,11 @@ public class CardSelector extends Item {
     public class CoolDownTracker extends Buff{
         {
             revivePersists = true;
+        }
+        @Override
+        public void detach() {
+            super.detach();
+            coolDownTracker = null;
         }
         @Override
         public boolean act() {

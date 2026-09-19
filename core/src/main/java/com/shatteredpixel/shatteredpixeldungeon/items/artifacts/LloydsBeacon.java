@@ -490,10 +490,14 @@ public class LloydsBeacon extends Artifact {
         super.stopTrack();
         if (coolDownTracker != null) {
             coolDownTracker.detach();
-            coolDownTracker = null;
         }
     }
 	public class CoolDownTracker extends Buff{
+		@Override
+		public void detach() {
+			super.detach();
+			coolDownTracker = null;
+		}
 		@Override
 		public boolean act() {
             if (cd > 0 && !cursed)

@@ -976,7 +976,6 @@ public class Item implements Bundlable {
     public void stopTrack(){
         if (isUpgradable() && tracker != null){
             tracker.detach();
-            tracker = null;
         }
     }
     public class OverLoadTrack extends Buff{
@@ -998,6 +997,11 @@ public class Item implements Bundlable {
                 updateTime = CooldownTracker.updateTime;
             }
             return true;
+        }
+        @Override
+        public void detach() {
+            super.detach();
+            tracker = null;
         }
         @Override
         public boolean act() {

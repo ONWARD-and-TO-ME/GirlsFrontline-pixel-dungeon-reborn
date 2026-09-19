@@ -47,12 +47,16 @@ public abstract class SkillItem extends Item {
         super.stopTrack();
         if (coolDownTracker != null){
             coolDownTracker.detach();
-            coolDownTracker = null;
         }
     }
     public class CoolDownTracker extends Buff {
         {
             revivePersists = true;
+        }
+        @Override
+        public void detach() {
+            super.detach();
+            coolDownTracker = null;
         }
         @Override
         public boolean act() {
