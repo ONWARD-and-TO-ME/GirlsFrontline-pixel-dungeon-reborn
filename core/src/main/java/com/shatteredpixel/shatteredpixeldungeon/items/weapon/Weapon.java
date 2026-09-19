@@ -393,7 +393,7 @@ abstract public class Weapon extends KindOfWeapon {
         int level = super.buffedLvl(lvl);
         if (BuffLevelPoint != Integer.MIN_VALUE)
             return level;
-		if (isEquipped( hero )){
+		if (isEquipped( hero ) || hero.belongings.contains(this) && !(this instanceof MissileWeapon)){
             // 56-1式天赋：火线补给T4-2电解糖分（实现见 Type561Talent）
             level += Type561Talent.weaponLevelBonus(hero);
 			level += RingOfKing.updateMultiplier(hero);

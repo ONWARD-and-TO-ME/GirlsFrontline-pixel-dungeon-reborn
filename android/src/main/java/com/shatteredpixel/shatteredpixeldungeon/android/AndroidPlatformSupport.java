@@ -446,12 +446,13 @@ public class AndroidPlatformSupport extends PlatformSupport {
 	//由 AndroidGame.onActivityResult 调用，处理文件选择结果
 	public static void handleActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode != FILE_PICK_REQUEST_CODE || pendingFilePickCallback == null) return;
-		FilePickCallback cb = pendingFilePickCallback;
+		final FilePickCallback cb = pendingFilePickCallback;
 		pendingFilePickCallback = null;
+
 		if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
 			try {
 				Context context = AndroidGame.instance.getContext();
-				java.io.File tempFile = new java.io.File(context.getCacheDir(), "import_temp.zip");
+				final java.io.File tempFile = new java.io.File(context.getCacheDir(), "import_temp.zip");
 				java.io.InputStream input = context.getContentResolver().openInputStream(data.getData());
 				java.io.FileOutputStream output = new java.io.FileOutputStream(tempFile);
 				byte[] buffer = new byte[8192];
@@ -461,13 +462,30 @@ public class AndroidPlatformSupport extends PlatformSupport {
 				}
 				input.close();
 				output.close();
-				cb.onFilePicked(Gdx.files.absolute(tempFile.getAbsolutePath()));
-			} catch (Exception e) {
+				//延迟到 GL 线程下一帧执行回调，此时 onResume 已完成、GL 上下文已恢复，
+				//避免字体纹理在 surface 恢复前被使用导致字形缺失
+				Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						cb.onFilePicked(Gdx.files.absolute(tempFile.getAbsolutePath()));
+					}
+				});
+			} catch (final Exception e) {
 				GirlsFrontlinePixelDungeon.reportException(e);
-				cb.onCancel();
+				Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						cb.onCancel();
+					}
+				});
 			}
 		} else {
-			cb.onCancel();
+			Gdx.app.postRunnable(new Runnable() {
+				@Override
+				public void run() {
+					cb.onCancel();
+				}
+			});
 		}
 	}
 

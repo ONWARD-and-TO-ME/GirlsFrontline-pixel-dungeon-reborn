@@ -29,6 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.ChristmasTicket;
 import com.shatteredpixel.shatteredpixeldungeon.items.KingsCrown;
 import com.shatteredpixel.shatteredpixeldungeon.items.XMasGift;
@@ -36,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.Choco;
 //import com.shatteredpixel.shatteredpixeldungeon.items.SALTYMOONCAKE;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.XMasSugar;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.FncSprite;
@@ -160,6 +163,16 @@ public class RatKing extends NPC {
 
         if (c != hero){
             return super.interact(c);
+        }
+        if (Dungeon.level instanceof SewerBossLevel && Dungeon.level.locked) {
+            //部分因为ThrowSkill导致楼层被意外地封锁的存档，通过这里解锁
+            Mob goo = null;
+            for (Mob m : Dungeon.level.mobs) {
+                if (m instanceof Goo)
+                    goo = m;
+            }
+            if (goo == null)
+                Dungeon.level.unseal();
         }
 
         KingsCrown crown = hero.belongings.getItem(KingsCrown.class);

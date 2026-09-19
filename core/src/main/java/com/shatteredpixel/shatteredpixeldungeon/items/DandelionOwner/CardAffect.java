@@ -132,7 +132,8 @@ public class CardAffect {
             protected boolean act() {
                 attackMask = mask;
                 try {
-                    hero.attack(enemy, damage, 1F, 0F, Char.INFINITE_ACCURACY);
+                    if (enemy != null && enemy.isAlive())
+                        hero.attack(enemy, damage, 1F, 0F, Char.INFINITE_ACCURACY);
                 } finally {
                     //虽然我感觉无需try-finally，但是AI推荐。
                     attackMask = 0;

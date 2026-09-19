@@ -236,7 +236,7 @@ public class Goo extends Mob {
 
 	@Override
 	public void damage(int dmg, Object src) {
-		if (!BossHealthBar.isAssigned()){
+		if (!BossHealthBar.isAssigned() && isAlive()){
 			BossHealthBar.assignBoss( this );
 			Dungeon.level.seal();
 		}

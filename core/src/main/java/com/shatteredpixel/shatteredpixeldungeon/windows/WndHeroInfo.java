@@ -323,7 +323,7 @@ public class WndHeroInfo extends WndTabbed {
 			message = PixelScene.renderTextBlock(Messages.get(WndHeroInfo.class, "subclasses_msg"), 6);
 			add(message);
 
-			HeroSubClass[] subClasses = cls.subClasses();
+			HeroSubClass[] subClasses = cls.subClasses().toArray(new HeroSubClass[0]);
 
 			subClsDescs = new RenderedTextBlock[subClasses.length];
 			subClsInfos = new IconButton[subClasses.length];
@@ -383,7 +383,7 @@ public class WndHeroInfo extends WndTabbed {
 			message = PixelScene.renderTextBlock(Messages.get(WndHeroInfo.class, "abilities_msg"), 6);
 			add(message);
 
-			ArmorAbility[] abilities = cls.armorAbilities();
+			ArmorAbility[] abilities = cls.armorAbilities().toArray(new ArmorAbility[0]);
 
 			abilityDescs = new RenderedTextBlock[abilities.length];
 			abilityInfos = new IconButton[abilities.length];

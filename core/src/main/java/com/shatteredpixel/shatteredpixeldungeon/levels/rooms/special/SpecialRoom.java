@@ -187,7 +187,7 @@ public abstract class SpecialRoom extends Room {
             int random = Random.Int(5);
             boolean secret;
             if (SeedFinder.SeedFinding)
-                secret = SeedFinder.toolkit == 2;
+                secret = false;
             else {
                 AlchemistsToolkit toolkit = Dungeon.hero.belongings.getItem(AlchemistsToolkit.class);
                 secret = toolkit != null && toolkit.Secret;

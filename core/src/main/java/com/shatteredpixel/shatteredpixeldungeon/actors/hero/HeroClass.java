@@ -119,31 +119,112 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
 import com.watabou.noosa.Game;
 import com.watabou.utils.DeviceCompat;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public enum HeroClass {
 
-	WARRIOR( HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR ),
-	MAGE( HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
-	ROGUE( HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
-	HUNTRESS( HeroSubClass.SNIPER, HeroSubClass.WARDEN, HeroSubClass.SUPER_AI ),
-	TYPE561( HeroSubClass.EMP_BOMB, HeroSubClass.GUN_MASTER ),
-	GSH18( HeroSubClass.FUTURE_STAR, HeroSubClass.MOBILE_MEDICALTABLE ),
-	HK416( HeroSubClass.NONE, HeroSubClass.NONE ),
-	Dandelion(),
-	PUBLIC_1( HeroSubClass.NONE ),
-    NONE( HeroSubClass.NONE );
-	private final HeroSubClass[] subClasses;
+	WARRIOR,
+	MAGE,
+	ROGUE,
+	HUNTRESS,
+	TYPE561,
+	GSH18,
+	HK416,
+	Dandelion,
+	PUBLIC_1,
+    NONE;
+
     public static final HashMap<String, String> rename = new HashMap<>();
     static {
 
     }
 
-	HeroClass( HeroSubClass...subClasses ) {
-		this.subClasses = subClasses;
+	public ArrayList<HeroSubClass> subClasses() {
+		ArrayList<HeroSubClass> person = new ArrayList<>();
+		switch (this) {
+			case WARRIOR:
+				person.add(HeroSubClass.BERSERKER);
+				person.add(HeroSubClass.GLADIATOR);
+				break;
+			case MAGE:
+				person.add(HeroSubClass.BATTLEMAGE);
+				person.add(HeroSubClass.WARLOCK);
+				break;
+			case ROGUE:
+				person.add(HeroSubClass.ASSASSIN);
+				person.add(HeroSubClass.FREERUNNER);
+				break;
+			case HUNTRESS:
+				person.add(HeroSubClass.SNIPER);
+				person.add(HeroSubClass.WARDEN);
+				person.add(HeroSubClass.SUPER_AI);
+				break;
+			case TYPE561:
+				person.add(HeroSubClass.EMP_BOMB);
+				person.add(HeroSubClass.GUN_MASTER);
+				break;
+			case GSH18:
+				person.add(HeroSubClass.FUTURE_STAR);
+				person.add(HeroSubClass.MOBILE_MEDICALTABLE);
+				break;
+			case HK416:
+				person.add(HeroSubClass.NONE);
+				person.add(HeroSubClass.NONE);
+				break;
+			default:
+				person.add(HeroSubClass.NONE);
+				break;
+			case Dandelion:
+				break;
+		}
+		return person;
 	}
-
+	public ArrayList<ArmorAbility> armorAbilities(){
+		ArrayList<ArmorAbility> person = new ArrayList<>();
+		switch (this) {
+			case WARRIOR: default:
+				person.add(new HeroicLeap());
+				person.add(new Shockwave());
+				person.add(new Endure());
+				break;
+			case MAGE:
+				person.add(new ElementalBlast());
+				person.add(new WildMagic());
+				person.add(new WarpBeacon());
+				break;
+			case ROGUE:
+				person.add(new SmokeBomb());
+				person.add(new DeathMark());
+				person.add(new ShadowClone());
+				break;
+			case HUNTRESS:
+				person.add(new SpectralBlades());
+				person.add(new NaturesPower());
+				person.add(new SpiritHawk());
+				break;
+			case TYPE561:
+				//旧版模式沿用新版护甲技能（旧版护甲技能为空缺）
+				person.add(new Type56FourOne());
+				person.add(new Type56FourTwo());
+				person.add(new Type56FourThree());
+				break;
+			case GSH18:
+				person.add(new HeroicLeap());
+				person.add(new Shockwave());
+				person.add(new Endure());
+				break;
+			case HK416:
+				person.add(new HeroicLeap());
+				person.add(new Shockwave());
+				person.add(new Endure());
+				break;
+			case Dandelion:
+				break;
+		}
+		person.add(new Education());
+		return person;
+	}
 	public void initHero( Hero hero ) {
 
 		hero.heroClass = this;
@@ -445,48 +526,6 @@ public enum HeroClass {
 	public String desc(){
 		return Messages.get(HeroClass.class, name()+"_desc");
 	}
-
-	public HeroSubClass[] subClasses() {
-		return subClasses;
-	}
-
-	public ArmorAbility[] armorAbilities(){
-        ArmorAbility[] person;
-		switch (this) {
-			case WARRIOR: default:
-				person = new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()};
-				break;
-			case MAGE:
-                person = new ArmorAbility[]{new ElementalBlast(), new WildMagic(), new WarpBeacon()};
-                break;
-			case ROGUE:
-                person = new ArmorAbility[]{new SmokeBomb(), new DeathMark(), new ShadowClone()};
-                break;
-			case HUNTRESS:
-                person = new ArmorAbility[]{new SpectralBlades(), new NaturesPower(), new SpiritHawk()};
-                break;
-			case TYPE561:
-				//旧版模式沿用新版护甲技能（旧版护甲技能为空缺）
-				person = new ArmorAbility[]{new Type56FourOne(), new Type56FourTwo(), new Type56FourThree()};
-                break;
-			case GSH18:
-				person = new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()}; // 使用战士的技能
-                break;
-			case HK416:
-				person = new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()}; // 占位：暂用战士的技能
-				break;
-			case Dandelion:
-				person = new ArmorAbility[0];
-        }
-        person = add(person, new Education());
-        return person;
-	}
-    private ArmorAbility[] add(ArmorAbility[] list,ArmorAbility ability){
-        list = Arrays.copyOf(list, list.length + 1);
-        list[list.length-1] = ability;
-        return list;
-    }
-
 	public String spritesheet() {
 		switch (this) {
 			case WARRIOR: default:

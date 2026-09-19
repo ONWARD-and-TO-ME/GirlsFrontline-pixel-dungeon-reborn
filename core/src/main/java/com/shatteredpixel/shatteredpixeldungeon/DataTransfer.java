@@ -199,7 +199,22 @@ public class DataTransfer {
 		FileHandle target = transferDir().child("GFPD_Data_" + time + ".zip");
 		encryptFile(rawZip, target);
 		rawZip.delete();
+		//只保留最新一个转移包，清除所有旧的 .zip 及残留的 .tmp
+		cleanupOldPackages(target);
 		return target;
+	}
+
+	//删除转移目录下除当前包以外的所有 .zip 和 .tmp 文件
+	private static void cleanupOldPackages(FileHandle keep) {
+		FileHandle dir = transferDir();
+		for (FileHandle f : dir.list()) {
+			if (f.isDirectory()) continue;
+			String name = f.name().toLowerCase(Locale.ENGLISH);
+			if (f.equals(keep)) continue;
+			if (name.endsWith(".zip") || name.endsWith(".tmp")) {
+				f.delete();
+			}
+		}
 	}
 
 	//从转移包导入玩家数据，成功后自动重载各模块缓存

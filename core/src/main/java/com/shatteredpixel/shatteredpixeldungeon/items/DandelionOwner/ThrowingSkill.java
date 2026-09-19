@@ -191,10 +191,12 @@ public class ThrowingSkill extends SkillItem {
                     }
 
                     float dmg = CardCalculator.M4A1damageRoll(1 - minimax, maxMul, 1 - (Math.min(5, size - 1)) * 0.1F);
-                    if (crit)
-                        ch.damage(CardCalculator.critDamage(dmg, true), ThrowingSkill.class);
-                    else
-                        ch.damage(Math.round(dmg), ThrowingSkill.class);
+                    if (ch.isAlive()) {
+                        if (crit)
+                            ch.damage(CardCalculator.critDamage(dmg, true), ThrowingSkill.class);
+                        else
+                            ch.damage(Math.round(dmg), ThrowingSkill.class);
+                    }
                 }
             }
             if (crit && hasCard(CommonCard.WA2000.SV_98))
