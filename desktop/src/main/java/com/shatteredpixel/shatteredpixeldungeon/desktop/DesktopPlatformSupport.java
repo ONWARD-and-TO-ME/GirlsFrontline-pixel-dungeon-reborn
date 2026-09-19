@@ -132,13 +132,20 @@ public class DesktopPlatformSupport extends PlatformSupport {
 		FileDialog fd = new FileDialog((Frame) null, "Select Data Transfer Package", FileDialog.LOAD);
 		fd.setFilenameFilter((dir, name) -> name.toLowerCase().endsWith(".zip"));
 		fd.setVisible(true);
-		String dir = fd.getDirectory();
-		String name = fd.getFile();
-		if (dir != null && name != null) {
-			callback.onFilePicked(Gdx.files.absolute(new File(dir, name).getAbsolutePath()));
-		} else {
-			callback.onCancel();
-		}
+		final String dir = fd.getDirectory();
+		final String name = fd.getFile();
+		//延迟到下一帧执行回调，让 GLFW 处理完原生对话框关闭后积压的窗口事件，
+		//避免字体纹理在 GL 上下文恢复前被使用导致字形缺失
+		Gdx.app.postRunnable(new Runnable() {
+			@Override
+			public void run() {
+				if (dir != null && name != null) {
+					callback.onFilePicked(Gdx.files.absolute(new File(dir, name).getAbsolutePath()));
+				} else {
+					callback.onCancel();
+				}
+			}
+		});
 	}
 
 	/* FONT SUPPORT */
