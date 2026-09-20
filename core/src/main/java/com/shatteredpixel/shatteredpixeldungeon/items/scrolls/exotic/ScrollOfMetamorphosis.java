@@ -47,6 +47,7 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -193,6 +194,18 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			against.add(new ArrayList<>(Arrays.asList(Talent.ROGUES_FORESIGHT, Talent.ROGUES_FORESIGHT_V2, Talent.ROGUES_FORESIGHT_V3)));
 			against.add(new ArrayList<>(Arrays.asList(Talent.Type56Two_Damage, Talent.SEARCH_ARMY)));
         }
+
+		//已从天赋蜕变池下架的旧版56-1式天赋：旧版模式角色开局仍自带这些天赋、也仍可将其蜕变掉，
+		//但任何角色都无法再通过蜕变获得它们；新版56-1式天赋不受影响
+		public static final Set<Talent> removedFromPool = new HashSet<>(Arrays.asList(
+				//旧版56-1式 T1：饭是钢、战场老兵、快速装填、咸派的肯定
+				Talent.NICE_FOOD, Talent.OLD_SOLDIER, Talent.FAST_RELOAD, Talent.BETTER_FOOD,
+				//旧版56-1式 T2：吃货的口才、陷阱达人、胆敢向我还击！、解放刺、夜战精英
+				Talent.BARGAIN_SKILLS, Talent.TRAP_EXPERT, Talent.HOW_DARE_YOU, Talent.JIEFANGCI, Talent.NIGHT_EXPERT,
+				//旧版56-1式 T3：侦查部队、精英部队
+				Talent.SEARCH_ARMY, Talent.ELITE_ARMY
+		));
+
 		public static WndMetamorphReplace INSTANCE;
 
 		public Talent replacing;
@@ -277,6 +290,10 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 					//移除互斥天赋
 					if (hasAgainstTalent(curUser, talent))
+						clsTalentsAtTier.remove(talent);
+
+					//移除已从蜕变池下架的旧版56-1式天赋
+					if (removedFromPool.contains(talent))
 						clsTalentsAtTier.remove(talent);
 
 					//移除已经随机出来的天赋
