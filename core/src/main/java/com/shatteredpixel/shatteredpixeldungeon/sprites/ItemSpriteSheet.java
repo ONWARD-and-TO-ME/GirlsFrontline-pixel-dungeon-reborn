@@ -871,11 +871,14 @@ public class ItemSpriteSheet {
 
 	public static final  int M4A1              =GUN_M4A1+3;
 	public static final  int P90               =GUN_M4A1+4;
-	
+	//隼（超级小爱）配件：集束聚焦器，P90右边一格
+	public static final  int BEAM_FOCUSER      =GUN_M4A1+5;
+
 	private static final int MEDICAL_KETICON        =GUN_M4A1+6;
 	static {
 	    assignItemRect(M4A1,              16, 16);
 	    assignItemRect(P90,               16, 16);
+	    assignItemRect(BEAM_FOCUSER,      14, 15);
 	    assignItemRect(MEDICAL_KETICON, 15, 12);
 	}
 	//16 free slots

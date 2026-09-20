@@ -66,9 +66,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampir
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FocusSpark;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
+import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -154,7 +157,10 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 	
 	public Augment augment = Augment.NONE;
-	
+
+	//集束聚焦器已永久贴附（集束聚焦器实现见 BeamFocuser / BeamFocusAttack）
+	public boolean beamFocused = false;
+
 	private static final int USES_TO_ID = 20;
 	private float usesLeftToID = USES_TO_ID;
 	private float availableUsesToID = USES_TO_ID/2f;
@@ -205,6 +211,7 @@ abstract public class Weapon extends KindOfWeapon {
 	private static final String CURSE_INFUSION_BONUS = "curse_infusion_bonus";
 	private static final String MASTERY_POTION_BONUS = "mastery_potion_bonus";
 	private static final String AUGMENT	        = "augment";
+	private static final String BEAM_FOCUSED    = "beam_focused";
 	private static final String TierThisRun		= "TierThisRun";
 	private static final String FirstUpdateTier	= "FirstUpdateTier";
 
@@ -217,10 +224,11 @@ abstract public class Weapon extends KindOfWeapon {
 		bundle.put( CURSE_INFUSION_BONUS, curseInfusionBonus );
 		bundle.put( MASTERY_POTION_BONUS, masteryPotionBonus );
 		bundle.put( AUGMENT, augment );
+		bundle.put( BEAM_FOCUSED, beamFocused );
 		bundle.put( FirstUpdateTier, UpdatedTierToLevel);
 		bundle.put( TierThisRun, tier);
 	}
-	
+
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
@@ -231,6 +239,7 @@ abstract public class Weapon extends KindOfWeapon {
 		masteryPotionBonus = bundle.getBoolean( MASTERY_POTION_BONUS );
 
 		augment = bundle.getEnum(AUGMENT, Augment.class);
+		beamFocused = bundle.getBoolean( BEAM_FOCUSED );
 		UpdatedTierToLevel = bundle.getBoolean( FirstUpdateTier );
 		if (bundle.contains( TierThisRun ))
 			tier = bundle.getInt( TierThisRun );
@@ -506,6 +515,17 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public ItemSprite.Glowing glowing() {
 		return enchantment != null && (cursedKnown || !enchantment.curse()) ? enchantment.glowing() : null;
+	}
+
+	@Override
+	public Emitter emitter() {
+		//集束聚焦器已贴附：贴图上闪烁蓝白色光粒（仿战士纹章的 RED_LIGHT）
+		if (!beamFocused) return super.emitter();
+		Emitter emitter = new Emitter();
+		emitter.pos( ItemSpriteSheet.film.width(image)/2f + 2f, ItemSpriteSheet.film.height(image)/3f );
+		emitter.fillTarget = false;
+		emitter.pour( FocusSpark.FACTORY, 0.6f );
+		return emitter;
 	}
 
 	public static abstract class Enchantment implements Bundlable {

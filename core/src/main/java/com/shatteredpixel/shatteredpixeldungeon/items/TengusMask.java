@@ -125,6 +125,8 @@ public class TengusMask extends Item {
 		else if (way == HeroSubClass.SUPER_AI) {
 			// 超级小爱：自动附加飞行切换指示器buff
 			Buff.affect(curUser, SuperAiFlight.class);
+			// 自动获得集束聚焦器配件
+			new BeamFocuser().collect();
 		}
 
 		curUser.sprite.operate( curUser.pos );

@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
@@ -184,6 +185,8 @@ public class Shopkeeper extends NPC {
 	public static boolean canSell(Item item){
 		if (item.value() <= 0)                                              return false;
 		if (item.unique && !item.stackable)                                 return false;
+		//集束聚焦器已贴附的武器无法出售（配件无法摘下，防止配件随武器被卖掉）
+		if (item instanceof Weapon && ((Weapon) item).beamFocused)          return false;
 		if (item instanceof Armor && ((Armor) item).checkSeal() != null)    return false;
 		if (item.isEquipped(Dungeon.hero) && item.cursed)                   return false;
 		return true;

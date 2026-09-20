@@ -88,6 +88,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.SpeedLine;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Battery;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.BeamFocusAttack;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.Card;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardAffect;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
@@ -2328,7 +2329,12 @@ public class Hero extends Char {
 
 		boolean hit;
 		try {
-			hit = attack( enemy );
+			//集束聚焦器：贴附的RF武器改为解离法杖式贯穿激光攻击（实现见 BeamFocusAttack）
+			if (BeamFocusAttack.isFocusedWeapon(this)) {
+				hit = BeamFocusAttack.attack(this, enemy);
+			} else {
+				hit = attack( enemy );
+			}
 		} finally {
 			GSH18Talent.endQuickAttack();
 		}

@@ -23,14 +23,17 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.HealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.ColorMath;
 
 public class IconTitle extends Component {
 
@@ -38,9 +41,16 @@ public class IconTitle extends Component {
 
 	private static final float GAP = 2;
 
+	//集束聚焦器贴附武器名称的蓝白渐变两色
+	private static final int BEAM_NAME_BLUE   = 0x66BBFF;
+	private static final int BEAM_NAME_WHITE  = 0xFFFFFF;
+
 	protected Image imIcon;
 	protected RenderedTextBlock tfLabel;
 	protected HealthBar health;
+
+	//集束聚焦器已贴附的武器：名称使用蓝白渐变而非默认黄色
+	private boolean beamName = false;
 
 	private float healthLvl = Float.NaN;
 
@@ -53,6 +63,10 @@ public class IconTitle extends Component {
 		icon( icon );
 		label( Messages.titleCase( item.toString() ) );
 		icon.view( item );
+
+		if (item instanceof Weapon && ((Weapon) item).beamFocused) {
+			beamName = true;
+		}
 	}
 	
 	public IconTitle( Heap heap ){
@@ -85,6 +99,16 @@ public class IconTitle extends Component {
 
 	public float alpha(){
 		return imIcon.alpha();
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		//已贴附集束聚焦器的武器，名称在蓝与白之间周期性渐变
+		if (beamName) {
+			float p = 0.5f + 0.5f * (float) Math.sin( Game.timeTotal * 3.0 );
+			tfLabel.hardlight( ColorMath.interpolate( BEAM_NAME_BLUE, BEAM_NAME_WHITE, p ) );
+		}
 	}
 
 	public void alpha( float value ){
