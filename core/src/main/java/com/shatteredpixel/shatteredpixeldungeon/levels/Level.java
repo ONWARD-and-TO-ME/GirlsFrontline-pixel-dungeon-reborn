@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FestivalCakeBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
@@ -1279,6 +1280,9 @@ public abstract class Level implements Bundlable {
 			
 			int viewDist = c.viewDistance;
 			if (c instanceof Hero){
+				// 节日蛋糕buff：单局视野+1格
+				if (c.buff(FestivalCakeBuff.class) != null)
+					viewDist += FestivalCakeBuff.VISION_BONUS;
 				// 56-1式天赋：夜战精英（旧版）黑暗中视野+1（实现见 Type561Talent）
 				viewDist += Type561Talent.viewDistanceBonus((Hero) c);
 				// 女猎（隼）远视视野乘数（实现见 HuntressTalent）

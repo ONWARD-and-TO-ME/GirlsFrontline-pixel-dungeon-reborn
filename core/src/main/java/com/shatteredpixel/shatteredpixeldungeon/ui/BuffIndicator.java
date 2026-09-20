@@ -108,6 +108,8 @@ public class BuffIndicator extends Component {
 	public static final int FOOD        = 57;
 	public static final int P90_FULL_AUTO       = 60;
 	public static final int CHARGED_STAR_STRIKE = 61;
+	//节日蛋糕（buffs.png / large_buffs.png 索引62，彩虹蛋糕贴图）
+	public static final int FESTIVAL_CAKE       = 62;
 	public static final int SIZE_SMALL  = 7;
 	public static final int SIZE_LARGE  = 16;
 	

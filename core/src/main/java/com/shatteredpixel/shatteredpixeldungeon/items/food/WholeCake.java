@@ -21,7 +21,10 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.food;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FestivalCakeBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Bundle;
 
@@ -31,6 +34,15 @@ public class WholeCake extends Food {
 		image = ItemSpriteSheet.WHOLECAKE;
 		energy = Hunger.STARVING;
 		unique = true;
+	}
+
+	@Override
+	public void execute( Hero hero, String action ) {
+		super.execute( hero, action );
+		if (action.equals(AC_EAT)){
+			//食用节日蛋糕：获得单局永久的节日祝福（视野+1、命中+20%、发光，复活继承）
+			Buff.affect(hero, FestivalCakeBuff.class);
+		}
 	}
 	private String title;
 	private String body;

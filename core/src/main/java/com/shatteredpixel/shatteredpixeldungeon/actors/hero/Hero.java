@@ -49,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.CardSelectorBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.DandelionOwner.HS2000_Shield;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FestivalCakeBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GunSwap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
@@ -632,6 +633,9 @@ public class Hero extends Char {
         accuracy *= Type561Talent.accuracyMultiplier(this);
         // HK416天赋：2.5x ACOG镜命中加成
         accuracy *= HK416Talent.acogAccuracyMultiplier(this);
+        // 节日蛋糕buff：命中+20%
+        if (buff(FestivalCakeBuff.class) != null)
+            accuracy *= FestivalCakeBuff.ACCURACY_MULTIPLIER;
         // 56天赋：1-4V2
         if (buff(ShootGun.ShootTracker.class) != null) {
             accuracy *= 1.1F + 0.2F * pointsInTalent(Talent.Type56_14V2);

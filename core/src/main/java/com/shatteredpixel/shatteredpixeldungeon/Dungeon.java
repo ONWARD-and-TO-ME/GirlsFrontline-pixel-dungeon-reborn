@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FestivalCakeBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
@@ -955,6 +956,10 @@ public class Dungeon {
 		dist *= HuntressTalent.farsightMultiplier(Dungeon.hero);
 		// HK416天赋：2.5x ACOG镜视野加成
 		dist += HK416Talent.acogVisionBonus(Dungeon.hero);
+		// 节日蛋糕buff：视野+1格
+		if (Dungeon.hero.buff(FestivalCakeBuff.class) != null){
+			dist += FestivalCakeBuff.VISION_BONUS;
+		}
 
 		if (Dungeon.hero.buff(MagicalSight.class) != null){
 			dist = Math.max( dist, MagicalSight.DISTANCE );

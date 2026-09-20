@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
@@ -33,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Empulse;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipLevelUp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EquipmentBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FestivalCakeBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FieldRation;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FireImbue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
@@ -142,6 +144,7 @@ public class BuffScanner {
         buffClasses.add(EnhancedRings.class);
         buffClasses.add(EquipLevelUp.class);
         buffClasses.add(EquipmentBuff.class);
+        buffClasses.add(FestivalCakeBuff.class);
         buffClasses.add(FieldRation.class);
         buffClasses.add(FireImbue.class);
         buffClasses.add(FlavourBuff.class);
@@ -206,6 +209,14 @@ public class BuffScanner {
         buffClasses.add(S_M82A1.class);
         buffClasses.add(Vector_Fire_Aura.class);
         buffClasses.add(VHS_Hack.class);
+
+        // actors/buffs/ChampionEnemy 嵌套精英怪buff（AllyToRestartOK图标为NONE，无需登记）
+        buffClasses.add(ChampionEnemy.Blazing.class);
+        buffClasses.add(ChampionEnemy.Projecting.class);
+        buffClasses.add(ChampionEnemy.AntiMagic.class);
+        buffClasses.add(ChampionEnemy.Giant.class);
+        buffClasses.add(ChampionEnemy.Blessed.class);
+        buffClasses.add(ChampionEnemy.Growing.class);
 
         return buffClasses;
     }
