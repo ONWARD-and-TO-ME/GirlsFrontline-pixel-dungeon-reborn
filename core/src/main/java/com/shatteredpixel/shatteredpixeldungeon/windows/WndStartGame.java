@@ -504,24 +504,10 @@ public class WndStartGame extends Window {
 				is561 = cl == HeroClass.TYPE561 || cl == HeroClass.TYPE561_OLD;
 				oldMode = is561 && SPDSettings.type561OldMode();
 				if (cl != null) {
-					// subtract 1 for NONE class
-					//avatar.frame((cl.ordinal()) * 24, 0, 24, 32);
-					// 每行显示4个角色，多出来的换行
-					int row = cl.ordinal() / 4;
-					int col = cl.ordinal() % 4;
-					if (cl == HeroClass.HUNTRESS) {
-						// 隼的立绘位于丹德莱前一格（第2行第3列）
-						row = 1;
-						col = 2;
-					} else if (cl == HeroClass.HK416) {
-						//TODO:占位HK416暂用原隼槽位的头像，待新角色立绘完成后替换
-						row = 0;
-						col = 3;
-					} else if (cl == HeroClass.TYPE561_OLD) {
-						//旧版561与新版561共用同一立绘槽位
-						row = HeroClass.TYPE561.ordinal() / 4;
-						col = HeroClass.TYPE561.ordinal() % 4;
-					}
+					//立绘槽位由 HeroClass.avatarFrame() 集中管理，避免枚举顺序变化导致贴图错位
+					int[] frame = cl.avatarFrame();
+					int row = frame[0];
+					int col = frame[1];
 					avatar.frame(col * 24, row * 32, 24, 32);
 
 					name.text(Messages.capitalize(cl.selectTitle()));
