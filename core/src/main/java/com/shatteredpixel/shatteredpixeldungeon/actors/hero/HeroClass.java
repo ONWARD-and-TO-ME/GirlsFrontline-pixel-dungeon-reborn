@@ -569,26 +569,6 @@ public enum HeroClass {
 		}
 	}
 
-	/**
-	 * 角色在 avatars.png 立绘大图中的槽位坐标（行、列），每行 4 个立绘。
-	 * 集中在此处显式声明，避免依赖 ordinal() 导致枚举顺序变化时贴图错位。
-	 * @return int[]{row, col}
-	 */
-	public int[] avatarFrame() {
-		switch (this) {
-			case WARRIOR:       return new int[]{0, 0};
-			case MAGE:          return new int[]{0, 1};
-			case ROGUE:         return new int[]{0, 2};
-			case HK416:         return new int[]{0, 3}; //占位：暂用原隼槽位的头像
-			case TYPE561:       return new int[]{1, 0};
-			case TYPE561_OLD:   return new int[]{1, 0}; //与新版561共用同一立绘槽位
-			case GSH18:         return new int[]{1, 1};
-			case HUNTRESS:      return new int[]{1, 2}; //隼的立绘位于丹德莱前一格
-			case Dandelion:     return new int[]{1, 3};
-			default:            return new int[]{0, 0};
-		}
-	}
-
 	
 	public String[] perks() {
 		switch (this) {
