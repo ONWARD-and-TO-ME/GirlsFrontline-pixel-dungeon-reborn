@@ -326,7 +326,7 @@ public class Hero extends Char {
 		
 		//旧版56-1式角色：极度饥饿且力量大于12时，力量-1（12力量以下不生效）
 		Hunger hunger = buff(Hunger.class);
-		if (hunger != null && (heroClass == HeroClass.TYPE561_OLD || (heroClass == HeroClass.TYPE561 && type561Old)) && Hunger.minLevel >= 0){
+		if (hunger != null && heroClass == HeroClass.TYPE561 && Hunger.minLevel >= 0){
 			if (hunger.isStarving() && STR >= 13) {
 				strBonus -= 1;
 			}
@@ -544,8 +544,8 @@ public class Hero extends Char {
         if (subClass != null && subClass != HeroSubClass.NONE && subClass != HeroSubClass.EMPTY)
             return subClass.title();
         if (heroClass != null && heroClass != HeroClass.NONE){
-        	//旧版561式未转职时游戏内名称显示为“老练的561式”（TYPE561_OLD 或旧档标志兼容）
-        	if (heroClass == HeroClass.TYPE561_OLD || (type561Old && heroClass == HeroClass.TYPE561)){
+        	//旧版561式未转职时游戏内名称显示为“老练的561式”（以本存档标志为准）
+        	if (type561Old && heroClass == HeroClass.TYPE561){
         		return Messages.get(HeroClass.class, "type561_old");
 	        }
 		    return heroClass.title();

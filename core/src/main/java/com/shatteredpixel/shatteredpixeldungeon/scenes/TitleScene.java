@@ -384,10 +384,8 @@ public class TitleScene extends PixelScene {
 					order = 8;
 					break;
 					case TYPE561:
-				case TYPE561_OLD:
-					//旧版561与新版561共用同一张存档立绘
-					order = 5;
-					break;
+						order = 5;
+						break;
 					case GSH18:
 						order = 6;
 						break;

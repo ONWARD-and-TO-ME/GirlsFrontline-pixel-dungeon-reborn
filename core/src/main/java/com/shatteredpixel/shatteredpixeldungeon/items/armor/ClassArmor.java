@@ -131,7 +131,6 @@ abstract public class ClassArmor extends Armor {
 			classArmor = new HuntressArmor();
 			break;
 		case TYPE561:
-		case TYPE561_OLD:
 			classArmor = new Type561Armor();
 		}
 		

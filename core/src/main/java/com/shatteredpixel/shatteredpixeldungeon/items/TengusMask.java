@@ -104,8 +104,7 @@ public class TengusMask extends Item {
 		curUser.spend( Actor.TICK );
 		curUser.busy();
 
-		if(Dungeon.hero.heroClass == HeroClass.TYPE561
-				|| Dungeon.hero.heroClass == HeroClass.TYPE561_OLD){
+		if(Dungeon.hero.heroClass== HeroClass.TYPE561){
 			new Gun562Accessories().collect();
 		}
 

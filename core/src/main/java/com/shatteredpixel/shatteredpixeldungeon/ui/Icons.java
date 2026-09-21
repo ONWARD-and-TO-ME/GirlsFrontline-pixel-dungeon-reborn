@@ -473,9 +473,7 @@ public enum Icons {
 		case HUNTRESS:
 			return get( HUNTRESS );
 		case TYPE561:
-	case TYPE561_OLD:
-		//旧版561与新版561共用同一个职业图标
-		return get( TYPE561 );
+			return get( TYPE561 );
 		default:
 			return get( WARRIOR );
 		}

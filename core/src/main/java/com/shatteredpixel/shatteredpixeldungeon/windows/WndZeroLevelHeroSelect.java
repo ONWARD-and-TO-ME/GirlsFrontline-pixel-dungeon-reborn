@@ -3,7 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -74,9 +73,6 @@ public class WndZeroLevelHeroSelect extends Window {
 
 		for (HeroClass cl : HeroClass.values()){
 			if (cl == HeroClass.NONE || cl == HeroClass.PUBLIC_1) continue;
-			//SPDSettings.type561OldMode() 决定只显示 TYPE561 还是 TYPE561_OLD
-			if (cl == HeroClass.TYPE561 && SPDSettings.type561OldMode()) continue;
-			if (cl == HeroClass.TYPE561_OLD && !SPDSettings.type561OldMode()) continue;
 			visibleClasses.add(cl);
 		}
 		totalPages = (int)Math.ceil((float)visibleClasses.size() / ROLES_PER_PAGE);

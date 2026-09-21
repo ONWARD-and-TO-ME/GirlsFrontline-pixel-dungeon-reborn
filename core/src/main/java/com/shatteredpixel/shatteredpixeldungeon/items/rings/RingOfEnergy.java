@@ -67,8 +67,7 @@ public class RingOfEnergy extends Ring {
         if (!(target instanceof Hero))
             return bonus;
         Hero hero = (Hero) target;
-        //FAST_RELOAD 为旧版561（TYPE561_OLD）的原生天赋，仅在蜕变到其他职业时由本戒指提供加成
-        if (hero.hasTalent(Talent.FAST_RELOAD) && hero.heroClass != HeroClass.TYPE561_OLD)
+        if (hero.hasTalent(Talent.FAST_RELOAD) && hero.heroClass != HeroClass.TYPE561)
             bonus *= 1 + (0.1F * hero.pointsInTalent(Talent.FAST_RELOAD)/2F);
         if (hero.hasTalent(Talent.Type56Three_Bomb) && hero.heroClass != HeroClass.TYPE561)
             bonus *= 1 + (0.2F * hero.pointsInTalent(Talent.Type56Three_Bomb)/3F);

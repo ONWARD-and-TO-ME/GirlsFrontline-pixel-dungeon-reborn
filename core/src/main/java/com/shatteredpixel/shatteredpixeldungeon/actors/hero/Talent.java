@@ -186,8 +186,7 @@ public enum Talent {
 
     //初始通用
     //t1
-    //FAST_RELOAD 为旧版56-1式（TYPE561_OLD）的原生天赋
-    FAST_RELOAD(HeroClass.TYPE561_OLD, 130),
+    FAST_RELOAD(HeroClass.TYPE561, 130),
 
     //t2
     //旧磁盘回流(1/2/3次+3)、绝境迫能(最后一充能+1/+2/+3)
