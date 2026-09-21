@@ -442,13 +442,15 @@ public class SurfaceScene extends PixelScene {
 			super( Assets.Sprites.AVATARS );
 			//frame( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );
 			//每行改成4个，不然没法排序，因为namsek还加了别人
-			int row = cl.ordinal() / 4;
-			int col = cl.ordinal() % 4;
-			if (cl == HeroClass.HUNTRESS) {
+			//TYPE561_OLD 与 TYPE561 共用同一立绘槽位
+			HeroClass frameCl = cl == HeroClass.TYPE561_OLD ? HeroClass.TYPE561 : cl;
+			int row = frameCl.ordinal() / 4;
+			int col = frameCl.ordinal() % 4;
+			if (frameCl == HeroClass.HUNTRESS) {
 				// 隼的立绘位于丹德莱前一格（第2行第3列）
 				row = 1;
 				col = 2;
-			} else if (cl == HeroClass.HK416) {
+			} else if (frameCl == HeroClass.HK416) {
 				// 占位HK416暂用原隼槽位的头像
 				row = 0;
 				col = 3;
