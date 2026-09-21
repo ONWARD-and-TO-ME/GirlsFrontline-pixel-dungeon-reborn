@@ -956,8 +956,9 @@ public class Dungeon {
 		dist *= HuntressTalent.farsightMultiplier(Dungeon.hero);
 		// HK416天赋：2.5x ACOG镜视野加成
 		dist += HK416Talent.acogVisionBonus(Dungeon.hero);
-		// 节日蛋糕buff：视野+1格
-		if (Dungeon.hero.buff(FestivalCakeBuff.class) != null){
+		// 节日蛋糕buff：击杀boss前视野+1格
+		FestivalCakeBuff cake = Dungeon.hero.buff(FestivalCakeBuff.class);
+		if (cake != null && cake.isVisionActive()){
 			dist += FestivalCakeBuff.VISION_BONUS;
 		}
 

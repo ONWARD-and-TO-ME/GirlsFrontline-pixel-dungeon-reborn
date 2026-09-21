@@ -1280,8 +1280,9 @@ public abstract class Level implements Bundlable {
 			
 			int viewDist = c.viewDistance;
 			if (c instanceof Hero){
-				// 节日蛋糕buff：单局视野+1格
-				if (c.buff(FestivalCakeBuff.class) != null)
+				// 节日蛋糕buff：击杀boss前视野+1格
+				FestivalCakeBuff cake = c.buff(FestivalCakeBuff.class);
+				if (cake != null && cake.isVisionActive())
 					viewDist += FestivalCakeBuff.VISION_BONUS;
 				// 56-1式天赋：夜战精英（旧版）黑暗中视野+1（实现见 Type561Talent）
 				viewDist += Type561Talent.viewDistanceBonus((Hero) c);

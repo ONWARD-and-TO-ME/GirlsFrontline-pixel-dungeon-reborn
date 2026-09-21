@@ -26,14 +26,15 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.watabou.utils.Bundle;
 
 /**
  * 节日蛋糕（WholeCake）食用后获得的全局性永久增益：
  * - 单局内不会被消除（detach 被拦截）；
  * - 十字架复活后依然继承（revivePersists，见 Hero.live()）；
- * - 视野 +1 格（在 Level.updateFieldOfView 中汇总）；
- * - 命中 +20%（在 Hero.attackSkill 中乘算）；
- * - 自带发光效果（复用 CharSprite.State.ILLUMINATED，而非额外挂一个 Light）。
+ * - 命中 +20%（在 Hero.attackSkill 中乘算），常驻；
+ * - 自带发光效果（复用 CharSprite.State.ILLUMINATED），常驻；
+ * - 视野 +1 格（在 Level.updateFieldOfView 中汇总），击杀一个 boss 后失效。
  */
 public class FestivalCakeBuff extends Buff {
 
@@ -48,6 +49,26 @@ public class FestivalCakeBuff extends Buff {
 	public static final int VISION_BONUS = 1;
 	//命中乘数
 	public static final float ACCURACY_MULTIPLIER = 1.2f;
+
+	//视野加成是否仍生效（击杀 boss 后置为 false，命中与发光不受影响）
+	private boolean visionActive = true;
+
+	public boolean isVisionActive() {
+		return visionActive;
+	}
+
+	/**
+	 * 击杀 boss 后调用：仅令视野加成失效，命中与发光保持常驻。
+	 */
+	public void deactivateVision() {
+		if (visionActive) {
+			visionActive = false;
+			//视野缩小，立即刷新一次
+			if (Dungeon.level != null) {
+				Dungeon.observe();
+			}
+		}
+	}
 
 	@Override
 	public boolean attachTo( Char target ) {
@@ -93,6 +114,29 @@ public class FestivalCakeBuff extends Buff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc");
+		if (visionActive) {
+			return Messages.get(this, "desc");
+		} else {
+			return Messages.get(this, "desc_inactive");
+		}
+	}
+
+	private static final String VISION_ACTIVE = "vision_active";
+
+	@Override
+	public void storeInBundle( Bundle bundle ) {
+		super.storeInBundle(bundle);
+		bundle.put(VISION_ACTIVE, visionActive);
+	}
+
+	@Override
+	public void restoreFromBundle( Bundle bundle ) {
+		super.restoreFromBundle(bundle);
+		//旧存档中没有该字段，默认视野仍生效（保持向后兼容）
+		if (bundle.contains(VISION_ACTIVE)) {
+			visionActive = bundle.getBoolean(VISION_ACTIVE);
+		} else {
+			visionActive = true;
+		}
 	}
 }

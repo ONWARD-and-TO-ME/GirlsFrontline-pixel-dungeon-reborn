@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FestivalCakeBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.RogueTalent;
@@ -1376,6 +1377,12 @@ public class GameScene extends PixelScene {
 			scene.showBanner( bossSlain );
 			
 			Sample.INSTANCE.play( Assets.Sounds.BOSS );
+
+			// 节日蛋糕 buff：击杀 boss 后视野加成失效，命中与发光保持常驻
+			FestivalCakeBuff cake = Dungeon.hero.buff( FestivalCakeBuff.class );
+			if (cake != null && cake.isVisionActive()) {
+				cake.deactivateVision();
+			}
 		}
 	}
 	

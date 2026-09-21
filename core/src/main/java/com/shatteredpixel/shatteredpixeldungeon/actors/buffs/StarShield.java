@@ -28,6 +28,7 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 
 import java.util.Locale;
 
@@ -41,12 +42,16 @@ public class StarShield extends ShieldBuff {
 
 	@Override
 	public void incShield(int addAmount) {
-		//对非GSH18角色添加30点上限限制
+		//非GSH18角色上限30点；GSH18角色上限500点；GSH18转职行走手术台后无上限
 		int curAmount = shielding();
 		int newAmount = addAmount + curAmount;
 		if(!(target instanceof Hero) || ((Hero)target).heroClass!=HeroClass.GSH18){
 			if(newAmount > 30){
 				newAmount = 30;
+			}
+		}else if(((Hero)target).subClass != HeroSubClass.MOBILE_MEDICALTABLE){
+			if(newAmount > 500){
+				newAmount = 500;
 			}
 		}
 
@@ -84,9 +89,9 @@ public class StarShield extends ShieldBuff {
 				turnsPassed = 0;
 			}
 
-			//护盾量超过 10×角色等级 层数时，每回合额外衰减2点（与分档衰减叠加，互不重置计数）
+			//护盾量超过 10×角色等级 层数时，每回合额外衰减1点（与分档衰减叠加，互不重置计数）
 			if (shielding() > 10 * heroLevel) {
-				decShield(Math.min(2, shielding()));
+				decShield(Math.min(1, shielding()));
 			}
 
 			//护盾被本回合衰减清空时立即移除，避免以0值多挂一回合
@@ -130,13 +135,13 @@ public class StarShield extends ShieldBuff {
 		return Messages.get(this, "desc", shielding(), turnDecayText());
 	}
 
-	//当前每回合实际衰减量：分档周期衰减 + 超限（>3×角色等级）每回合额外2点
+	//当前每回合实际衰减量：分档周期衰减 + 超限（>10×角色等级）每回合额外1点
 	private float turnDecay() {
 		int s = shielding();
 		float tier = s < 10 ? 1f / 5 : (s <= 30 ? 1f / 3 : 1f / 2);
 		int heroLevel = (target instanceof Hero) ? ((Hero)target).lvl : 0;
-		if (s > 3 * heroLevel) {
-			tier += 2;
+		if (s > 10 * heroLevel) {
+			tier += 1;
 		}
 		return tier;
 	}
