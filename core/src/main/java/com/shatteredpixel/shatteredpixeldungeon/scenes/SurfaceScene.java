@@ -440,19 +440,10 @@ public class SurfaceScene extends PixelScene {
 		private static final int HEIGHT	= 32;
 		public Avatar( HeroClass cl ) {
 			super( Assets.Sprites.AVATARS );
-			//frame( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );
-			//每行改成4个，不然没法排序，因为namsek还加了别人
-			int row = cl.ordinal() / 4;
-			int col = cl.ordinal() % 4;
-			if (cl == HeroClass.HUNTRESS) {
-				// 隼的立绘位于丹德莱前一格（第2行第3列）
-				row = 1;
-				col = 2;
-			} else if (cl == HeroClass.HK416) {
-				// 占位HK416暂用原隼槽位的头像
-				row = 0;
-				col = 3;
-			}
+			// 集中在 HeroClass.avatarFrame() 显式声明每个角色的立绘槽位
+			int[] frame = cl.avatarFrame();
+			int row = frame[0];
+			int col = frame[1];
 			int frameIndex = row * 4 + col;
 			frame( new TextureFilm( texture, WIDTH, HEIGHT ).get( frameIndex ) );
 		}

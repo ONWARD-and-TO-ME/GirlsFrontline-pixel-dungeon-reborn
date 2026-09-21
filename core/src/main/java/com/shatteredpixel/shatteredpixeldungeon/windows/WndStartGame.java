@@ -427,7 +427,7 @@ public class WndStartGame extends Window {
 				@Override
 				protected void onClick() {
 					if (cl == null) return;
-					GirlsFrontlinePixelDungeon.scene().add(new WndMessage(Messages.get(cl, cl.name() + "_desc_item")));
+					GirlsFrontlinePixelDungeon.scene().add(new WndMessage(Messages.get(cl, cl.infoKey() + "_desc_item")));
 				}
 			};
 			heroItem.setSize(BTN_SIZE, BTN_SIZE);
@@ -437,7 +437,7 @@ public class WndStartGame extends Window {
 				@Override
 				protected void onClick() {
 					if (cl == null) return;
-					GirlsFrontlinePixelDungeon.scene().add(new WndMessage(Messages.get(cl, cl.name() + "_desc_loadout")));
+					GirlsFrontlinePixelDungeon.scene().add(new WndMessage(Messages.get(cl, cl.infoKey() + "_desc_loadout")));
 				}
 			};
 			heroLoadout.setSize(BTN_SIZE, BTN_SIZE);
@@ -447,7 +447,7 @@ public class WndStartGame extends Window {
 				@Override
 				protected void onClick() {
 					if (cl == null) return;
-					GirlsFrontlinePixelDungeon.scene().add(new WndMessage(Messages.get(cl, cl.name() + "_desc_misc")));
+					GirlsFrontlinePixelDungeon.scene().add(new WndMessage(Messages.get(cl, cl.infoKey() + "_desc_misc")));
 				}
 			};
 			heroMisc.setSize(BTN_SIZE, BTN_SIZE);
@@ -457,7 +457,7 @@ public class WndStartGame extends Window {
 				@Override
 				protected void onClick() {
 					if (cl == null) return;
-					String msg = Messages.get(cl, cl.name() + "_desc_subclasses");
+					String msg = Messages.get(cl, cl.infoKey() + "_desc_subclasses");
 					for (HeroSubClass sub : cl.subClasses()){
 						msg += "\n\n" + sub.desc();
 					}
@@ -499,20 +499,10 @@ public class WndStartGame extends Window {
 				cl = GamesInProgress.selectedClass;
 				oldMode = cl == HeroClass.TYPE561 && SPDSettings.type561OldMode();
 				if (cl != null) {
-					// subtract 1 for NONE class
-					//avatar.frame((cl.ordinal()) * 24, 0, 24, 32);
-					// 每行显示4个角色，多出来的换行
-					int row = cl.ordinal() / 4;
-					int col = cl.ordinal() % 4;
-					if (cl == HeroClass.HUNTRESS) {
-						// 隼的立绘位于丹德莱前一格（第2行第3列）
-						row = 1;
-						col = 2;
-					} else if (cl == HeroClass.HK416) {
-						//TODO:占位HK416暂用原隼槽位的头像，待新角色立绘完成后替换
-						row = 0;
-						col = 3;
-					}
+					// 集中在 HeroClass.avatarFrame() 显式声明每个角色的立绘槽位
+					int[] frame = cl.avatarFrame();
+					int row = frame[0];
+					int col = frame[1];
 					avatar.frame(col * 24, row * 32, 24, 32);
 
 					name.text(Messages.capitalize(cl.selectTitle()));

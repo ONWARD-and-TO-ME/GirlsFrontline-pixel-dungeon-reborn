@@ -534,8 +534,21 @@ public enum HeroClass {
 	}
 
 	public String desc(){
-		return Messages.get(HeroClass.class, name()+"_desc");
+		return Messages.get(HeroClass.class, infoKey()+"_desc");
 	}
+
+	/**
+	 * 角色介绍文本所用的消息键前缀。
+	 * 561 式在旧版模式（SPDSettings.type561OldMode()）下使用带 "_old" 后缀的键，
+	 * 使新旧版的道具/武器/神器描述各自独立。
+	 */
+	public String infoKey() {
+		if (this == TYPE561 && SPDSettings.type561OldMode()) {
+			return name() + "_old";
+		}
+		return name();
+	}
+
 	public String spritesheet() {
 		switch (this) {
 			case WARRIOR: default:
@@ -555,6 +568,25 @@ public enum HeroClass {
 				return Assets.Sprites.HK416;
 			case Dandelion:
 				return Assets.Sprites.DANDELION;
+		}
+	}
+
+	/**
+	 * 角色在 avatars.png 立绘大图中的槽位坐标（行、列），每行 4 个立绘。
+	 * 集中在此处显式声明，避免依赖 ordinal() 导致枚举顺序变化时贴图错位。
+	 * @return int[]{row, col}
+	 */
+	public int[] avatarFrame() {
+		switch (this) {
+			case WARRIOR:       return new int[]{0, 0};
+			case MAGE:          return new int[]{0, 1};
+			case ROGUE:         return new int[]{0, 2};
+			case HK416:         return new int[]{0, 3}; //占位：暂用原隼槽位的头像
+			case TYPE561:       return new int[]{1, 0};
+			case GSH18:         return new int[]{1, 1};
+			case HUNTRESS:      return new int[]{1, 2}; //隼的立绘位于丹德莱前一格
+			case Dandelion:     return new int[]{1, 3};
+			default:            return new int[]{0, 0};
 		}
 	}
 
