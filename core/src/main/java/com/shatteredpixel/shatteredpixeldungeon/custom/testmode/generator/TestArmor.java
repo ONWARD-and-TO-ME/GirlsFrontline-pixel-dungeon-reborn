@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -16,26 +17,40 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.OptionSlider;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextNumberInput;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class TestArmor extends TestGenerator {
     {
         image = ItemSpriteSheet.ARMOR_HOLDER;
     }
 
-    private int tier = 1;
-    private boolean cursed = false;
-    private int levelToGen = 0;
-    private int enchant_id = 0;
-    private int enchant_rarity = 0;
+    private int armor_id;
+    private boolean cursed;
+    private int armor_level;
+    private int enchant_id;
+    private int enchant_rarity;
+
+    public TestArmor() {
+        this.armor_id = 0;
+        this.cursed = false;
+        this.armor_level = 0;
+        this.enchant_id = 0;
+        this.enchant_rarity = 0;
+    }
 
     @Override
     public ArrayList<String> actions(Hero hero) {
@@ -50,30 +65,32 @@ public class TestArmor extends TestGenerator {
         }
     }
 
+    private Armor getArmor(int armor_id) {
+        switch (armor_id) {
+            case 1:
+                return new LeatherArmor();
+            case 2:
+                return new MailArmor();
+            case 3:
+                return new ScaleArmor();
+            case 4:
+                return new PlateArmor();
+            case 0:
+            default:
+                return new ClothArmor();
+        }
+    }
+
     private void createArmor() {
-        Armor armor = new ClothArmor();
+        Armor armor = getArmor(armor_id);
         if (Challenges.isItemBlocked(armor)) {
             return;
-        }
-        switch (tier) {
-            case 5:
-                armor = new PlateArmor();
-                break;
-            case 4:
-                armor = new ScaleArmor();
-                break;
-            case 3:
-                armor = new MailArmor();
-                break;
-            case 2:
-                armor = new LeatherArmor();
-                break;
-            default:
-                armor = new ClothArmor();
         }
         armor = modifyArmor(armor);
         armor.identify();
         if (armor.collect()) {
+            GameScene.pickUp(armor, curUser.pos);
+            Sample.INSTANCE.play(Assets.Sounds.ITEM);
             GLog.i(Messages.get(this, "collect_success", armor.name()));
         } else {
             armor.doDrop(curUser);
@@ -81,22 +98,19 @@ public class TestArmor extends TestGenerator {
     }
 
     private Armor modifyArmor(Armor armor) {
-        if (levelToGen >= 0) armor.level(levelToGen);
+        armor.level(armor_level);
         armor.cursed = cursed;
-        if (generateEnchant(enchant_rarity, enchant_id) == null) {
-            armor.inscribe(null);
-        } else {
-            armor.inscribe(Reflection.newInstance(generateEnchant(enchant_rarity, enchant_id)));
-        }
+        Class<? extends Armor.Glyph> glyphCls = generateEnchant(enchant_rarity, enchant_id);
+        armor.inscribe(glyphCls == null ? null : Reflection.newInstance(glyphCls));
         return armor;
     }
 
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
-        bundle.put("tier", tier);
-        bundle.put("is_cursed", cursed);
-        bundle.put("level_to_gen", levelToGen);
+        bundle.put("armor_id", armor_id);
+        bundle.put("cursed", cursed);
+        bundle.put("armor_level", armor_level);
         bundle.put("enchant_rarity", enchant_rarity);
         bundle.put("enchant_id", enchant_id);
     }
@@ -104,9 +118,9 @@ public class TestArmor extends TestGenerator {
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
-        tier = bundle.getInt("tier");
-        cursed = bundle.getBoolean("is_cursed");
-        levelToGen = bundle.getInt("level_to_gen");
+        armor_id = bundle.getInt("armor_id");
+        cursed = bundle.getBoolean("cursed");
+        armor_level = bundle.getInt("armor_level");
         enchant_rarity = bundle.getInt("enchant_rarity");
         enchant_id = bundle.getInt("enchant_id");
     }
@@ -134,8 +148,7 @@ public class TestArmor extends TestGenerator {
                 return Potential.class;
             default:
                 return null;
-        }
-        else if (enc_type == 2) switch (enc_id) {
+        } else if (enc_type == 2) switch (enc_id) {
             case 0:
                 return Stone.class;
             case 1:
@@ -150,8 +163,7 @@ public class TestArmor extends TestGenerator {
                 return Flow.class;
             default:
                 return null;
-        }
-        else if (enc_type == 3) switch (enc_id) {
+        } else if (enc_type == 3) switch (enc_id) {
             case 0:
                 return AntiMagic.class;
             case 1:
@@ -160,8 +172,7 @@ public class TestArmor extends TestGenerator {
                 return Affection.class;
             default:
                 return null;
-        }
-        else if (enc_type == 4) switch (enc_id) {
+        } else if (enc_type == 4) switch (enc_id) {
             case 0:
                 return AntiEntropy.class;
             case 1:
@@ -178,113 +189,202 @@ public class TestArmor extends TestGenerator {
                 return Overgrowth.class;
             case 7:
                 return Stench.class;
+            default:
+                return null;
         }
-
         return null;
     }
 
     private class SettingsWindow extends Window {
-        private static final int WIDTH = 120;
+        private static final int WIDTH = 150;
+        private static final int HEIGHT = 220;
         private static final int GAP = 2;
-        private CheckBox c_curse;
-        private RenderedTextBlock t_enchantInfo;
-        private OptionSlider o_level;
-        private OptionSlider o_enchantId;
-        private OptionSlider o_enchantRarity;
-        private OptionSlider o_tier;
-        private RedButton b_create;
+        private static final int BTN_SIZE = 18;
+        private static final int MAX_ICONS_PER_LINE = 4;
+
+        private Class[] AllArmor;
+        private CheckBox CheckBox_curse;
+        private RenderedTextBlock RenderedTextBlock_enchantInfo;
+        private OptionSlider OptionSlider_enchantId;
+        private OptionSlider OptionSlider_enchantRarity;
+        private RedButton RedButton_create;
+        private final ArrayList<IconButton> IconButtons = new ArrayList<>();
+        private RedButton Button_Level;
 
         public SettingsWindow() {
             super();
+            resize(WIDTH, HEIGHT);
 
-            o_tier = new OptionSlider(Messages.get(this, "tier"), "1", "5", 1, 5) {
+            createArmorList();
+            createArmorImage(AllArmor);
+
+            Button_Level = new RedButton("") {
                 @Override
-                protected void onChange() {
-                    tier = getSelectedValue();
+                protected void onClick() {
+                    Game.runOnRenderThread(() -> GameScene.show(new WndTextNumberInput(
+                            Messages.get(TestArmor.SettingsWindow.class, "armor_level"),
+                            Messages.get(TestArmor.SettingsWindow.class, "armor_level_desc"),
+                            Integer.toString(armor_level),
+                            4, false,
+                            Messages.get(TestArmor.SettingsWindow.class, "confirm"),
+                            Messages.get(TestArmor.SettingsWindow.class, "cancel"), false) {
+                        @Override
+                        public void onSelect(boolean check, String text) {
+                            if (check && text.matches("-?\\d+")) {
+                                int level = Integer.parseInt(text);
+                                armor_level = level;
+                            }
+                        }
+                    }));
                 }
             };
-            o_tier.setSelectedValue(tier);
-            add(o_tier);
+            updateSelectedArmorText();
+            add(Button_Level);
 
-            o_level = new OptionSlider(Messages.get(this, "level"), "0", "12", 0, 12) {
-                @Override
-                protected void onChange() {
-                    levelToGen = getSelectedValue();
-                }
-            };
-            o_level.setSelectedValue(levelToGen);
-            add(o_level);
+            RenderedTextBlock_enchantInfo = PixelScene.renderTextBlock("", 6);
+            RenderedTextBlock_enchantInfo.visible = true;
+            RenderedTextBlock_enchantInfo.maxWidth(WIDTH);
+            updateEnchantText();
+            add(RenderedTextBlock_enchantInfo);
 
-            t_enchantInfo = PixelScene.renderTextBlock("", 6);
-            t_enchantInfo.text(infoBuilder());
-            t_enchantInfo.visible = true;
-            t_enchantInfo.maxWidth(WIDTH);
-            add(t_enchantInfo);
-
-            o_enchantRarity = new OptionSlider(Messages.get(this, "enchant_rarity"), "0", "4", 0, 4) {
+            OptionSlider_enchantRarity = new OptionSlider(Messages.get(this, "enchant_rarity"), "0", "4", 0, 4) {
                 @Override
                 protected void onChange() {
                     enchant_rarity = getSelectedValue();
-                    updateText();
+                    updateEnchantText();
+                    layout();
                 }
             };
-            o_enchantRarity.setSelectedValue(enchant_rarity);
-            add(o_enchantRarity);
+            OptionSlider_enchantRarity.setSelectedValue(enchant_rarity);
+            add(OptionSlider_enchantRarity);
 
-            o_enchantId = new OptionSlider(Messages.get(this, "enchant_id"), "0", "7", 0, 7) {
+            OptionSlider_enchantId = new OptionSlider(Messages.get(this, "enchant_id"), "0", "8", 0, 8) {
                 @Override
                 protected void onChange() {
                     enchant_id = getSelectedValue();
-                    updateText();
+                    updateEnchantText();
+                    layout();
                 }
             };
-            o_enchantId.setSelectedValue(enchant_id);
-            add(o_enchantId);
+            OptionSlider_enchantId.setSelectedValue(enchant_id);
+            add(OptionSlider_enchantId);
 
-            c_curse = new CheckBox(Messages.get(this, "curse")) {
+            CheckBox_curse = new CheckBox(Messages.get(this, "cursed")) {
                 @Override
                 protected void onClick() {
                     super.onClick();
                     cursed = checked();
                 }
             };
-            c_curse.checked(cursed);
-            add(c_curse);
+            CheckBox_curse.checked(cursed);
+            add(CheckBox_curse);
 
-            b_create = new RedButton(Messages.get(this, "create_button")) {
+            RedButton_create = new RedButton(Messages.get(this, "create")) {
                 @Override
                 protected void onClick() {
                     createArmor();
+                    hide();
                 }
             };
-            add(b_create);
+            add(RedButton_create);
 
             layout();
         }
 
         private void layout() {
-            o_tier.setRect(0, GAP, WIDTH, 24);
-            o_level.setRect(0, GAP + o_tier.top() + o_tier.height(), WIDTH, 24);
-            t_enchantInfo.setPos(0, GAP + o_level.top() + o_level.height());
-            o_enchantRarity.setRect(0, GAP + t_enchantInfo.bottom(), WIDTH, 24);
-            o_enchantId.setRect(0, GAP + o_enchantRarity.top() + o_enchantRarity.height(), WIDTH, 24);
-            c_curse.setRect(0, GAP + o_enchantId.top() + o_enchantId.height(), WIDTH / 2f - GAP / 2f, 16);
-            b_create.setRect(WIDTH / 2f + GAP / 2f, o_enchantId.bottom() + GAP, WIDTH / 2f - GAP / 2f, 16);
-            resize(WIDTH, (int) b_create.bottom());
+            int numLines = (int) Math.ceil(AllArmor.length / (float) MAX_ICONS_PER_LINE);
+            float totalHeight = 2;
+            if (numLines > 0) {
+                totalHeight += numLines * (BTN_SIZE + GAP);
+            }
+
+            Button_Level.setRect(0, totalHeight, WIDTH, 24);
+            RenderedTextBlock_enchantInfo.setPos(0, GAP + Button_Level.top() + Button_Level.height());
+            OptionSlider_enchantRarity.setRect(0, GAP + RenderedTextBlock_enchantInfo.bottom(), WIDTH, 24);
+            OptionSlider_enchantId.setRect(0, GAP + OptionSlider_enchantRarity.bottom(), WIDTH, 24);
+            CheckBox_curse.setRect(0, GAP + OptionSlider_enchantId.bottom(), WIDTH / 2f - GAP / 2f, 16);
+            RedButton_create.setRect(WIDTH / 2f + GAP / 2f, OptionSlider_enchantId.bottom() + GAP, WIDTH / 2f - GAP / 2f, 16);
+            resize(WIDTH, (int) RedButton_create.bottom());
         }
 
-        private String infoBuilder() {
-            //String desc = Messages.get(BossRushArmor.class, "enchant_id_pre", enchant_rarity);
-            String desc = "";
-            String key = "enchant_id_g" + String.valueOf(enchant_rarity);
-            Class<? extends Armor.Glyph> glyph = generateEnchant(enchant_rarity, enchant_id);
-            desc += Messages.get(TestArmor.class, key, (glyph == null ? Messages.get(TestArmor.class, "null_glyph") : currentGlyphName(glyph)));
-            return desc;
+        private void createArmorList() {
+            AllArmor = new Class<?>[]{
+                    ClothArmor.class,
+                    LeatherArmor.class,
+                    MailArmor.class,
+                    ScaleArmor.class,
+                    PlateArmor.class
+            };
         }
 
-        private void updateText() {
-            t_enchantInfo.text(infoBuilder());
-            layout();
+        private void createArmorImage(Class<? extends Armor>[] all) {
+            float left = BTN_SIZE / 2f;
+            float top = 0;
+            int placed = 0;
+            int length = all.length;
+            for (int i = 0; i < length; ++i) {
+                final int j = i;
+                IconButton btn = new IconButton() {
+                    @Override
+                    protected void onClick() {
+                        armor_id = j;
+                        updateSelectedArmorText();
+                        layout();
+                        super.onClick();
+                    }
+                };
+                Image im = new Image(Assets.Sprites.ITEMS);
+                im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(all[i])).image));
+                im.scale.set(1f);
+                btn.icon(im);
+                int row = placed / MAX_ICONS_PER_LINE;
+                int col = placed % MAX_ICONS_PER_LINE;
+                float x = left + col * (BTN_SIZE + GAP) * 2;
+                float y = top + row * (BTN_SIZE + GAP);
+                btn.setRect(x, y, BTN_SIZE, BTN_SIZE);
+                add(btn);
+                placed++;
+                IconButtons.add(btn);
+            }
+        }
+
+        private void updateSelectedArmorText() {
+            Armor armor = Reflection.newInstance(getArmor(armor_id).getClass());
+            Button_Level.text(armor.name());
+        }
+
+        private String getEnchantInfo(Class enchant) {
+            return enchant == null ? Messages.get(this, "no_enchant") : Messages.get(enchant, "name", Messages.get(this, "enchant"));
+        }
+
+        private int getEnchantCount(int rarity) {
+            switch (rarity) {
+                case 1:
+                    return 4;
+                case 2:
+                    return 6;
+                case 3:
+                    return 3;
+                case 4:
+                    return 8;
+            }
+            return 0;
+        }
+
+        private void updateEnchantText() {
+            StringBuilder info = new StringBuilder();
+            if (enchant_rarity == 0) {
+                info = new StringBuilder(Messages.get(this, "no_enchant"));
+            } else {
+                for (int i = 0; i < getEnchantCount(enchant_rarity); i++) {
+                    info.append(i + 1).append(":").append(getEnchantInfo(generateEnchant(enchant_rarity, i))).append(" ");
+                    if ((i + 1) % 4 == 0 || i == (getEnchantCount(enchant_rarity) - 1)) {
+                        info.append("\n");
+                    }
+                }
+                info.append(Messages.get(this, "current_enchant", getEnchantInfo(generateEnchant(enchant_rarity, enchant_id))));
+            }
+            RenderedTextBlock_enchantInfo.text(info.toString());
         }
     }
 }
