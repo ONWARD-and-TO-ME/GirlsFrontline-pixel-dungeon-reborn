@@ -132,6 +132,7 @@ public enum HeroClass {
 	ROGUE,
 	HUNTRESS,
 	TYPE561,
+	TYPE561_OLD,
 	GSH18,
 	HK416,
 	Dandelion,
@@ -164,6 +165,7 @@ public enum HeroClass {
 				person.add(HeroSubClass.SUPER_AI);
 				break;
 			case TYPE561:
+			case TYPE561_OLD:
 				person.add(HeroSubClass.EMP_BOMB);
 				person.add(HeroSubClass.GUN_MASTER);
 				break;
@@ -207,6 +209,7 @@ public enum HeroClass {
 				person.add(new SpiritHawk());
 				break;
 			case TYPE561:
+			case TYPE561_OLD:
 				//旧版模式沿用新版护甲技能（旧版护甲技能为空缺）
 				person.add(new Type56FourOne());
 				person.add(new Type56FourTwo());
@@ -324,6 +327,10 @@ public enum HeroClass {
 				initType561( hero );
 				break;
 
+			case TYPE561_OLD:
+				initType561Old( hero );
+				break;
+
 			case GSH18:
 				initGSH18( hero );
 				break;
@@ -366,6 +373,7 @@ public enum HeroClass {
 			case HUNTRESS:
 				return Badges.Badge.MASTERY_HUNTRESS;
 			case TYPE561:
+			case TYPE561_OLD:
 				return Badges.Badge.MASTERY_TYPE561;
 			case GSH18:
 				return Badges.Badge.MASTERY_GSH18;
@@ -434,25 +442,6 @@ public enum HeroClass {
 	}
 
 	private static void initType561( Hero hero ) {
-		if (SPDSettings.type561OldMode()){
-			//旧版56-1式角色机制（隐藏功能，能力介绍页切换，仅影响新开局）
-			hero.type561Old = true;
-			Gun561Old gun561 = new Gun561Old();
-			(hero.belongings.weapon=gun561).identify();
-			hero.belongings.weapon.activate(hero);
-
-			RedBookOld redBook = new RedBookOld();
-			(hero.belongings.artifact=redBook).identify();
-			hero.belongings.artifact.activate(hero);
-
-			Dungeon.quickslot.setSlot(0,redBook);
-			Dungeon.quickslot.setSlot(1,gun561);
-
-			new SaltyZongzi().collect();
-			new PotionOfMindVision().identify();
-			Hunger.minLevel = 0;
-			return;
-		}
         Hunger.minLevel = -150;
 		hero.type561Old = false;
 		Gun561 gun561 = new Gun561();
@@ -470,6 +459,26 @@ public enum HeroClass {
         new PotionOfMindVision().identify();
 		new SaltyZongzi().collect();
         new SugarZongzi().collect();
+	}
+
+	//旧版56-1式角色机制（隐藏功能）：使用 Gun561Old + RedBookOld，type561Old 标志置 true
+	//通过 HeroClass.TYPE561_OLD 进入此方法，不再依赖 SPDSettings 在 init 阶段做分支判断
+	private static void initType561Old( Hero hero ) {
+		hero.type561Old = true;
+		Gun561Old gun561 = new Gun561Old();
+		(hero.belongings.weapon=gun561).identify();
+		hero.belongings.weapon.activate(hero);
+
+		RedBookOld redBook = new RedBookOld();
+		(hero.belongings.artifact=redBook).identify();
+		hero.belongings.artifact.activate(hero);
+
+		Dungeon.quickslot.setSlot(0,redBook);
+		Dungeon.quickslot.setSlot(1,gun561);
+
+		new SaltyZongzi().collect();
+		new PotionOfMindVision().identify();
+		Hunger.minLevel = 0;
 	}
 	
 	private static void initGSH18( Hero hero ) {
@@ -518,14 +527,15 @@ public enum HeroClass {
 	}
 
 	//选择/介绍界面使用的职业名：游戏内优先按当前存档的旧版标志，开局前选择界面按全局旧版开关；
-	//命中旧版561时显示“老练的561式”
+	//命中旧版561时显示"老练的561式"
 	public String selectTitle() {
 		Hero hero = Dungeon.hero;
 		boolean old;
 		if (hero != null && hero.heroClass == this){
 			old = hero.type561Old;
 		} else {
-			old = this == TYPE561 && SPDSettings.type561OldMode();
+			//TYPE561_OLD 始终走旧版标题；TYPE561 走全局开关（保留旧行为以兼容仍使用 TYPE561 的存档）
+			old = this == TYPE561_OLD || (this == TYPE561 && SPDSettings.type561OldMode());
 		}
 		if (old){
 			return Messages.get(HeroClass.class, "type561_old");
@@ -548,6 +558,7 @@ public enum HeroClass {
 				return Assets.Sprites.FALCON;
 				//return Assets.Sprites.HUNTRESS;
 			case TYPE561:
+			case TYPE561_OLD:
 				return Assets.Sprites.TYPE561;
 			case GSH18:
 				return Assets.Sprites.GSH18;
@@ -594,13 +605,14 @@ public enum HeroClass {
 						Messages.get(HeroClass.class, "huntress_perk5"),
 				};
 			case TYPE561:
-			return new String[]{
-					Messages.get(HeroClass.class, "type561_perk1"),
-					Messages.get(HeroClass.class, "type561_perk2"),
-					Messages.get(HeroClass.class, "type561_perk3"),
-					Messages.get(HeroClass.class, "type561_perk4"),
-					Messages.get(HeroClass.class, "type561_perk5"),
-			};
+			case TYPE561_OLD:
+		return new String[]{
+				Messages.get(HeroClass.class, "type561_perk1"),
+				Messages.get(HeroClass.class, "type561_perk2"),
+				Messages.get(HeroClass.class, "type561_perk3"),
+				Messages.get(HeroClass.class, "type561_perk4"),
+				Messages.get(HeroClass.class, "type561_perk5"),
+		};
 		case GSH18:
 		return new String[]{
 				Messages.get(HeroClass.class, "warrior_perk1"),
@@ -644,6 +656,12 @@ public enum HeroClass {
 			case HUNTRESS:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
 			case TYPE561:
+				//旧版开关开启时，角色选择界面隐藏新版561，仅显示 TYPE561_OLD
+				if (SPDSettings.type561OldMode()) return false;
+				return Badges.isUnlocked(Badges.Badge.UNLOCK_TYPE561);
+			case TYPE561_OLD:
+				//旧版开关关闭时，角色选择界面隐藏旧版561
+				if (!SPDSettings.type561OldMode()) return false;
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_TYPE561);
 			case GSH18:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_GSH18);
@@ -667,6 +685,7 @@ public enum HeroClass {
 			case HUNTRESS:
 				return Messages.get(HeroClass.class, "huntress_unlock");
 			case TYPE561:
+			case TYPE561_OLD:
 				return Messages.get(HeroClass.class, "type561_unlock");
 			case GSH18:
 				return Messages.get(HeroClass.class, "gsh18_unlock");

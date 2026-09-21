@@ -392,11 +392,16 @@ public class Hero extends Char {
 		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class, HeroSubClass.rename );
 		armorAbility = (ArmorAbility)bundle.get( ABILITY );
 		type561Old = bundle.getBoolean( TYPE561_OLD );
+		//存档兼容：旧档中 TYPE561 同时承担新版/旧版两种身份，分裂出 TYPE561_OLD 枚举后，
+		//按 type561Old 标志把旧版存档的 heroClass 重映射为 TYPE561_OLD，让后续逻辑按枚举分流
+		if (type561Old && heroClass == HeroClass.TYPE561){
+			heroClass = HeroClass.TYPE561_OLD;
+		}
 		Talent.restoreTalentsFromBundle( bundle, this, Rankings.restoreInRanking );
-		
+
 		attackSkill = bundle.getInt( ATTACK );
 		defenseSkill = bundle.getInt( DEFENSE );
-		
+
 		STR = bundle.getInt( STRENGTH );
 		belongings.restoreFromBundle( bundle );
 
@@ -404,6 +409,10 @@ public class Hero extends Char {
 		if (!bundle.contains( TYPE561_OLD ) && heroClass == HeroClass.TYPE561){
 			type561Old = belongings.weapon instanceof Gun561Old
 					|| belongings.artifact instanceof RedBookOld;
+			//老档识别为旧版561后，同样把 heroClass 重映射为 TYPE561_OLD
+			if (type561Old){
+				heroClass = HeroClass.TYPE561_OLD;
+			}
 		}
 
 		restoreUpdateByVersion(bundle);
@@ -443,6 +452,10 @@ public class Hero extends Char {
 		info.heroClass = bundle.getEnum( CLASS, HeroClass.class, HeroClass.rename );
 		info.subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
 		info.type561Old = bundle.getBoolean( TYPE561_OLD );
+		//与 restoreFromBundle 保持一致：旧档识别为旧版561后，把 info.heroClass 重映射为 TYPE561_OLD
+		if (info.type561Old && info.heroClass == HeroClass.TYPE561){
+			info.heroClass = HeroClass.TYPE561_OLD;
+		}
 		Belongings.preview( info, bundle );
 	}
 

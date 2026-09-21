@@ -45,8 +45,9 @@ public enum HeroSubClass {
 	WARDEN(HeroIcon.WARDEN),
 	SUPER_AI(HeroIcon.HEROIC_LEAP), // 超级小爱
 
-    EMP_BOMB(HeroIcon.EMP_BOMB),
-    GUN_MASTER(HeroIcon.GUN_MASTER),
+	//第一个为现用的整理后的，第二个是给旧存档留的接口
+    EMP_BOMB(HeroIcon.EMP_BOMB), PULSETROOPER(HeroIcon.EMP_BOMB),
+    GUN_MASTER(HeroIcon.GUN_MASTER), MODERN_REBORNER(HeroIcon.GUN_MASTER),
 	// GSH18子职业
 	FUTURE_STAR(HeroIcon.BERSERKER), // 未来之星
 	MOBILE_MEDICALTABLE(HeroIcon.GLADIATOR), // 行走手术台
@@ -57,6 +58,7 @@ public enum HeroSubClass {
 
     public static final HashMap<String, String> rename = new HashMap<>();
     static {
+        //双重保险：旧档名既可经 rename 映射到新枚举，也可直接保留旧枚举值作为接口
         rename.put("PULSETROOPER", EMP_BOMB.name());
         rename.put("MODERN_REBORNER", GUN_MASTER.name());
     }

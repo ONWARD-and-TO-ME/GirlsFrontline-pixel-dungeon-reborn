@@ -191,7 +191,7 @@ public class GamesInProgress {
 
 		//存档界面使用的基础职业名（未转职时显示）；旧版561式显示独立名称
 		public String classTitle(){
-			if (type561Old && heroClass == HeroClass.TYPE561){
+			if (type561Old && (heroClass == HeroClass.TYPE561 || heroClass == HeroClass.TYPE561_OLD)){
 				return Messages.get(HeroClass.class, "type561_old");
 			}
 			return heroClass.title();
