@@ -644,11 +644,12 @@ public enum Talent {
 				Collections.addAll(tierTalents, NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID);
 				break;
 			case TYPE561:
-				Collections.addAll(tierTalents, Type56One_FOOD , Type56One_Identify, Type56One_Damage, Type56_14);
-				break;
-			case TYPE561_OLD:
-				//旧版56-1式角色天赋表（独立枚举后不再依赖 SPDSettings）
-				Collections.addAll(tierTalents, NICE_FOOD, OLD_SOLDIER, FAST_RELOAD, BETTER_FOOD);
+				if (SPDSettings.type561OldMode()){
+					//旧版56-1式角色天赋表（隐藏功能）
+					Collections.addAll(tierTalents, NICE_FOOD, OLD_SOLDIER, FAST_RELOAD, BETTER_FOOD);
+				} else {
+					Collections.addAll(tierTalents, Type56One_FOOD , Type56One_Identify, Type56One_Damage, Type56_14);
+				}
 				break;
 			case GSH18:
 				Collections.addAll(tierTalents, GSH18_MEAL_TREATMENT, GSH18_DOCTOR_INTUITION, GSH18_CLOSE_COMBAT, GSH18_STAR_SHIELD);
@@ -689,11 +690,12 @@ public enum Talent {
 				Collections.addAll(tierTalents, INVIGORATING_MEAL, RESTORED_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES);
 				break;
 			case TYPE561:
-				Collections.addAll(tierTalents, Type56Two_FOOD, Type56Two_Armor, Type56_23V4, Type56Two_Sight, Type56Two_Damage);
-				break;
-			case TYPE561_OLD:
-				//旧版56-1式角色天赋表（独立枚举后不再依赖 SPDSettings）
-				Collections.addAll(tierTalents, BARGAIN_SKILLS, TRAP_EXPERT, HOW_DARE_YOU, JIEFANGCI, NIGHT_EXPERT);
+				if (SPDSettings.type561OldMode()){
+					//旧版56-1式角色天赋表（隐藏功能）
+					Collections.addAll(tierTalents, BARGAIN_SKILLS, TRAP_EXPERT, HOW_DARE_YOU, JIEFANGCI, NIGHT_EXPERT);
+				} else {
+					Collections.addAll(tierTalents, Type56Two_FOOD, Type56Two_Armor, Type56_23V4, Type56Two_Sight, Type56Two_Damage);
+				}
 				break;
             case GSH18:
                 Collections.addAll(tierTalents, GSH18_ENERGIZING_MEAL, GSH18_CHAIN_SHOCK, GSH18_LOGISTICS_SUPPORT, GSH18_COMIC_HEART, GSH18_MEDICAL_COMPATIBILITY);
@@ -729,11 +731,12 @@ public enum Talent {
 				Collections.addAll(tierTalents, POINT_BLANK, SEER_SHOT);
 				break;
 			case TYPE561:
-				Collections.addAll(tierTalents, Type56Three_Bomb, Type56Three_Book);
-				break;
-			case TYPE561_OLD:
-				//旧版56-1式角色天赋表（独立枚举后不再依赖 SPDSettings）
-				Collections.addAll(tierTalents, SEARCH_ARMY, ELITE_ARMY);
+				if (SPDSettings.type561OldMode()){
+					//旧版56-1式角色天赋表（隐藏功能）
+					Collections.addAll(tierTalents, SEARCH_ARMY, ELITE_ARMY);
+				} else {
+					Collections.addAll(tierTalents, Type56Three_Bomb, Type56Three_Book);
+				}
 				break;
             case GSH18:
                 Collections.addAll(tierTalents,GSH18_INTELLIGENCE_AWARENESS,GSH18_AGILE_MOVEMENT);
@@ -760,16 +763,6 @@ public enum Talent {
         }
 		//tier4
 		//TBD
-	}
-
-	//判断当前是否处于旧版561上下文：游戏内按 Dungeon.hero 的 heroClass==TYPE561_OLD 或 type561Old 标志判断，
-	//介绍窗口（Dungeon.hero 尚未创建时）回退到 SPDSettings 全局旧版开关
-	private static boolean isType561OldContext(){
-		Hero hero = Dungeon.hero;
-		if (hero != null){
-			return hero.heroClass == HeroClass.TYPE561_OLD || hero.type561Old;
-		}
-		return SPDSettings.type561OldMode();
 	}
 
 	public static void initSubclassTalents( Hero hero ){
@@ -835,9 +828,8 @@ public enum Talent {
 				Collections.addAll(tierTalents, EMP_One, EMP_Two, EMP_Three);
 				break;
 			case GUN_MASTER:
-				//按当前角色是否旧版561决定子职业天赋，无角色上下文（介绍窗口）时回退到全局旧版开关
-				if (isType561OldContext()) {
-					//旧版56-1式角色转职天赋
+				if (SPDSettings.type561OldMode()){
+					//旧版56-1式角色转职天赋（隐藏功能）
 					Collections.addAll(tierTalents, NEWLIFE, MORE_ACCURATE, ENHANCE_GRENADE);
 				} else {
 					Collections.addAll(tierTalents, GUN_1V2, GUN_2V2, GUN_3);

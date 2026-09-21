@@ -73,10 +73,6 @@ public class WndHeroInfo extends WndTabbed {
 			case HK416:
 				tabIcon = new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null);
 				break;
-			case TYPE561:
-			case TYPE561_OLD:
-				tabIcon = new ItemSprite(ItemSpriteSheet.REDBOOK, null);
-				break;
 		}
 
 		int finalHeight = MIN_HEIGHT;
@@ -194,7 +190,6 @@ public class WndHeroInfo extends WndTabbed {
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
 				case TYPE561:
-				case TYPE561_OLD:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.REDBOOK),
 							new ItemSprite(ItemSpriteSheet.GUN561),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
@@ -220,12 +215,8 @@ public class WndHeroInfo extends WndTabbed {
 								protected void onSelect(int index) {
 									if (index == 0) {
 										SPDSettings.type561OldMode(!SPDSettings.type561OldMode());
-										//切换模式后切换到对应版本的 HeroClass：新版→TYPE561，旧版→TYPE561_OLD
-										HeroClass target = SPDSettings.type561OldMode()
-												? HeroClass.TYPE561_OLD
-												: HeroClass.TYPE561;
 										WndHeroInfo.this.hide();
-										GirlsFrontlinePixelDungeon.scene().addToFront(new WndHeroInfo(target));
+										GirlsFrontlinePixelDungeon.scene().addToFront(new WndHeroInfo(cls));
 									}
 								}
 							});

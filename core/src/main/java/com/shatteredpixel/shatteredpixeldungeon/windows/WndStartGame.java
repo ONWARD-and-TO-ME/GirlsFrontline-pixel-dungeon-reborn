@@ -119,14 +119,12 @@ public class WndStartGame extends Window {
 		nextButton.setRect(WIDTH - 11, 2, 12, 12); // 固定在右上角，大小10x10
 		add(nextButton);
 
-		// 收集所有可见角色（排除NONE、PUBLIC_1 以及被旧版开关隐藏的另一版本561）
+		// 收集所有可见角色（排除NONE）
 		visibleClasses = new ArrayList<>();
 		for (HeroClass cl : HeroClass.values()) {
-			if (cl == HeroClass.NONE || cl == HeroClass.PUBLIC_1) continue;
-			//SPDSettings.type561OldMode() 决定只显示 TYPE561 还是 TYPE561_OLD
-			if (cl == HeroClass.TYPE561 && SPDSettings.type561OldMode()) continue;
-			if (cl == HeroClass.TYPE561_OLD && !SPDSettings.type561OldMode()) continue;
-			visibleClasses.add(cl);
+			if (cl != HeroClass.NONE && cl != HeroClass.PUBLIC_1) {
+				visibleClasses.add(cl);
+			}
 		}
 
 		// 计算总页数
@@ -496,13 +494,10 @@ public class WndStartGame extends Window {
 		@Override
 		public synchronized void update() {
 			super.update();
-			//561 旧版/新版切换检测：selectedClass 是 TYPE561 或 TYPE561_OLD 时，按 SPDSettings 比对
-			boolean is561 = cl == HeroClass.TYPE561 || cl == HeroClass.TYPE561_OLD;
-			boolean curOldMode = is561 && SPDSettings.type561OldMode();
-			if (GamesInProgress.selectedClass != cl || (is561 && curOldMode != oldMode)){
+			boolean curOldMode = cl == HeroClass.TYPE561 && SPDSettings.type561OldMode();
+			if (GamesInProgress.selectedClass != cl || curOldMode != oldMode){
 				cl = GamesInProgress.selectedClass;
-				is561 = cl == HeroClass.TYPE561 || cl == HeroClass.TYPE561_OLD;
-				oldMode = is561 && SPDSettings.type561OldMode();
+				oldMode = cl == HeroClass.TYPE561 && SPDSettings.type561OldMode();
 				if (cl != null) {
 					// subtract 1 for NONE class
 					//avatar.frame((cl.ordinal()) * 24, 0, 24, 32);
@@ -517,10 +512,6 @@ public class WndStartGame extends Window {
 						//TODO:占位HK416暂用原隼槽位的头像，待新角色立绘完成后替换
 						row = 0;
 						col = 3;
-					} else if (cl == HeroClass.TYPE561_OLD) {
-						//旧版561与新版561共用同一立绘槽位
-						row = HeroClass.TYPE561.ordinal() / 4;
-						col = HeroClass.TYPE561.ordinal() % 4;
 					}
 					avatar.frame(col * 24, row * 32, 24, 32);
 
@@ -548,12 +539,6 @@ public class WndStartGame extends Window {
 							heroMisc.icon(new ItemSprite(ItemSpriteSheet.SEED_SUNGRASS, null));
 							break;
 						case TYPE561:
-						heroItem.icon(new ItemSprite(ItemSpriteSheet.SALTYZONGZI, null));
-						heroLoadout.icon(new ItemSprite(ItemSpriteSheet.GUN561, null));
-						heroMisc.icon(new ItemSprite(ItemSpriteSheet.REDBOOK, null));
-						break;
-					case TYPE561_OLD:
-						//旧版561：展示旧版专属道具（咸肉粽、Gun561Old、RedBookOld）
 						heroItem.icon(new ItemSprite(ItemSpriteSheet.SALTYZONGZI, null));
 						heroLoadout.icon(new ItemSprite(ItemSpriteSheet.GUN561, null));
 						heroMisc.icon(new ItemSprite(ItemSpriteSheet.REDBOOK, null));
