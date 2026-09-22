@@ -141,27 +141,31 @@ public class MedicalKit extends Artifact {
 		@Override
 		public boolean act() {
 			lockcha();
-			LockedFloor lock = target.buff( LockedFloor.class );
-			if (charge < chargeCap && !cursed && (lock == null || lock.regenOn())){
-				// 每回合自然充能 0.5%
-				float chargeGain = 0.5f;
-				chargeGain *= RingOfEnergy.artifactChargeMultiplier( target );
-				partialCharge += chargeGain;
-
-				while (partialCharge >= 1){
-					partialCharge -= 1;
-					charge++;
-					if (charge == chargeCap){
-						partialCharge = 0;
-					}
-				}
-			} else {
-				partialCharge = 0;
-			}
-
+			// 充能改为在获取星之护盾时触发（见 StarShield.incShield），此处不再自然恢复
 			updateQuickslot();
 			spend( TICK );
 			return true;
+		}
+
+		// 获取星之护盾时由 StarShield 调用：每 1 点星之护盾充能 1%
+		public void gainCharge( int amount ){
+			if (amount <= 0) return;
+			if (charge >= chargeCap) return;
+			if (cursed) return;
+			LockedFloor lock = target.buff( LockedFloor.class );
+			if (lock != null && !lock.regenOn()) return;
+
+			float chargeGain = amount * RingOfEnergy.artifactChargeMultiplier( target );
+			partialCharge += chargeGain;
+			while (partialCharge >= 1){
+				partialCharge -= 1;
+				charge++;
+				if (charge == chargeCap){
+					partialCharge = 0;
+					break;
+				}
+			}
+			updateQuickslot();
 		}
 	}
 }

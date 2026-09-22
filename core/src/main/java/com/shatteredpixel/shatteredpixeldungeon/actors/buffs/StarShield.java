@@ -29,6 +29,7 @@ import com.watabou.utils.Bundle;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MedicalKit;
 
 import java.util.Locale;
 
@@ -72,6 +73,14 @@ public class StarShield extends ShieldBuff {
 		}
 
 		super.incShield(incAmount);
+
+		// 便携医疗包：每 1 点星之护盾充能 1%（仅在 hero 装备 MedicalKit 时生效）
+		if (target instanceof Hero){
+			MedicalKit.KitRecharge medkitBuff = ((Hero)target).buff(MedicalKit.KitRecharge.class);
+			if (medkitBuff != null){
+				medkitBuff.gainCharge(incAmount);
+			}
+		}
 	}
 
 	@Override
