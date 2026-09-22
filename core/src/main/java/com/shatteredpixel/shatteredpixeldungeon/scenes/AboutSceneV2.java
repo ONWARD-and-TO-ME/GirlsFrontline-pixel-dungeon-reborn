@@ -77,10 +77,12 @@ public class AboutSceneV2 extends PixelScene {
 	private static final Object[][] TEAM_MAIN = {
 			{"程 序 编 码", -1, Icons.ONWARD, "to me", true},
 			{"贴 图 美 术", 0xe6739b, Icons.CHOCOSUKI, "choco", false},
+			{"文 案 编 写", 0x4a76c2, Icons.LANGLING, "言凌", false},
 	};
 	//协力人员名单暂未确定，先保留占位条目，后续编辑此处即可
 	private static final Object[][] TEAM_HELP = {
-			{"协力", 0xB9F0FD, null, "待编辑", false},
+			{"协力", 0xB9F0FD, null, "提供文本和建议的群友、以及提供代码和美术支持的 其他地牢开发者", false},
+			{" ", 0xB9F0FD, null, "待编辑", false},
 	};
 
 	//项目开源仓库地址（点击可跳转）
