@@ -37,15 +37,15 @@ import com.watabou.noosa.audio.Sample;
 
 import java.util.ArrayList;
 
-//隼（超级小爱）配件：集束聚焦器
-//仅能贴附在RF（步枪）标签的武器上，使其攻击变为解离法杖式的贯穿激光攻击（见 BeamFocusAttack）
+//隼（超级小爱）配件：磁轨加速弹
+//仅能贴附在RF（步枪）标签的武器上，使其获得在默认攻击与射线攻击模式间切换的能力（见 BeamFocusAttack）
 //贴附时像战士纹章一样从背心中选择武器；贴附后永久绑定：无法摘下、武器不会被摧毁或消失、不会从骸骨中开出、配件本身无法出售
 public class BeamFocuser extends Item {
 
 	public static final String AC_ATTACH = "ATTACH";
 
 	{
-		image = ItemSpriteSheet.BEAM_FOCUSER;
+		image = ItemSpriteSheet.SPBULLET;
 
 		unique = true;
 		bones = false;

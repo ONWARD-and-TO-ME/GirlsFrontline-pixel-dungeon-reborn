@@ -172,6 +172,10 @@ public enum Talent {
 	GSH18_COMPANION_SYNC(172, 3),
 	//Huntress 超级小爱 T3 - 飞升自由
 	FLIGHT_FREEDOM(28, 3),
+	//Huntress 超级小爱 T3 - 全能战术（磁轨加速弹射线伤害提升）
+	OMNI_TACTICS(29, 3),
+	//Huntress 超级小爱 T3 - 氘核光束（飞行能量消耗/门槛费/装填/自然恢复优化）
+	DEUTERIUM_BEAM(30, 3),
 
 	//HK416 T1
 	HK416_EXTRA_SUPPLY(192), HK416_ELITE_TROOPER(193), HK416_WEAK_POINT(194), HK416_SHIELD_COMBO(195),
@@ -822,8 +826,8 @@ public enum Talent {
 			Collections.addAll(tierTalents, DURABLE_TIPS, BARKSKIN, SHIELDING_DEW);
 			break;
 		case SUPER_AI:
-			Collections.addAll(tierTalents, FLIGHT_FREEDOM);
-			break;
+		Collections.addAll(tierTalents, FLIGHT_FREEDOM, OMNI_TACTICS, DEUTERIUM_BEAM);
+		break;
 			case EMP_BOMB:
 				Collections.addAll(tierTalents, EMP_One, EMP_Two, EMP_Three);
 				break;

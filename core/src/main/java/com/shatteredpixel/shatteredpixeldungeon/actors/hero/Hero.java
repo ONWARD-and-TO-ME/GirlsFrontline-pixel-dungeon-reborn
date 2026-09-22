@@ -2333,7 +2333,7 @@ public class Hero extends Char {
 
 		boolean hit;
 		try {
-			//集束聚焦器：贴附的RF武器改为解离法杖式贯穿激光攻击（实现见 BeamFocusAttack）
+			//磁轨加速弹：贴附且处于射线模式时改为解离法杖式贯穿激光攻击（实现见 BeamFocusAttack）
 			if (BeamFocusAttack.isFocusedWeapon(this)) {
 				hit = BeamFocusAttack.attack(this, enemy);
 			} else {

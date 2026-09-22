@@ -41,7 +41,7 @@ public class IconTitle extends Component {
 
 	private static final float GAP = 2;
 
-	//集束聚焦器贴附武器名称的蓝白渐变两色
+	//磁轨加速弹贴附武器名称的蓝白渐变两色
 	private static final int BEAM_NAME_BLUE   = 0x66BBFF;
 	private static final int BEAM_NAME_WHITE  = 0xFFFFFF;
 
@@ -49,7 +49,7 @@ public class IconTitle extends Component {
 	protected RenderedTextBlock tfLabel;
 	protected HealthBar health;
 
-	//集束聚焦器已贴附的武器：名称使用蓝白渐变而非默认黄色
+	//磁轨加速弹已贴附的武器：名称使用蓝白渐变而非默认黄色
 	private boolean beamName = false;
 
 	private float healthLvl = Float.NaN;
@@ -104,7 +104,7 @@ public class IconTitle extends Component {
 	@Override
 	public void update() {
 		super.update();
-		//已贴附集束聚焦器的武器，名称在蓝与白之间周期性渐变
+		//已贴附磁轨加速弹的武器，名称在蓝与白之间周期性渐变
 		if (beamName) {
 			float p = 0.5f + 0.5f * (float) Math.sin( Game.timeTotal * 3.0 );
 			tfLabel.hardlight( ColorMath.interpolate( BEAM_NAME_BLUE, BEAM_NAME_WHITE, p ) );

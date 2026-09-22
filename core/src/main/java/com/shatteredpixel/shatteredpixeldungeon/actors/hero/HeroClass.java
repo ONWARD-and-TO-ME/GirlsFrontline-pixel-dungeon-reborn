@@ -103,6 +103,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurs
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.M79;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M4A1;
@@ -495,6 +496,11 @@ public enum HeroClass {
 		M320 m320 = new M320();
 		m320.identify().collect();
 		Dungeon.quickslot.setSlot(0, m320);
+
+		// 初始携带 M79
+		M79 m79 = new M79();
+		m79.identify().collect();
+		Dungeon.quickslot.setSlot(1, m79);
 
 		new PotionOfHaste().identify().collect();
 		new ScrollOfUpgrade().identify();

@@ -20,7 +20,10 @@ import com.watabou.utils.Bundle;
 /*超级小爱专属被动：可随时启停的飞行。
 默认开启/降落消耗2回合，飞行时移动速度-20%；视野可穿透高草。
 可通过T3天赋「飞升自由」缩短开启耗时并提升飞行移速。
-飞行能量：开启后最多维持200回合，关闭后每回合恢复；可用炼金能量以1:5装填。
+飞行能量：上限200，开启时扣除门槛费（默认20点），飞行中按移动格数消耗（每格1点），
+默认关闭后不再自然恢复，只能用炼金能量装填；能量耗尽强制降落。
+T3天赋「氘核光束」可降低能量消耗与门槛费、优化炼金装填比，+3时每回合自然恢复0.2%。
+飞行状态下饱食度消耗翻倍。
 飞升自由 +3 且飞行中 每次移动最多跨 5 格 ，总耗时 = 单格移动耗时（即每格仅需原来 1/5 时间）
  移动动画 精灵从起点滑到终点仅 0.08s （正常单格为 0.1s），形成残影感
  速度线 沿冲刺方向每格喷射冷白色短线，向身后飞散淡出
@@ -33,14 +36,18 @@ public class SuperAiFlight extends Buff implements ActionIndicator.Action {
 
 	private boolean active = false;
 
-	//飞行能量（单位：回合）
+	//飞行能量（单位：格）
 	public static final float MAX_ENERGY = 200f;
-	//关闭飞行后每回合恢复的能量
-	private static final float REGEN_PER_TICK = 1f;
-	//炼金能量装填比：1点炼金能量 = 5点飞行能量
-	public static final int ALCHEMY_RATIO = 5;
+	//开启飞行时扣除的默认门槛能量
+	private static final float DEFAULT_TAKEOFF_COST = 20f;
+	//炼金能量默认装填比：1点炼金能量 = 5点飞行能量
+	public static final int DEFAULT_ALCHEMY_RATIO = 5;
+	//氘核光束+3时每回合自然恢复上限的0.2%
+	private static final float REGEN_PERCENT = 0.002f;
 
 	private float energy = MAX_ENERGY;
+	//上一次结算时的位置，用于按格计算飞行能量消耗
+	private int lastPos = -1;
 
 	private static final String ACTIVE = "active";
 	private static final String ENERGY = "energy";
@@ -66,7 +73,8 @@ public class SuperAiFlight extends Buff implements ActionIndicator.Action {
 			if (active) {
 				target.flying = true;
 			}
-			//每回合结算一次能量（开启消耗/关闭恢复）
+			lastPos = target.pos;
+			//每回合结算一次能量（按格消耗，不再自然恢复）
 			spend(TICK);
 			return true;
 		}
@@ -76,16 +84,73 @@ public class SuperAiFlight extends Buff implements ActionIndicator.Action {
 	@Override
 	public boolean act() {
 		if (active) {
-			energy -= TICK;
-			if (energy <= 0f) {
-				energy = 0f;
-				forceLand();
+			//按格计算：根据自上次结算以来移动的格数消耗飞行能量（受氘核光束消耗倍率影响）
+			int moved = movedTiles();
+			if (moved > 0) {
+				energy -= moved * drainMultiplier();
+				if (energy <= 0f) {
+					energy = 0f;
+					forceLand();
+				}
 			}
-		} else if (energy < MAX_ENERGY) {
-			energy = Math.min(MAX_ENERGY, energy + REGEN_PER_TICK);
 		}
+		//氘核光束+3：获得自行恢复能力，每回合恢复上限的0.2%（飞行/非飞行状态均生效）
+		if (hasDeuteriumBeam(3) && energy < MAX_ENERGY) {
+			energy = Math.min(MAX_ENERGY, energy + MAX_ENERGY * REGEN_PERCENT);
+			if (!active) ActionIndicator.updateIcon();
+		}
+		//无氘核光束+3时不自然恢复，只能通过炼金能量装填
+		lastPos = target != null ? target.pos : -1;
 		spend(TICK);
 		return true;
+	}
+
+	private int deuteriumPoints() {
+		return (target instanceof Hero) ? ((Hero) target).pointsInTalent(Talent.DEUTERIUM_BEAM) : 0;
+	}
+
+	private boolean hasDeuteriumBeam(int points) {
+		return deuteriumPoints() >= points;
+	}
+
+	//开启飞行的门槛能量：默认20点，氘核光束+1为15点，+2及以上为10点
+	public float takeoffCost() {
+		switch (deuteriumPoints()) {
+			case 1:  return 15f;
+			case 2:
+			case 3:  return 10f;
+			default: return DEFAULT_TAKEOFF_COST;
+		}
+	}
+
+	//飞行能量消耗倍率：默认100%，氘核光束+1为90%，+2及以上为80%
+	public float drainMultiplier() {
+		switch (deuteriumPoints()) {
+			case 1:  return 0.9f;
+			case 2:
+			case 3:  return 0.8f;
+			default: return 1f;
+		}
+	}
+
+	//炼金能量装填比：默认1:5，氘核光束+2及以上提升为1:10
+	public int alchemyRatio() {
+		return hasDeuteriumBeam(2) ? DEFAULT_ALCHEMY_RATIO * 2 : DEFAULT_ALCHEMY_RATIO;
+	}
+
+	//计算自上次结算以来移动的格数（曼哈顿距离，适用于四向移动网格）
+	private int movedTiles() {
+		if (target == null || lastPos < 0) {
+			return 0;
+		}
+		int cur = target.pos;
+		if (cur == lastPos) {
+			return 0;
+		}
+		int w = Dungeon.level.width();
+		int dx = Math.abs((cur % w) - (lastPos % w));
+		int dy = Math.abs((cur / w) - (lastPos / w));
+		return dx + dy;
 	}
 
 	@Override
@@ -121,15 +186,18 @@ public class SuperAiFlight extends Buff implements ActionIndicator.Action {
 
 	//切换飞行状态（默认开启/降落消耗2回合，受「飞升自由」天赋影响可缩短至1回合或免费）
 	public void toggle() {
-		//无能量时不允许起飞
-		if (!active && energy <= 0f) {
-			GLog.w(Messages.get(this, "no_energy"));
+		float cost = takeoffCost();
+		//能量不足以支付起飞门槛时不允许起飞
+		if (!active && energy <= cost) {
+			GLog.w(Messages.get(this, "no_energy", (int) cost));
 			return;
 		}
 		active = !active;
 		if (target != null) {
 			if (active) {
 				target.flying = true;
+				//开启飞行的门槛收费
+				energy = Math.max(0f, energy - cost);
 				if (target.sprite != null) {
 					target.sprite.add(CharSprite.State.LEVITATING);
 				}
@@ -148,9 +216,9 @@ public class SuperAiFlight extends Buff implements ActionIndicator.Action {
 		Sample.INSTANCE.play(Assets.Sounds.MASTERY);
 
 		//消耗开启/降落回合（飞升自由+2及以上免费）
-		int cost = turnCost();
-		if (cost > 0 && target instanceof Hero) {
-			((Hero) target).spendAndNext(cost);
+		int turns = turnCost();
+		if (turns > 0 && target instanceof Hero) {
+			((Hero) target).spendAndNext(turns);
 		}
 	}
 
@@ -216,12 +284,12 @@ public class SuperAiFlight extends Buff implements ActionIndicator.Action {
 		return (int) Math.ceil(energy);
 	}
 
-	//补满飞行能量所需的炼金能量（向上取整）
+	//补满飞行能量所需的炼金能量（向上取整，装填比受「氘核光束」天赋影响）
 	public int alchemyCostToFull() {
-		return (int) Math.ceil((MAX_ENERGY - energy) / (float) ALCHEMY_RATIO);
+		return (int) Math.ceil((MAX_ENERGY - energy) / (float) alchemyRatio());
 	}
 
-	//使用炼金能量补满飞行能量（1:5）
+	//使用炼金能量补满飞行能量
 	private void refillWithAlchemy() {
 		int cost = alchemyCostToFull();
 		if (cost <= 0) {
@@ -241,8 +309,9 @@ public class SuperAiFlight extends Buff implements ActionIndicator.Action {
 	//起飞/装填选择窗口
 	private void showTakeoffWindow(boolean empty) {
 		int cost = alchemyCostToFull();
+		int ratio = alchemyRatio();
 		String msg = Messages.get(this, "refill_msg",
-				energyLeft(), (int) MAX_ENERGY, cost, Dungeon.energy);
+				energyLeft(), (int) MAX_ENERGY, ratio, ratio, cost, Dungeon.energy);
 		String refillOpt = Messages.get(this, "opt_refill", cost);
 
 		if (empty) {
@@ -262,7 +331,7 @@ public class SuperAiFlight extends Buff implements ActionIndicator.Action {
 			GameScene.show(new WndOptions(
 					Messages.get(this, "refill_title"),
 					msg,
-					Messages.get(this, "opt_takeoff", turnCost(), energyLeft()),
+					Messages.get(this, "opt_takeoff", turnCost(), (int) takeoffCost(), energyLeft()),
 					refillOpt,
 					Messages.get(this, "opt_cancel")) {
 				@Override
@@ -295,8 +364,8 @@ public class SuperAiFlight extends Buff implements ActionIndicator.Action {
 			toggle();
 			return;
 		}
-		if (energy <= 0f) {
-			//能量耗尽：只能装填
+		if (energy <= takeoffCost()) {
+			//能量不足以支付起飞门槛，只能装填
 			showTakeoffWindow(true);
 		} else if (energy >= MAX_ENERGY) {
 			//满能量：直接起飞

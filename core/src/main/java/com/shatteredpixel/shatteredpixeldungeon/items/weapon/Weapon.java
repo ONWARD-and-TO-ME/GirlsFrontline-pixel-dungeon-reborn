@@ -158,8 +158,10 @@ abstract public class Weapon extends KindOfWeapon {
 	
 	public Augment augment = Augment.NONE;
 
-	//集束聚焦器已永久贴附（集束聚焦器实现见 BeamFocuser / BeamFocusAttack）
+	//磁轨加速弹已永久贴附（实现见 BeamFocuser / BeamFocusAttack）
 	public boolean beamFocused = false;
+	//射线攻击模式开关（贴附后默认为射线模式，可由更换弹夹按钮切换）
+	public boolean beamRayMode = true;
 
 	private static final int USES_TO_ID = 20;
 	private float usesLeftToID = USES_TO_ID;
@@ -212,6 +214,7 @@ abstract public class Weapon extends KindOfWeapon {
 	private static final String MASTERY_POTION_BONUS = "mastery_potion_bonus";
 	private static final String AUGMENT	        = "augment";
 	private static final String BEAM_FOCUSED    = "beam_focused";
+	private static final String BEAM_RAY_MODE   = "beam_ray_mode";
 	private static final String TierThisRun		= "TierThisRun";
 	private static final String FirstUpdateTier	= "FirstUpdateTier";
 
@@ -225,6 +228,7 @@ abstract public class Weapon extends KindOfWeapon {
 		bundle.put( MASTERY_POTION_BONUS, masteryPotionBonus );
 		bundle.put( AUGMENT, augment );
 		bundle.put( BEAM_FOCUSED, beamFocused );
+		bundle.put( BEAM_RAY_MODE, beamRayMode );
 		bundle.put( FirstUpdateTier, UpdatedTierToLevel);
 		bundle.put( TierThisRun, tier);
 	}
@@ -240,6 +244,8 @@ abstract public class Weapon extends KindOfWeapon {
 
 		augment = bundle.getEnum(AUGMENT, Augment.class);
 		beamFocused = bundle.getBoolean( BEAM_FOCUSED );
+		//旧档无此键时默认为射线模式（与贴附后原行为一致）
+		beamRayMode = bundle.contains( BEAM_RAY_MODE ) ? bundle.getBoolean( BEAM_RAY_MODE ) : true;
 		UpdatedTierToLevel = bundle.getBoolean( FirstUpdateTier );
 		if (bundle.contains( TierThisRun ))
 			tier = bundle.getInt( TierThisRun );
@@ -271,6 +277,21 @@ abstract public class Weapon extends KindOfWeapon {
 		}
 		return super.identify(byHero);
 	}
+
+	//磁轨加速弹：贴附后为武器增加"更换弹夹"按钮（实现委托至 BeamFocusAttack）
+	@Override
+	public ArrayList<String> actions( Hero hero ) {
+		ArrayList<String> actions = super.actions( hero );
+		BeamFocusAttack.addActions( actions, this );
+		return actions;
+	}
+
+	@Override
+	public void execute( Hero hero, String action ) {
+		super.execute( hero, action );
+		BeamFocusAttack.executeAction( this, hero, action );
+	}
+
 	@Override
 	public float accuracyFactor( Char owner ) {
 		
@@ -519,8 +540,8 @@ abstract public class Weapon extends KindOfWeapon {
 
 	@Override
 	public Emitter emitter() {
-		//集束聚焦器已贴附：贴图上闪烁蓝白色光粒（仿战士纹章的 RED_LIGHT）
-		if (!beamFocused) return super.emitter();
+		//磁轨加速弹已贴附且处于射线模式：贴图上闪烁蓝白色光粒（仿战士纹章的 RED_LIGHT）
+		if (!beamFocused || !beamRayMode) return super.emitter();
 		Emitter emitter = new Emitter();
 		emitter.pos( ItemSpriteSheet.film.width(image)/2f + 2f, ItemSpriteSheet.film.height(image)/3f );
 		emitter.fillTarget = false;

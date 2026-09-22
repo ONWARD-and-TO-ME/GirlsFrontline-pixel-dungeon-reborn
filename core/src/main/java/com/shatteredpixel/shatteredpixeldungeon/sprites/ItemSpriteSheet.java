@@ -869,17 +869,22 @@ public class ItemSpriteSheet {
 	private static final int GUN_M4A1         =xy(1, 39);
 
 
-	public static final  int M4A1              =GUN_M4A1+3;
-	public static final  int P90               =GUN_M4A1+4;
-	//隼（超级小爱）配件：集束聚焦器，P90右边一格
-	public static final  int BEAM_FOCUSER      =GUN_M4A1+5;
+	public static final  int M4A1               	=GUN_M4A1+3;
+	public static final  int P90               		=GUN_M4A1+4;
+	public static final  int BEAM_FOCUSER       	=GUN_M4A1+5;
 
 	private static final int MEDICAL_KETICON        =GUN_M4A1+6;
+	public static final  int ClUSTER_KIT_A          =GUN_M4A1+7;
+	public static final  int ClUSTER_KIT_B          =GUN_M4A1+8;
+	public static final  int SPBULLET     			=GUN_M4A1+9;
 	static {
-	    assignItemRect(M4A1,              16, 16);
-	    assignItemRect(P90,               16, 16);
-	    assignItemRect(BEAM_FOCUSER,      14, 15);
-	    assignItemRect(MEDICAL_KETICON, 15, 12);
+	    assignItemRect(M4A1,             	 16, 16);
+	    assignItemRect(P90,              	 16, 16);
+	    assignItemRect(BEAM_FOCUSER,    	 14, 15);
+	    assignItemRect(MEDICAL_KETICON,    	 15, 12);
+	    assignItemRect(ClUSTER_KIT_A,    	 15, 12);
+	    assignItemRect(ClUSTER_KIT_B,    	 15, 12);
+	    assignItemRect(SPBULLET,    		 15, 15);
 	}
 	//16 free slots
 

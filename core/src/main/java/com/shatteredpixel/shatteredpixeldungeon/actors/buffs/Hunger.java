@@ -93,7 +93,11 @@ public class Hunger extends Buff implements Hero.Doom {
 
             } else {
 
-				float newLevel = level + STEP;
+				//超级小爱飞行时饱食度消耗翻倍
+				SuperAiFlight flight = target.buff(SuperAiFlight.class);
+				float step = (flight != null && flight.isActive()) ? STEP * 2f : STEP;
+
+				float newLevel = level + step;
 				if (newLevel >= STARVING) {
 
 					GLog.n( Messages.get(this, "onstarving") );

@@ -28,7 +28,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PointF;
 
-//集束聚焦器发射的蓝白色激光（贴图：effects.png (0,32)-(15,34)）
+//磁轨加速弹发射的蓝白色激光（贴图：effects.png (0,32)-(15,34)）
 public class FocusRay extends Image {
 
 	private static final double A = 180 / Math.PI;
@@ -40,7 +40,7 @@ public class FocusRay extends Image {
 	public FocusRay(PointF s, PointF e, float duration) {
 		super( Assets.Effects.EFFECTS );
 
-		//effects.png 中集束聚焦器的蓝白激光区域
+		//effects.png 中磁轨加速弹的蓝白激光区域
 		frame(texture.uvRect(0, 32, 16, 35));
 
 		origin.set( 0, height / 2 );

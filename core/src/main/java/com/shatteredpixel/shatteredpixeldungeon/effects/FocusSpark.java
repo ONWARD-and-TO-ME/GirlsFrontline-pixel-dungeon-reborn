@@ -24,7 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.effects;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Random;
 
-//集束聚焦器贴附武器后，贴图上闪烁的蓝白色光粒（替代战士纹章的红色 RED_LIGHT）
+//磁轨加速弹贴附武器后，贴图上闪烁的蓝白色光粒（替代战士纹章的红色 RED_LIGHT）
 public class FocusSpark extends Speck {
 
 	//蓝白色调
