@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.BadgesScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.RankingsScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -52,13 +53,11 @@ public class ZeroLevel extends Level {
     // 定义了传送触发器的位置
     public static final int toZeroLevelSub = 10 * WIDTH + 13;
 
-    // 定义了六个电脑地块的位置
-    private static final int computerPos0 = 7 * WIDTH + 6;
-    private static final int computerPos1 = 7 * WIDTH + 7;
-    private static final int computerPos2 = 7 * WIDTH + 8;
-    private static final int computerPos3 = 8 * WIDTH + 6;
-    private static final int computerPos4 = 8 * WIDTH + 7;
-    private static final int computerPos5 = 8 * WIDTH + 8;
+    // 六个电脑地块组成的3x2控制台位置（作为一整个整体进行交互）
+    private static final int[] COMPUTER_POSITIONS = {
+            7 * WIDTH + 6, 7 * WIDTH + 7, 7 * WIDTH + 8,
+            8 * WIDTH + 6, 8 * WIDTH + 7, 8 * WIDTH + 8
+    };
     // 定义了消毒通道的位置
     private static final int decontaminationCorridorPos = 5 * WIDTH + 13;
     // 定义了成就按钮的位置（消毒通道上方一格向左移动两格，再向上移动两格）
@@ -129,9 +128,17 @@ public class ZeroLevel extends Level {
     // 电脑触发器 - 用于切换到标题场景
     public static class ComputerTriger extends WindowTrigger {
         // 检查角色是否可以与电脑交互
+        // 六个电脑地块作为一整个3x2控制台：只要角色与任意一块相邻即可交互，
+        // 避免点击不同地块时需要寻路到对应地块旁边的问题
         @Override
         public boolean canInteract(Char ch) {
-            return Dungeon.hero == ch && Dungeon.level.adjacent(pos, ch.pos);
+            if (Dungeon.hero != ch) return false;
+            for (int p : COMPUTER_POSITIONS) {
+                if (Dungeon.level.adjacent(p, ch.pos)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override
@@ -223,6 +230,20 @@ public class ZeroLevel extends Level {
                 });
                 curBtn.icon(Icons.get(Icons.RANKINGS));
 
+                addButton(curBtn = new RedButton("更新日志") {/*mark*/
+                    @Override
+                    protected void onClick() {
+                        try {
+                            Dungeon.saveAll();
+                        } catch (IOException e) {
+                            GirlsFrontlinePixelDungeon.reportException(e);
+                        }
+                        PixelScene.inGame = true;
+                        GirlsFrontlinePixelDungeon.switchNoFade(ChangesScene.class);
+                    }
+                });
+                curBtn.icon(Icons.get(Icons.CHANGES));
+
                 resize(WIDTH, pos);
             }
 
@@ -263,12 +284,10 @@ public class ZeroLevel extends Level {
         // 德尔(DEL)已移动至神秘据点(Room404)，不在前进营地生成
 
         // 放置电脑触发器(用于回到标题页面)
-        placeTrigger(new ComputerTriger().create(computerPos0));
-        placeTrigger(new ComputerTriger().create(computerPos1));
-        placeTrigger(new ComputerTriger().create(computerPos2));
-        placeTrigger(new ComputerTriger().create(computerPos3));
-        placeTrigger(new ComputerTriger().create(computerPos4));
-        placeTrigger(new ComputerTriger().create(computerPos5));
+        // 六块电脑组成一整个3x2控制台，每格均注册触发器以便任意点击均可响应
+        for (int p : COMPUTER_POSITIONS) {
+            placeTrigger(new ComputerTriger().create(p));
+        }
 
         // 放置消毒通道触发器（相邻点击直接弹出存档界面窗口，背景为0层画面）
         placeTrigger(new DecontaminationCorridor().create(decontaminationCorridorPos));
@@ -321,24 +340,18 @@ public class ZeroLevel extends Level {
         // 自定义地块名字
         @Override
         public String name(int tileX, int tileY) {
-            if ((tileY * WIDTH + tileX) == computerPos0) {
-                return Messages.get(this, "computer0.name");
-            } else if ((tileY * WIDTH + tileX) == computerPos1) {
-                return Messages.get(this, "computer1.name");
-            } else if ((tileY * WIDTH + tileX) == computerPos2) {
-                return Messages.get(this, "computer2.name");
-            } else if ((tileY * WIDTH + tileX) == computerPos3) {
-                return Messages.get(this, "computer3.name");
-            } else if ((tileY * WIDTH + tileX) == computerPos4) {
-                return Messages.get(this, "computer4.name");
-            } else if ((tileY * WIDTH + tileX) == computerPos5) {
-                return Messages.get(this, "computer5.name");
-            } else if ((tileY * WIDTH + tileX) == decontaminationCorridorPos) {
+            int cell = tileY * WIDTH + tileX;
+            for (int p : COMPUTER_POSITIONS) {
+                if (cell == p) {
+                    return Messages.get(this, "computer.name");
+                }
+            }
+            if (cell == decontaminationCorridorPos) {
                 return Messages.get(this, "decontamination_corridor.name");
-            } else if ((tileY * WIDTH + tileX) == achievementButtonPos) {
+            } else if (cell == achievementButtonPos) {
                 return Messages.get(this, "achievement_button.name");
-            } else if ((tileY * WIDTH + tileX) == blackMarketTablePos0
-                    || (tileY * WIDTH + tileX) == blackMarketTablePos1) {
+            } else if (cell == blackMarketTablePos0
+                    || cell == blackMarketTablePos1) {
                 return Messages.get(this, "black_market_table.name");
             }
 
@@ -348,24 +361,18 @@ public class ZeroLevel extends Level {
         // 自定义地块描述
         @Override
         public String desc(int tileX, int tileY) {
-            if ((tileY * WIDTH + tileX) == computerPos0) {
-                return Messages.get(this, "computer0.desc");
-            } else if ((tileY * WIDTH + tileX) == computerPos1) {
-                return Messages.get(this, "computer1.desc");
-            } else if ((tileY * WIDTH + tileX) == computerPos2) {
-                return Messages.get(this, "computer2.desc");
-            } else if ((tileY * WIDTH + tileX) == computerPos3) {
-                return Messages.get(this, "computer3.desc");
-            } else if ((tileY * WIDTH + tileX) == computerPos4) {
-                return Messages.get(this, "computer4.desc");
-            } else if ((tileY * WIDTH + tileX) == computerPos5) {
-                return Messages.get(this, "computer5.desc");
-            } else if ((tileY * WIDTH + tileX) == decontaminationCorridorPos) {
+            int cell = tileY * WIDTH + tileX;
+            for (int p : COMPUTER_POSITIONS) {
+                if (cell == p) {
+                    return Messages.get(this, "computer.desc");
+                }
+            }
+            if (cell == decontaminationCorridorPos) {
                 return Messages.get(this, "decontamination_corridor.desc");
-            } else if ((tileY * WIDTH + tileX) == achievementButtonPos) {
+            } else if (cell == achievementButtonPos) {
                 return Messages.get(this, "achievement_button.desc");
-            } else if ((tileY * WIDTH + tileX) == blackMarketTablePos0
-                    || (tileY * WIDTH + tileX) == blackMarketTablePos1) {
+            } else if (cell == blackMarketTablePos0
+                    || cell == blackMarketTablePos1) {
                 return Messages.get(this, "black_market_table.desc");
             }
 
