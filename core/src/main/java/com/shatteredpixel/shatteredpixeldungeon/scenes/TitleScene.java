@@ -380,9 +380,9 @@ public class TitleScene extends PixelScene {
 						order = 3;
 						break;
 					case HUNTRESS:
-					//隼的存档头像位于图集第9格（单行9列布局）
-					order = 8;
-					break;
+				//隼的存档头像位于图集第9格（索引8）；转职"超级小爱"后使用专属头像（第10格，索引9）
+				order = Info.subClass == HeroSubClass.SUPER_AI ? 9 : 8;
+				break;
 					case TYPE561:
 						order = 5;
 						break;
@@ -400,7 +400,7 @@ public class TitleScene extends PixelScene {
 						break;
 				}
 
-				portrait = new Image(Assets.Interfaces.PORTRAIT1, (order % 9) * 38, (order / 9) * 60, 38, 60);
+				portrait = new Image(Assets.Interfaces.PORTRAIT1, (order % 10) * 38, (order / 10) * 60, 38, 60);
 				frame = new Image(Assets.Interfaces.SAVESLOT, 0, 0, 21, 52);
 
 				setRect(0, 0, frame.width * SCALE, frame.height * SCALE);

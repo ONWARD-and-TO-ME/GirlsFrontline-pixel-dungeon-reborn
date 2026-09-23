@@ -21,6 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.scrolls;
 
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
+
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
@@ -32,16 +35,23 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndUpgrade;
+import com.watabou.noosa.audio.Sample;
 
 public class ScrollOfUpgrade extends InventoryScroll {
-	
+
 	{
 		icon = ItemSpriteSheet.Icons.SCROLL_UPGRADE;
 		preferredBag = Belongings.Backpack.class;
@@ -55,8 +65,115 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		return item.isUpgradable();
 	}
 
+	//持有的升级磁盘多于1张时，改为弹出WndUpgrade连续升级窗口；
+	//单张或首次鉴定使用时沿用InventoryScroll的直接升级流程
+	@Override
+	public void doRead() {
+
+		if (!isKnown()) {
+			identify();
+			curItem = detach( hero.belongings.backpack );
+			identifiedByUse = true;
+		} else {
+			identifiedByUse = false;
+		}
+
+		GameScene.selectItem( upgradeSelector );
+	}
+
+	//WndUpgrade内点击"返回"后重新打开物品选择界面
+	public void reShowSelector(){
+		curItem = this;
+		GameScene.selectItem( upgradeSelector );
+	}
+
+	//供WndUpgrade跨包调用（父类Scroll.readAnimation为protected）
+	public void playReadAnimation(){
+		readAnimation();
+	}
+
+	private final WndBag.ItemSelector upgradeSelector = new WndBag.ItemSelector() {
+
+		@Override
+		public String textPrompt() {
+			return Messages.get(ScrollOfUpgrade.this, "inv_title");
+		}
+
+		@Override
+		public Class<? extends Bag> preferredBag() {
+			return preferredBag;
+		}
+
+		@Override
+		public boolean itemSelectable(Item item) {
+			return usableOnItem(item);
+		}
+
+		@Override
+		public void onSelect( Item item ) {
+
+			//FIXME this safety check shouldn't be necessary
+			if (!(curItem instanceof ScrollOfUpgrade)){
+				return;
+			}
+
+			ScrollOfUpgrade scroll = (ScrollOfUpgrade)curItem;
+
+			if (item != null) {
+
+				if (!identifiedByUse && scroll.quantity() > 1) {
+					//多于1张：弹出确认窗口，点击升级时才消耗磁盘，
+					//若还有剩余磁盘则再次弹出窗口以连续升级同一件物品
+					GameScene.show( new WndUpgrade( scroll, item ) );
+
+				} else {
+					//单张磁盘（或首次鉴定使用）：直接升级，保持原流程
+					scroll.onItemSelected( item );
+					scroll.readAnimation();
+					if (!identifiedByUse)
+						curItem = detach( hero.belongings.backpack );
+					Sample.INSTANCE.play( Assets.Sounds.READ );
+				}
+
+			} else if (identifiedByUse && !anonymous) {
+
+				scroll.confirmCancelation();
+
+			}
+		}
+	};
+
+	//与InventoryScroll中同名的私有方法一致：已鉴定磁盘取消使用时二次确认
+	private void confirmCancelation() {
+		GameScene.show( new WndOptions(new ItemSprite(this),
+				Messages.titleCase(name()),
+				Messages.get(this, "warning"),
+				Messages.get(this, "yes"),
+				Messages.get(this, "no") ) {
+			@Override
+			protected void onSelect( int index ) {
+				switch (index) {
+				case 0:
+					curUser.spendAndNext( TIME_TO_READ );
+					identifiedByUse = false;
+					break;
+				case 1:
+					GameScene.selectItem( upgradeSelector );
+					break;
+				}
+			}
+			@Override
+			public void onBackPressed() {}
+		} );
+	}
+
 	@Override
 	protected void onItemSelected( Item item ) {
+		upgradeItem( item );
+	}
+
+	//执行一次实际升级并返回升级后的物品，WndUpgrade会连续调用本方法
+	public Item upgradeItem( Item item ) {
 
 		upgrade( curUser );
 
@@ -119,6 +236,8 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		Badges.validateItemLevelAquired( item );
 		Statistics.upgradesUsed++;
 		Badges.validateMageUnlock();
+
+		return item;
 	}
 	
 	public static void upgrade( Hero hero ) {

@@ -31,6 +31,8 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 //A buff whose only purposes is to keep track of a count of some form
 public class TalentSecondSight extends Buff {
@@ -38,12 +40,14 @@ public class TalentSecondSight extends Buff {
         revivePersists = true;
     }
 
-    private ArrayList<curLevelSight> sights = new ArrayList<>();
+    //使用CopyOnWriteArrayList：渲染线程（BuffIndicator刷新图标/描述）会遍历sights，
+    //而Actor线程（天赋触发Set/EndCD）可能同时add，普通ArrayList会触发ConcurrentModificationException
+    private List<curLevelSight> sights = new CopyOnWriteArrayList<>();
 
     @Override
     public boolean attachTo( Char target ){
         if (sights == null)
-            sights = new ArrayList<>();
+            sights = new CopyOnWriteArrayList<>();
         return super.attachTo(target);
     }
     @Override
@@ -141,7 +145,8 @@ public class TalentSecondSight extends Buff {
 		super.restoreFromBundle(bundle);
 
         if (bundle.contains(SIGHT)){
-            sights = (ArrayList<curLevelSight>) bundle.get(SIGHT);
+            ArrayList<curLevelSight> loaded = bundle.getArrayList(SIGHT, curLevelSight.class);
+            sights = loaded != null ? new CopyOnWriteArrayList<>(loaded) : new CopyOnWriteArrayList<>();
         }
         else if (bundle.contains("ID")){
             int[] IDToLoad = bundle.getIntArray("ID");
@@ -155,7 +160,7 @@ public class TalentSecondSight extends Buff {
             }
         }
         else
-            sights = new ArrayList<>();
+            sights = new CopyOnWriteArrayList<>();
 
 	}
     public static class curLevelSight implements Bundlable{
