@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
@@ -70,7 +71,14 @@ public class ChangesScene extends PixelScene {
 		align(title);
 		add(title);
 
-		ExitButton btnExit = new ExitButton();
+		//自定义退出按钮，使用与onBackPressed相同的返回逻辑
+		//从游戏内（如0层终端）进入时返回游戏场景，从标题界面进入时返回标题界面
+		ExitButton btnExit = new ExitButton() {
+			@Override
+			protected void onClick() {
+				backToPreviousScene();
+			}
+		};
 		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
 		add( btnExit );
 
@@ -186,6 +194,20 @@ public class ChangesScene extends PixelScene {
 		addToBack( archs );
 
 		fadeIn();
+	}
+
+	//返回来处：从游戏内（如0层终端）进入时返回游戏场景，从标题界面进入时返回标题界面
+	private void backToPreviousScene() {
+		if (inGame) {
+			GirlsFrontlinePixelDungeon.switchNoFade(GameScene.class);
+		} else {
+			GirlsFrontlinePixelDungeon.switchNoFade(TitleScene.class);
+		}
+	}
+
+	@Override
+	protected void onBackPressed() {
+		backToPreviousScene();
 	}
 
 	//大版本页签按钮，样式仿照 WndTabbed 的 LabeledTab
