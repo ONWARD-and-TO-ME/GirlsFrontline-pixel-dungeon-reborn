@@ -155,6 +155,7 @@ public enum Bestiary {
                 Ghoul.class, Elemental.FireElemental.class, Elemental.FrostElemental.class, Elemental.ShockElemental.class, Warlock.class, Monk.class, Golem.class,
                 Guard.class, Dragun.class, Jupiter.class,
                 Cyclops.class, Hydra.class, Succubus.class,
+                Kentauros.class,
                 RipperDemon.class, DemonSpawner.class);
 
         BOSSES.addEntities(Goo.class,
@@ -573,6 +574,7 @@ public enum Bestiary {
                 add(list, 2, Succubus.class);
                 add(list, 2, Jupiter.class);
                 add(list, 1, Hydra.class);
+                add(list, 2, Kentauros.class);
                 break;
 
             case 28:
@@ -580,9 +582,15 @@ public enum Bestiary {
                 add(list, 1, Succubus.class);
                 add(list, 1, Jupiter.class);
                 add(list, 6, Hydra.class);
+                add(list, 2, Kentauros.class);
                 break;
 
             case 29:
+                add(list, 1, Cyclops.class);
+                add(list, 6, Hydra.class);
+                add(list, 3, Kentauros.class);
+                break;
+
             case 30:
                 add(list, 1, Cyclops.class);
                 add(list, 9, Hydra.class);

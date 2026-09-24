@@ -29,6 +29,7 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 		RCH = 2;
 		bones = false;
         dmgBaseDiffer = -0.8F;
+		bones = false;
 	}
 	@Override
 	public int damageRoll(Char owner) {

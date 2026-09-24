@@ -82,7 +82,14 @@ public class GradientBitmapText extends BitmapText {
  * 圣诞节 (XMAS) `0xFF3B3B` 红          `0x2ECC71`        绿经典圣诞红绿 
  * 万圣节 (HWEEN) `0xFF8800` 南瓜橙      `0x8E44AD` 幽紫   南瓜与鬼魅 
  * 面包节 (BREAD) `0xE0A040` 肉桂金      `0x8B5A2B` 焦棕   烘烤色泽 
- * 中秋节 (midAutumn) `0x9EC9FF` 月光蓝  `0xFFFFFF` 银白   月色清辉 
+ * 中秋节 (midAutumnFestival) `0x9EC9FF` 月光蓝  `0xFFFFFF` 银白   月色清辉
+ * 春节 (SPRING_FESTIVAL) `0xE60012` 中国红      `0xFFD700` 鎏金    喜庆年味
+ * 元宵节 (LANTERN_FESTIVAL) `0xFF4500` 灯红     `0xFFD27F` 暖黄    花灯流光
+ * 清明节 (QINGMING) `0x7FBF7F` 柳绿            `0xEAF2EA` 雨雾白  踏青烟雨
+ * 端午节 (DRAGON_BOAT) `0x2E8B57` 粽叶绿       `0x9DC183` 艾草青  粽艾清香
+ * 七夕 (QIXI) `0xB57EDC` 鹊桥紫                `0xFFB6C1` 织女粉  星河相会
+ * 重阳节 (DOUBLE_NINTH) `0xFFB90F` 菊黄        `0xD2691E` 枫橙    登高赏菊
+ * 国庆节 (NATIONAL_DAY) `0xDE2910` 国旗红      `0xFFDE00` 五星金  国旗配色
  * 复活节 (EASTER) `0xFF99CC` 粉彩       `0x98FB98` 嫩绿   春日彩蛋 
  * 普通日期 `0xCACFC2` 浅灰 `0xA8AEA0` 深灰 微渐变不突兀 
  * 蛋糕节日 `0xFFD700` 金色 `0xFFFFFF` 白色 （保持原有金白渐变）

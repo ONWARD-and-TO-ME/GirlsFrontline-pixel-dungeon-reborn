@@ -748,7 +748,10 @@ public class Dungeon {
         resetTest();
 		Bundle bundle = FileUtils.bundleFromFile( GamesInProgress.gameFile( save ) );
 
-        levelId = bundle.getInt( LEVEL_ID );
+		//读档时同样刷新农历节日状态，否则中秋等节日需开新局才生效
+		Gregorian.LunarCheckDate();
+
+		levelId = bundle.getInt( LEVEL_ID );
 
 		version = bundle.getInt( VERSION );
 		seed = bundle.contains( SEED ) ? bundle.getLong( SEED ) : DungeonSeed.randomSeed();

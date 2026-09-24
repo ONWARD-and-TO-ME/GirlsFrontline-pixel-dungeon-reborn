@@ -88,6 +88,20 @@ public class MenuPane extends Component {
 	private static final int COLOR_BREAD_END         = 0x8B5A2B; // 面包节：焦棕
 	private static final int COLOR_MID_AUTUMN_START  = 0x9EC9FF; // 中秋节：月光蓝
 	private static final int COLOR_MID_AUTUMN_END    = 0xFFFFFF; // 中秋节：银白
+	private static final int COLOR_SPRING_START      = 0xE60012; // 春节：中国红
+	private static final int COLOR_SPRING_END        = 0xFFD700; // 春节：鎏金
+	private static final int COLOR_LANTERN_START     = 0xFF4500; // 元宵节：灯红
+	private static final int COLOR_LANTERN_END       = 0xFFD27F; // 元宵节：暖黄光
+	private static final int COLOR_QINGMING_START    = 0x7FBF7F; // 清明节：柳绿
+	private static final int COLOR_QINGMING_END      = 0xEAF2EA; // 清明节：雨雾白
+	private static final int COLOR_DRAGON_BOAT_START = 0x2E8B57; // 端午节：粽叶绿
+	private static final int COLOR_DRAGON_BOAT_END   = 0x9DC183; // 端午节：艾草青
+	private static final int COLOR_QIXI_START        = 0xB57EDC; // 七夕：鹊桥紫
+	private static final int COLOR_QIXI_END          = 0xFFB6C1; // 七夕：织女粉
+	private static final int COLOR_DOUBLE_NINTH_START= 0xFFB90F; // 重阳节：菊黄
+	private static final int COLOR_DOUBLE_NINTH_END  = 0xD2691E; // 重阳节：枫橙
+	private static final int COLOR_NATIONAL_START    = 0xDE2910; // 国庆节：国旗红
+	private static final int COLOR_NATIONAL_END      = 0xFFDE00; // 国庆节：五星金
 	private static final int COLOR_EASTER_START      = 0xFF99CC; // 复活节：粉彩
 	private static final int COLOR_EASTER_END        = 0x98FB98; // 复活节：嫩绿
 	private static final int COLOR_DEFAULT_START     = 0xCACFC2; // 普通日期
@@ -320,6 +334,13 @@ public class MenuPane extends Component {
 			case HWEEN:              return new int[]{ COLOR_HWEEN_START, COLOR_HWEEN_END };
 			case BREAD_INDEPENDENT:  return new int[]{ COLOR_BREAD_START, COLOR_BREAD_END };
 			case midAutumnFestival:  return new int[]{ COLOR_MID_AUTUMN_START, COLOR_MID_AUTUMN_END };
+			case SPRING_FESTIVAL:    return new int[]{ COLOR_SPRING_START, COLOR_SPRING_END };
+			case LANTERN_FESTIVAL:   return new int[]{ COLOR_LANTERN_START, COLOR_LANTERN_END };
+			case QINGMING:           return new int[]{ COLOR_QINGMING_START, COLOR_QINGMING_END };
+			case DRAGON_BOAT:        return new int[]{ COLOR_DRAGON_BOAT_START, COLOR_DRAGON_BOAT_END };
+			case QIXI:               return new int[]{ COLOR_QIXI_START, COLOR_QIXI_END };
+			case DOUBLE_NINTH:       return new int[]{ COLOR_DOUBLE_NINTH_START, COLOR_DOUBLE_NINTH_END };
+			case NATIONAL_DAY:       return new int[]{ COLOR_NATIONAL_START, COLOR_NATIONAL_END };
 			case EASTER:             return new int[]{ COLOR_EASTER_START, COLOR_EASTER_END };
 			case NONE: default:
 				//Holidays 静态块仅覆盖到 12 月第 3 周，isXMAS 额外覆盖 12 月 17 日起

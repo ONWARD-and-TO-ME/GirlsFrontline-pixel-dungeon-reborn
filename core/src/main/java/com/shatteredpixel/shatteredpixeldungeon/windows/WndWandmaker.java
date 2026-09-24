@@ -111,7 +111,7 @@ public class WndWandmaker extends Window {
 			Dungeon.level.drop( reward, wandmaker.pos ).sprite.drop();
 		}
 
-		if(Dungeon.hero.heroClass == HeroClass.HUNTRESS){
+		if(Dungeon.hero.heroClass == HeroClass.HK416){
 			wandmaker.yell( Messages.get(this, "farewell_hk416", Dungeon.hero.name()) );
 		} else {
 			wandmaker.yell( Messages.get(this, "farewell", Dungeon.hero.name()) );

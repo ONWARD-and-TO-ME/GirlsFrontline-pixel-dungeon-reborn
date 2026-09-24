@@ -10,13 +10,25 @@ public class Holidays {
         BREAD_INDEPENDENT,  // 6월 4일 빵복절
         HWEEN,              // 2nd week of october though first day of november
         midAutumnFestival,  // 八月十五中秋节
-        XMAS                // 3rd week of december through first week of january
+        XMAS,               // 3rd week of december through first week of january
+        SPRING_FESTIVAL,    // 正月初一至初七 春节
+        LANTERN_FESTIVAL,   // 正月十五 元宵节
+        QINGMING,           // 公历4月4日~6日 清明节
+        DRAGON_BOAT,        // 五月初五 端午节
+        QIXI,               // 七月初七 七夕
+        DOUBLE_NINTH,       // 九月初九 重阳节
+        NATIONAL_DAY        // 公历10月1日~7日 国庆节
 
     }
 
     public static Holiday holiday;
 
     static {
+        checkSolarHolidays();
+    }
+
+    //按公历重置节日状态；农历节日由 Gregorian.LunarCheckDate() 在此基础上覆盖
+    public static void checkSolarHolidays() {
         holiday = Holiday.NONE;
 
         final Calendar calendar = Calendar.getInstance();

@@ -387,5 +387,7 @@ public class Assets {
 
 		public static final String STRIKER			= "sprites/girlpd/striker.png";
 		public static final String ESTRIKER			= "sprites/girlpd/elitestriker.png";
+
+		public static final String KENTAUROS		= "sprites/girlpd/archer.png";
 	}
 }

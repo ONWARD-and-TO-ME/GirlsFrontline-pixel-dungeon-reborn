@@ -167,6 +167,9 @@ public class TalentSecondSight extends Buff {
 
         private int level;
         private int time;
+        //Bundle 反射反序列化必须存在无参构造
+        public curLevelSight(){
+        }
         public curLevelSight(int level, int time){
             this.level  = level;
             this.time   = time;
@@ -175,14 +178,14 @@ public class TalentSecondSight extends Buff {
         private static final String CD = "sight_time";
         @Override
         public void restoreFromBundle(Bundle bundle) {
-            bundle.put(ID, level);
-            bundle.put(CD, time);
+            level = bundle.getInt(ID);
+            time = bundle.getInt(CD);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
-            level = bundle.getInt(ID);
-            time = bundle.getInt(CD);
+            bundle.put(ID, level);
+            bundle.put(CD, time);
         }
     }
 }
