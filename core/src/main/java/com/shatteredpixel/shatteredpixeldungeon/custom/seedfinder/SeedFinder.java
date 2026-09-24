@@ -46,6 +46,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLongArray;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SeedFinder implements Runnable {
 
@@ -145,6 +147,113 @@ public class SeedFinder implements Runnable {
         }
         SeedFinding = false;
         return result;
+    }
+
+    // ===== 强力查种（多线程分片） =====
+    public static volatile boolean parallelFound = false;
+    /** Dungeon 是全局静态状态，多线程操作必须串行化 */
+    public static final Object DUNGEON_LOCK = new Object();
+
+    /** 当前搜索线程数，供 SeedFindScene 轮询显示 */
+    public static volatile int searchThreadCount = 1;
+
+    public static final AtomicLongArray parallelSeeds = new AtomicLongArray(8);
+
+    /** 强力查种：单个区间覆盖的种子偏移数量 */
+    public static final long SEGMENT_SIZE = 100_000L;
+    /** 强力查种：单个区间超过该时长（毫秒）仍未命中，则该线程切换到下一个随机区间 */
+    public static final long SEGMENT_TIMEOUT_MS = 5_000L;
+
+    public String findSeedParallel(int threadCount) {
+        String result = "NONE";
+        SeedFinding = true;
+        running = true;
+        parallelFound = false;
+
+        // 清零每个线程的当前种子槽位
+        searchThreadCount = threadCount;
+        for (int t = 0; t < parallelSeeds.length(); t++) parallelSeeds.set(t, -1);
+
+        final long total = DungeonSeed.TOTAL_SEEDS;
+        final long startSeed = Random.Long(total);
+
+        final AtomicReference<String> resultRef = new AtomicReference<>();
+
+        Thread[] workers = new Thread[threadCount];
+        for (int t = 0; t < threadCount; t++) {
+            final int tid = t;
+
+            // 线程 tid 负责 [segStart, segEnd) 连续大段，互不重叠
+            long seg = total / threadCount;
+            final long segStart = tid * seg;
+            final long segEnd = (tid == threadCount - 1) ? total : (tid + 1) * seg;
+
+            workers[t] = new Thread(() -> {
+                // 每线程负责段内一个随机区间（种子池）；超时未命中或池测完则完全随机 roll 一次
+                long maxSliceStart = segEnd - SEGMENT_SIZE;
+                long sliceStart = (maxSliceStart > segStart) ? (segStart + Random.Long(maxSliceStart - segStart + 1)) : segStart;
+                long sliceEnd = Math.min(sliceStart + SEGMENT_SIZE, segEnd);
+                long sliceStartTime = System.currentTimeMillis();
+
+                long local = sliceStart;
+
+                while (!parallelFound && running && SeedFinding) {
+                    if (Thread.currentThread().isInterrupted()) return;
+
+                    long now = System.currentTimeMillis();
+                    // 切片超时未命中，或当前切片已测完 → 段内随机跳到下一片
+                    if (now - sliceStartTime >= SEGMENT_TIMEOUT_MS || local >= sliceEnd) {
+                        if (maxSliceStart <= segStart) return;
+                        sliceStart = segStart + Random.Long(maxSliceStart - segStart + 1);
+                        sliceEnd = Math.min(sliceStart + SEGMENT_SIZE, segEnd);
+                        sliceStartTime = System.currentTimeMillis();
+                        local = sliceStart;
+                        continue;
+                    }
+
+                    final long seedValue = (startSeed + local) % total;
+                    parallelSeeds.set(tid, seedValue);
+
+                    // 只写共享状态，UI 由 SeedFindScene.update() 统一轮询
+                    synchronized (DUNGEON_LOCK) {
+                        if (parallelFound || !running || !SeedFinding) return;
+
+                        // 10 连复查：命中目标必须落在该种子各楼层生成变体的交集内
+                        boolean confirmed = true;
+                        for (int r = 0; r < 10; r++) {
+                            if (!testSeed(seedValue)) {
+                                confirmed = false;
+                                break;
+                            }
+                        }
+                        if (confirmed) {
+                            parallelFound = true;
+                            resultRef.set(logSeedItems(seedValue));
+                            return;
+                        }
+                    }
+
+                    local++;
+                }
+            });
+            workers[t].setName("SeedFinder-Worker-" + tid);
+            workers[t].setDaemon(true);
+        }
+
+        for (Thread w : workers) w.start();
+        try {
+            for (Thread w : workers) w.join();
+        } catch (InterruptedException e) {
+            running = false;
+            SeedFinding = false;
+            for (Thread w : workers) w.interrupt();
+            return result;
+        }
+
+        running = false;
+        SeedFinding = false;
+        String r = resultRef.get();
+        return r != null ? r : result;
     }
 
     protected boolean testSeed(long seed) {
