@@ -141,7 +141,7 @@ public class ShootGun extends MeleeWeapon {
     }
 
     public void onShootComplete(int cell, int lvl) {
-        BombDestory(cell);
+        BombDestroy(cell);
         int shield = BombAttack(cell, lvl);
         if(!Dungeon.hero.isAlive()){
             Dungeon.fail(getClass());
@@ -158,21 +158,18 @@ public class ShootGun extends MeleeWeapon {
         hasCharge=false;
         int down = 0;
         switch (Dungeon.hero.pointsInTalent(Talent.Type56Three_Bomb)){
-            case 1: down=15;break;
-            case 2: down=35;break;
-            case 3: down=50;break;
+            case 1: down = 15; break;
+            case 2: down = 35; break;
+            case 3: down = 50; break;
         }
-        down += Dungeon.hero.pointsInTalent(Talent.FAST_RELOAD)*20;
-        if (Dungeon.hero.hasTalent(Talent.Type56_14V2)){
-            Buff.prolong(Dungeon.hero, ShootTracker.class, 6f);
-        }
+        down += Dungeon.hero.pointsInTalent(Talent.FAST_RELOAD) * 20;
         EMPCharge();
-        cooldownLeft=cooldownTurns-down;
+        cooldownLeft = cooldownTurns - down;
         cooldown = true;
         updateQuickslot();
         curUser.spendAndNext(1f);
     }
-    protected void BombDestory(int cell){
+    protected void BombDestroy(int cell){
         if(rate>0){
             //伤害倍率大于0
             Sample.INSTANCE.play(Assets.Sounds.BLAST);
@@ -207,15 +204,11 @@ public class ShootGun extends MeleeWeapon {
     }
     protected int BombAdd(){
         int add = 0;
-        if (Dungeon.hero.subClass==HeroSubClass.GUN_MASTER){
-            int min = 1;
-            int max = 5;
-            if (Dungeon.hero.hasTalent(Talent.GUN_1)){
-                max+=Dungeon.hero.pointsInTalent(Talent.GUN_1);
-            }
-            int time = (Dungeon.hero.HT-Dungeon.hero.HP)/5;
-            min*=time;
-            max*=time;
+        if (Dungeon.hero.subClass == HeroSubClass.GUN_MASTER){
+            int min, max;
+            int time = (Dungeon.hero.HT - Dungeon.hero.HP)/5;
+            min = time;
+            max = 5 * time;
             add = Random.Int(min, max);
         }
         return add;
@@ -419,27 +412,23 @@ public class ShootGun extends MeleeWeapon {
         }
         @Override
         public boolean act() {
-            if (Dungeon.hero.buff(LostInventory.class)!=null && !keptThoughLostInvent) {
+            if (Dungeon.hero.buff(LostInventory.class) != null && !keptThoughLostInvent) {
                 //进入重生且没有在重生时选中的56榴弹不允许充能cd
                 spend(1.0F);
-                return true;}
-            cooldownLeft=Math.max(0,cooldownLeft);
-            //小于0则幅值0
+                return true;
+            }
             LockedFloor lock = target.buff(LockedFloor.class);
-            if((lock == null || lock.regenOn())
-            && !hasCharge){
-                if (cooldownLeft>0){
-                    cooldownLeft--;
-                }
-                if (cooldownLeft==0)
+            if((lock == null || lock.regenOn()) && !hasCharge) {
+                cooldownLeft--;
+                if (cooldownLeft <= 0)
                     cooldown = false;
 
-                if (0==cooldownLeft && !needReload){
-                    hasCharge=true;
+                if (0 <= cooldownLeft && !needReload){
+                    hasCharge = true;
                     updateQuickslot();
                 }
             }
-            cooldownLeft=Math.max(0,cooldownLeft);
+            cooldownLeft = Math.max(0, cooldownLeft);
             spend( TICK );
             return true;
         }

@@ -62,7 +62,7 @@ public class WndGameInProgress extends Window {
 		if (info.subClass != HeroSubClass.NONE && info.subClass != HeroSubClass.EMPTY){
 			className = info.subClass.title();
 		} else {
-			className = info.classTitle();
+			className = info.heroClass.title();
 		}
 		
 		IconTitle title = new IconTitle();

@@ -133,12 +133,31 @@ public enum HeroClass {
 	ROGUE,
 	HUNTRESS,
 	TYPE561,
+	TYPE561_OLD,
 	GSH18,
 	HK416,
 	Dandelion,
 	PUBLIC_1,
     NONE;
-
+	public boolean show = true;
+	public boolean show() {
+		switch (this) {
+			case NONE: case PUBLIC_1:
+				return false;
+			case TYPE561_OLD:
+				return !TYPE561.show;
+			default:
+				return show;
+		}
+	}
+	public boolean descIsSameAs(HeroClass heroClass) {
+		if (this == NONE || heroClass == NONE || this == heroClass)
+			return true;
+		if (this == TYPE561 && heroClass == TYPE561_OLD
+				|| this == TYPE561_OLD && heroClass == TYPE561)
+			return true;
+		return false;
+	}
     public static final HashMap<String, String> rename = new HashMap<>();
     static {
 
@@ -167,6 +186,10 @@ public enum HeroClass {
 			case TYPE561:
 				person.add(HeroSubClass.EMP_BOMB);
 				person.add(HeroSubClass.GUN_MASTER);
+				break;
+			case TYPE561_OLD:
+				person.add(HeroSubClass.PULSETROOPER);
+				person.add(HeroSubClass.MODERN_REBORNER);
 				break;
 			case GSH18:
 				person.add(HeroSubClass.FUTURE_STAR);
@@ -208,7 +231,7 @@ public enum HeroClass {
 				person.add(new SpiritHawk());
 				break;
 			case TYPE561:
-				//旧版模式沿用新版护甲技能（旧版护甲技能为空缺）
+			case TYPE561_OLD:
 				person.add(new Type56FourOne());
 				person.add(new Type56FourTwo());
 				person.add(new Type56FourThree());
@@ -324,6 +347,9 @@ public enum HeroClass {
 			case TYPE561:
 				initType561( hero );
 				break;
+			case TYPE561_OLD:
+				initType561_OLD( hero );
+				break;
 
 			case GSH18:
 				initGSH18( hero );
@@ -367,6 +393,7 @@ public enum HeroClass {
 			case HUNTRESS:
 				return Badges.Badge.MASTERY_HUNTRESS;
 			case TYPE561:
+			case TYPE561_OLD:
 				return Badges.Badge.MASTERY_TYPE561;
 			case GSH18:
 				return Badges.Badge.MASTERY_GSH18;
@@ -435,27 +462,7 @@ public enum HeroClass {
 	}
 
 	private static void initType561( Hero hero ) {
-		if (SPDSettings.type561OldMode()){
-			//旧版56-1式角色机制（隐藏功能，能力介绍页切换，仅影响新开局）
-			hero.type561Old = true;
-			Gun561Old gun561 = new Gun561Old();
-			(hero.belongings.weapon=gun561).identify();
-			hero.belongings.weapon.activate(hero);
-
-			RedBookOld redBook = new RedBookOld();
-			(hero.belongings.artifact=redBook).identify();
-			hero.belongings.artifact.activate(hero);
-
-			Dungeon.quickslot.setSlot(0,redBook);
-			Dungeon.quickslot.setSlot(1,gun561);
-
-			new SaltyZongzi().collect();
-			new PotionOfMindVision().identify();
-			Hunger.minLevel = 0;
-			return;
-		}
-        Hunger.minLevel = -150;
-		hero.type561Old = false;
+		Hunger.minLevel = -150;
 		Gun561 gun561 = new Gun561();
 		(hero.belongings.weapon = gun561).identify();
 		hero.belongings.weapon.activate(hero);
@@ -467,12 +474,28 @@ public enum HeroClass {
 		Dungeon.quickslot.setSlot(0,redBook);
 		Dungeon.quickslot.setSlot(1,gun561);
 
-        new ScrollOfTerror().identify().collect();
-        new PotionOfMindVision().identify();
+		new ScrollOfTerror().identify().collect();
+		new PotionOfMindVision().identify();
 		new SaltyZongzi().collect();
-        new SugarZongzi().collect();
+		new SugarZongzi().collect();
 	}
-	
+
+	private static void initType561_OLD(Hero hero) {
+		Gun561Old gun561 = new Gun561Old();
+		(hero.belongings.weapon = gun561).identify();
+		hero.belongings.weapon.activate(hero);
+
+		RedBookOld redBook = new RedBookOld();
+		(hero.belongings.artifact = redBook).identify();
+		hero.belongings.artifact.activate(hero);
+
+		Dungeon.quickslot.setSlot(0, redBook);
+		Dungeon.quickslot.setSlot(1, gun561);
+
+		new SaltyZongzi().collect();
+		new PotionOfMindVision().identify();
+	}
+
 	private static void initGSH18( Hero hero ) {
 		// 使用GSH18作为初始武器
 		(hero.belongings.weapon = new GSH18()).identify();
@@ -514,45 +537,17 @@ public enum HeroClass {
 		new PotionOfExperience().identify();
 		new ScrollOfTransmutation().identify();
 		for (int i = 0; i < 5; i++){
-			PotionOfDivineInspiration.addTalent(hero, 0);
-			PotionOfDivineInspiration.addTalent(hero, 1);
-			PotionOfDivineInspiration.addTalent(hero, 2);
+			PotionOfDivineInspiration.addTalent(hero, 0, true);
+			PotionOfDivineInspiration.addTalent(hero, 1, true);
+			PotionOfDivineInspiration.addTalent(hero, 2, true);
 		}
 	}
 	public String title() {
 		return Messages.get(HeroClass.class, name());
 	}
 
-	//选择/介绍界面使用的职业名：游戏内优先按当前存档的旧版标志，开局前选择界面按全局旧版开关；
-	//命中旧版561时显示“老练的561式”
-	public String selectTitle() {
-		Hero hero = Dungeon.hero;
-		boolean old;
-		if (hero != null && hero.heroClass == this){
-			old = hero.type561Old;
-		} else {
-			old = this == TYPE561 && SPDSettings.type561OldMode();
-		}
-		if (old){
-			return Messages.get(HeroClass.class, "type561_old");
-		}
-		return title();
-	}
-
 	public String desc(){
-		return Messages.get(HeroClass.class, infoKey()+"_desc");
-	}
-
-	/**
-	 * 角色介绍文本所用的消息键前缀。
-	 * 561 式在旧版模式（SPDSettings.type561OldMode()）下使用带 "_old" 后缀的键，
-	 * 使新旧版的道具/武器/神器描述各自独立。
-	 */
-	public String infoKey() {
-		if (this == TYPE561 && SPDSettings.type561OldMode()) {
-			return name() + "_old";
-		}
-		return name();
+		return Messages.get(HeroClass.class, name()+"_desc");
 	}
 
 	public String spritesheet() {
@@ -567,6 +562,7 @@ public enum HeroClass {
 				return Assets.Sprites.FALCON;
 				//return Assets.Sprites.HUNTRESS;
 			case TYPE561:
+			case TYPE561_OLD:
 				return Assets.Sprites.TYPE561;
 			case GSH18:
 				return Assets.Sprites.GSH18;
@@ -584,22 +580,22 @@ public enum HeroClass {
 	 */
 	public int[] avatarFrame() {
 		switch (this) {
-			case WARRIOR:       return new int[]{0, 0};
-			case MAGE:          return new int[]{0, 1};
-			case ROGUE:         return new int[]{0, 2};
-			case HK416:         return new int[]{0, 3}; //占位：暂用原隼槽位的头像
-			case TYPE561:       return new int[]{1, 0};
-			case GSH18:         return new int[]{1, 1};
-			case HUNTRESS:      return new int[]{1, 2}; //隼的立绘位于丹德莱前一格
-			case Dandelion:     return new int[]{1, 3};
-			default:            return new int[]{0, 0};
+			case WARRIOR: default:			return new int[]{0, 0};
+			case MAGE:						return new int[]{0, 1};
+			case ROGUE:						return new int[]{0, 2};
+			case HK416:						return new int[]{0, 3}; //占位：暂用原隼槽位的头像
+			case TYPE561: case TYPE561_OLD:	return new int[]{1, 0};
+			case GSH18:						return new int[]{1, 1};
+			case HUNTRESS:					return new int[]{1, 2}; //隼的立绘位于丹德莱前一格
+			case Dandelion:					return new int[]{1, 3};
 		}
 	}
 
 	
 	public String[] perks() {
 		switch (this) {
-			case WARRIOR: default:
+			case WARRIOR:
+			default:
 				return new String[]{
 						Messages.get(HeroClass.class, "warrior_perk1"),
 						Messages.get(HeroClass.class, "warrior_perk2"),
@@ -632,38 +628,39 @@ public enum HeroClass {
 						Messages.get(HeroClass.class, "huntress_perk5"),
 				};
 			case TYPE561:
-			return new String[]{
-					Messages.get(HeroClass.class, "type561_perk1"),
-					Messages.get(HeroClass.class, "type561_perk2"),
-					Messages.get(HeroClass.class, "type561_perk3"),
-					Messages.get(HeroClass.class, "type561_perk4"),
-					Messages.get(HeroClass.class, "type561_perk5"),
-			};
-		case GSH18:
-		return new String[]{
-				Messages.get(HeroClass.class, "warrior_perk1"),
-				Messages.get(HeroClass.class, "warrior_perk2"),
-				Messages.get(HeroClass.class, "warrior_perk3"),
-				Messages.get(HeroClass.class, "warrior_perk4"),
-				"初始获得两瓶治疗药水", // 天赋效果
-		};
-	case HK416:
-		return new String[]{
-				Messages.get(HeroClass.class, "hk416_perk1"),
-				Messages.get(HeroClass.class, "hk416_perk2"),
-				Messages.get(HeroClass.class, "hk416_perk3"),
-				Messages.get(HeroClass.class, "hk416_perk4"),
-				Messages.get(HeroClass.class, "hk416_perk5"),
-		};
-	case Dandelion:
-		return new String[]{
-				Messages.get(HeroClass.class, "warrior_perk1"),
-				Messages.get(HeroClass.class, "warrior_perk2"),
-				Messages.get(HeroClass.class, "warrior_perk3"),
-				Messages.get(HeroClass.class, "warrior_perk4"),
-				Messages.get(HeroClass.class, "warrior_perk5"),
-		};
-	}
+			case TYPE561_OLD:
+				return new String[]{
+						Messages.get(HeroClass.class, "type561_perk1"),
+						Messages.get(HeroClass.class, "type561_perk2"),
+						Messages.get(HeroClass.class, "type561_perk3"),
+						Messages.get(HeroClass.class, "type561_perk4"),
+						Messages.get(HeroClass.class, "type561_perk5"),
+				};
+			case GSH18:
+				return new String[]{
+						Messages.get(HeroClass.class, "warrior_perk1"),
+						Messages.get(HeroClass.class, "warrior_perk2"),
+						Messages.get(HeroClass.class, "warrior_perk3"),
+						Messages.get(HeroClass.class, "warrior_perk4"),
+						"初始获得两瓶治疗药水", // 天赋效果
+				};
+			case HK416:
+				return new String[]{
+						Messages.get(HeroClass.class, "hk416_perk1"),
+						Messages.get(HeroClass.class, "hk416_perk2"),
+						Messages.get(HeroClass.class, "hk416_perk3"),
+						Messages.get(HeroClass.class, "hk416_perk4"),
+						Messages.get(HeroClass.class, "hk416_perk5"),
+				};
+			case Dandelion:
+				return new String[]{
+						Messages.get(HeroClass.class, "warrior_perk1"),
+						Messages.get(HeroClass.class, "warrior_perk2"),
+						Messages.get(HeroClass.class, "warrior_perk3"),
+						Messages.get(HeroClass.class, "warrior_perk4"),
+						Messages.get(HeroClass.class, "warrior_perk5"),
+				};
+		}
 	}
 	
 	public boolean isUnlocked(){
@@ -682,6 +679,7 @@ public enum HeroClass {
 			case HUNTRESS:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
 			case TYPE561:
+			case TYPE561_OLD:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_TYPE561);
 			case GSH18:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_GSH18);
@@ -705,6 +703,7 @@ public enum HeroClass {
 			case HUNTRESS:
 				return Messages.get(HeroClass.class, "huntress_unlock");
 			case TYPE561:
+			case TYPE561_OLD:
 				return Messages.get(HeroClass.class, "type561_unlock");
 			case GSH18:
 				return Messages.get(HeroClass.class, "gsh18_unlock");

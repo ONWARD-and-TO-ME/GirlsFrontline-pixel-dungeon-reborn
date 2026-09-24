@@ -23,8 +23,8 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -39,8 +39,11 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentsPane;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -146,13 +149,10 @@ public class WndHeroInfo extends WndTabbed {
 
 		private RenderedTextBlock title;
 		private RenderedTextBlock[] info;
-		private Image[] icons;
-		//561旧版切换热区：覆盖在袖珍本图标上，点击弹出版本切换确认窗口
-		private IconButton bookToggle;
-
+		private Gizmo[] icons;
 		public HeroInfoTab(HeroClass cls){
 			super();
-			title = PixelScene.renderTextBlock(Messages.titleCase(cls.selectTitle()), 9);
+			title = PixelScene.renderTextBlock(Messages.titleCase(cls.title()), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
 
@@ -190,14 +190,12 @@ public class WndHeroInfo extends WndTabbed {
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
 				case TYPE561:
-					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.REDBOOK),
-							new ItemSprite(ItemSpriteSheet.GUN561),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
-					//隐藏功能：点击介绍窗口内的袖珍本图标，切换56-1式角色的新版/旧版机制
-					bookToggle = new IconButton(){
+				case TYPE561_OLD:
+					icons = new Gizmo[3];
+					icons[0] = new IconButton(new ItemSprite(ItemSpriteSheet.REDBOOK)) {
 						@Override
 						protected void onClick() {
-							boolean isOld = SPDSettings.type561OldMode();
+							boolean isOld = HeroClass.TYPE561_OLD.show();
 							String msg = isOld
 									? Messages.get(WndHeroInfo.class, "mode_toggle_msg_to_new")
 									: Messages.get(WndHeroInfo.class, "mode_toggle_msg_to_old");
@@ -210,19 +208,25 @@ public class WndHeroInfo extends WndTabbed {
 									msg,
 									confirm,
 									Messages.get(WndHeroInfo.class, "mode_cancel")
-							){
+							) {
 								@Override
 								protected void onSelect(int index) {
 									if (index == 0) {
-										SPDSettings.type561OldMode(!SPDSettings.type561OldMode());
 										WndHeroInfo.this.hide();
-										GirlsFrontlinePixelDungeon.scene().addToFront(new WndHeroInfo(cls));
+										HeroClass.TYPE561.show = !HeroClass.TYPE561.show;
+										GamesInProgress.selectedClass = HeroClass.TYPE561.show
+												? HeroClass.TYPE561
+												:HeroClass.TYPE561_OLD;
+										WndStartGame wnd = WndStartGame.INSTANCE;
+										if (wnd != null)
+											GirlsFrontlinePixelDungeon.scene().addToFront((WndStartGame) Reflection.newInstance(wnd.getClass()));
 									}
 								}
 							});
 						}
 					};
-					add(bookToggle);
+					icons[1] = new ItemSprite(ItemSpriteSheet.GUN561);
+					icons[2] = new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ);
 					break;
 				case GSH18:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.GSH18),
@@ -236,7 +240,7 @@ public class WndHeroInfo extends WndTabbed {
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
 			}
-			for (Image im : icons) {
+			for (Gizmo im : icons) {
 				add(im);
 			}
 
@@ -253,16 +257,19 @@ public class WndHeroInfo extends WndTabbed {
 			for (int i = 0; i < info.length; i++){
 				info[i].maxWidth((int)width - 20);
 				info[i].setPos(20, pos);
-
-				icons[i].x = (20-icons[i].width())/2;
-				icons[i].y = info[i].top() + (info[i].height() - icons[i].height())/2;
+				Gizmo g = icons[i];
+				if (g instanceof Visual) {
+					Visual v = (Visual) g;
+					v.x = (20-v.width())/2;
+					v.y = info[i].top() + (info[i].height() - v.height())/2;
+				}
+				else if (g instanceof IconButton) {
+					IconButton v = (IconButton) g;
+					Image icon = v.icon();
+					v.setRect((20-icon.width())/2f, info[i].top() + (info[i].height()-icon.height())/2f, icon.width(), icon.height());
+				}
 
 				pos = info[i].bottom() + 4*MARGIN;
-			}
-
-			if (bookToggle != null){
-				//热区覆盖在袖珍本图标上（icons[0]），视觉与介绍窗口原版一致
-				bookToggle.setRect(icons[0].x, icons[0].y, icons[0].width(), icons[0].height());
 			}
 
 			height = Math.max(height, pos - 4*MARGIN);

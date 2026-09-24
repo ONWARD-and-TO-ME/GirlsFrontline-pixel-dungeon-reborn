@@ -67,9 +67,10 @@ public class RingOfEnergy extends Ring {
         if (!(target instanceof Hero))
             return bonus;
         Hero hero = (Hero) target;
-        if (hero.hasTalent(Talent.FAST_RELOAD) && hero.heroClass != HeroClass.TYPE561)
+		boolean type561 = hero.heroClass == HeroClass.TYPE561 || hero.heroClass == HeroClass.TYPE561_OLD;
+        if (hero.hasTalent(Talent.FAST_RELOAD) && !type561)
             bonus *= 1 + (0.1F * hero.pointsInTalent(Talent.FAST_RELOAD)/2F);
-        if (hero.hasTalent(Talent.Type56Three_Bomb) && hero.heroClass != HeroClass.TYPE561)
+        if (hero.hasTalent(Talent.Type56Three_Bomb) && !type561)
             bonus *= 1 + (0.2F * hero.pointsInTalent(Talent.Type56Three_Bomb)/3F);
         return bonus;
 	}
@@ -81,7 +82,8 @@ public class RingOfEnergy extends Ring {
         Hero hero = (Hero) target;
         // 盗贼（UMP9）轻身披风（蜕变）：非盗贼持有时神器充能加速（实现见 RogueTalent）
         bonus *= RogueTalent.lightCloakArtifactChargeMul(hero);
-        if ( hero.hasTalent(Talent.Type56Three_Book) && hero.heroClass != HeroClass.TYPE561)
+		boolean type561 = hero.heroClass == HeroClass.TYPE561 || hero.heroClass == HeroClass.TYPE561_OLD;
+        if ( hero.hasTalent(Talent.Type56Three_Book) && !type561)
             bonus *= 1f + (0.2f * hero.pointsInTalent(Talent.LIGHT_CLOAK)/3f);
         return bonus;
 	}

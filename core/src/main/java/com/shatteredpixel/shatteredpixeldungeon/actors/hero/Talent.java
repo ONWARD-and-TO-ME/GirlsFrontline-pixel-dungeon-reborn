@@ -146,8 +146,6 @@ public enum Talent {
 	EMP_One(139, 3), EMP_Two(140, 3), EMP_Three(141, 3),
 	//type561 T3-2 GUN
 	GUN_1(142, 3), GUN_2(143, 3), GUN_3(144, 3),
-	//旧版56-1式角色 GUN_MASTER 转职天赋（隐藏功能，仅旧版模式使用）
-	NEWLIFE(142, 3), MORE_ACCURATE(143, 3), ENHANCE_GRENADE(144, 3),
     //type561 T4-1
     Type56FourOneOne(137, 4), Type56FourOneTwo(137, 4),Type56FourOneThree(137, 4),
     //type561 T4-2
@@ -155,10 +153,17 @@ public enum Talent {
     //type561 T4-3
     Type56_431(137, 4), Type56_432(137, 4),Type56_433(137, 4),
 
-    //留作旧版本561天赋的接口
-    NICE_FOOD(128), OLD_SOLDIER(129), BETTER_FOOD(131),
-    BARGAIN_SKILLS(132),TRAP_EXPERT(133),HOW_DARE_YOU(134),JIEFANGCI(135),NIGHT_EXPERT(136),
-    SEARCH_ARMY(137, 3),
+	//旧版561
+	//type561 T1
+	NICE_FOOD(128), OLD_SOLDIER(129), FAST_RELOAD(HeroClass.TYPE561,130), BETTER_FOOD(131),
+	//type561 T2
+	BARGAIN_SKILLS(132),TRAP_EXPERT(133),HOW_DARE_YOU(134),JIEFANGCI(135),NIGHT_EXPERT(136),
+	//type561 T3
+	SEARCH_ARMY(137, 3), ELITE_ARMY(138, 3),
+	//pulseTrooper T3
+	SIMPLE_RELOAD(139, 3), MORE_POWER(140, 3), ENDURE_EMP(141, 3),
+	//modernReborner T3
+	NEWLIFE(142, 3), MORE_ACCURATE(143, 3), ENHANCE_GRENADE(144, 3),
 
     //GSH18 T1
 	GSH18_MEAL_TREATMENT(160), GSH18_DOCTOR_INTUITION(161), GSH18_CLOSE_COMBAT(162), GSH18_STAR_SHIELD(163),
@@ -190,8 +195,6 @@ public enum Talent {
 
     //初始通用
     //t1
-    FAST_RELOAD(HeroClass.TYPE561, 130),
-
     //t2
     //旧磁盘回流(1/2/3次+3)、绝境迫能(最后一充能+1/+2/+3)
     EMPOWERING_SCROLLS_V2(41, 3),DESPERATE_POWER(41, 3),
@@ -201,7 +204,6 @@ public enum Talent {
     //t3
     //瞄准镜强化变种-超频校准
     ENHANCED_RINGS_V2(73, 3),
-    ELITE_ARMY(138, 3),
 
     NONE(0, 4);
 
@@ -416,11 +418,7 @@ public enum Talent {
 	public String desc(HeroClass heroClass){
         if (heroClass == HeroClass.PUBLIC_1)
             return Messages.get(this, name() + ".meta_desc");
-        if (this.heroClass == HeroClass.NONE)
-            return Messages.get(this, name() + ".desc");
-        if (this.heroClass == heroClass)
-            return Messages.get(this, name() + ".desc");
-        if (heroClass == HeroClass.NONE)
+        if (this.heroClass.descIsSameAs(heroClass))
             return Messages.get(this, name() + ".desc");
         return Messages.get(this, name() + ".meta_desc");
 	}
@@ -648,12 +646,10 @@ public enum Talent {
 				Collections.addAll(tierTalents, NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID);
 				break;
 			case TYPE561:
-				if (SPDSettings.type561OldMode()){
-					//旧版56-1式角色天赋表（隐藏功能）
-					Collections.addAll(tierTalents, NICE_FOOD, OLD_SOLDIER, FAST_RELOAD, BETTER_FOOD);
-				} else {
-					Collections.addAll(tierTalents, Type56One_FOOD , Type56One_Identify, Type56One_Damage, Type56_14);
-				}
+				Collections.addAll(tierTalents, Type56One_FOOD , Type56One_Identify, Type56One_Damage, Type56_14);
+				break;
+			case TYPE561_OLD:
+				Collections.addAll(tierTalents, NICE_FOOD, OLD_SOLDIER, FAST_RELOAD, BETTER_FOOD);
 				break;
 			case GSH18:
 				Collections.addAll(tierTalents, GSH18_MEAL_TREATMENT, GSH18_DOCTOR_INTUITION, GSH18_CLOSE_COMBAT, GSH18_STAR_SHIELD);
@@ -694,12 +690,10 @@ public enum Talent {
 				Collections.addAll(tierTalents, INVIGORATING_MEAL, RESTORED_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES);
 				break;
 			case TYPE561:
-				if (SPDSettings.type561OldMode()){
-					//旧版56-1式角色天赋表（隐藏功能）
-					Collections.addAll(tierTalents, BARGAIN_SKILLS, TRAP_EXPERT, HOW_DARE_YOU, JIEFANGCI, NIGHT_EXPERT);
-				} else {
-					Collections.addAll(tierTalents, Type56Two_FOOD, Type56Two_Armor, Type56_23V4, Type56Two_Sight, Type56Two_Damage);
-				}
+				Collections.addAll(tierTalents, Type56Two_FOOD, Type56Two_Armor, Type56_23V4, Type56Two_Sight, Type56Two_Damage);
+				break;
+			case TYPE561_OLD:
+				Collections.addAll(tierTalents, BARGAIN_SKILLS, TRAP_EXPERT, HOW_DARE_YOU, JIEFANGCI, NIGHT_EXPERT);
 				break;
             case GSH18:
                 Collections.addAll(tierTalents, GSH18_ENERGIZING_MEAL, GSH18_CHAIN_SHOCK, GSH18_LOGISTICS_SUPPORT, GSH18_COMIC_HEART, GSH18_MEDICAL_COMPATIBILITY);
@@ -735,12 +729,10 @@ public enum Talent {
 				Collections.addAll(tierTalents, POINT_BLANK, SEER_SHOT);
 				break;
 			case TYPE561:
-				if (SPDSettings.type561OldMode()){
-					//旧版56-1式角色天赋表（隐藏功能）
-					Collections.addAll(tierTalents, SEARCH_ARMY, ELITE_ARMY);
-				} else {
-					Collections.addAll(tierTalents, Type56Three_Bomb, Type56Three_Book);
-				}
+				Collections.addAll(tierTalents, Type56Three_Bomb, Type56Three_Book);
+				break;
+			case TYPE561_OLD:
+				Collections.addAll(tierTalents, SEARCH_ARMY, ELITE_ARMY);
 				break;
             case GSH18:
                 Collections.addAll(tierTalents,GSH18_INTELLIGENCE_AWARENESS,GSH18_AGILE_MOVEMENT);
@@ -807,18 +799,21 @@ public enum Talent {
 			case GLADIATOR:
 				Collections.addAll(tierTalents, CLEAVE, LETHAL_DEFENSE, ENHANCED_COMBO);
 				break;
+
 			case BATTLEMAGE:
 				Collections.addAll(tierTalents, EMPOWERED_STRIKE, MYSTICAL_CHARGE, EXCESS_CHARGE);
 				break;
 			case WARLOCK:
 				Collections.addAll(tierTalents, SOUL_EATER, SOUL_SIPHON, NECROMANCERS_MINIONS);
 				break;
+
 			case ASSASSIN:
 				Collections.addAll(tierTalents, ENHANCED_LETHALITY, ASSASSINS_REACH, BOUNTY_HUNTER);
 				break;
 			case FREERUNNER:
 				Collections.addAll(tierTalents, EVASIVE_ARMOR, PROJECTILE_MOMENTUM, SPEEDY_STEALTH);
 				break;
+
 			case SNIPER:
 				Collections.addAll(tierTalents, FARSIGHT, SHARED_ENCHANTMENT, SHARED_UPGRADES);
 				break;
@@ -832,19 +827,23 @@ public enum Talent {
 				Collections.addAll(tierTalents, EMP_One, EMP_Two, EMP_Three);
 				break;
 			case GUN_MASTER:
-				if (SPDSettings.type561OldMode()){
-					//旧版56-1式角色转职天赋（隐藏功能）
-					Collections.addAll(tierTalents, NEWLIFE, MORE_ACCURATE, ENHANCE_GRENADE);
-				} else {
-					Collections.addAll(tierTalents, GUN_1V2, GUN_2V2, GUN_3);
-				}
+				Collections.addAll(tierTalents, GUN_1V2, GUN_2V2, GUN_3);
 				break;
+
+			case MODERN_REBORNER:
+				Collections.addAll(tierTalents, NEWLIFE, MORE_ACCURATE, ENHANCE_GRENADE);
+				break;
+			case PULSETROOPER:
+				Collections.addAll(tierTalents, SIMPLE_RELOAD, MORE_POWER, ENDURE_EMP);
+				break;
+
 			case FUTURE_STAR:
 				Collections.addAll(tierTalents, GSH18_INTELLIGENCE_AWARENESS, GSH18_SIRIUS_HEART, GSH18_COMPANION_SYNC);
 				break;
 			case MOBILE_MEDICALTABLE:
 				Collections.addAll(tierTalents, GSH18_AGILE_MOVEMENT);
 				break;
+
 			case PARASITIC_GRENADE:
 				//HK416 寄生榴弹 T3
 				Collections.addAll(tierTalents, HK416_EROSION_INHERIT, HK416_EXPERIENCE, HK416_EROSION_WEAKEN);
@@ -853,6 +852,7 @@ public enum Talent {
 				//HK416 特工 T3
 				Collections.addAll(tierTalents, HK416_BLAST_DETER, HK416_UPGRADE_PROBE, HK416_SCRAP_USE);
 				break;
+
             case EMPTY: break;
 		}
 		for (Talent talent : tierTalents){
@@ -910,12 +910,7 @@ public enum Talent {
 
     private static final HashSet<String> removed = new HashSet<>();
     static{
-        removed.add("enhance_grenade".toUpperCase());
-        removed.add("more_accurate".toUpperCase());
-        removed.add("simple_reload".toUpperCase());
-        removed.add("more_power".toUpperCase());
-        removed.add("endure_emp".toUpperCase());
-        removed.add("newlife".toUpperCase());
+
     }
 
     private static final HashMap<String, String> renamed = new HashMap<>();

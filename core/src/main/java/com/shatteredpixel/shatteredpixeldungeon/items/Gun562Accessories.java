@@ -42,40 +42,44 @@ public class Gun562Accessories extends Item{
 	}
 
 	private void UpgradeGun561(Hero hero){
-		if(hero.belongings.weapon instanceof Gun561Old){
-			//旧版56-1改造为旧版56-2（隐藏功能，同贴图独立武器，不影响新版改造链）
-			Gun561Old gun561=(Gun561Old)hero.belongings.weapon;
-			Gun562Old gun562=new Gun562Old();
-
-			gun562.clone(gun561);
-			gun562.activate(hero);
-			(hero.belongings.weapon=gun562).identify();
-			int id=Dungeon.quickslot.getSlot(gun561);
-			if(id>=0){
-				Dungeon.quickslot.setSlot(id,gun562);
+		Gun561 gun561 = null;
+		Gun561Old gun561Old = null;
+		for (Gun561 g : hero.belongings.getAllItems(Gun561.class))
+			if (gun561 == null || gun561.trueLevel() < g.trueLevel())
+				gun561 = g;
+		if (gun561 == null)
+			for (Gun561Old g : hero.belongings.getAllItems(Gun561Old.class))
+				if (gun561Old == null || gun561Old.trueLevel() < g.trueLevel())
+					gun561Old = g;
+		if (gun561 != null) {
+			Gun562 gun562 = new Gun562();
+			gun562.clone(gun561).identify();
+			Dungeon.quickslot.replaceSlot(gun561, gun562);
+			if (gun561.isEquipped(hero)) {
+				hero.belongings.weapon = gun562;
+				gun562.activate(hero);
 			}
-
+			else
+				gun561.detach(hero.belongings.backpack);
 			hero.spendAndNext(3f);
 			detach(hero.belongings.backpack);
-
 			GLog.i(Messages.get(this,"succeed!"));
-		}else if(hero.belongings.weapon instanceof Gun561){
-			Gun561 gun561=(Gun561)hero.belongings.weapon;
-			Gun562 gun562=new Gun562();
-
-			gun562.clone(gun561);
-			gun562.activate(hero);
-			(hero.belongings.weapon=gun562).identify();
-			int id=Dungeon.quickslot.getSlot(gun561);
-			if(id>=0){
-				Dungeon.quickslot.setSlot(id,gun562);
+		}
+		else if (gun561Old != null) {
+			Gun562Old gun562Old = new Gun562Old();
+			gun562Old.clone(gun561Old).identify();
+			Dungeon.quickslot.replaceSlot(gun561Old, gun562Old);
+			if (gun561Old.isEquipped(hero)) {
+				hero.belongings.weapon = gun562Old;
+				gun562Old.activate(hero);
 			}
-
+			else
+				gun561Old.detach(hero.belongings.backpack);
 			hero.spendAndNext(3f);
 			detach(hero.belongings.backpack);
-
 			GLog.i(Messages.get(this,"succeed!"));
-		}else{
+		}
+		else{
 			GLog.i(Messages.get(this,"failed"));
 		}
 	}

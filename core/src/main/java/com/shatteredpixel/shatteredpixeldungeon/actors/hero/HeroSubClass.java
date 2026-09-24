@@ -47,6 +47,9 @@ public enum HeroSubClass {
 
     EMP_BOMB(HeroIcon.EMP_BOMB),
     GUN_MASTER(HeroIcon.GUN_MASTER),
+	PULSETROOPER(HeroIcon.EMP_BOMB),
+	MODERN_REBORNER(HeroIcon.GUN_MASTER),
+
 	// GSH18子职业
 	FUTURE_STAR(HeroIcon.BERSERKER), // 未来之星
 	MOBILE_MEDICALTABLE(HeroIcon.GLADIATOR), // 行走手术台
@@ -57,8 +60,6 @@ public enum HeroSubClass {
 
     public static final HashMap<String, String> rename = new HashMap<>();
     static {
-        rename.put("PULSETROOPER", EMP_BOMB.name());
-        rename.put("MODERN_REBORNER", GUN_MASTER.name());
     }
 	int icon;
 

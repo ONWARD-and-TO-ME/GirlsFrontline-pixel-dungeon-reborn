@@ -473,6 +473,7 @@ public enum Icons {
 		case HUNTRESS:
 			return get( HUNTRESS );
 		case TYPE561:
+		case TYPE561_OLD:
 			return get( TYPE561 );
 		default:
 			return get( WARRIOR );

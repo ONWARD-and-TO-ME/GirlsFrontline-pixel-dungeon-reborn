@@ -212,7 +212,7 @@ public class Hunger extends Buff implements Hero.Doom {
 			result = Messages.get(this, "desc_intro_hungry");
 		} else {
 			result = Messages.get(this, "desc_intro_starving");
-			if(Dungeon.hero.heroClass == HeroClass.TYPE561){
+			if(Dungeon.hero.heroClass == HeroClass.TYPE561_OLD){
 				result += Messages.get(this, "desc_type561");
 			}
 		}

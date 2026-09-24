@@ -384,6 +384,7 @@ public class TitleScene extends PixelScene {
 				order = Info.subClass == HeroSubClass.SUPER_AI ? 9 : 8;
 				break;
 					case TYPE561:
+					case TYPE561_OLD:
 						order = 5;
 						break;
 					case GSH18:
@@ -461,7 +462,7 @@ public class TitleScene extends PixelScene {
 					name.text( Info.heroClass.title() );
 				} else {
 					//EMPTY 为无子类职业（如丹德莱）的占位，其名称未定义，须回退显示职业名
-					name.text( Info.subClass != HeroSubClass.NONE && Info.subClass != HeroSubClass.EMPTY ? Info.subClass.title() :Info.classTitle() );
+					name.text( Info.subClass != HeroSubClass.NONE && Info.subClass != HeroSubClass.EMPTY ? Info.subClass.title() :Info.heroClass.title() );
 				}
 
 

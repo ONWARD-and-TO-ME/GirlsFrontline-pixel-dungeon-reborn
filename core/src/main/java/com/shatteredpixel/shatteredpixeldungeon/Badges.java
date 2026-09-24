@@ -705,6 +705,7 @@ public class Badges {
 					badge = Badge.BOSS_SLAIN_1_HUNTRESS;
 					break;
 				case TYPE561:
+				case TYPE561_OLD:
 					badge = Badge.BOSS_SLAIN_1_TYPE561;
 					break;
 				case GSH18:
@@ -799,6 +800,7 @@ public class Badges {
 			badge = Badge.MASTERY_HUNTRESS;
 			break;
 		case TYPE561:
+		case TYPE561_OLD:
 			badge = Badge.MASTERY_TYPE561;
 			break;
 		case GSH18:
@@ -892,6 +894,7 @@ public class Badges {
 			badge = Badge.VICTORY_HUNTRESS;
 			break;
 		case TYPE561:
+		case TYPE561_OLD:
 			badge = Badge.VICTORY_TYPE561;
 			break;
 		case HK416:

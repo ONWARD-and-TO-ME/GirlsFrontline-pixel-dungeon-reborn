@@ -71,9 +71,8 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	public static final int NEGATIVE	= 0xFF0000;
 	public static final int WARNING		= 0xFF8800;
 	public static final int NEUTRAL		= 0xFFFF00;
-	
-	public static final float DEFAULT_MOVE_INTERVAL = 0.1f;
-	private static float moveInterval = DEFAULT_MOVE_INTERVAL;
+
+	public float moveInterval = 0.1F;
 	private static final float FLASH_INTERVAL	= 0.05f;
 
 	//the amount the sprite is raised from flat when viewed in a raised perspective
@@ -250,15 +249,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		}
 
 	}
-	
-	public static void setMoveInterval( float interval){
-		moveInterval = interval;
-	}
 
-	public static float getMoveInterval(){
-		return moveInterval;
-	}
-	
 	//returns where the center of this sprite will be after it completes any motion in progress
 	public PointF destinationCenter(){
 		PosTweener motion = this.motion;

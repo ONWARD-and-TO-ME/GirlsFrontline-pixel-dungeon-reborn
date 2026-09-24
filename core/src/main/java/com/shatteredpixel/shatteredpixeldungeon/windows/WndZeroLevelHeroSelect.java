@@ -71,10 +71,10 @@ public class WndZeroLevelHeroSelect extends Window {
 		nextButton.visible = false;
 		add(nextButton);
 
-		for (HeroClass cl : HeroClass.values()){
-			if (cl == HeroClass.NONE || cl == HeroClass.PUBLIC_1) continue;
-			visibleClasses.add(cl);
-		}
+		for (HeroClass cl : HeroClass.values())
+			if (cl.show())
+				visibleClasses.add(cl);
+			
 		totalPages = (int)Math.ceil((float)visibleClasses.size() / ROLES_PER_PAGE);
 
 		separator = new ColorBlock(1, 1, 0xFF222222);

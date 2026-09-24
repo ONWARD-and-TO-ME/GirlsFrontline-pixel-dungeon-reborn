@@ -152,7 +152,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gun561Old;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.AK47;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gun562Old;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ShootGun;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ShootGun_OLD;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
@@ -220,8 +222,6 @@ public class Hero extends Char {
 	public HeroClass heroClass = HeroClass.ROGUE;
 	public HeroSubClass subClass = HeroSubClass.NONE;
 	public ArmorAbility armorAbility = null;
-	//TYPE561 隐藏旧版机制标志：仅旧版561式新开局时为 true，随存档保存，用于存档界面显示名区分
-	public boolean type561Old = false;
 	public ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
 	public LinkedHashMap<Talent, Talent> metamorphedTalents = new LinkedHashMap<>();
     public LinkedHashMap<Talent, Integer> addTalents = new LinkedHashMap<>();
@@ -326,7 +326,7 @@ public class Hero extends Char {
 		
 		//旧版56-1式角色：极度饥饿且力量大于12时，力量-1（12力量以下不生效）
 		Hunger hunger = buff(Hunger.class);
-		if (hunger != null && heroClass == HeroClass.TYPE561 && Hunger.minLevel >= 0){
+		if (hunger != null && heroClass == HeroClass.TYPE561_OLD && Hunger.minLevel >= 0){
 			if (hunger.isStarving() && STR >= 13) {
 				strBonus -= 1;
 			}
@@ -338,8 +338,6 @@ public class Hero extends Char {
 	private static final String CLASS       = "class";
 	private static final String SUBCLASS    = "subClass";
 	private static final String ABILITY     = "armorAbility";
-	private static final String TYPE561_OLD = "type561_old";
-
 	private static final String ATTACK		= "attackSkill";
 	private static final String DEFENSE		= "defenseSkill";
 	private static final String STRENGTH	= "STR";
@@ -356,7 +354,6 @@ public class Hero extends Char {
 		bundle.put( CLASS, heroClass );
 		bundle.put( SUBCLASS, subClass );
 		bundle.put( ABILITY, armorAbility );
-		bundle.put( TYPE561_OLD, type561Old );
 		Talent.storeTalentsInBundle( bundle, this );
 		
 		bundle.put( ATTACK, attackSkill );
@@ -391,7 +388,6 @@ public class Hero extends Char {
 		heroClass = bundle.getEnum( CLASS, HeroClass.class, HeroClass.rename );
 		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class, HeroSubClass.rename );
 		armorAbility = (ArmorAbility)bundle.get( ABILITY );
-		type561Old = bundle.getBoolean( TYPE561_OLD );
 		Talent.restoreTalentsFromBundle( bundle, this, Rankings.restoreInRanking );
 		
 		attackSkill = bundle.getInt( ATTACK );
@@ -399,12 +395,6 @@ public class Hero extends Char {
 		
 		STR = bundle.getInt( STRENGTH );
 		belongings.restoreFromBundle( bundle );
-
-		//兼容旧版561标志字段加入前已存在的存档：按旧版专属武器/袖珍本补识别
-		if (!bundle.contains( TYPE561_OLD ) && heroClass == HeroClass.TYPE561){
-			type561Old = belongings.weapon instanceof Gun561Old
-					|| belongings.artifact instanceof RedBookOld;
-		}
 
 		restoreUpdateByVersion(bundle);
 	}
@@ -430,6 +420,28 @@ public class Hero extends Char {
 			if (selector != null)
 				Buff.affect(this, CardSelectorBuff.class).item(selector.detachAll(belongings.backpack));
 		}
+		if (Dungeon.version < 675) {
+			//兼容旧版561标志字段加入前已存在的存档：按旧版专属武器/袖珍本补识别
+			if (heroClass == HeroClass.TYPE561) {
+				for (Item item : belongings) {
+                    if (item instanceof ShootGun_OLD || item instanceof RedBookOld) {
+                        heroClass = HeroClass.TYPE561_OLD;
+						Hero hero = new Hero(heroClass);
+						Talent.initClassTalents(hero);
+						if (subClass == HeroSubClass.EMP_BOMB)
+							subClass = HeroSubClass.PULSETROOPER;
+						else if (subClass == HeroSubClass.GUN_MASTER)
+							subClass = HeroSubClass.MODERN_REBORNER;
+						Talent.initSubclassTalents(hero);
+						Talent.initArmorTalents(hero);
+						talents = hero.talents;
+						Talent.restoreTalentsFromBundle( bundle, this, Rankings.restoreInRanking );
+                        break;
+                    }
+				}
+			}
+
+		}
 	}
 	
 	public static void preview( GamesInProgress.Info info, Bundle bundle ) {
@@ -442,7 +454,6 @@ public class Hero extends Char {
         info.hunger = bundle.getInt(HUNGER);
 		info.heroClass = bundle.getEnum( CLASS, HeroClass.class, HeroClass.rename );
 		info.subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
-		info.type561Old = bundle.getBoolean( TYPE561_OLD );
 		Belongings.preview( info, bundle );
 	}
 
@@ -451,12 +462,7 @@ public class Hero extends Char {
 	}
 
     public int pointsInTalent( Talent talent ){
-        for (LinkedHashMap<Talent, Integer> tier : talents){
-            for (Talent f : tier.keySet()){
-                if (f == talent) return tier.get(f);
-            }
-        }
-        return 0;
+		return Math.max(0, pointsInTalentA(talent));
     }
 
     public boolean hasTalentA( Talent talent ){
@@ -474,19 +480,15 @@ public class Hero extends Char {
     }
 
     public int pointsInTalentA( Talent talent ){
-        for (LinkedHashMap<Talent, Integer> tier : talents){
-            for (Talent f : tier.keySet()){
-                if (f == talent) return tier.get(f);
-            }
-        }
+        for (LinkedHashMap<Talent, Integer> tier : talents)
+			if (tier.containsKey(talent))
+				return tier.get(talent);
         return -1;
     }
 	public void upgradeTalent( Talent talent ){
-		for (LinkedHashMap<Talent, Integer> tier : talents){
-			for (Talent f : tier.keySet()){
-				if (f == talent) tier.put(talent, tier.get(talent)+1);
-			}
-		}
+		for (LinkedHashMap<Talent, Integer> tier : talents)
+			if (tier.containsKey(talent))
+				tier.put(talent, tier.get(talent)+1);
 		Talent.onTalentUpgraded(this, talent);
 	}
 
@@ -523,20 +525,15 @@ public class Hero extends Char {
 
         int lvl = Dungeon.hero.pointsInTalent(Talent.HIGH_EDUCATION);
 		point += lvl / 3
-				+ (lvl%3 >= tier ? 1 : 0);
+				+ (lvl % 3 >= tier ? 1 : 0);
         return point;
 	}
 	
 	public String className() {
         if (subClass != null && subClass != HeroSubClass.NONE && subClass != HeroSubClass.EMPTY)
             return subClass.title();
-        if (heroClass != null && heroClass != HeroClass.NONE){
-        	//旧版561式未转职时游戏内名称显示为“老练的561式”（以本存档标志为准）
-        	if (type561Old && heroClass == HeroClass.TYPE561){
-        		return Messages.get(HeroClass.class, "type561_old");
-	        }
+        if (heroClass != null && heroClass != HeroClass.NONE)
 		    return heroClass.title();
-        }
         return "404 NOT FOUND";
 	}
 
@@ -585,7 +582,10 @@ public class Hero extends Char {
 		else
 			return belongings.armor().tier();
 	}
-	
+	@Override
+	public boolean isEquip(EquipableItem item) {
+		return item.isEquipped(this);
+	}
 	public boolean shoot( Char enemy, MissileWeapon wep ) {
 
 		this.enemy = enemy;
@@ -613,10 +613,9 @@ public class Hero extends Char {
 
 		//旧版56-1式角色转职天赋：精度提升（GUN_MASTER旧版，隐藏功能）
 		switch(pointsInTalent(Talent.MORE_ACCURATE)){
-			case 0:default:break;
-			case 1:accuracy*=1.3f;break;
-			case 2:accuracy*=1.6f;break;
-			case 3:accuracy*=2f;break;
+			case 1: accuracy *= 1.3f; break;
+			case 2: accuracy *= 1.6f; break;
+			case 3: accuracy *= 2f; break;
 		}
 
         BasicBuffs.Accuracy acc = Dungeon.hero.buff(BasicBuffs.Accuracy.class);
@@ -636,11 +635,7 @@ public class Hero extends Char {
         // 节日蛋糕buff：命中+20%
         if (buff(FestivalCakeBuff.class) != null)
             accuracy *= FestivalCakeBuff.ACCURACY_MULTIPLIER;
-        // 56天赋：1-4V2
-        if (buff(ShootGun.ShootTracker.class) != null) {
-            accuracy *= 1.1F + 0.2F * pointsInTalent(Talent.Type56_14V2);
-        }
-		
+
 		if (wep instanceof MissileWeapon){
 			if (Dungeon.level.adjacent( pos, target.pos )) {
 				// 女猎（隼）点射：近战距离投掷命中系数（实现见 HuntressTalent）
@@ -710,19 +705,9 @@ public class Hero extends Char {
 	public int drRoll() {
 		int dr = 0;
 
-        if (belongings.armor() != null) {
-            // Use the only or first
-            int armDr = Random.NormalIntRange( belongings.armor().DRMin(), belongings.armor().DRMax());
-            if (STR() < belongings.armor().STRReq()){
-                armDr -= 2*(belongings.armor().STRReq() - STR());
-            }
-            if (armDr > 0) dr += armDr;
-			if (belongings.armor().inside != null) {
-				armDr = Random.NormalIntRange( belongings.armor().inside.DRMin(), belongings.armor().inside.DRMax());
-            	armDr = Math.min( armDr, WarriorTalent.secondArmorDRCap(this, belongings.armor().inside.tier()));
-            	if (armDr > 0) dr += armDr;
-			}
-        }
+        if (belongings.armor() != null)
+			dr += belongings.armor().drRoll(this);
+
 		if (belongings.weapon() != null)  {
 			int wepDr = Random.NormalIntRange( 0 , belongings.weapon().defenseFactor( this ) );
 			if (STR() < ((Weapon)belongings.weapon()).STRReq()){
@@ -1854,10 +1839,10 @@ public class Hero extends Char {
 				}
 
 				//用一次性的快速位移动画跨越整段距离
-				float savedInterval = CharSprite.getMoveInterval();
-				CharSprite.setMoveInterval( 0.08f );
+				float savedInterval = sprite.moveInterval;
+				sprite.moveInterval = 0.08F;
 				sprite.move( startPos, dashEnd );
-				CharSprite.setMoveInterval( savedInterval );
+				sprite.moveInterval = savedInterval;
 
 				//总耗时仅为单格移动的耗时（5格≈原来1格的时间）
 				spend( 1 / speed );
@@ -2141,11 +2126,11 @@ public class Hero extends Char {
 
 			//旧版56-1式角色转职天赋：老兵新生（GUN_MASTER旧版，隐藏功能）
 			if(hasTalent(Talent.NEWLIFE)){
-				if(ankh.isBlessed()){
+				if(ankh.isBlessed() && !Dungeon.isChallenged(Challenges.NO_HEALING)){
 					new PotionOfHealing().apply(this);
 				}
 
-				if(pointsInTalent(Talent.NEWLIFE)>=2){
+				if(pointsInTalent(Talent.NEWLIFE) >= 2){
 					new PotionOfStrength().apply(this);
 				}
 
