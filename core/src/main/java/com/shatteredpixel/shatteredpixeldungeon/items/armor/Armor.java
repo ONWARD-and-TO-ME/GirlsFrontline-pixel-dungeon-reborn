@@ -636,8 +636,6 @@ public class Armor extends EquipableItem {
 	@Override
 	public int buffedLvl(int lvl) {
         int level = super.buffedLvl(lvl);
-        if (BuffLevelPoint != Integer.MIN_VALUE)
-            return level;
 		if (isEquipped( hero )) {
             // 56-1式天赋：火线补给/饭饱为钢/饱腹护甲（实现见 Type561Talent）
             level = Type561Talent.armorLevelBonus(hero, level);

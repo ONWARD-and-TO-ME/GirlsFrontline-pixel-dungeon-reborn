@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic;
 import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -271,7 +272,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 				if (talent == replacing || hero.hasTalentB(talent))
 					clsTalentsAtTier.remove(talent);
 				else {
-					//移除无法使用的天赋且未做蜕变适应的天赋
+					//移除无法使用且未做蜕变适应的天赋
 					if (isIgnoreTalent(cls, talent))
 						clsTalentsAtTier.remove(talent);
 
@@ -293,6 +294,9 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 		private void setup(Talent replacing, int tier, LinkedHashMap<Talent, Integer> replaceOptions){
 			if (replaceOptions.isEmpty()){
 				hide();
+				if (ScrollOfMetamorphosis.curItem instanceof ScrollOfMetamorphosis)
+					if (!curItem.collect())
+						Dungeon.level.drop(curItem, hero.pos);
 				return;
 			}
 

@@ -36,6 +36,7 @@ import com.watabou.noosa.NinePatch;
 import java.util.ArrayList;
 
 public class ActionIndicator extends Tag {
+	//TODO: 待整理
 
 	//默认黄色 / 换枪按钮粉色（与星之护盾光环同色 0xFF99CC）
 	private static final int COLOR_DEFAULT = Color.YELLOW;

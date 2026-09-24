@@ -552,6 +552,10 @@ public class Generator {
 			};
 			ARTIFACT.defaultProbs = new float[]{ 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 			ARTIFACT.probs = ARTIFACT.defaultProbs.clone();
+
+			for (Category category : Category.values())
+				if (category.classes.length != category.probs.length)
+					GirlsFrontlinePixelDungeon.reportException(new Exception(category.name() + "长度不匹配"));
 		}
 	}
     public static int HolidayDiff(Class food){

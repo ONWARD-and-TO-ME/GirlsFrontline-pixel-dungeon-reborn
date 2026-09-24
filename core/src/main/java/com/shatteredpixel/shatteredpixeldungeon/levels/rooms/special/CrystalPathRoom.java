@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.custom.seedfinder.SeedFinder;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -285,7 +284,7 @@ public class CrystalPathRoom extends SpecialRoom {
         Potion p = new PotionOfExperience();
         Scroll s = new ScrollOfTransmutation();
         boolean isEXP = Random.Int(2) == 0;
-        if(p.isKnown() && s.isKnown() && !SeedFinder.SeedFinding){
+        if(p.isKnown() && s.isKnown()){
             potions.set(2, p);
             scrolls.set(2, s);
         }

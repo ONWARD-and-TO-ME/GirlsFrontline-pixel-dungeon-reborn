@@ -43,8 +43,6 @@ public class CardAffect {
     private static int attackMask = 0;
     public static int cardAttackProc( Hero hero, Char enemy, int damage, int baseDMG, KindOfWeapon wep ) {
         float dmg = damage;
-        if (hasCard(FirstCard.VHS))
-            dmg = CardCalculator.VHS_Hack_Proc(hero, enemy, dmg, wep);
         dmg += CardCalculator.cardAttackProc_NormalAdd(hero, wep);
         if (!(wep instanceof M4A1) || true) {
             //此二者已在M4A1damageRoll执行。
@@ -62,6 +60,8 @@ public class CardAffect {
                 && hero.belongings.thrownWeapon == null)
             //投武不触发此效果。
             d /= 2;
+        if (hasCard(FirstCard.VHS))
+            dmg = CardCalculator.VHS_Hack_Proc(hero, enemy, dmg, wep);
         affectAfterAttack(hero, enemy, baseDMG, wep);
         return d;
     }

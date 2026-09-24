@@ -210,7 +210,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 	}
 	
 	private static Artifact changeArtifact( Artifact a ) {
-		Artifact n = Generator.randomArtifact(true);
+		Artifact n = Generator.randomArtifact();
 		
 		if (n != null && !Challenges.isItemBlocked(n)){
 			n.cursedKnown = a.cursedKnown;

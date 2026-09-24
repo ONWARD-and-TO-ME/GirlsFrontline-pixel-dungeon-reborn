@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.ui.Component;
 
@@ -41,15 +42,6 @@ public class ScrollingGridPane extends ScrollPane {
     public ScrollingGridPane(boolean small){
         super(new Component());
         this.small = small;
-    }
-
-    @Override
-    public void onClick(float x, float y) {
-        for (Component item : items) {
-            if ((item instanceof ScrollingGridPane.GridItem) && ((ScrollingGridPane.GridItem) item).onClick( x, y )) {
-                break;
-            }
-        }
     }
 
     public void addItem( ScrollingGridPane.GridItem item ){
@@ -138,7 +130,8 @@ public class ScrollingGridPane extends ScrollPane {
                     lastWasSmallheader = false;
                 }
 
-            } if (item instanceof GridItem){
+            }
+            if (item instanceof GridItem){
                 if (left + ITEM_SIZE > width()) {
                     left = 0;
                     widthThisGroup = 0;
@@ -166,24 +159,15 @@ public class ScrollingGridPane extends ScrollPane {
         super.layout();
     }
 
-    public static class GridItem extends Component {
-
-        protected Image icon;
+    public static class GridItem extends IconButton {
 
         protected Visual secondIcon;
 
         protected ColorBlock bg;
 
         public GridItem( Image icon ) {
-            super();
-
-            if (icon instanceof ItemSprite){
-                this.icon = new ItemSprite();
-            } else {
-                this.icon = new Image();
-            }
-            this.icon.copy(icon);
-            add(this.icon);
+            super(icon);
+            hotArea.blockLevel = PointerArea.NEVER_BLOCK;
         }
 
         public void addSecondIcon( Visual icon ){
@@ -196,34 +180,25 @@ public class ScrollingGridPane extends ScrollPane {
             bg.hardlight(r, g, b);
         }
 
-        public boolean onClick( float x, float y ){
-            return false;
-        }
-
         @Override
         protected void createChildren() {
+            super.createChildren();
             bg = new ColorBlock( 1, 1, 0x9953564D);
             add(bg);
         }
 
         @Override
         protected void layout() {
-
             bg.x = x;
             bg.y = y;
             bg.size(width(), height());
-
-            icon.y = y + (height() - icon.height()) / 2f;
-            icon.x = x + (width() - icon.width())/2f;
-            PixelScene.align(icon);
+            super.layout();
 
             if (secondIcon != null){
                 secondIcon.x = x + width()-secondIcon.width();
                 secondIcon.y = y;
             }
-
         }
-
     }
 
     public static class GridHeader extends Component {

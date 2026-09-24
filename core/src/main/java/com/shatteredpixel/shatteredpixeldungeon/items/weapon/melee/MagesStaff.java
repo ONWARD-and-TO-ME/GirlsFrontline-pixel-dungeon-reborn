@@ -149,8 +149,6 @@ public class MagesStaff extends MeleeWeapon {
     @Override
     public int buffedLvl(int lvl) {
         int level = super.buffedLvl(lvl);
-        if (BuffLevelPoint != Integer.MIN_VALUE)
-            return level;
         if (wand != null){
             return Math.max(level, wand.buffedLvl());
         }

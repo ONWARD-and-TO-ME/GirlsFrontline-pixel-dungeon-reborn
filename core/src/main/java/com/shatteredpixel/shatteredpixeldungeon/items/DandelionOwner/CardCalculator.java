@@ -176,11 +176,11 @@ public class CardCalculator {
         return M4A1damageRoll(0F, 1F, mul);
     }
     public static float M4A1max( float mul ){
-        M4A1 m = M4A1.INSTANCE();
-        float dmg = m.augment.damageFactor(m.max()) * mul;
-        return onM4A1damageRoll(Dungeon.hero, dmg);
+//        M4A1 m = M4A1.INSTANCE();
+//        float dmg = m.augment.damageFactor(m.max()) * mul;
+//        return onM4A1damageRoll(Dungeon.hero, dmg);
         //暂时还是不吃强化符石好了
-//        return onM4A1damageRoll(Dungeon.hero, M4A1.INSTANCE().max() * mul);
+        return onM4A1damageRoll(Dungeon.hero, M4A1.INSTANCE().max() * mul);
     }
     public static int shieldPerHit(){
         int s = 1;
@@ -237,7 +237,8 @@ public class CardCalculator {
                 hack.charge(1F);
             else
                 hack.charge(GameMath.gate(0.5F, delay, 2F));
-            return damage;
+            if (!hack.isHacking())
+                return damage;
         }
 
         float add = dmgIncrease(damage, VHS_Hack_Factor(), wep instanceof M4A1);

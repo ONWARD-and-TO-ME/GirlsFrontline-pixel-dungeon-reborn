@@ -97,14 +97,10 @@ public class Bones {
 			}
 		} else {
 
-			Iterator<Item> iterator = hero.belongings.backpack.iterator();
-			Item curItem;
 			ArrayList<Item> items = new ArrayList<>();
-			while (iterator.hasNext()){
-				curItem = iterator.next();
+			for (Item curItem : hero.belongings.backpack)
 				if (curItem.bones)
 					items.add(curItem);
-			}
 
 			if (Random.Int(3) < items.size()) {
 				item = Random.element(items);

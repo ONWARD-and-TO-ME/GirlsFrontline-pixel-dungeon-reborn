@@ -395,14 +395,17 @@ public class TalentButton extends Button {
     private static void onReplace(Talent replacing, Talent newTalent, Hero hero){
         if (replacing == Talent.HOLD_FAST){
             if (hero.belongings.armor != null){
-                final Armor armor = hero.belongings.armor.inside;
-				if (armor != null)
+                Armor armor = hero.belongings.armor.inside;
+				while (armor != null) {
 					armor.doUnequip(hero, true);
+					armor = armor.inside;
+				}
             }
         }
         if (newTalent == Talent.IRON_WILL){
             Buff.affect(hero, BrokenSeal.WarriorShield.class);
         }
+		Dungeon.resetGenerator();
     }
 	@Override
 	protected void onPointerDown() {

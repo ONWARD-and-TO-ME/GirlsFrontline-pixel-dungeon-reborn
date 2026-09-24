@@ -264,16 +264,10 @@ public class BrokenSeal extends Item {
 		}
 
 		public synchronized int maxShield() {
-            //metamorphed iron will logic（非战士蜕变出坚韧意志，实现见 WarriorTalent）
-            int metamorphShield = WarriorTalent.metamorphIronWillShield((Hero) target);
-            if (metamorphShield != -1){
-                return metamorphShield;
-            }
-
 			if (armor != null && armor.isEquipped((Hero)target) && armor.checkSeal() != null) {
 				return armor.checkSeal().maxShield(armor.tier, armor.level());
 			} else {
-				return 0;
+				return WarriorTalent.warriorShieldBonus(Dungeon.hero);
 			}
 		}
 		

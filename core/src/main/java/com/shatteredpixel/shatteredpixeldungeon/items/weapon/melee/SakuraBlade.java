@@ -80,11 +80,7 @@ public class SakuraBlade extends MeleeWeapon {
     // 重写buffedLvl方法，返回基础等级加上技能获得的buff等级
     @Override
     public int buffedLvl(int lvl) {
-        int level = super.buffedLvl(lvl);
-        if (BuffLevelPoint!=Integer.MIN_VALUE)
-            return level;
-        level += skillBuffedLevels;
-        return level;
+        return super.buffedLvl(lvl) + skillBuffedLevels;
     }
 
     @Override

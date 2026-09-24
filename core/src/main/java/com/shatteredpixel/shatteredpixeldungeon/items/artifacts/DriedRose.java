@@ -720,15 +720,9 @@ public class DriedRose extends Artifact {
 		@Override
 		public int drRoll() {
 			int block = 0;
-			if (rose != null && rose.armor != null){
-				block += Random.NormalIntRange( rose.armor.DRMin(), rose.armor.DRMax());
-				// 副护甲（坚守）格挡，同 Hero.drRoll；GhostHero 非英雄，上限取玩家的坚守天赋
-				if (rose.armor.inside != null) {
-					int armDr = Random.NormalIntRange( rose.armor.inside.DRMin(), rose.armor.inside.DRMax());
-					armDr = Math.min( armDr, WarriorTalent.secondArmorDRCap( Dungeon.hero, rose.armor.inside.tier()));
-					if (armDr > 0) block += armDr;
-				}
-			}
+			if (rose != null && rose.armor != null)
+				block += rose.armor.drRoll(this);
+
 			if (rose != null && rose.weapon != null){
 				block += Random.NormalIntRange( 0, rose.weapon.defenseFactor( this ));
 			}

@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.artifacts;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
@@ -189,9 +190,18 @@ public class CapeOfThorns extends Artifact {
 
 		private void applyThornCurse( Hero hero, int damage ) {
 			int time = hero.buff(ThornCurse.class) == null ? 10 : 5;
-			Buff.affect(hero, ThornCurse.class, time).extend(damage);
-			hero.updateHT( false );
-			BuffIndicator.refreshHero();
+			Actor.addDelayed(new Actor() {
+				@Override
+				protected boolean act() {
+					if (hero.isAlive())
+						Buff.affect(hero, ThornCurse.class, time).extend(damage);
+					if (hero.isAlive())
+						hero.updateHT( false );
+					BuffIndicator.refreshHero();
+					Actor.remove(this);
+					return true;
+				}
+			}, -1);
 		}
 
 		@Override

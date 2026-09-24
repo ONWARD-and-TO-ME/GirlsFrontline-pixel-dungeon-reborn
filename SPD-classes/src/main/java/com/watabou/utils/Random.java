@@ -172,13 +172,15 @@ public class Random {
 		int length = chances.length;
 		
 		float sum = 0;
-		for (int i=0; i < length; i++) {
-			sum += chances[i];
-		}
-		
+		for (int i=0; i < length; i++)
+			if (chances[i] > 0)
+				sum += chances[i];
+
 		float value = Float( sum );
 		sum = 0;
 		for (int i=0; i < length; i++) {
+			if (chances[i] <= 0)
+				continue;
 			sum += chances[i];
 			if (value < sum) {
 				return i;

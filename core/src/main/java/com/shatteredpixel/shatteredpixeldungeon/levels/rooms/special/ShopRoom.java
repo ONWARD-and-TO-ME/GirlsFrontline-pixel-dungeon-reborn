@@ -309,7 +309,7 @@ public class ShopRoom extends SpecialRoom {
 				itemsToSpawn.add(new SugarZongzi());
 				itemsToSpawn.add(new SugarZongzi());
 			}
-			if (Dungeon.hero.heroClass == HeroClass.TYPE561) {
+			if (Dungeon.hero.hasTalentB(Talent.Type56One_FOOD) || Dungeon.hero.hasTalentB(Talent.BETTER_FOOD)) {
 				switch (Random.Int(3)) {
 					case 0:
 						itemsToSpawn.add(new Maccol());

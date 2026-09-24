@@ -342,8 +342,6 @@ public abstract class Wand extends Item {
 	@Override
 	public int buffedLvl(int lvl) {
 		int level = super.buffedLvl(lvl);
-        if (BuffLevelPoint != Integer.MIN_VALUE)
-            return level;
 
 		if (charger != null && charger.target != null) {
 			// 法师（G11）狂野魔法：技能持续期间法杖获得额外等级（实现见 MageTalent）

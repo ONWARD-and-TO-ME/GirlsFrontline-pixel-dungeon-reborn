@@ -7,6 +7,7 @@ import com.watabou.utils.Bundlable;
 
 public interface ColorItem extends Bundlable {
     void setIgnore();
+    void anonymize();
     default void guessType(String cause) {
         if (Dungeon.guessType.add(getClass()))
             if (cause != null && !cause.isEmpty() && SPDSettings.isAutoIdentify() && SPDSettings.showAutoGuessingText()) {

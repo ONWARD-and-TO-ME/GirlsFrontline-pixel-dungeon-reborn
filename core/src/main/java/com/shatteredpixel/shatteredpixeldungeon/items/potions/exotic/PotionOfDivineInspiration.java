@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,7 +72,7 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 			for (int i = 1; i <= 4; i++){
 				if (hero.heroClass == HeroClass.Dandelion) {
 					//4层以外的如果出现空天赋说明已经抽完了，所以禁止。仅允许以4层HIGH_EDUCATION给一二三层补天赋点
-					if (i != 4 && randomTalent(hero, i - 1) == null)
+					if (i != 4 && randomTalent(hero, i - 1, false) == null)
 						enabled[i] = false;
 				}
 				else if (tracker.getBoosted(i) != 0)
@@ -114,8 +115,9 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 						curItem.detach(curUser.belongings.backpack);
 
 					if (hero.heroClass == HeroClass.Dandelion && index < 3) {
-						addTalent(hero, index);
-						addTalent(hero, index);
+						addTalent(hero, index, false);
+						addTalent(hero, index, false);
+						Dungeon.resetGenerator();
 					}
 					identify();
 					curUser.busy();
@@ -156,9 +158,12 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 		});
 
 	}
-	private static Talent randomTalent( Hero hero, int tier ){
+	private static Talent randomTalent( Hero hero, int tier, boolean seed ){
 		ArrayList<Talent> talents = new ArrayList<>(Arrays.asList(TierOfTalent.TierTalent(tier)));
-		Collections.shuffle(talents);
+		if (seed)
+			Random.shuffle(talents);
+		else
+			Collections.shuffle(talents);
 		for (Talent talent : talents) {
 			if (talent != null
 					&& !hero.hasTalentB(talent)
@@ -168,8 +173,8 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 		}
 		return null;
 	}
-	public static void addTalent( Hero hero, int tier ){
-		Talent add = randomTalent(hero, tier);
+	public static void addTalent( Hero hero, int tier, boolean seed ){
+		Talent add = randomTalent(hero, tier, seed);
         if (add == null)
             return;
         hero.talents.get(tier).put(add, 0);

@@ -479,11 +479,11 @@ public class Item implements Bundlable {
 	//returns the level of the item, after it may have been modified by temporary boosts/reductions
 	//note that not all item properties should care about buffs/debuffs! (e.g. str requirement)
 	public int buffedLvl(){
+		if (BuffLevelPoint != Integer.MIN_VALUE)
+			return level() + BuffLevelPoint;
 		return buffedLvl(level());
 	}
 	protected int buffedLvl(int lvl){
-        if (BuffLevelPoint != Integer.MIN_VALUE)
-            return lvl + BuffLevelPoint;
         if (overLoad == OverLoad.RECOVER && overLoadLeft != 0)
             lvl -= (int)(Math.sqrt(8 * Math.ceil(overLoadLeft / 100F) + 1) - 1)/2;
 		if (hero.buff( Degrade.class ) != null)

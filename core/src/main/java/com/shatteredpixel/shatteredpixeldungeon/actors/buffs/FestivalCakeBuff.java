@@ -64,9 +64,7 @@ public class FestivalCakeBuff extends Buff {
 		if (visionActive) {
 			visionActive = false;
 			//视野缩小，立即刷新一次
-			if (Dungeon.level != null) {
-				Dungeon.observe();
-			}
+			Dungeon.observe();
 		}
 	}
 
@@ -74,9 +72,7 @@ public class FestivalCakeBuff extends Buff {
 	public boolean attachTo( Char target ) {
 		if (super.attachTo(target)) {
 			//视野加成立即生效，刷新一次视野
-			if (Dungeon.level != null) {
-				Dungeon.observe();
-			}
+			Dungeon.observe();
 			return true;
 		} else {
 			return false;

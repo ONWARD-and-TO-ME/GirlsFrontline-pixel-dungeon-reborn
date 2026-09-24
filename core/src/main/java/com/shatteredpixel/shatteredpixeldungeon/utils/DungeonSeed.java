@@ -110,14 +110,14 @@ public class DungeonSeed {
         //First see if input is a seed code, use that format if it is
         try {
             return convertFromCode(inputText);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException ignored){
 
         }
 
         //Then see if input is a number (ignoring spaces), if so parse as a long seed (with overflow)
         try {
             return Long.parseLong(inputText.replaceAll("\\s", "")) % TOTAL_SEEDS;
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException ignored){
 
         }
 

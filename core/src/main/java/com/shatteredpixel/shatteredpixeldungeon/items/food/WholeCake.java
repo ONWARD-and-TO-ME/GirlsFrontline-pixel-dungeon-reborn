@@ -37,12 +37,9 @@ public class WholeCake extends Food {
 	}
 
 	@Override
-	public void execute( Hero hero, String action ) {
-		super.execute( hero, action );
-		if (action.equals(AC_EAT)){
-			//食用节日蛋糕：获得单局永久的节日祝福（视野+1、命中+20%、发光，复活继承）
-			Buff.affect(hero, FestivalCakeBuff.class);
-		}
+	protected void satisfy( Hero hero ){
+		super.satisfy(hero);
+		Buff.affect(hero, FestivalCakeBuff.class);
 	}
 	private String title;
 	private String body;

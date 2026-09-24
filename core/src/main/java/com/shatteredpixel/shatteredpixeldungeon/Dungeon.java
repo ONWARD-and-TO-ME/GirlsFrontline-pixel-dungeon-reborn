@@ -269,7 +269,7 @@ public class Dungeon {
 	public static long GameMode;
     public static String customSeedText = "";
 	public static void init(String seedCode){
-		init(seedCode,SPDSettings.challenges());
+		init(seedCode, SPDSettings.challenges());
 	}
 
     public static void init(String seedCode,int paramChallenges) {
@@ -478,7 +478,7 @@ public class Dungeon {
             }
         }
 
-        return newLevel(level,id%1000,id);
+        return newLevel(level,id%1000, id);
     }
 	
 	public static void resetLevel() {
@@ -490,7 +490,6 @@ public class Dungeon {
 	}
 
 	public static int curDepth(){
-        //mark without %1000, may cause error when depth >= 1000
 		return depth;
 	}
 

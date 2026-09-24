@@ -4,6 +4,7 @@ import com.watabou.noosa.ui.Component;
 
 public interface canScrollButton {
 
+    //hotArea.blockLevel = PointerArea.NEVER_BLOCK;
     void onClick();
 
     Component setRect(float x, float y, float width, float height );

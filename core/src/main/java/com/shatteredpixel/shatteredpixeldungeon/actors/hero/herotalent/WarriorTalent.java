@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
@@ -229,14 +230,8 @@ public final class WarriorTalent {
 	// ===================== 坚守（HOLD_FAST）副护甲加成 =====================
 
 	/** 坚守：副护甲贡献的闪避上限 */
-	public static float secondArmorEvasionCap( Hero hero, int tier ){
-		int talent = hero.pointsInTalent(Talent.HOLD_FAST);
-		return (tier + talent) * (1 + talent) / 2F;
-	}
-
-	/** 坚守：副护甲贡献的格挡（DR）上限 */
-	public static int secondArmorDRCap( Hero hero, int tier ){
-		return tier * (1 + hero.pointsInTalent(Talent.HOLD_FAST));
+	public static int secondArmorCap(){
+		return 2 * Dungeon.hero.pointsInTalent(Talent.HOLD_FAST);
 	}
 
 	// ===================== 坚韧意志（IRON_WILL）战士护盾 =====================
@@ -244,14 +239,6 @@ public final class WarriorTalent {
 	/** 坚韧意志：战士护盾最大层数 += 天赋点 */
 	public static int warriorShieldBonus( Hero hero ){
 		return hero.pointsInTalent(Talent.IRON_WILL);
-	}
-
-	/** 蜕变（非战士）点出坚韧意志时的战士护盾上限；不满足返回-1 */
-	public static int metamorphIronWillShield( Hero hero ){
-		if (hero.heroClass != HeroClass.WARRIOR && hero.hasTalent(Talent.IRON_WILL)){
-			return hero.pointsInTalent(Talent.IRON_WILL);
-		}
-		return -1;
 	}
 
 	// ===================== 符文转移（RUNIC_TRANSFERENCE）刻印 =====================
