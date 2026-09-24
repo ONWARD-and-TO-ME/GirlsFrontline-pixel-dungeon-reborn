@@ -220,21 +220,12 @@ public class Dungeon {
     public static void resetGenerator(){
         boolean hasZongziTalent = Dungeon.hero.hasTalentB(Talent.Type56One_FOOD) || Dungeon.hero.hasTalentB(Talent.BETTER_FOOD);
         for (int j = 0; j < Generator.Category.FOOD.classes.length; j++) {
-            if (Generator.Category.FOOD.classes[j] == Food.class ) {
-                if (hasZongziTalent) {
-                    Generator.Category.FOOD.probs[j] = 2;
-                }else {
-                    Generator.Category.FOOD.probs[j] = 4;
-                }
-            }else if( Generator.Category.FOOD.classes[j] == SaltyZongzi.class){
-                if (hasZongziTalent) {
-                    Generator.Category.FOOD.probs[j] = 2;
-                }else {
-                    Generator.Category.FOOD.probs[j] = 0;
-                }
-            }else if (HolidayFood.contains(Generator.Category.FOOD.classes[j])){
-                Generator.Category.FOOD.probs[j] =Generator.HolidayDiff(Generator.Category.FOOD.classes[j]);
-            }
+            if (Generator.Category.FOOD.classes[j] == Food.class )
+				Generator.Category.FOOD.probs[j] = hasZongziTalent ? 2 : 4;
+            else if( Generator.Category.FOOD.classes[j] == SaltyZongzi.class)
+				Generator.Category.FOOD.probs[j] = hasZongziTalent ? 2 : 0;
+            else if (HolidayFood.contains(Generator.Category.FOOD.classes[j]))
+                Generator.Category.FOOD.probs[j] = Generator.HolidayDiff(Generator.Category.FOOD.classes[j]);
         }
     }
 	public static Level level;
@@ -353,7 +344,10 @@ public class Dungeon {
 		hero.live();
 		Badges.reset();
 		
+		Random.pushGenerator( seed );
 		GamesInProgress.selectedClass.initHero( hero );
+		Random.resetGenerators();
+		resetGenerator();
         Buff.affect(hero, Hunger.class).satisfy(1000);
 	}
 
@@ -426,7 +420,6 @@ public class Dungeon {
         return level;
     }
 	public static Level newLevel(int id){
-        resetGenerator();
 		Level level;
         if (id%1000==0)
             level = newZeroLevel(id);
@@ -480,7 +473,9 @@ public class Dungeon {
 
         return newLevel(level,id%1000, id);
     }
-	
+	public static Level newLevel(int depth, int sub) {
+		return newLevel(depth + sub*1000);
+	}
 	public static void resetLevel() {
 		
 		Actor.clear();
@@ -847,6 +842,7 @@ public class Dungeon {
 		gold = bundle.getInt( GOLD );
 		energy = bundle.getInt( ENERGY );
 		Generator.restoreFromBundle( bundle );
+		resetGenerator();
 
 		droppedItems = new SparseArray<>();
 		portedItems = new SparseArray<>();

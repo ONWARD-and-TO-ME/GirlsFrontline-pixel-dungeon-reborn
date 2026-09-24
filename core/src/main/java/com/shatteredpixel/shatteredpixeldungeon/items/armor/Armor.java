@@ -550,7 +550,20 @@ public class Armor extends EquipableItem {
 			return lvl;
 		}
 	}
-
+	public int drRoll( Char owner ) {
+		int dr = 0;
+		int armDr = Random.NormalIntRange(DRMin(), DRMax());
+		if (owner instanceof Hero) {
+			Hero hero = (Hero) owner;
+			if (hero.STR() < STRReq())
+				armDr -= 2 * (STRReq() - hero.STR());
+		}
+		if (outside != null)
+			armDr = Math.min(armDr, WarriorTalent.secondArmorCap());
+		if (armDr > 0) dr += armDr;
+		if (inside != null) dr += inside.drRoll(owner);
+		return dr;
+	}
     public float evasionFactor( Char owner, float evasion){
 		
 		if (glyph instanceof Stone && owner.buff(MagicImmune.class) == null && !((Stone)glyph).testingEvasion()){
@@ -568,7 +581,7 @@ public class Armor extends EquipableItem {
 		float add = augment.evasionFactor(buffedLvl());
         if ( outside != null )
             // 战士（UMP45）坚守：副护甲闪避上限（实现见 WarriorTalent）
-            add = Math.min( WarriorTalent.secondArmorEvasionCap(hero, tier()), add);
+            add = Math.min( WarriorTalent.secondArmorCap(), add);
 		evasion += add;
 		if (inside != null)
 			evasion = inside.evasionFactor(owner, evasion);
@@ -898,20 +911,35 @@ public class Armor extends EquipableItem {
 	}
 
 	public boolean hasGlyph(Class<?extends Glyph> type, Char owner) {
-		return glyph != null && glyph.getClass() == type&& owner.buff(MagicImmune.class) == null
-				//复合进来的外骨骼刻印同样生效
-				|| inside != null && inside.hasGlyph(type, owner);
+		if (owner.buff(MagicImmune.class) != null)
+			return false;
+		if (outside == null)
+			return glyph != null && glyph.getClass() == type
+					//复合进来的外骨骼刻印同样生效
+					|| inside != null && inside.hasGlyph(type, owner);
+		Armor theLast = theLastHasGlyph();
+		return theLast != null && theLast.hasGlyph(type, owner);
 	}
-
+	private Armor theLastHasGlyph() {
+		Armor inside = this.inside;
+		Armor hasGlyph = null;
+		while (inside != null) {
+			if (inside.glyph != null)
+				hasGlyph = inside;
+			inside = inside.inside;
+		}
+		return hasGlyph;
+	}
 	//统计自身与复合外骨骼的同种刻印等级，同种刻印复合时额外+1
 	public int GlyphLevel(Class<?extends Glyph> type){
 		int lvl = 0;
 		if (glyph != null && glyph.getClass() == type){
 			lvl += buffedLvl();
 		}
-		if (inside != null && inside.glyph != null && inside.glyph.getClass() == type){
-			lvl += inside.buffedLvl();
-			if (glyph == inside.glyph)
+		Armor theLast = theLastHasGlyph();
+		if (theLast != null && theLast.glyph != null && theLast.glyph.getClass() == type){
+			lvl += theLast.buffedLvl();
+			if (glyph.getClass() == theLast.glyph.getClass())
 				lvl++;
 		}
 		return lvl;
@@ -922,6 +950,7 @@ public class Armor extends EquipableItem {
 	}
 
 	private void guessArmorByGlyph(Class<?extends Glyph> type, boolean grass){
+		Armor theLast = theLastHasGlyph();
 		if (glyph != null && glyph.getClass() == type
 				&& buffedLvl() == GlyphLevel(type)) {
 			int lvl = level();
@@ -933,30 +962,30 @@ public class Armor extends EquipableItem {
 			else
 				guessLevel(lvl, "外骨骼刻印影响回合盘，以完整回合盘触发，精准判断。");
 		}
-		else if (inside != null && inside.glyph != null && inside.glyph.getClass() == type
-				&& inside.buffedLvl() == GlyphLevel(type)) {
-			int lvl = inside.level();
+		else if (theLast != null && theLast.glyph != null && theLast.glyph.getClass() == type
+				&& theLast.buffedLvl() == GlyphLevel(type)) {
+			int lvl = theLast.level();
 			if (grass) {
 				if (lvl % 2 == 1)
 					lvl--;
-				guessLevel(lvl, "外骨骼触发迷彩刻印，以隐身回合数判断。");
+				theLast.guessLevel(lvl, "外骨骼触发迷彩刻印，以隐身回合数判断。");
 			}
 			else
-				guessLevel(lvl, "外骨骼刻印影响回合盘，以完整回合盘触发，精准判断。");
+				theLast.guessLevel(lvl, "外骨骼刻印影响回合盘，以完整回合盘触发，精准判断。");
 		}
-		else if (inside != null && inside.glyph != null && inside.glyph.getClass() == type
+		else if (theLast != null && theLast.glyph != null && theLast.glyph.getClass() == type
 				&& glyph != null && glyph.getClass() == type) {
 			if (levelKnown) {
-				int lvl = inside.level();
+				int lvl = theLast.level();
 				if (grass) {
 					if (GlyphLevel(type) % 2 == 1)
 						lvl--;
-					inside.guessLevel(lvl, "复合外骨骼触发迷彩刻印，以隐身回合数判断。");
+					theLast.guessLevel(lvl, "复合外骨骼触发迷彩刻印，以隐身回合数判断。");
 				}
 				else
-					inside.guessLevel(lvl, "复合外骨骼刻印影响回合盘，以完整回合盘触发，精准判断。");
+					theLast.guessLevel(lvl, "复合外骨骼刻印影响回合盘，以完整回合盘触发，精准判断。");
 			}
-			else if (inside.levelKnown) {
+			else if (theLast.levelKnown) {
 				int lvl = level();
 				if (grass) {
 					if (GlyphLevel(type) % 2 == 1)
@@ -1117,7 +1146,6 @@ public class Armor extends EquipableItem {
             }
             return true;
         }
-
         @Override
         public void detach() {
             super.detach();
@@ -1140,10 +1168,8 @@ public class Armor extends EquipableItem {
 			LockedFloor lock = target.buff(LockedFloor.class);
 			if(lock != null && !lock.regenOn())
 				return true;
-			
-            Hero hero = (Hero) target;
-            boolean isEquip = isEquipped(hero);
-            if (isEquip){
+
+            if (target.isEquip(armor())){
                 if (inside != null)
                     broken += outsideBroken;
                 else if (outside != null)
@@ -1155,9 +1181,8 @@ public class Armor extends EquipableItem {
                 broken -= unEquipRecover;
             if (broken <= 0){
                 broken = 0;
-                if (!isEquipped(hero)) {
+                if (target.isEquip(armor()))
                     detach();
-                }
             }
             return true;
         }

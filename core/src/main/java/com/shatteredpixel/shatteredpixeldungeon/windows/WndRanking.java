@@ -412,8 +412,6 @@ public class WndRanking extends WndTabbed {
 			items.addAll(artifacts);
 			items.addAll(rings);
 
-			//按钮保持原始大小，使用ScrollPane承载，过多时可滚动，避免按钮被压缩得过小
-			EquipmentItemButton.BtnSize = 1F;
 			ScrollPane pane = new ScrollPane(new Component());
 			add(pane);
 			Component content = pane.content();
@@ -422,7 +420,7 @@ public class WndRanking extends WndTabbed {
 			for (Item item : items) {
 				item.canNote = false;
 				item.showSelf = true;
-				EquipmentItemButton slot = new EquipmentItemButton(item, true);
+				canScrollItemButton slot = new canScrollItemButton(item, true);
 				slot.setRect(0, pos, WIDTH, ItemButton.HEIGHT);
 				content.add(slot);
 
@@ -454,18 +452,7 @@ public class WndRanking extends WndTabbed {
 			badges.setSize( WIDTH, HEIGHT );
 		}
 	}
-	private static class EquipmentItemButton extends ItemButton{
-		protected static float BtnSize = 1F;
-		protected void resetScale(){
-			size = BtnSize;
-		}
-		public EquipmentItemButton(Item item, boolean identify) {
-			super(item, identify);
-			//NEVER_BLOCK使从按钮上发起的拖拽也能滚动ScrollPane，同时保留按下高亮与点击
-			hotArea.blockLevel = PointerArea.NEVER_BLOCK;
-		}
-	}
-	private static class ItemButton extends Button {
+	public static class ItemButton extends Button {
 		
 		public static final int HEIGHT	= 23;
 		
@@ -544,7 +531,7 @@ public class WndRanking extends WndTabbed {
 				Game.scene().add(new WndInfoItem(item));
 		}
 	}
-    private static class canScrollItemButton extends ItemButton implements canScrollButton {
+    public static class canScrollItemButton extends ItemButton implements canScrollButton {
         public canScrollItemButton( Item item, boolean identify ) {
             super(item, identify);
             //NEVER_BLOCK使从按钮上发起的拖拽也能滚动ScrollPane，同时保留按下高亮与点击

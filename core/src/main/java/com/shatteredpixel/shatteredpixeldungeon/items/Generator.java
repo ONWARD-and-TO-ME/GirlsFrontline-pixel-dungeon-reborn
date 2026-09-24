@@ -738,10 +738,7 @@ public class Generator {
 	}
 
 	//enforces uniqueness of artifacts throughout a run.
-    public static Artifact randomArtifact() {
-        return randomArtifact(false);
-    }
-	public static Artifact randomArtifact(boolean Transmutation) {
+	public static Artifact randomArtifact() {
 
 		Category cat = Category.ARTIFACT;
         Random.pushGenerator(Dungeon.seed);
@@ -757,7 +754,7 @@ public class Generator {
         if (item == null)
             return null;
 
-        if(item.getClass()== LloydsBeacon.class && !Transmutation){
+        if(item.getClass() == LloydsBeacon.class){
             item = Reflection.newInstance((Class<? extends Artifact>) cat.classes[j]);
             cat.probs[j]=0;
         }else {

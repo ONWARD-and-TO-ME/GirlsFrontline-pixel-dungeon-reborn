@@ -252,154 +252,154 @@ public class WndJournal extends WndTabbed {
 	}
 
 	private static class ListItem extends Component {
-		
+
 		protected RenderedTextBlock label;
 		protected BitmapText depth;
 		protected ColorBlock line;
 		protected Image icon;
-		
-		public ListItem( Image icon, String text ) {
+
+		public ListItem(Image icon, String text) {
 			this(icon, text, -1);
 		}
-		
-		public ListItem( Image icon, String text, int d ) {
+
+		public ListItem(Image icon, String text, int d) {
 			super();
-			
+
 			this.icon.copy(icon);
-			
-			label.text( text );
-			
+
+			label.text(text);
+
 			if (d >= 0) {
 				depth.text(Integer.toString(d));
 				depth.measure();
-				
+
 				if (d == Dungeon.depth) {
 					label.hardlight(TITLE_COLOR);
 					depth.hardlight(TITLE_COLOR);
 				}
 			}
 		}
-		
+
 		@Override
 		protected void createChildren() {
-			label = PixelScene.renderTextBlock( 7 );
-			add( label );
-			
+			label = PixelScene.renderTextBlock(7);
+			add(label);
+
 			icon = new Image();
-			add( icon );
-			
-			depth = new BitmapText( PixelScene.pixelFont);
-			add( depth );
-			
-			line = new ColorBlock( 1, 1, 0xFF222222);
+			add(icon);
+
+			depth = new BitmapText(PixelScene.pixelFont);
+			add(depth);
+
+			line = new ColorBlock(1, 1, 0xFF222222);
 			add(line);
-			
+
 		}
-		
+
 		@Override
 		protected void layout() {
-			
+
 			icon.y = y + 1 + (height() - 1 - icon.height()) / 2f;
-			icon.x = x + (16 - icon.width())/2f;
+			icon.x = x + (16 - icon.width()) / 2f;
 			PixelScene.align(icon);
-			
+
 			depth.x = icon.x + (icon.width - depth.width()) / 2f;
 			depth.y = icon.y + (icon.height - depth.height()) / 2f + 1;
 			PixelScene.align(depth);
-			
+
 			line.size(width, 1);
 			line.x = 0;
 			line.y = y;
-			
-			label.maxWidth((int)(width - 16 - 1));
+
+			label.maxWidth((int) (width - 16 - 1));
 			label.setPos(17, y + 1 + (height() - label.height()) / 2f);
 			PixelScene.align(label);
 		}
 	}
-	
+
 	public static class GuideTab extends Component {
-		
+
 		private ScrollPane list;
 		private ArrayList<GuideItem> pages = new ArrayList<>();
-		
+
 		@Override
 		protected void createChildren() {
-			list = new ScrollPane( new Component() ){
+			list = new ScrollPane(new Component()) {
 				@Override
-				public void onClick( float x, float y ) {
+				public void onClick(float x, float y) {
 					int size = pages.size();
-					for (int i=0; i < size; i++) {
-						if (pages.get( i ).onClick( x, y )) {
+					for (int i = 0; i < size; i++) {
+						if (pages.get(i).onClick(x, y)) {
 							break;
 						}
 					}
 				}
 			};
-			add( list );
+			add(list);
 		}
-		
+
 		@Override
 		protected void layout() {
 			super.layout();
-			list.setRect( 0, 0, width, height);
+			list.setRect(0, 0, width, height);
 		}
-		
-		public void updateList(){
+
+		public void updateList() {
 			Component content = list.content();
-			
+
 			float pos = 0;
-			
-			ColorBlock line = new ColorBlock( width(), 1, 0xFF222222);
+
+			ColorBlock line = new ColorBlock(width(), 1, 0xFF222222);
 			line.y = pos;
 			content.add(line);
-			
+
 			RenderedTextBlock title = PixelScene.renderTextBlock(Document.ADVENTURERS_GUIDE.title(), 9);
 			title.hardlight(TITLE_COLOR);
-			title.maxWidth( (int)width() - 2 );
-			title.setPos( (width() - title.width())/2f, pos + 1 + ((ITEM_HEIGHT) - title.height())/2f);
+			title.maxWidth((int) width() - 2);
+			title.setPos((width() - title.width()) / 2f, pos + 1 + ((ITEM_HEIGHT) - title.height()) / 2f);
 			PixelScene.align(title);
 			content.add(title);
-			
+
 			pos += Math.max(ITEM_HEIGHT, title.height());
-			
-			for (String page : Document.ADVENTURERS_GUIDE.pageNames()){
-				GuideItem item = new GuideItem( page );
-				
-				item.setRect( 0, pos, width(), ITEM_HEIGHT );
-				content.add( item );
-				
+
+			for (String page : Document.ADVENTURERS_GUIDE.pageNames()) {
+				GuideItem item = new GuideItem(page);
+
+				item.setRect(0, pos, width(), ITEM_HEIGHT);
+				content.add(item);
+
 				pos += item.height();
 				pages.add(item);
 			}
-			
-			content.setSize( width(), pos );
-			list.setSize( list.width(), list.height() );
+
+			content.setSize(width(), pos);
+			list.setSize(list.width(), list.height());
 		}
-		
+
 		private static class GuideItem extends ListItem {
-			
+
 			private boolean found = false;
 			private String page;
-			
-			public GuideItem( String page ){
-				super( iconForPage(page), Messages.titleCase(Document.ADVENTURERS_GUIDE.pageTitle(page)));
-				
+
+			public GuideItem(String page) {
+				super(iconForPage(page), Messages.titleCase(Document.ADVENTURERS_GUIDE.pageTitle(page)));
+
 				this.page = page;
 				found = Document.ADVENTURERS_GUIDE.isPageFound(page);
-				
+
 				if (!found) {
-					icon.hardlight( 0.5f, 0.5f, 0.5f);
-					label.text( Messages.titleCase(Messages.get( this, "missing" )));
-					label.hardlight( 0x999999 );
+					icon.hardlight(0.5f, 0.5f, 0.5f);
+					label.text(Messages.titleCase(Messages.get(this, "missing")));
+					label.hardlight(0x999999);
 				}
-				
+
 			}
-			
-			public boolean onClick( float x, float y ) {
-				if (inside( x, y ) && found) {
-					Window window = new WndStory( iconForPage(page),
+
+			public boolean onClick(float x, float y) {
+				if (inside(x, y) && found) {
+					Window window = new WndStory(iconForPage(page),
 							Document.ADVENTURERS_GUIDE.pageTitle(page),
-							Document.ADVENTURERS_GUIDE.pageBody(page) );
+							Document.ADVENTURERS_GUIDE.pageBody(page));
 					if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
 						GameScene.show(window);
 					} else {
@@ -411,46 +411,47 @@ public class WndJournal extends WndTabbed {
 					return false;
 				}
 			}
-			
+
 		}
 
 		//TODO might just want this to be part of the Document class
-		public static Image iconForPage( String page ){
-			if (!Document.ADVENTURERS_GUIDE.isPageFound(page)){
-				return new ItemSprite( ItemSpriteSheet.GUIDE_PAGE );
+		public static Image iconForPage(String page) {
+			if (!Document.ADVENTURERS_GUIDE.isPageFound(page)) {
+				return new ItemSprite(ItemSpriteSheet.GUIDE_PAGE);
 			}
-			switch (page){
-				case Document.GUIDE_INTRO: default:
+			switch (page) {
+				case Document.GUIDE_INTRO:
+				default:
 					return new ItemSprite(ItemSpriteSheet.MASTERY);
 				case "Examining":
 					return Icons.get(Icons.MAGNIFY);
 				case "Surprise_Attacks":
-					return new ItemSprite( ItemSpriteSheet.GUA91 );
+					return new ItemSprite(ItemSpriteSheet.GUA91);
 				case "Identifying":
-					return new ItemSprite( new ScrollOfIdentify() );
+					return new ItemSprite(new ScrollOfIdentify());
 				case "Food":
-					return new ItemSprite( ItemSpriteSheet.PASTY );
+					return new ItemSprite(ItemSpriteSheet.PASTY);
 				case "Dieing":
-					return new ItemSprite( ItemSpriteSheet.TOMB );
+					return new ItemSprite(ItemSpriteSheet.TOMB);
 				case Document.GUIDE_SEARCHING:
 					return Icons.get(Icons.MAGNIFY);
 				case "Strength":
-					return new ItemSprite( ItemSpriteSheet.GREATAXE );
+					return new ItemSprite(ItemSpriteSheet.GREATAXE);
 				case "Upgrades":
-					return new ItemSprite( ItemSpriteSheet.RING_EMERALD );
+					return new ItemSprite(ItemSpriteSheet.RING_EMERALD);
 				case "Looting":
-					return new ItemSprite( ItemSpriteSheet.CRYSTAL_KEY );
+					return new ItemSprite(ItemSpriteSheet.CRYSTAL_KEY);
 				case "Levelling":
 					return Icons.get(Icons.TALENT);
 				case "Positioning":
-					return new ItemSprite( ItemSpriteSheet.SPIRIT_BOW );
+					return new ItemSprite(ItemSpriteSheet.SPIRIT_BOW);
 				case "Magic":
-					return new ItemSprite( ItemSpriteSheet.WAND_FIREBOLT );
+					return new ItemSprite(ItemSpriteSheet.WAND_FIREBOLT);
 			}
 		}
 
 	}
-	
+
 	//设计文档页签：列出 assets/messages/character-design/ 下的 txt 文档，点击打开可滚动阅读窗口
 	public static class DesignTab extends Component {
 
@@ -463,15 +464,15 @@ public class WndJournal extends WndTabbed {
 		//枚举文档目录下的全部 txt：
 		//开发时 assets 是文件系统上的真实文件夹，可直接 list()，新放入的 txt 立即生效；
 		//打包成 jar 后 classpath 内目录无法枚举，回退读取构建期生成的 doc-index.txt 清单
-		private static List<String> listDocs(){
+		private static List<String> listDocs() {
 			if (docFiles != null) return docFiles;
 			LinkedHashSet<String> names = new LinkedHashSet<>();
 			try {
-				FileHandle dir = Gdx.files.internal( DOC_DIR );
+				FileHandle dir = Gdx.files.internal(DOC_DIR);
 				if (dir.exists() && dir.isDirectory()) {
-					for (FileHandle f : dir.list( ".txt" )) {
+					for (FileHandle f : dir.list(".txt")) {
 						String n = f.name();
-						if (!"doc-index.txt".equalsIgnoreCase( n )) names.add( n );
+						if (!"doc-index.txt".equalsIgnoreCase(n)) names.add(n);
 					}
 				}
 			} catch (Exception e) {
@@ -479,47 +480,48 @@ public class WndJournal extends WndTabbed {
 			}
 			if (names.isEmpty()) {
 				try {
-					for (String line : Gdx.files.internal( DOC_INDEX ).readString( "UTF-8" ).split( "\n" )) {
+					for (String line : Gdx.files.internal(DOC_INDEX).readString("UTF-8").split("\n")) {
 						String n = line.trim();
-						if (n.toLowerCase( Locale.ROOT ).endsWith( ".txt" )) names.add( n );
+						if (n.toLowerCase(Locale.ROOT).endsWith(".txt")) names.add(n);
 					}
 				} catch (Exception e) {
 					//清单不存在，列表留空
 				}
 			}
-			docFiles = new ArrayList<>( names );
+			docFiles = new ArrayList<>(names);
 			//welcome 为卷首说明固定置顶，其余按文件名不区分大小写排序
-			docFiles.sort( (a, b) -> {
-				if (a.equalsIgnoreCase( "welcome.txt" ) && !b.equalsIgnoreCase( "welcome.txt" )) return -1;
-				if (!a.equalsIgnoreCase( "welcome.txt" ) && b.equalsIgnoreCase( "welcome.txt" )) return 1;
-				return a.compareToIgnoreCase( b );
-			} );
+			for (String name : docFiles.toArray(new String[0])) {
+				if (name.equalsIgnoreCase("welcome.txt")) {
+					docFiles.add(0, name);
+					docFiles.remove(name);
+				}
+			}
 			return docFiles;
 		}
 
 		//文档标题：优先取 I18N 键 doc_<由文件名推导的键名>；未配置时以文件名（去掉 .txt）作为默认名
-		private static String docTitle( String fileName ){
-			String title = Messages.get( DesignTab.class, "doc_" + docKey( fileName ) );
-			if (Messages.NO_TEXT_FOUND.equals( title )) {
-				title = fileName.toLowerCase( Locale.ROOT ).endsWith( ".txt" )
-						? fileName.substring( 0, fileName.length() - 4 ) : fileName;
+		private static String docTitle(String fileName) {
+			String title = Messages.get(DesignTab.class, "doc_" + docKey(fileName));
+			if (Messages.NO_TEXT_FOUND.equals(title)) {
+				title = fileName.toLowerCase(Locale.ROOT).endsWith(".txt")
+						? fileName.substring(0, fileName.length() - 4) : fileName;
 			}
 			return title;
 		}
 
 		//文件名 -> properties 键后缀：转小写，仅保留字母/数字/下划线/CJK 字符，
 		//其余字符（空格、连字符、点号等）统一转下划线并合并连续下划线
-		private static String docKey( String fileName ){
-			String base = fileName.toLowerCase( Locale.ROOT );
-			if (base.endsWith( ".txt" )) base = base.substring( 0, base.length() - 4 );
-			StringBuilder sb = new StringBuilder( base.length() );
+		private static String docKey(String fileName) {
+			String base = fileName.toLowerCase(Locale.ROOT);
+			if (base.endsWith(".txt")) base = base.substring(0, base.length() - 4);
+			StringBuilder sb = new StringBuilder(base.length());
 			for (int i = 0; i < base.length(); i++) {
-				char c = base.charAt( i );
+				char c = base.charAt(i);
 				boolean ok = (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_'
 						|| (c >= 0x4E00 && c <= 0x9FFF);
-				sb.append( ok ? c : '_' );
+				sb.append(ok ? c : '_');
 			}
-			return sb.toString().replaceAll( "_+", "_" );
+			return sb.toString().replaceAll("_+", "_");
 		}
 
 		private ScrollPane list;
@@ -527,114 +529,114 @@ public class WndJournal extends WndTabbed {
 
 		@Override
 		protected void createChildren() {
-			list = new ScrollPane( new Component() ){
+			list = new ScrollPane(new Component()) {
 				@Override
-				public void onClick( float x, float y ) {
+				public void onClick(float x, float y) {
 					for (DesignItem item : docs) {
-						if (item.onClick( x, y )) {
+						if (item.onClick(x, y)) {
 							break;
 						}
 					}
 				}
 			};
-			add( list );
+			add(list);
 		}
 
 		@Override
 		protected void layout() {
 			super.layout();
-			list.setRect( 0, 0, width, height);
+			list.setRect(0, 0, width, height);
 		}
 
-		public void updateList(){
+		public void updateList() {
 			Component content = list.content();
 			docs.clear();
 
 			float pos = 0;
 
-			ColorBlock line = new ColorBlock( width(), 1, 0xFF222222);
+			ColorBlock line = new ColorBlock(width(), 1, 0xFF222222);
 			line.y = pos;
 			content.add(line);
 
 			RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
-			title.maxWidth( (int)width() - 2 );
-			title.setPos( (width() - title.width())/2f, pos + 1 + ((ITEM_HEIGHT) - title.height())/2f);
+			title.maxWidth((int) width() - 2);
+			title.setPos((width() - title.width()) / 2f, pos + 1 + ((ITEM_HEIGHT) - title.height()) / 2f);
 			PixelScene.align(title);
 			content.add(title);
 
 			pos += Math.max(ITEM_HEIGHT, title.height());
 
-			for (String file : listDocs()){
-				DesignItem item = new DesignItem( file, docTitle( file ) );
-				item.setRect( 0, pos, width(), ITEM_HEIGHT );
-				content.add( item );
+			for (String file : listDocs()) {
+				DesignItem item = new DesignItem(file, docTitle(file));
+				item.setRect(0, pos, width(), ITEM_HEIGHT);
+				content.add(item);
 				pos += item.height();
 				docs.add(item);
 			}
 
-			content.setSize( width(), pos );
-			list.setSize( list.width(), list.height() );
+			content.setSize(width(), pos);
+			list.setSize(list.width(), list.height());
 		}
 
 		//读取 txt 正文：去回车符；下划线替换为连字符（分词器会把单个下划线当作高亮开关）；制表符转空格
-	//assets 内文件必须用 Gdx.files.internal 读取；FileUtils 单参 getFileHandle 默认指向存档目录
-	private static String loadDoc( String file ){
-		try {
-			String txt = Gdx.files.internal( DOC_DIR + file ).readString( "UTF-8" );
-			txt = txt.replace( "\r", "" ).replace( "_", "-" ).replace( "\t", "  " );
-			return splitLongRuns( txt );
-		} catch (Exception e) {
-			return Messages.get(DesignTab.class, "failed");
-		}
-	}
-
-	//分词器只在空格、换行、CJK 字符边界断词；连续横线（原下划线分隔线）或超长英文单词
-	//（长文件名、链接等无空格 ASCII 串）不会被折行，会撑破正文宽度。这里把过长的连续可见
-	//ASCII 串按固定长度切开：纯横线截为固定长度的分隔线，其余串每段之间插入空格作为断点
-	private static String splitLongRuns( String text ) {
-		final int LIMIT = 20;
-		StringBuilder sb = new StringBuilder( text.length() );
-		int runStart = 0;
-		int len = text.length();
-		for (int i = 0; i <= len; i++) {
-			boolean atEnd = i == len;
-			boolean isAscii = !atEnd && text.charAt( i ) >= 0x21 && text.charAt( i ) <= 0x7E;
-			if (atEnd || !isAscii) {
-				String run = text.substring( runStart, i );
-				if (run.length() > LIMIT) {
-					boolean allDashes = true;
-					for (int k = 0; k < run.length(); k++) {
-						if (run.charAt( k ) != '-') {
-							allDashes = false;
-							break;
-						}
-					}
-					if (allDashes) {
-						for (int k = 0; k < LIMIT; k++) sb.append( '-' );
-					} else {
-						for (int j = 0; j < run.length(); j += LIMIT) {
-							sb.append( run, j, Math.min( j + LIMIT, run.length() ) );
-							if (j + LIMIT < run.length()) sb.append( ' ' );
-						}
-					}
-				} else {
-					sb.append( run );
-				}
-				if (!atEnd) sb.append( text.charAt( i ) );
-				runStart = i + 1;
+		//assets 内文件必须用 Gdx.files.internal 读取；FileUtils 单参 getFileHandle 默认指向存档目录
+		private static String loadDoc(String file) {
+			try {
+				String txt = Gdx.files.internal(DOC_DIR + file).readString("UTF-8");
+				txt = txt.replace("\r", "").replace("_", "-").replace("\t", "  ");
+				return splitLongRuns(txt);
+			} catch (Exception e) {
+				return Messages.get(DesignTab.class, "failed");
 			}
 		}
-		return sb.toString();
-	}
+
+		//分词器只在空格、换行、CJK 字符边界断词；连续横线（原下划线分隔线）或超长英文单词
+		//（长文件名、链接等无空格 ASCII 串）不会被折行，会撑破正文宽度。这里把过长的连续可见
+		//ASCII 串按固定长度切开：纯横线截为固定长度的分隔线，其余串每段之间插入空格作为断点
+		private static String splitLongRuns(String text) {
+			final int LIMIT = 20;
+			StringBuilder sb = new StringBuilder(text.length());
+			int runStart = 0;
+			int len = text.length();
+			for (int i = 0; i <= len; i++) {
+				boolean atEnd = i == len;
+				boolean isAscii = !atEnd && text.charAt(i) >= 0x21 && text.charAt(i) <= 0x7E;
+				if (atEnd || !isAscii) {
+					String run = text.substring(runStart, i);
+					if (run.length() > LIMIT) {
+						boolean allDashes = true;
+						for (int k = 0; k < run.length(); k++) {
+							if (run.charAt(k) != '-') {
+								allDashes = false;
+								break;
+							}
+						}
+						if (allDashes) {
+							for (int k = 0; k < LIMIT; k++) sb.append('-');
+						} else {
+							for (int j = 0; j < run.length(); j += LIMIT) {
+								sb.append(run, j, Math.min(j + LIMIT, run.length()));
+								if (j + LIMIT < run.length()) sb.append(' ');
+							}
+						}
+					} else {
+						sb.append(run);
+					}
+					if (!atEnd) sb.append(text.charAt(i));
+					runStart = i + 1;
+				}
+			}
+			return sb.toString();
+		}
 
 		private static class DesignItem extends ListItem {
 
 			private final String file;
 			private final String docTitle;
 
-			public DesignItem( String file, String title ){
-				super( new ItemSprite(ItemSpriteSheet.SCROLL_HOLDER), title );
+			public DesignItem(String file, String title) {
+				super(new ItemSprite(ItemSpriteSheet.SCROLL_HOLDER), title);
 				this.file = file;
 				this.docTitle = title;
 			}
@@ -642,15 +644,15 @@ public class WndJournal extends WndTabbed {
 			@Override
 			protected void layout() {
 				//默认标题（文件名）可能较长，先按宽度换行并据文字高度撑高列表项，再走父类布局
-				label.maxWidth( (int)(width - 16 - 1) );
+				label.maxWidth((int) (width - 16 - 1));
 				if (label.height() + 2 > height) height = label.height() + 2;
 				super.layout();
 			}
 
-			public boolean onClick( float x, float y ) {
-				if (inside( x, y )) {
-					Window window = new WndDocument( new ItemSprite(ItemSpriteSheet.SCROLL_HOLDER),
-							docTitle, loadDoc(file) );
+			public boolean onClick(float x, float y) {
+				if (inside(x, y)) {
+					Window window = new WndDocument(new ItemSprite(ItemSpriteSheet.SCROLL_HOLDER),
+							docTitle, loadDoc(file));
 					if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
 						GameScene.show(window);
 					} else {
@@ -665,26 +667,26 @@ public class WndJournal extends WndTabbed {
 	}
 
 	public static class AlchemyTab extends Component {
-		
+
 		private RedButton[] pageButtons;
 		private static final int NUM_BUTTONS = 10;
-		
+
 		private static final int[] spriteIndexes = {10, 12, 7, 9, 11, 8, 3, 13, 14, 15};
-		
-		public static int currentPageIdx   = -1;
-		
+
+		public static int currentPageIdx = -1;
+
 		private IconTitle title;
 		private RenderedTextBlock body;
-		
+
 		private ScrollPane list;
 		private ArrayList<QuickRecipe> recipes = new ArrayList<>();
-		
+
 		@Override
 		protected void createChildren() {
 			pageButtons = new RedButton[NUM_BUTTONS];
-			for (int i = 0; i < NUM_BUTTONS; i++){
+			for (int i = 0; i < NUM_BUTTONS; i++) {
 				final int idx = i;
-				pageButtons[i] = new RedButton( "" ){
+				pageButtons[i] = new RedButton("") {
 					@Override
 					protected void onClick() {
 						currentPageIdx = idx;
@@ -697,52 +699,52 @@ public class WndJournal extends WndTabbed {
 					pageButtons[i].icon(new ItemSprite(ItemSpriteSheet.SOMETHING, null));
 					pageButtons[i].enable(false);
 				}
-				add( pageButtons[i] );
+				add(pageButtons[i]);
 			}
-			
+
 			title = new IconTitle();
-			title.icon( new ItemSprite(ItemSpriteSheet.ALCH_PAGE));
+			title.icon(new ItemSprite(ItemSpriteSheet.ALCH_PAGE));
 			title.visible = false;
 
 			body = PixelScene.renderTextBlock(6);
-			
+
 			list = new ScrollPane(new Component());
 			add(list);
 		}
-		
+
 		@Override
 		protected void layout() {
 			super.layout();
-			
-			if (PixelScene.landscape()){
-				float buttonWidth = width()/pageButtons.length;
+
+			if (PixelScene.landscape()) {
+				float buttonWidth = width() / pageButtons.length;
 				for (int i = 0; i < NUM_BUTTONS; i++) {
-					pageButtons[i].setRect(i*buttonWidth, 0, buttonWidth, ITEM_HEIGHT);
+					pageButtons[i].setRect(i * buttonWidth, 0, buttonWidth, ITEM_HEIGHT);
 					PixelScene.align(pageButtons[i]);
 				}
 			} else {
 				//for first row
-				float buttonWidth = width()/5;
+				float buttonWidth = width() / 5;
 				float y = 0;
 				float x = 0;
 				for (int i = 0; i < NUM_BUTTONS; i++) {
 					pageButtons[i].setRect(x, y, buttonWidth, ITEM_HEIGHT);
 					PixelScene.align(pageButtons[i]);
 					x += buttonWidth;
-					if (i == 4){
+					if (i == 4) {
 						y += ITEM_HEIGHT;
 						x = 0;
-						buttonWidth = width()/5;
+						buttonWidth = width() / 5;
 					}
 				}
 			}
-			
-			list.setRect(0, pageButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - pageButtons[NUM_BUTTONS-1].bottom() - 1);
-			
+
+			list.setRect(0, pageButtons[NUM_BUTTONS - 1].bottom() + 1, width,
+					height - pageButtons[NUM_BUTTONS - 1].bottom() - 1);
+
 			updateList();
 		}
-		
+
 		private void updateList() {
 
 			for (int i = 0; i < NUM_BUTTONS; i++) {
@@ -752,29 +754,29 @@ public class WndJournal extends WndTabbed {
 					pageButtons[i].icon().resetColor();
 				}
 			}
-			
-			if (currentPageIdx == -1){
+
+			if (currentPageIdx == -1) {
 				return;
 			}
-			
-			for (QuickRecipe r : recipes){
+
+			for (QuickRecipe r : recipes) {
 				if (r != null) {
 					r.killAndErase();
 					r.destroy();
 				}
 			}
 			recipes.clear();
-			
+
 			Component content = list.content();
-			
+
 			content.clear();
-			
+
 			title.visible = true;
 			title.label(Document.ALCHEMY_GUIDE.pageTitle(currentPageIdx));
 			title.setRect(0, 0, width(), 10);
 			content.add(title);
-			
-			body.maxWidth((int)width());
+
+			body.maxWidth((int) width());
 			body.text(Document.ALCHEMY_GUIDE.pageBody(currentPageIdx));
 			body.setPos(0, title.bottom());
 			content.add(body);
@@ -782,27 +784,27 @@ public class WndJournal extends WndTabbed {
 			Document.ALCHEMY_GUIDE.readPage(currentPageIdx);
 
 			ArrayList<QuickRecipe> toAdd = QuickRecipe.getRecipes(currentPageIdx);
-			
+
 			float left;
-			float top = body.bottom()+2;
+			float top = body.bottom() + 2;
 			int w;
 			ArrayList<QuickRecipe> toAddThisRow = new ArrayList<>();
-			while (!toAdd.isEmpty()){
-				if (toAdd.get(0) == null){
+			while (!toAdd.isEmpty()) {
+				if (toAdd.get(0) == null) {
 					toAdd.remove(0);
 					top += 6;
 				}
-				
+
 				w = 0;
-				while(!toAdd.isEmpty() && toAdd.get(0) != null
-						&& w + toAdd.get(0).width() <= width()){
+				while (!toAdd.isEmpty() && toAdd.get(0) != null
+						&& w + toAdd.get(0).width() <= width()) {
 					toAddThisRow.add(toAdd.remove(0));
 					w += toAddThisRow.get(0).width();
 				}
-				
-				float spacing = (width() - w)/(toAddThisRow.size() + 1);
+
+				float spacing = (width() - w) / (toAddThisRow.size() + 1);
 				left = spacing;
-				while (!toAddThisRow.isEmpty()){
+				while (!toAddThisRow.isEmpty()) {
 					QuickRecipe r = toAddThisRow.remove(0);
 					r.setPos(left, top);
 					left += r.width() + spacing;
@@ -816,11 +818,11 @@ public class WndJournal extends WndTabbed {
 					recipes.add(r);
 					content.add(r);
 				}
-				
-				if (!toAdd.isEmpty() && toAdd.get(0) == null){
+
+				if (!toAdd.isEmpty() && toAdd.get(0) == null) {
 					toAdd.remove(0);
 				}
-				
+
 				if (!toAdd.isEmpty() && toAdd.get(0) != null) {
 					ColorBlock spacer = new ColorBlock(width(), 1, 0xFF222222);
 					spacer.y = top + 16;
@@ -851,10 +853,10 @@ public class WndJournal extends WndTabbed {
 		@Override
 		protected void layout() {
 			super.layout();
-			grid.setRect( x, y, width, height);
+			grid.setRect(x, y, width, height);
 		}
 
-		private void updateList(){
+		private void updateList() {
 
 			grid.addHeader("_" + Messages.get(this, "title") + "_", 9, true);
 
@@ -862,23 +864,18 @@ public class WndJournal extends WndTabbed {
 
 			ArrayList<Notes.CustomRecord> customRecs = Notes.getRecords(Notes.CustomRecord.class);
 
-			if (!customRecs.isEmpty()){
-				for (Notes.CustomRecord rec : customRecs){
-					ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(rec.icon()){
+			if (!customRecs.isEmpty()) {
+				for (Notes.CustomRecord rec : customRecs) {
+					ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(rec.icon()) {
 						@Override
-						public boolean onClick(float x, float y) {
-							if (inside(x, y)) {
-								GameScene.show(new CustomNoteButton.CustomNoteWindow(rec, WndJournal.INSTANCE));
-								return true;
-							} else {
-								return false;
-							}
+						public void onClick() {
+							GameScene.show(new CustomNoteButton.CustomNoteWindow(rec, WndJournal.INSTANCE));
 						}
 					};
 
 					Visual secondIcon = rec.secondIcon();
-					if (secondIcon != null){
-						gridItem.addSecondIcon( secondIcon );
+					if (secondIcon != null) {
+						gridItem.addSecondIcon(secondIcon);
 					}
 
 					grid.addItem(gridItem);
@@ -887,10 +884,10 @@ public class WndJournal extends WndTabbed {
 
 			int i = Statistics.deepestFloor;
 			int j = Statistics.deepestSub;
-			while (i > 0){
+			while (i > 0) {
 
-				ArrayList<Notes.Record> recs = Notes.getRecords(i + j*1000);
-				if (j > 0 && recs.isEmpty()){
+				ArrayList<Notes.Record> recs = Notes.getRecords(i + j * 1000);
+				if (j > 0 && recs.isEmpty()) {
 					j--;
 					continue;
 				}
@@ -899,44 +896,38 @@ public class WndJournal extends WndTabbed {
 				if (j > 0)
 					depth += "/" + j;
 
-				if (i + j*1000 == Dungeon.levelId) {
+				if (i + j * 1000 == Dungeon.levelId) {
 					grid.addHeader("_" + Messages.get(this, "floor_header", depth) + "_");
 				} else {
 					grid.addHeader(Messages.get(this, "floor_header", depth));
 				}
 
-				for( Notes.Record rec : recs){
+				for (Notes.Record rec : recs) {
 
-					ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(rec.icon()){
+					ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(rec.icon()) {
 						@Override
-						public boolean onClick(float x, float y) {
-							if (inside(x, y)) {
-								if (rec.icon() instanceof CharSprite) {
+						public void onClick() {
+								if (rec.icon() instanceof CharSprite)
 									GameScene.show(new WndJournalElse((CharSprite) rec.icon(),
 											Messages.titleCase(rec.title()),
 											rec.desc()));
-								}else {
+								else
 									GameScene.show(new WndJournalElse(rec.icon(),
 											Messages.titleCase(rec.title()),
 											rec.desc()));
-								}
-								return true;
-							} else {
-								return false;
-							}
 						}
 					};
 
 					Visual secondIcon = rec.secondIcon();
-					if (secondIcon != null){
-						gridItem.addSecondIcon( secondIcon );
+					if (secondIcon != null) {
+						gridItem.addSecondIcon(secondIcon);
 					}
 
 					grid.addItem(gridItem);
 				}
-				if ( j > 0 ) {
+				if (j > 0) {
 					j--;
-				}else {
+				} else {
 					i--;
 					j = Statistics.deepestSub;
 				}
@@ -944,7 +935,7 @@ public class WndJournal extends WndTabbed {
 
 			custom = new CustomNoteButton();
 			grid.content().add(custom);
-			custom.setPos(width-custom.width()-1, 0);
+			custom.setPos(width - custom.width() - 1, 0);
 
 			grid.setRect(x, y, width, height);
 
@@ -952,55 +943,55 @@ public class WndJournal extends WndTabbed {
 
 	}
 
-	public static class CatalogTab extends Component{
+	public static class CatalogTab extends Component {
 
 		private RedButton[] itemButtons;
-	private static final int NUM_BUTTONS = 4;
+		private static final int NUM_BUTTONS = 4;
 
-	public static int currentItemIdx   = 0;
-	private static float[] scrollPositions = new float[NUM_BUTTONS];
+		public static int currentItemIdx = 0;
+		private static float[] scrollPositions = new float[NUM_BUTTONS];
 
-	//sprite locations
-	private static final int EQUIP_IDX = 0;
-	private static final int CONSUM_IDX = 1;
-	private static final int BESTIARY_IDX = 2;
-	private static final int BUFF_IDX = 3;
+		//sprite locations
+		private static final int EQUIP_IDX = 0;
+		private static final int CONSUM_IDX = 1;
+		private static final int BESTIARY_IDX = 2;
+		private static final int BUFF_IDX = 3;
 
-	public static ArrayList<Class<?>> positiveBuffs = new ArrayList<>();
-	public static ArrayList<Class<?>> negativeBuffs = new ArrayList<>();
-	public static ArrayList<Class<?>> neutralBuffs = new ArrayList<>();
+		public static ArrayList<Class<?>> positiveBuffs = new ArrayList<>();
+		public static ArrayList<Class<?>> negativeBuffs = new ArrayList<>();
+		public static ArrayList<Class<?>> neutralBuffs = new ArrayList<>();
 
-	public static ArrayList<Class<? extends Buff>> buffClasses = BuffScanner.getAllBuffClasses();
+		public static ArrayList<Class<? extends Buff>> buffClasses = BuffScanner.getAllBuffClasses();
 
-	private ScrollingGridPane grid;
+		private ScrollingGridPane grid;
 
 		@Override
 		protected void createChildren() {
 			itemButtons = new RedButton[NUM_BUTTONS];
-			for (int i = 0; i < NUM_BUTTONS; i++){
+			for (int i = 0; i < NUM_BUTTONS; i++) {
 				final int idx = i;
-				itemButtons[i] = new RedButton( "" ){
+				itemButtons[i] = new RedButton("") {
 					@Override
 					protected void onClick() {
 						currentItemIdx = idx;
 						updateList();
 					}
 				};
-				add( itemButtons[i] );
+				add(itemButtons[i]);
 			}
 			itemButtons[EQUIP_IDX].icon(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER));
-		itemButtons[CONSUM_IDX].icon(new ItemSprite(ItemSpriteSheet.POTION_HOLDER));
-		itemButtons[BESTIARY_IDX].icon(new ItemSprite(ItemSpriteSheet.CATA_HOLDER));
-		itemButtons[BUFF_IDX].icon(Icons.get(Icons.BUFFS));
+			itemButtons[CONSUM_IDX].icon(new ItemSprite(ItemSpriteSheet.POTION_HOLDER));
+			itemButtons[BESTIARY_IDX].icon(new ItemSprite(ItemSpriteSheet.CATA_HOLDER));
+			itemButtons[BUFF_IDX].icon(Icons.get(Icons.BUFFS));
 
-			grid = new ScrollingGridPane(false){
+			grid = new ScrollingGridPane(false) {
 				@Override
 				public synchronized void update() {
 					super.update();
 					scrollPositions[currentItemIdx] = content.camera.scroll.y;
 				}
 			};
-			add( grid );
+			add(grid);
 		}
 
 		@Override
@@ -1008,78 +999,78 @@ public class WndJournal extends WndTabbed {
 			super.layout();
 
 			int perRow = NUM_BUTTONS;
-			float buttonWidth = width()/perRow;
+			float buttonWidth = width() / perRow;
 
 			for (int i = 0; i < NUM_BUTTONS; i++) {
-				itemButtons[i].setRect(x +(i%perRow) * (buttonWidth),
-						y + (i/perRow) * (ITEM_HEIGHT ),
+				itemButtons[i].setRect(x + (i % perRow) * (buttonWidth),
+						y + (i / perRow) * (ITEM_HEIGHT),
 						buttonWidth, ITEM_HEIGHT);
 				PixelScene.align(itemButtons[i]);
 			}
 
 			grid.setRect(x,
-					itemButtons[NUM_BUTTONS-1].bottom() + 1,
+					itemButtons[NUM_BUTTONS - 1].bottom() + 1,
 					width,
-					height - itemButtons[NUM_BUTTONS-1].height() - 1);
+					height - itemButtons[NUM_BUTTONS - 1].height() - 1);
 		}
 
 		public void updateList() {
 
 			grid.clear();
 
-			for (int i = 0; i < NUM_BUTTONS; i++){
-				if (i == currentItemIdx){
+			for (int i = 0; i < NUM_BUTTONS; i++) {
+				if (i == currentItemIdx) {
 					itemButtons[i].icon().color(TITLE_COLOR);
 				} else {
 					itemButtons[i].icon().resetColor();
 				}
 			}
 
-			grid.scrollTo( 0, 0 );
+			grid.scrollTo(0, 0);
 
 			if (currentItemIdx == EQUIP_IDX) {
 				int totalItems = 0;
 				int totalSeen = 0;
-				for (Catalog catalog : Catalog.equipmentCatalogs){
+				for (Catalog catalog : Catalog.equipmentCatalogs) {
 					totalItems += catalog.totalItems();
 					totalSeen += catalog.totalSeen();
 				}
 				grid.addHeader("_" + Messages.get(this, "title_equipment") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
 
-				for (Catalog catalog : Catalog.equipmentCatalogs){
+				for (Catalog catalog : Catalog.equipmentCatalogs) {
 					grid.addHeader("_" + Messages.titleCase(catalog.title()) + "_ (" + catalog.totalSeen() + "/" + catalog.totalItems() + "):");
 					addGridItems(grid, catalog.items());
 				}
 
-			} else if (currentItemIdx == CONSUM_IDX){
+			} else if (currentItemIdx == CONSUM_IDX) {
 				int totalItems = 0;
 				int totalSeen = 0;
-				for (Catalog catalog : Catalog.consumableCatalogs){
+				for (Catalog catalog : Catalog.consumableCatalogs) {
 					totalItems += catalog.totalItems();
 					totalSeen += catalog.totalSeen();
 				}
 				grid.addHeader("_" + Messages.get(this, "title_consumables") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
 
-				if (TitleScene){
+				if (TitleScene) {
 					Potion.initColors();
 					Scroll.initLabels();
 					Ring.initGems();
 				}
-				for (Catalog catalog : Catalog.consumableCatalogs){
+				for (Catalog catalog : Catalog.consumableCatalogs) {
 					grid.addHeader("_" + Messages.titleCase(catalog.title()) + "_ (" + catalog.totalSeen() + "/" + catalog.totalItems() + "):");
 					addGridItems(grid, catalog.items());
 				}
 
-			} else if (currentItemIdx == BESTIARY_IDX){
+			} else if (currentItemIdx == BESTIARY_IDX) {
 				int totalItems = 0;
 				int totalSeen = 0;
-				for (Bestiary bestiary : Bestiary.values()){
+				for (Bestiary bestiary : Bestiary.values()) {
 					totalItems += bestiary.totalEntities();
 					totalSeen += bestiary.totalSeen();
 				}
 				grid.addHeader("_" + Messages.get(this, "title_bestiary") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
 
-				for (Bestiary bestiary : Bestiary.values()){
+				for (Bestiary bestiary : Bestiary.values()) {
 					grid.addHeader("_" + Messages.titleCase(bestiary.title()) + "_ (" + bestiary.totalSeen() + "/" + bestiary.totalEntities() + "):");
 					addGridEntities(grid, bestiary.entities());
 				}
@@ -1132,17 +1123,17 @@ public class WndJournal extends WndTabbed {
 				}
 			}
 
-			grid.setRect(x, itemButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - itemButtons[NUM_BUTTONS-1].height() - 1);
+			grid.setRect(x, itemButtons[NUM_BUTTONS - 1].bottom() + 1, width,
+					height - itemButtons[NUM_BUTTONS - 1].height() - 1);
 
 			grid.scrollTo(0, scrollPositions[currentItemIdx]);
 		}
 
 		//TODO 这个理应放到各个类里边，默认返回null，重写返回注解效果，然后property非null时，附页展示其机制。
-		private static String property(MeleeWeapon weapon){
+		private static String property(MeleeWeapon weapon) {
 			weapon.update();
 			String info = "";
-			if (weapon instanceof Cypros){
+			if (weapon instanceof Cypros) {
 				info += Messages.format("该武器阶数_%d_。\n", weapon.tier);
 				((Cypros) weapon).setMode(Cypros.Mode.MAGNUM, false);
 				((Cypros) weapon).setMode(Cypros.Mode.TRAVAILLER, false);
@@ -1150,20 +1141,19 @@ public class WndJournal extends WndTabbed {
 						((Cypros) weapon).minBaseDmg(0), ((Cypros) weapon).maxBaseDmg(0),
 						weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(0, 1),
 						weapon.RCH, weapon.DLY, weapon.ACC, weapon.DEF, weapon.DEFUPGRADE);
-				info+="\n\n";
+				info += "\n\n";
 				((Cypros) weapon).setMode(Cypros.Mode.CONFIRE, false);
 				info += Messages.format("_康菲尔小姐_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
 						((Cypros) weapon).minBaseDmg(1), ((Cypros) weapon).maxBaseDmg(1),
 						weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(1, 1),
-						weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier*100);
+						weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier * 100);
 				info += "\n\n";
 				((Cypros) weapon).setMode(Cypros.Mode.MAGNUM, false);
 				info += Messages.format("_马格南婚礼_:基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。在伏击时的伤害区间改写为当前的区间的_%.1f_%%~_100_%%。",
 						((Cypros) weapon).minBaseDmg(2), ((Cypros) weapon).maxBaseDmg(2),
 						weapon.minUpgrade(1), ((Cypros) weapon).maxUpgrade(2, 1),
-						weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier*100);
-			}
-			else {
+						weapon.RCH, weapon.DLY, weapon.ACC, ((Cypros) weapon).surpriseMultiplier * 100);
+			} else {
 				info += Messages.format("该武器阶数_%d_，基础面板属性_%.1f_~_%.1f_，成长_%.1f_~_%.1f_，攻击距离_%d_，攻击延迟/后摇_%.3f_，精度乘数_%.3f_。",
 						weapon.tier,
 						weapon.minBaseDmg(), weapon.maxBaseDmg(),
@@ -1180,10 +1170,12 @@ public class WndJournal extends WndTabbed {
 			}
 			return info;
 		}
-		private static void addGridItems( ScrollingGridPane grid, Collection<Class<?>> classes) {
+
+		private static void addGridItems(ScrollingGridPane grid, Collection<Class<?>> classes) {
 			for (Class<?> itemClass : classes) {
 
-				boolean seen = Catalog.isSeen(itemClass);;
+				boolean seen = Catalog.isSeen(itemClass);
+				;
 				ItemSprite sprite = null;
 				Image secondIcon = null;
 				String title = "";
@@ -1210,8 +1202,8 @@ public class WndJournal extends WndTabbed {
 					}
 
 					sprite = new ItemSprite(item.image, seen ? item.glowing() : null);
-					if (!seen)  {
-						if (item instanceof ExoticPotion){
+					if (!seen) {
+						if (item instanceof ExoticPotion) {
 							sprite.frame(ItemSpriteSheet.POTION_CRIMSON);
 						}
 						sprite.lightness(0);
@@ -1219,9 +1211,9 @@ public class WndJournal extends WndTabbed {
 						desc = Messages.get(CatalogTab.class, "not_seen_item");
 						desc += "\n\n" + Messages.get(item, "discover_hint");
 					} else {
-						title = Messages.titleCase( item.name() );
+						title = Messages.titleCase(item.name());
 						//some items don't include direct stats, generally when they're not applicable
-						if (item instanceof ClassArmor || item instanceof SpiritBow){
+						if (item instanceof ClassArmor || item instanceof SpiritBow) {
 							desc += item.desc();
 						} else {
 							desc += item.info();
@@ -1240,9 +1232,9 @@ public class WndJournal extends WndTabbed {
 						}
 
 						//mage's staff normally has 2 pixels extra at the top for particle effects, we chop that off here
-						if (item instanceof MagesStaff){
+						if (item instanceof MagesStaff) {
 							RectF frame = sprite.frame();
-							frame.top += frame.height()/8f;
+							frame.top += frame.height() / 8f;
 							sprite.frame(frame);
 						}
 
@@ -1252,11 +1244,11 @@ public class WndJournal extends WndTabbed {
 						}
 					}
 
-				} else if (Weapon.Enchantment.class.isAssignableFrom(itemClass)){
+				} else if (Weapon.Enchantment.class.isAssignableFrom(itemClass)) {
 
 					Weapon.Enchantment ench = (Weapon.Enchantment) Reflection.newInstance(itemClass);
 
-					if (seen){
+					if (seen) {
 						sprite = new ItemSprite(ItemSpriteSheet.GREATAXE, ench.glowing());
 						title = Messages.titleCase(ench.name());
 						desc = ench.desc();
@@ -1268,11 +1260,11 @@ public class WndJournal extends WndTabbed {
 						desc += "\n\n" + Messages.get(ench, "discover_hint");
 					}
 
-				} else if (Armor.Glyph.class.isAssignableFrom(itemClass)){
+				} else if (Armor.Glyph.class.isAssignableFrom(itemClass)) {
 
 					Armor.Glyph glyph = (Armor.Glyph) Reflection.newInstance(itemClass);
 
-					if (seen){
+					if (seen) {
 						sprite = new ItemSprite(ItemSpriteSheet.ARMOR_CLOTH, glyph.glowing());
 						title = Messages.titleCase(glyph.name());
 						desc = glyph.desc();
@@ -1291,32 +1283,21 @@ public class WndJournal extends WndTabbed {
 				String finalProperty = property;
 				ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(sprite) {
 					@Override
-					public boolean onClick(float x, float y) {
-						if (inside(x, y)) {
-							Image sprite = new Image(icon);
-							if (!finalProperty.isEmpty()) {
-								Window window = new WndJournalItem(sprite, finalTitle, finalDesc, finalProperty, seen);
-								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
-									GameScene.show(window);
-								} else {
-									GirlsFrontlinePixelDungeon.scene().addToFront(window);
-								}
-							}
-							else {
-								Window window = new WndJournalElse(sprite, finalTitle, finalDesc);
-								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene){
-									GameScene.show(window);
-								} else {
-									GirlsFrontlinePixelDungeon.scene().addToFront(window);
-								}
-							}
-							return true;
-						} else {
-							return false;
-						}
-					}
+					public void onClick() {
+						Image sprite = new Image(icon);
+                        Window window;
+                        if (!finalProperty.isEmpty())
+                            window = new WndJournalItem(sprite, finalTitle, finalDesc, finalProperty, seen);
+                        else
+                            window = new WndJournalElse(sprite, finalTitle, finalDesc);
+
+                        if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene)
+                            GameScene.show(window);
+                        else
+                            GirlsFrontlinePixelDungeon.scene().addToFront(window);
+                    }
 				};
-				if (secondIcon != null){
+				if (secondIcon != null) {
 					gridItem.addSecondIcon(secondIcon);
 				}
 				if (!seen) {
@@ -1327,7 +1308,7 @@ public class WndJournal extends WndTabbed {
 		}
 
 		private static void addGridEntities(ScrollingGridPane grid, Collection<Class<?>> classes) {
-			for (Class<?> entityCls : classes){
+			for (Class<?> entityCls : classes) {
 
 				boolean seen = Bestiary.isSeen(entityCls);
 				Mob mob = null;
@@ -1341,8 +1322,8 @@ public class WndJournal extends WndTabbed {
 					if (mob instanceof Mimic || mob instanceof Pylon) {
 						mob.alignment = Char.Alignment.ENEMY;
 					}
-					if (mob instanceof WandOfWarding.Ward){
-						if (mob instanceof WandOfWarding.Ward.WardSentry){
+					if (mob instanceof WandOfWarding.Ward) {
+						if (mob instanceof WandOfWarding.Ward.WardSentry) {
 							((WandOfWarding.Ward) mob).upgrade(3);
 							((WandOfWarding.Ward) mob).upgrade(3);
 							((WandOfWarding.Ward) mob).upgrade(3);
@@ -1360,15 +1341,15 @@ public class WndJournal extends WndTabbed {
 					if (seen) {
 						title = Messages.titleCase(mob.name());
 						desc = mob.description();
-						if (Bestiary.encounterCount(entityCls) > 0){
+						if (Bestiary.encounterCount(entityCls) > 0) {
 							desc += "\n\n" + Messages.get(CatalogTab.class, "enemy_count", Bestiary.encounterCount(entityCls));
 						}
 					} else {
 						icon.lightness(0f);
 						title = "???";
-						if (mob instanceof WandOfRegrowth.Lotus){
+						if (mob instanceof WandOfRegrowth.Lotus) {
 							desc = Messages.get(CatalogTab.class, "not_seen_plant");
-						} else if (mob.alignment == Char.Alignment.ENEMY){
+						} else if (mob.alignment == Char.Alignment.ENEMY) {
 							desc = Messages.get(CatalogTab.class, "not_seen_enemy");
 						} else {
 							desc = Messages.get(CatalogTab.class, "not_seen_ally");
@@ -1376,7 +1357,7 @@ public class WndJournal extends WndTabbed {
 						desc += "\n\n" + Messages.get(mob, "discover_hint");
 					}
 
-				} else if (Trap.class.isAssignableFrom(entityCls)){
+				} else if (Trap.class.isAssignableFrom(entityCls)) {
 
 					Trap trap = (Trap) Reflection.newInstance(entityCls);
 					icon = TerrainFeaturesTilemap.getTrapVisual(trap);
@@ -1384,7 +1365,7 @@ public class WndJournal extends WndTabbed {
 					if (seen) {
 						title = Messages.titleCase(trap.name());
 						desc = trap.desc();
-						if (Bestiary.encounterCount(entityCls) > 0){
+						if (Bestiary.encounterCount(entityCls) > 0) {
 							desc += "\n\n" + Messages.get(CatalogTab.class, "trap_count", Bestiary.encounterCount(entityCls));
 						}
 					} else {
@@ -1394,7 +1375,7 @@ public class WndJournal extends WndTabbed {
 						desc += "\n\n" + Messages.get(trap, "discover_hint");
 					}
 
-				} else if (Plant.class.isAssignableFrom(entityCls)){
+				} else if (Plant.class.isAssignableFrom(entityCls)) {
 
 					Plant plant = (Plant) Reflection.newInstance(entityCls);
 					icon = TerrainFeaturesTilemap.getPlantVisual(plant);
@@ -1402,7 +1383,7 @@ public class WndJournal extends WndTabbed {
 					if (seen) {
 						title = Messages.titleCase(plant.name());
 						desc = plant.desc();
-						if (Bestiary.encounterCount(entityCls) > 0){
+						if (Bestiary.encounterCount(entityCls) > 0) {
 							desc += "\n\n" + Messages.get(CatalogTab.class, "plant_count", Bestiary.encounterCount(entityCls));
 						}
 					} else {
@@ -1417,107 +1398,91 @@ public class WndJournal extends WndTabbed {
 				//we have to clip the bounds of the sprite if it's too large
 				if (icon.width() >= 17 || icon.height() >= 17) {
 					float size = Math.max(icon.width(), icon.height());
-					icon.scale.set(16/size);
+					icon.scale.set(16 / size);
 				}
 				Mob finalMob = mob;
 				String finalTitle = title;
 				String finalDesc = desc;
-                ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(icon) {
+				ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(icon) {
 					@Override
-					public boolean onClick(float x, float y) {
-						if (inside(x, y)) {
-							if (seen && finalMob != null){
-								Window window = new WndJournalElse(finalMob, finalTitle, finalDesc);
-								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
-									GameScene.show(window);
-								} else {
-									GirlsFrontlinePixelDungeon.scene().addToFront(window);
-								}
-							} else {
-								Window window = new WndJournalElse(new Image(icon), finalTitle, finalDesc);
-								if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
-									GameScene.show(window);
-								} else {
-									GirlsFrontlinePixelDungeon.scene().addToFront(window);
-								}
-							}
+					public void onClick() {
+                        Window window;
+                        if (seen && finalMob != null)
+                            window = new WndJournalElse(finalMob, finalTitle, finalDesc);
+                        else
+                            window = new WndJournalElse(new Image(icon), finalTitle, finalDesc);
 
-							return true;
-						} else {
-							return false;
-						}
-					}
+                        if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene)
+                            GameScene.show(window);
+                        else
+                            GirlsFrontlinePixelDungeon.scene().addToFront(window);
+                    }
 				};
 				if (!seen) {
 					gridItem.hardLightBG(2f, 1f, 2f);
 				}
 				grid.addItem(gridItem);
-		}
-	}
-
-	private static void addGridBuff(ScrollingGridPane grid, Class<?> buffClass) {
-		Buff buff;
-		try {
-			buff = (Buff) buffClass.getDeclaredConstructor().newInstance();
-		} catch (Exception e) {
-			return;
-		}
-		int iconID;
-		try {
-			iconID = buff.icon();
-		} catch (Exception e) {
-			return;
-		}
-
-		//直接读取 properties 原始文本，不经过 buff.desc()/toString()，
-		//避免 FlavourBuff 等传入格式化参数导致 Messages.format 崩溃
-		String title = Messages.get(buffClass, "name");
-		if (title == null || title.startsWith("Ms:")) {
-			title = buffClass.getSimpleName();
-		}
-		title = Messages.titleCase(title);
-
-		String desc = Messages.get(buffClass, "desc");
-		if (desc == null || desc.startsWith("Ms:")) {
-			desc = "";
-		} else {
-			//去掉格式化占位符，图鉴中不需要具体数值
-			desc = desc.replaceAll("%[\\d.]*[df]", "?")
-					.replace("%s", "?")
-					.replace("%%", "%");
-		}
-
-		Image icons = new BuffIcon(iconID, true);
-		try {
-			Method tintMethod = buffClass.getMethod("tintIcon", Image.class);
-			tintMethod.invoke(buff, icons);
-		} catch (Exception ignored) {
-		}
-
-		ScrollingGridPane.GridItem gridItem = getGridItem(title, desc, icons);
-		grid.addItem(gridItem);
-	}
-
-	private static ScrollingGridPane.GridItem getGridItem(String title, String desc, Image icon) {
-		return new ScrollingGridPane.GridItem(icon) {
-			@Override
-			public boolean onClick(float x, float y) {
-				if (inside(x, y) && icon != null) {
-					Image sprite = new Image();
-					sprite.copy(icon);
-					Window window = new WndTitledMessage(sprite, title, desc);
-					if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene){
-						GameScene.show(window);
-					} else {
-						GirlsFrontlinePixelDungeon.scene().addToFront(window);
-					}
-					return true;
-				} else {
-					return false;
-				}
 			}
-		};
-	}
+		}
+
+		private static void addGridBuff(ScrollingGridPane grid, Class<?> buffClass) {
+			Buff buff;
+			try {
+				buff = (Buff) buffClass.getDeclaredConstructor().newInstance();
+			} catch (Exception e) {
+				return;
+			}
+			int iconID;
+			try {
+				iconID = buff.icon();
+			} catch (Exception e) {
+				return;
+			}
+
+			//直接读取 properties 原始文本，不经过 buff.desc()/toString()，
+			//避免 FlavourBuff 等传入格式化参数导致 Messages.format 崩溃
+			String title = Messages.get(buffClass, "name");
+			if (title == null || title.startsWith("Ms:")) {
+				title = buffClass.getSimpleName();
+			}
+			title = Messages.titleCase(title);
+
+			String desc = Messages.get(buffClass, "desc");
+			if (desc == null || desc.startsWith("Ms:")) {
+				desc = "";
+			} else {
+				//去掉格式化占位符，图鉴中不需要具体数值
+				desc = desc.replaceAll("%[\\d.]*[df]", "?")
+						.replace("%s", "?")
+						.replace("%%", "%");
+			}
+
+			Image icons = new BuffIcon(iconID, true);
+			try {
+				Method tintMethod = buffClass.getMethod("tintIcon", Image.class);
+				tintMethod.invoke(buff, icons);
+			} catch (Exception ignored) {
+			}
+
+			ScrollingGridPane.GridItem gridItem = getGridItem(title, desc, icons);
+			grid.addItem(gridItem);
+		}
+
+		private static ScrollingGridPane.GridItem getGridItem(String title, String desc, Image icon) {
+			return new ScrollingGridPane.GridItem(icon) {
+				@Override
+				public void onClick() {
+					if (icon != null) {
+						Window window = new WndTitledMessage(new Image(icon), title, desc);
+						if (GirlsFrontlinePixelDungeon.scene() instanceof GameScene) {
+							GameScene.show(window);
+						} else {
+							GirlsFrontlinePixelDungeon.scene().addToFront(window);
+						}
+					}
+				}
+			};
+		}
 	}
 
 	public static class BadgesTab extends Component {
@@ -1571,7 +1536,7 @@ public class WndJournal extends WndTabbed {
 			}
 
 			badgesGlobal = new BadgesGrid(true);
-			add( badgesGlobal );
+			add(badgesGlobal);
 		}
 
 		@Override
@@ -1582,16 +1547,16 @@ public class WndJournal extends WndTabbed {
 				btnLocal.setRect(x, y, width / 2, 18);
 				btnGlobal.setRect(x + width / 2, y, width / 2, 18);
 
-				badgesLocal.setRect(x, y + 20, width, height-20);
-				badgesGlobal.setRect( x, y + 20, width, height-20);
+				badgesLocal.setRect(x, y + 20, width, height - 20);
+				badgesGlobal.setRect(x, y + 20, width, height - 20);
 			} else {
-				title.setPos( x + (width - title.width())/2, y + (12-title.height())/2);
+				title.setPos(x + (width - title.width()) / 2, y + (12 - title.height()) / 2);
 
-				badgesGlobal.setRect( x, y + 14, width, height-14);
+				badgesGlobal.setRect(x, y + 14, width, height - 14);
 			}
 		}
 
-		private void updateList(){
+		private void updateList() {
 			if (btnLocal != null) {
 				badgesLocal.visible = badgesLocal.active = !global;
 				badgesGlobal.visible = badgesGlobal.active = global;

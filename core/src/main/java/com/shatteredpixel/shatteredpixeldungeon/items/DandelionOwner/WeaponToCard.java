@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR.AN94;
@@ -118,7 +119,10 @@ public class WeaponToCard {
                             @Override
                             protected void onSelect( int index ) {
                                 if (index == 0){
-                                    item.detach(Dungeon.hero.belongings.backpack);
+                                    if (item.isEquipped(Dungeon.hero))
+                                        ((EquipableItem) item).detachCursedEquipment(Dungeon.hero);
+                                    else
+                                        item.detach(Dungeon.hero.belongings.backpack);
                                     if (c instanceof FirstCard)
                                         selector.FirstCards.add((FirstCard) c);
                                     else if (c instanceof CommonCard)

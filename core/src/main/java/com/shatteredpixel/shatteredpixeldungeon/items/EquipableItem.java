@@ -134,8 +134,14 @@ public abstract class EquipableItem extends Item {
 	final public boolean doUnequip( Hero hero, boolean collect ) {
 		return doUnequip( hero, collect, true );
 	}
+	final public void detachCursedEquipment(Hero hero) {
+		boolean curse = cursed;
+		cursed = false;
+		doUnequip(hero, false);
+		cursed = curse;
+	}
 	final protected boolean doUnequip_copy( Hero hero, boolean collect, boolean single ){
-		if ( !unEquipable(hero) ) {
+		if ( !unEquipable(hero) && collect ) {
 			GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
 			return false;
 		}

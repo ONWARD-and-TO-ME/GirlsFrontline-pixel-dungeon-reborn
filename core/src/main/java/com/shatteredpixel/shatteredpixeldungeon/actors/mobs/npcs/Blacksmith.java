@@ -109,9 +109,8 @@ public class Blacksmith extends NPC {
 				} else if (!pick.bloodStained) {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.Kill())));
 				} else {
-					if (pick.isEquipped( Dungeon.hero )) {
-						pick.doUnequip( Dungeon.hero, false );
-					}
+					if (pick.isEquipped( Dungeon.hero ))
+						pick.detachCursedEquipment( Dungeon.hero );
 					pick.detach( Dungeon.hero.belongings.backpack );
 					CardSelector.INSTANCE().coolDown(1000);
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.L1())));
