@@ -270,6 +270,19 @@ public class Armor extends EquipableItem {
 	}
 
 	@Override
+	public void resetBone() {
+		//reset() above nulls inside, so capture the nested armor first and
+		//normalize it too, then re-link without bindInside's gameplay side effects
+		Armor nested = inside;
+		super.resetBone();
+		if (nested != null) {
+			nested.resetBone();
+			inside = nested;
+			nested.outside = this;
+		}
+	}
+
+	@Override
 	public ArrayList<String> actions(Hero hero) {
 		ArrayList<String> actions = super.actions(hero);
 		if (seal != null) actions.add(AC_DETACH);
@@ -406,6 +419,20 @@ public class Armor extends EquipableItem {
             inside.stopTrack();
     }
 	@Override
+	public boolean doPickUp( Hero hero, int pos ) {
+		if (super.doPickUp(hero, pos)) {
+			if (!hero.hasTalent(Talent.HOLD_FAST)) {
+				if (inside != null) {
+					Dungeon.level.drop(inside, pos);
+					inside.outside = null;
+					inside = null;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	@Override
 	public boolean doEquip( Hero hero ) {
         Tracker(hero);
 		detach( hero.belongings.backpack );
@@ -413,6 +440,12 @@ public class Armor extends EquipableItem {
 		if (hero.belongings.armor == null || hero.belongings.armor.doUnequip( hero, true, false )) {
 
 			hero.belongings.armor = this;
+			if (!hero.hasTalent(Talent.HOLD_FAST))
+				if (inside != null) {
+					inside.outside = null;
+					inside.collect();
+					inside = null;
+				}
 
 			cursedKnown = true;
 			if (cursed) {

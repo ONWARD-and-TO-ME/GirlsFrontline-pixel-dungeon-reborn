@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
@@ -317,7 +318,7 @@ public class Generator {
 					Earthroot.Seed.class,
 					Dreamfoil.Seed.class,
 					Starflower.Seed.class};
-			SEED.defaultProbs = new float[]{ 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2 };
+			SEED.defaultProbs = new float[]{ -1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2 };
 			SEED.probs = SEED.defaultProbs.clone();
 			
 			SCROLL.classes = new Class<?>[]{
@@ -388,7 +389,7 @@ public class Generator {
 					GSH18.class,
 					M4A1.class
 			};
-			WEP_T1.probs = new float[]{ 0, 1, 0, 1, 1, 1, 1, 1, 1, 0.5f, 0.75f, 1 };
+			WEP_T1.probs = new float[]{ -1, 1, -1, 1, 1, 1, 1, 1, 1, 0.5f, 0.75f, 1 };
 			
 			WEP_T2.classes = new Class<?>[]{
 					M16.class,
@@ -399,7 +400,7 @@ public class Generator {
 					NagantRevolver.class,
 					Cypros.class
 			};
-			WEP_T2.probs = new float[]{ 5, 4, 5, 4, 4, 4 ,0 };
+			WEP_T2.probs = new float[]{ 5, 4, 5, 4, 4, 4 ,-1 };
 			
 			WEP_T3.classes = new Class<?>[]{
 					Ks23.class,
@@ -413,7 +414,7 @@ public class Generator {
 					MOSINNAGANT.class,
 					Pickaxe.class
 			};
-			WEP_T3.probs = new float[]{ 6, 5, 5, 4, 4, 4, 2, 0 ,2 ,0 };
+			WEP_T3.probs = new float[]{ 6, 5, 5, 4, 4, 4, 2, -1 ,2 ,-1 };
 			
 			WEP_T4.classes = new Class<?>[]{
 					Win97.class,
@@ -453,12 +454,13 @@ public class Generator {
 					MailArmor.class,
 					ScaleArmor.class,
 					PlateArmor.class,
+
 					WarriorArmor.class,
 					MageArmor.class,
 					RogueArmor.class,
 					HuntressArmor.class,
 					Type561Armor.class };
-			ARMOR.probs = new float[]{ 0, 0, 0, 0, 0 };
+			ARMOR.probs = new float[]{ -1, 0, 0, 0, 0, -1, -1, -1, -1, -1 };
 			
 			//see Generator.randomMissile
 			MISSILE.classes = new Class<?>[]{};
@@ -469,7 +471,7 @@ public class Generator {
 					ThrowingKnife.class,
 					Dart.class
 			};
-			MIS_T1.probs = new float[]{ 6, 5, 0 };
+			MIS_T1.probs = new float[]{ 6, 5, -1 };
 			
 			MIS_T2.classes = new Class<?>[]{
 					FishingSpear.class,
@@ -477,7 +479,7 @@ public class Generator {
 					Shuriken.class,
 					Clipper.class
 			};
-			MIS_T2.probs = new float[]{ 6, 5, 4, 0 };
+			MIS_T2.probs = new float[]{ 6, 5, 4, -1 };
 			
 			MIS_T3.classes = new Class<?>[]{
 					ThrowingSpear.class,
@@ -518,7 +520,7 @@ public class Generator {
 					SugarZongzi.class,
 					WholeCake.class
             };
-            FOOD.defaultProbs = new float[]{ 4, HolidayDiff(Pasty.class), HolidayDiff(XMasSugar.class), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            FOOD.defaultProbs = new float[]{ 4, HolidayDiff(Pasty.class), HolidayDiff(XMasSugar.class), -1, -1, 0, -1, -1, 0, 0, -1, 0, -1, 0, 0, -1};
 			FOOD.probs = FOOD.defaultProbs.clone();
 			
 			RING.classes = new Class<?>[]{
@@ -550,7 +552,7 @@ public class Generator {
 					LloydsBeacon.class,
 					EtherealChains.class
 			};
-			ARTIFACT.defaultProbs = new float[]{ 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+			ARTIFACT.defaultProbs = new float[]{ 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 			ARTIFACT.probs = ARTIFACT.defaultProbs.clone();
 
 			for (Category category : Category.values())
@@ -561,7 +563,7 @@ public class Generator {
     public static int HolidayDiff(Class food){
         if(food == Food.SummonPasty().getClass())
             return 1;
-        else return 0;
+        else return -1;
     }
 
 	private static final float[][] WeaponTierProbs = new float[][]{

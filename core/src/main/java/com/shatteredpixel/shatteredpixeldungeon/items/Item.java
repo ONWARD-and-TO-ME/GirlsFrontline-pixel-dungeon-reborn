@@ -227,6 +227,26 @@ public class Item implements Bundlable {
 		keptThoughLostInvent = false;
 	}
 
+	//normalizes equipment reclaimed from a previous hero's remains (Bones):
+	//caps upgrade level and forces it cursed. This must not run on freshly
+	//generated items, otherwise every generated ring/weapon/armor is cursed
+	//and Imp.Quest's uncursed-ring reward loop spins forever.
+	public void resetBone(){
+		reset();
+		if (isUpgradable()) {
+			//caps at +3
+			if (level > 3) {
+				degrade( level - 3 );
+			}
+			//thrown weapons are always IDed, otherwise set unknown
+			if (this instanceof MissileWeapon) levelKnown = true;
+			else {
+				cursed = true;
+				cursedKnown = true;
+			}
+		}
+	}
+
 	public void doThrow( Hero hero ) {
 		GameScene.selectCell(thrower);
 	}

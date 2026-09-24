@@ -171,22 +171,8 @@ public class Bones {
 					}
 				}
 				
-				if (item.isUpgradable() && !(item instanceof MissileWeapon)) {
-					item.cursed = true;
-					item.cursedKnown = true;
-				}
-				
-				if (item.isUpgradable()) {
-					//caps at +3
-					if (item.level() > 3) {
-						item.degrade( item.level() - 3 );
-					}
-					//thrown weapons are always IDed, otherwise set unknown
-					item.levelKnown = item instanceof MissileWeapon;
-				}
-				
-				item.reset();
-				
+				item.resetBone();
+
 				return item;
 			} else {
 				return null;
