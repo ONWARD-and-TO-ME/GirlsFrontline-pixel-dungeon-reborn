@@ -526,7 +526,6 @@ public class SeedFindScene extends PixelScene {
         private class summaryPane extends ScrollPane {
             int lastCount = -1;
             RedButton startBtn;
-            RedButton parallelBtn;
             public summaryPane() {
                 super(new Component());
             }
@@ -567,16 +566,7 @@ public class SeedFindScene extends PixelScene {
                 content.add(startBtn);
                 startBtn.setRect(1, summary.bottom() + 4, w - 2, 18);
 
-                parallelBtn = new RedButton("强力查找（多线程）") {
-                    @Override
-                    protected void onClick() {
-                        startSearchParallel();
-                    }
-                };
-                content.add(parallelBtn);
-                parallelBtn.setRect(1, startBtn.bottom() + 2, w - 2, 18);
-
-                content.setSize(w, parallelBtn.bottom() + 2);
+                content.setSize(w, startBtn.bottom() + 2);
             }
         }
         @Override
@@ -986,24 +976,10 @@ public class SeedFindScene extends PixelScene {
         seedDisplayCooldown += Game.elapsed;
         if (seedDisplayCooldown >= 0.25f) {
             seedDisplayCooldown = 0f;
-            if (searchViewVisible && !stopThread) {
-                if (SeedFinder.searchThreadCount > 1) {
-                    // 多线程模式：轮询各线程当前种子
-                    StringBuilder sb = new StringBuilder("正在强力查找（")
-                            .append(SeedFinder.searchThreadCount).append(" 线程）……");
-                    for (int t = 0; t < SeedFinder.searchThreadCount; t++) {
-                        long s = SeedFinder.parallelSeeds.get(t);
-                        if (s >= 0)
-                            sb.append("\n线程").append(t + 1).append("：").append(s);
-                    }
-                    String txt = sb.toString();
-                    if (!txt.equals(currentSeedText.text()))
-                        currentSeedText.text(txt);
-                } else if (currentSeedValue != lastShownSeed) {
-                    lastShownSeed = currentSeedValue;
-                    if (currentSeedValue >= 0) {
-                        currentSeedText.text("正在查找…… 当前遍历种子：" + currentSeedValue);
-                    }
+            if (currentSeedValue != lastShownSeed) {
+                lastShownSeed = currentSeedValue;
+                if (searchViewVisible && !stopThread && currentSeedValue >= 0) {
+                    currentSeedText.text("正在查找…… 当前遍历种子：" + currentSeedValue);
                 }
             }
         }
@@ -1032,7 +1008,6 @@ public class SeedFindScene extends PixelScene {
         stopThread = false;
         currentSeedValue = -1;
         lastShownSeed = -1;
-        SeedFinder.searchThreadCount = 1;
 
         final ArrayList<WantedTarget> targets = new ArrayList<>();
         for (Item item : wantedItems)
@@ -1059,46 +1034,8 @@ public class SeedFindScene extends PixelScene {
         findSeedThread.start();
     }
 
-    // 强力查种：多线程分片遍历，Dungeon 全局状态由 DUNGEON_LOCK 串行化保护
-    private void startSearchParallel() {
-        if (wantedItems.isEmpty()) return; // 无目标时多线程无意义
-        SPDSettings.challenges(SPDSettings.challenges() & ~Challenges.TEST_MODE);
-        stopThread = false;
-        currentSeedValue = -1;
-        lastShownSeed = -1;
-
-        final ArrayList<WantedTarget> targets = new ArrayList<>();
-        for (Item item : wantedItems)
-            for (int i = 0; i < item.quantity(); i++)
-                targets.add(new WantedTarget(item));
-
-        showSearchView();
-        final SeedFinder finder = new SeedFinder(targets, currentFloor, currentHero);
-        final int threadCount = Math.min(SeedFinder.parallelSeeds.length(),
-                Math.max(2, Runtime.getRuntime().availableProcessors() - 1));
-        findSeedThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String result = finder.findSeedParallel(threadCount);
-                    text = result;
-                    needUpdate = true;
-                } catch (Exception e) {
-                    GirlsFrontlinePixelDungeon.saveCrashReport(e);
-                    e.printStackTrace();
-                    if (!stopThread) {
-                        text = "查找失败：" + e.getMessage();
-                        needUpdate = true;
-                    }
-                }
-            }
-        });
-        findSeedThread.start();
-    }
-
     private void stopSearch() {
         stopThread = true;
-        SeedFinder.parallelFound = true;
         if (findSeedThread != null && findSeedThread.isAlive()) {
             findSeedThread.interrupt();
         }
