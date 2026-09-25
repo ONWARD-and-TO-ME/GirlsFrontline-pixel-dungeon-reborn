@@ -652,13 +652,14 @@ public class SeedFindScene extends PixelScene {
                     private static final int PANE_MAX_HEIGHT = 96;
 
                     private int selectedFloor = tempFloor;
+                    final public RedButton confirm;
 
                     WndSelectLevel() {
                         super();
                         ScrollPane sp = new ScrollPane(new Component());
                         add(sp);
 
-                        final RedButton confirm = new RedButton(Messages.get(SeedFindScene.class, "setFloor", selectedFloor)) {
+                        confirm = new RedButton(Messages.get(SeedFindScene.class, "setFloor", selectedFloor)) {
                             @Override
                             protected void onClick() {
                                 tempFloor = selectedFloor;
@@ -697,7 +698,7 @@ public class SeedFindScene extends PixelScene {
                             @Override
                             protected void onClick() {
                                 selectedFloor = j;
-                                FloorButton.this.text(Messages.get(SeedFindScene.class, "setFloor", selectedFloor));
+                                confirm.text(Messages.get(SeedFindScene.class, "setFloor", selectedFloor));
                             }
                         };
                     }
