@@ -159,7 +159,6 @@ public class Armor extends EquipableItem {
 						Dungeon.level.drop(insideArmor, hero.pos);
 				return;
 			}
-			inside.outside = null;
         }
         if (insideArmor == null)
             return;
@@ -292,6 +291,8 @@ public class Armor extends EquipableItem {
 		}
 		else {
 			actions.remove(AC_EQUIP);
+			if (!actions.contains(AC_UNEQUIP))
+				actions.add(AC_UNEQUIP);
 			if (!outside.unEquipable(hero)) {
 				actions.remove(AC_DROP);
 				actions.remove(AC_UNEQUIP);
@@ -510,18 +511,18 @@ public class Armor extends EquipableItem {
 
 	@Override
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
-		if (outside != null && outside.unEquipable(hero)) {
-			outside.inside = null;
-			outside = null;
-			if (!doPickUp(hero))
-				Dungeon.level.drop(this, hero.pos);
+		if (outside != null) {
+			if (outside.unEquipable(hero)) {
+				outside.inside = null;
+				outside = null;
+				if (!doPickUp(hero))
+					Dungeon.level.drop(this, hero.pos);
 
-			BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
-			if (sealBuff != null && sealBuff.armor == this) {
-				sealBuff.setArmor( null );
+				BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
+				if (sealBuff != null && sealBuff.armor == this)
+					sealBuff.setArmor( null );
+				return true;
 			}
-
-			return true;
 		}
 		else if (super.doUnequip( hero, collect, single )) {
 
@@ -537,11 +538,8 @@ public class Armor extends EquipableItem {
 
 			return true;
 
-		} else {
-
-			return false;
-
 		}
+			return false;
 	}
 	
 	@Override
