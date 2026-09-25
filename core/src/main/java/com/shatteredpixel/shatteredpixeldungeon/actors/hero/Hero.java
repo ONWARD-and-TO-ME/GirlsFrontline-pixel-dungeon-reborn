@@ -202,6 +202,7 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public class Hero extends Char {
 
@@ -1784,7 +1785,7 @@ public class Hero extends Char {
 					passable[i] = p[i] && (v[i] || m[i]);
 				}
 
-				PathFinder.Path newpath = Dungeon.findPath(this, target, passable, fieldOfView, true);
+				LinkedList<Integer> newpath = Dungeon.findPath(this, target, passable, fieldOfView, true);
 				if (newpath != null && path != null && newpath.size() > 2*path.size()){
 					path = null;
 				} else {

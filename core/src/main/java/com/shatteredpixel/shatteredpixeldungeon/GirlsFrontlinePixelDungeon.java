@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.WelcomeScene;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PlatformSupport;
 
@@ -53,11 +54,11 @@ public class GirlsFrontlinePixelDungeon extends Game {
 				, platform );
 
 		//Old And New
-		com.watabou.utils.Bundle.addAlias(
+		Bundle.addAlias(
 				com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff.class,
 				"com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.G11" );
 
-		com.watabou.utils.Bundle.addAlias(
+		Bundle.addAlias(
 				com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfTenacity.class,
 				"com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfElements" );
 		//元素合并至韧性。
@@ -65,13 +66,13 @@ public class GirlsFrontlinePixelDungeon extends Game {
 	}
 	public static void reportException( Throwable tr ) {
 		Game.GameMode = Dungeon.GameMode;
-		Game.versionCode = Dungeon.version;
+		Game.Seed = Dungeon.seed;
 		Game.Challenges = Dungeon.challenges;
 		Game.reportException(tr);
 	}
 	public static void saveCrashReport( Throwable tr ){
 		Game.GameMode = Dungeon.GameMode;
-		Game.versionCode = Dungeon.version;
+		Game.Seed = Dungeon.seed;
 		Game.Challenges = Dungeon.challenges;
 		if (instance != null)
 			Game.saveCrashReport(tr);

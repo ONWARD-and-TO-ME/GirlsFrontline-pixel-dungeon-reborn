@@ -89,13 +89,13 @@ public class PathFinder {
 		CIRCLE8 = new int[]{-width-1, -width, -width+1, +1, +width+1, +width, +width-1, -1};
 	}
 
-	public static Path find( int from, int to, boolean[] passable ) {
+	public static LinkedList<Integer> find( int from, int to, boolean[] passable ) {
 
 		if (!buildDistanceMap( from, to, passable )) {
 			return null;
 		}
 		
-		Path result = new Path();
+		LinkedList<Integer> result = new LinkedList<>();
 		int s = from;
 
 		// From the starting position we are moving downwards,
@@ -384,9 +384,5 @@ public class PathFinder {
 
 	public static int direction(int pos, Integer target) {
 		return 0;
-	}
-
-    @SuppressWarnings("serial")
-	public static class Path extends LinkedList<Integer> {
 	}
 }

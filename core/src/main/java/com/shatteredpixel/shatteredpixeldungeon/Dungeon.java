@@ -108,6 +108,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Dungeon {
 	//enum of items which have limited spawns, records how many have spawned
@@ -231,7 +232,7 @@ public class Dungeon {
 	public static Level level;
     static final Calendar calendar = Calendar.getInstance();
     public static boolean isXMAS(){
-        if(calendar.get(Calendar.MONTH)==Calendar.DECEMBER&&calendar.get(Calendar.DAY_OF_MONTH)>=17){
+        if(calendar.get(Calendar.MONTH) == Calendar.DECEMBER && calendar.get(Calendar.DAY_OF_MONTH) >= 17){
             return true;
         } else if (isGameMode(WndStartGame.GameMode.CHRISTMAS)) {
 			return true;
@@ -239,7 +240,7 @@ public class Dungeon {
             return false;
         }
     }
-	public static HashSet<Class<? extends ColorItem>> guessType = new HashSet<>() ;
+	public static final HashSet<Class<? extends ColorItem>> guessType = new HashSet<>() ;
 
 	public static QuickSlot quickslot = new QuickSlot();
 	
@@ -264,7 +265,7 @@ public class Dungeon {
 	}
 
     public static void init(String seedCode,int paramChallenges) {
-		guessType	= new HashSet<>();
+		guessType.clear();
 		version = Game.versionCode;
 		challenges = paramChallenges;
 		//全局圣诞节彩蛋开关（0层营地FNC对话切换）：所有新开的存档（含0层基地）生效
@@ -757,7 +758,7 @@ public class Dungeon {
 		seed = bundle.contains( SEED ) ? bundle.getLong( SEED ) : DungeonSeed.randomSeed();
 		Game.Seed = seed;
         customSeedText = bundle.contains( SEED_CODE ) ? bundle.getString( SEED_CODE ) : "";
-        guessType = new HashSet<>();
+        guessType.clear();
 		if (bundle.contains(GuessType))
 			guessType.addAll(Arrays.<Class<? extends ColorItem>>asList(bundle.getClassArray(GuessType)));
 		GameMode = bundle.getLong(GAME_MODE);
@@ -1080,7 +1081,7 @@ public class Dungeon {
 			BArray.setFalse(passable);
 	}
 
-	public static PathFinder.Path findPath(Char ch, int to, boolean[] pass, boolean[] vis, boolean chars) {
+	public static LinkedList<Integer> findPath(Char ch, int to, boolean[] pass, boolean[] vis, boolean chars) {
 
 		setupPassable();
 		if (ch.flying || ch.buff( Amok.class ) != null) {

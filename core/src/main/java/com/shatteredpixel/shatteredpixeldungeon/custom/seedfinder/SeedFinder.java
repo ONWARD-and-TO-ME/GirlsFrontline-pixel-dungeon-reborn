@@ -149,7 +149,6 @@ public class SeedFinder implements Runnable {
 
     protected boolean testSeed(long seed) {
         Dungeon.hero = null;
-        GamesInProgress.selectedClass = heroClass;
         Dungeon.init(DungeonSeed.convertToCode(seed));
         boolean[] itemsFound = new boolean[wantedArr.length];
         int foundCount = 0;

@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.journal;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.custom.seedfinder.SeedFinder;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
@@ -313,7 +314,7 @@ public enum Catalog {
 	}
 
 	public static void setSeen(Class<?> cls){
-		if(Dungeon.isChallenged(Challenges.TEST_MODE))
+		if(Dungeon.isChallenged(Challenges.TEST_MODE) || SeedFinder.SeedFinding)
 			return;
 		for (Catalog cat : values()) {
 			if (cat.seen.containsKey(cls) && !cat.seen.get(cls)) {

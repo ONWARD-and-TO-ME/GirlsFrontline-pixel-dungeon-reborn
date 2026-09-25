@@ -55,7 +55,7 @@ public class Bundle {
 
 	public static final String DEFAULT_KEY = "key";
 
-	private static HashMap<String,String> aliases = new HashMap<>();
+	private static final HashMap<String,String> aliases = new HashMap<>();
 
 	/*
 		WARNING: NOT ALL METHODS IN ORG.JSON ARE PRESENT ON ANDROID/IOS!

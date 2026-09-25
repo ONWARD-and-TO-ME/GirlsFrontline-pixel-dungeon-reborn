@@ -560,7 +560,7 @@ public class Generator {
 					GirlsFrontlinePixelDungeon.reportException(new Exception(category.name() + "长度不匹配"));
 		}
 	}
-    public static int HolidayDiff(Class food){
+    public static int HolidayDiff(Class<?> food){
         if(food == Food.SummonPasty().getClass())
             return 1;
         else return -1;

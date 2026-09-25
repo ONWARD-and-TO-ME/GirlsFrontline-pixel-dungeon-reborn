@@ -122,6 +122,7 @@ import com.watabou.utils.Random;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public abstract class Char extends Actor {
 
@@ -133,7 +134,7 @@ public abstract class Char extends Actor {
 	public int HP;
 
 	protected float baseSpeed	= 1;
-	protected PathFinder.Path path;
+	protected LinkedList<Integer> path;
 
 	public int paralysed	    = 0;
 	public boolean rooted		= false;
