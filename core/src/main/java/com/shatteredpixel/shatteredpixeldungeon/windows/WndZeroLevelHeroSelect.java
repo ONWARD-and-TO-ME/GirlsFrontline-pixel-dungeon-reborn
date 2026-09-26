@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
@@ -140,7 +141,11 @@ public class WndZeroLevelHeroSelect extends Window {
 		}
 		// 确保 Dungeon.cur().hero 非 null，避免更新日志等界面访问 hero 时 NPE
 		if (Dungeon.cur().hero == null){
-			Dungeon.cur().hero = new Hero(GamesInProgress.selectedClass);
+			Hero placeholder = new Hero(GamesInProgress.selectedClass);
+			//new Hero(...) 不会初始化天赋表（talents 为空 ArrayList），
+			//不补全的话一旦此 Hero 被保存，storeTalentsInBundle 会按下标越界
+			Talent.initClassTalents(placeholder);
+			Dungeon.cur().hero = placeholder;
 		}
 		super.onBackPressed();
 	}

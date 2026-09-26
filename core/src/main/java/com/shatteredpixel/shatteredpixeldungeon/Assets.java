@@ -22,39 +22,39 @@
 package com.shatteredpixel.shatteredpixeldungeon;
 
 public class Assets {
-	//unsed
+	//unsed 未使用
 	public static final String ELID         = "elid.png";
 	public static final String TOW 			= "tow.png";
 
-	//need Organize
+	//need Organize 需要整理
 	public static final String EMOTION 		= "emotion.png";
 	public static final String PYRO			= "sprites/girlpd/pyro.png";
-	public static final String P7			= "p7.png";
-	public static final String SVESPID		= "shieldvespid.png";
-	public static final String M4A1			= "m4a1.png";
-	public static final String JUPITER		= "jupiter.png";
-	public static final String TYPHOOTIN	= "typhootin.png";
-	public static final String NEMEUM 		= "nemeum.png";
-	public static final String TYPHOON		= "typhoon.png";
-	public static final String JAGUAR       = "Jaguar.png";
+	public static final String P7			= "sprites/zeroNPC/p7.png";
+	public static final String SVESPID		= "sprites/SANGVIS_FERRI/shieldvespid.png";
+	public static final String M4A1			= "sprites/zeroNPC/m4a1.png";
+	public static final String JUPITER		= "sprites/SANGVIS_FERRI/jupiter.png";
+	public static final String TYPHOOTIN	= "sprites/boss/typhootin.png";
+	public static final String NEMEUM 		= "sprites/SANGVIS_FERRI/nemeum.png";
+	public static final String TYPHOON		= "sprites/REGULAR_ARMY/typhoon.png";
+	public static final String JAGUAR       = "sprites/SANGVIS_FERRI/Jaguar.png";
 	public static final String INTRUDER 	= "intruder.png";
 
-	//need Organize
+	//need Organize 需要整理
 	public static final String ELPHELT 		= "sprites/boss/elphelt.png";
 	public static final String DRAGUN		= "sprites/dragun.png";
 	public static final String DISLOLI		= "sprites/boss/disloli.png";
 	public static final String GARM			= "sprites/garm.png";
-	public static final String DREAMER		= "sprites/dreamer.png";
+	public static final String DREAMER		= "sprites/boss/dreamer.png";
     public static final String AGENT		= "sprites/boss/Agent.png";
 	public static final String ALCHEMIST	= "sprites/boss/Alchemist.png";
-	public static final String AEGIS		= "sprites/aegis.png";
-	public static final String FNC			= "sprites/girlpd/fnc.png";
+	public static final String AEGIS		= "sprites/SANGVIS_FERRI/aegis.png";
+	public static final String FNC			= "sprites/zeroNPC/fnc.png";
 	public static final String PROWLER		= "sprites/girlpd/prowler.png";
 	public static final String EXCU			= "sprites/boss/excutioner.png";
 
 	public static final String MASTAR_HEAD	= "sprites/boss/master_head.png";
 	public static final String DISTORY		= "sprites/boss/disloli.png";
-	public static final String GOLYAT		= "sprites/girlpd/golyat.png";
+	public static final String GOLYAT		= "sprites/SANGVIS_FERRI/golyat.png";
 	public static final String MG5	    	= "sprites/girlpd/mg5.png";
 	public static final String URO			= "sprites/boss/uro.png";
 	public static final String VESPID		= "sprites/girlpd/vespid.png";
@@ -93,7 +93,7 @@ public class Assets {
 		public static final String WATER_CITY   = "environment/water3.png";
 		public static final String WATER_HALLS  = "environment/water4.png";
 
-		//need Organize
+		//need Organize 需要整理
 		public static final String WEAK_FLOOR       = "environment/custom_tiles/weak_floor.png";
 		public static final String ZERO_LEVEL       = "environment/custom_tiles/zero_level.png";
 		public static final String ROOM             = "environment/custom_tiles/room.png";
@@ -110,7 +110,7 @@ public class Assets {
 		public static final String FORWARD_CAMP_1   = "environment/custom_tiles/Forward_Camp-1.png";
 	}
 	
-	//TODO include other font assets here? Some are platform specific though...
+	//TODO include other font assets here? Some are platform specific though... 一些平台特定的字体资产
 	public static class Fonts {
 		public static final String PIXELFONT= "fonts/pixel_font.png";
 	}
@@ -313,11 +313,11 @@ public class Assets {
 		public static final String PET      = "sprites/pet.png";
 		public static final String AMULET   = "sprites/amulet.png";
 
-		public static final String NOEL       = "sprites/noel.png";
+		public static final String NOEL       = "sprites/zeroNPC/noel.png";
 		public static final String DEELE      = "sprites/zeroNPC/deele.png";
-		public static final String RAT        = "sprites/rat.png";
+		public static final String RAT        = "sprites/SANGVIS_FERRI/rat.png";
 		public static final String FETID_RAT  = "sprites/fetid_rat.png";
-		public static final String BRUTE      = "sprites/brute.png";
+		public static final String BRUTE      = "sprites/SANGVIS_FERRI/brute.png";
 		public static final String SPINNER    = "sprites/spinner.png";
 		public static final String SPINNERCAT = "sprites/spinner_cat.png";
 		public static final String DM300      = "sprites/dm300.png";
@@ -334,9 +334,9 @@ public class Assets {
 		public static final String SHAMAN     = "sprites/shaman.png";
 		public static final String THIEF      = "sprites/thief.png";
 		public static final String TENGU      = "sprites/tengu.png";
-		public static final String SHEEP      = "sprites/sheep.png";
-		public static final String KEEPER     = "sprites/shopkeeper.png";
-		public static final String BAT        = "sprites/bat.png";
+		public static final String SHEEP      = "sprites/zeroNPC/sheep.png";
+		public static final String KEEPER     = "sprites/zeroNPC/shopkeeper.png";
+		public static final String BAT        = "sprites/SANGVIS_FERRI/bat.png";
 		public static final String ELEMENTAL  = "sprites/elemental.png";
 		public static final String MONK       = "sprites/monk.png";
 		public static final String WARLOCK    = "sprites/warlock.png";
@@ -347,13 +347,12 @@ public class Assets {
 		public static final String FISTS      = "sprites/yog_fists.png";
 		public static final String YOG        = "sprites/yog.png";
 		public static final String LARVA      = "sprites/girlpd/larva.png";
-        public static final String GHOST      = "sprites/ghost.png";
+        public static final String GHOST      = "sprites/zeroNPC/ghost.png";
         public static final String POT      = "sprites/char/pot.png";
 		public static final String MAKER      = "sprites/wandmaker.png";
-		public static final String TROLL      = "sprites/blacksmith.png";
-		public static final String IMP        = "sprites/demon.png";
+		public static final String TROLL      = "sprites/zeroNPC/blacksmith.png";
 		public static final String RATKING    = "sprites/ratking.png";
-		public static final String BEE        = "sprites/bee.png";
+		public static final String BEE        = "sprites/girlpd/bee.png";
 		public static final String MIMIC      = "sprites/mimic.png";
 		public static final String ROT_LASH   = "sprites/rot_lasher.png";
 		public static final String ROT_HEART  = "sprites/rot_heart.png";
@@ -361,12 +360,12 @@ public class Assets {
 		public static final String WARDS      = "sprites/wards.png";
 		public static final String GUARDIAN   = "sprites/girlpd/SAT8.png";
 		public static final String SLIME      = "sprites/slime.png";
-		public static final String SNAKE      = "sprites/snake.png";
+		public static final String SNAKE      = "sprites/girlpd/snake.png";
 		public static final String NECRO      = "sprites/necromancer.png";
-        public static final String GOLYATFACTORY      = "sprites/girlpd\\golyatfactory.png";
+        public static final String GOLYATFACTORY      = "sprites/SANGVIS_FERRI/golyatfactory.png";
 		public static final String GHOUL      = "sprites/girlpd/undead.png";
 		public static final String RIPPER     = "sprites/ripper.png";
-        public static final String GNOLLSWAP = "sprites/GnollSWAP.png";
+        public static final String GNOLLSWAP = "sprites/SANGVIS_FERRI/GnollSWAP.png";
 		public static final String SPAWNER    = "sprites/spawner.png";
 		public static final String DM100      = "sprites/dm100.png";
 		public static final String PYLON      = "sprites/pylon.png";
@@ -374,7 +373,7 @@ public class Assets {
 		public static final String LOTUS      = "sprites/girlpd/lotus1.png";
 		public static final String NINJA_LOG  = "sprites/ninja_log.png";
 		public static final String SPIRIT_HAWK= "sprites/spirit_hawk.png";
-		public static final String RED_SENTRY = "sprites/girlpd/red_pointer.png";
+		public static final String RED_SENTRY = "sprites/PARA_DEUS/red_pointer.png";
 
 		public static final String AEGIS    = "sprites/girlpd/aegis.png";
 		public static final String JAEGER    = "sprites/girlpd/jaeger.png";

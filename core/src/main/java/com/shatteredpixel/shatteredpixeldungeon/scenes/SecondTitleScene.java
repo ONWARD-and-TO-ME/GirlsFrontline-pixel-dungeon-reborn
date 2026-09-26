@@ -40,6 +40,10 @@ public class SecondTitleScene extends PixelScene {
 	private static int month = SPDSettings.getSpecialDay_Month();
 	private static int day = SPDSettings.getSpecialDay_Day();
 
+	//下一次 create() 时弹出0层角色选择窗口。
+	//场景切换要到下一帧才生效，无法把窗口直接 add 到即将创建的场景，故用此标记传递
+	private static boolean pendingHeroSelect = false;
+
 	private TitlePageSwipe pageSwipe;
 	@Override
 	public void create() {
@@ -178,6 +182,12 @@ public class SecondTitleScene extends PixelScene {
 		pageSwipe.attach();
 
 		fadeIn();
+
+		//从游戏内“返回地表”但0层无有效存档时，落到本页后弹出角色选择
+		if (pendingHeroSelect){
+			pendingHeroSelect = false;
+			addToFront(new WndZeroLevelHeroSelect());
+		}
 	}
 
 	private void placeTorch( float x, float y ) {
@@ -200,26 +210,34 @@ public class SecondTitleScene extends PixelScene {
 	}
 
     public static void enterMainGame(){
-        Dungeon.cur().hero = null;
+        //先只读检查0号槽，在此之前绝不能改动当前对局的 hero/curSlot 等内存状态：
+        //本方法可能从存活的 GameScene（ESC“返回地表”）调用，若0层无存档而提前
+        //置空 hero / 切换槽位，角色选择窗又盖在旧地牢场景上，之后任何保存都会把
+        //一个天赋表为空的临时 Hero 写盘，导致 storeTalentsInBundle 越界崩溃
+        GamesInProgress.Info gameInfo = GamesInProgress.check(0);
+        if (gameInfo != null && gameInfo.version < Game.versionCode){
+            Dungeon.deleteGame(0, true);
+            gameInfo = null;
+        }
+
+        if (gameInfo == null){
+            //0层无有效存档：先落到第二标题页（离开可能存活的 GameScene），再弹角色选择
+            GamesInProgress.selectedClass = null;
+            if (Game.scene() instanceof SecondTitleScene){
+                GirlsFrontlinePixelDungeon.scene().addToFront(new WndZeroLevelHeroSelect());
+            } else {
+                pendingHeroSelect = true;
+                GirlsFrontlinePixelDungeon.switchNoFade(SecondTitleScene.class);
+            }
+            return;
+        }
+
+        //有0层存档：清空动作指示器后经 InterlevelScene 工作线程读档，
+        //hero 的置空与恢复都在加载线程内完成（loadGame），渲染线程不再提前置空
         ActionIndicator.clearAll();
         GamesInProgress.curSlot = 0;
-        GamesInProgress.Info gameInfo = GamesInProgress.check(GamesInProgress.curSlot);
-        if(gameInfo == null){
-            // 0层存档未创建，弹出角色选择窗口
-            GamesInProgress.selectedClass = null;
-            GirlsFrontlinePixelDungeon.scene().addToFront(new WndZeroLevelHeroSelect());
-        }else if(gameInfo.version < Game.versionCode){
-            Dungeon.deleteGame(GamesInProgress.curSlot, true);
-            GamesInProgress.selectedClass = null;
-            GirlsFrontlinePixelDungeon.scene().addToFront(new WndZeroLevelHeroSelect());
-        }else{
-            //必须经 InterlevelScene 工作线程读档后再切场：
-            //若在渲染线程（ESC“返回地表”/0层电脑返回）直接 InterlevelScene.restore()，
-            //静态 Dungeon.level 会立刻换成0层，而旧 GameScene 在本帧还要再 update 一次
-            //（场景切换下一帧才执行），大厅等旧楼层视觉会按0层数组越界（如 Stream 崩溃）
-            InterlevelScene.mode = InterlevelScene.Mode.CONTINUE;
-            GirlsFrontlinePixelDungeon.switchNoFade(InterlevelScene.class);
-        }
+        InterlevelScene.mode = InterlevelScene.Mode.CONTINUE;
+        GirlsFrontlinePixelDungeon.switchNoFade(InterlevelScene.class);
     }
 	//公开：0层电脑窗口（windows.WndComputer）也会打开节日蛋糕窗口
 	public static class WndCake extends WndOptions {

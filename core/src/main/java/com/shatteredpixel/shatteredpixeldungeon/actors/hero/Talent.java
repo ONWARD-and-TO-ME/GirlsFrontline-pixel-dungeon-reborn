@@ -881,6 +881,20 @@ public enum Talent {
 	private static final String TALENT_TIER = "talents_tier_";
 
 	public static void storeTalentsInBundle( Bundle bundle, Hero hero ){
+		//防御：极端时序下（如角色选择窗取消时塞了未初始化的占位 Hero）
+		//talents 可能为空表，保存前补全，避免按层下标访问越界
+		if (hero.talents == null || hero.talents.size() < MAX_TALENT_TIERS){
+			if (hero.heroClass != null){
+				initClassTalents(hero);
+				if (hero.subClass != null)      initSubclassTalents(hero);
+				if (hero.armorAbility != null)  initArmorTalents(hero);
+			}
+		}
+		if (hero.talents.size() < MAX_TALENT_TIERS){
+			while (hero.talents.size() < MAX_TALENT_TIERS){
+				hero.talents.add(new LinkedHashMap<>());
+			}
+		}
 		for (int i = 0; i < MAX_TALENT_TIERS; i++){
 			LinkedHashMap<Talent, Integer> tier = hero.talents.get(i);
 			Bundle tierBundle = new Bundle();
