@@ -40,7 +40,7 @@ public class Corrosion extends Armor.Glyph {
 
 		if (Random.Int(10) == 0){
 			int pos = defender.pos;
-			for (int i : PathFinder.NEIGHBOURS9){
+			for (int i : PathFinder.cur().NEIGHBOURS9){
 				Splash.at(pos+i, 0x000000, 5);
 				if (Actor.findChar(pos+i) != null)
 					Buff.affect(Actor.findChar(pos+i), Ooze.class).set( Ooze.DURATION );

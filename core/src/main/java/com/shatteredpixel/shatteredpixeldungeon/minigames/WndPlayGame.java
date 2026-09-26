@@ -193,8 +193,8 @@ public class WndPlayGame extends Window {
     private void lose(){
         if (Random.Int(100)==0) {
             Grass grass = new Grass();
-            if (!grass.doPickUp(Dungeon.hero))
-                Dungeon.level.drop(grass, Dungeon.hero.pos);
+            if (!grass.doPickUp(Dungeon.cur().hero))
+                Dungeon.level.drop(grass, Dungeon.cur().hero.pos);
         }
     }
     private void tie(){

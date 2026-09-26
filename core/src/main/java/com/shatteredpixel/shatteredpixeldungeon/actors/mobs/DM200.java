@@ -74,11 +74,11 @@ public class DM200 extends Mob {
 	public float lootChance(){
 		//each drop makes future drops 1/2 as likely
 		// so loot chance looks like: 1/8, 1/16, 1/32, 1/64, etc.
-		return super.lootChance() * (float)Math.pow(1/2f, Dungeon.LimitedDrops.DM200_EQUIP.count);
+		return super.lootChance() * (float)Math.pow(1/2f, Dungeon.LimitedDrops.DM200_EQUIP.count());
 	}
 
 	public Item createLoot() {
-		Dungeon.LimitedDrops.DM200_EQUIP.count++;
+		Dungeon.LimitedDrops.DM200_EQUIP.used();
 		//uses probability tables for dwarf city
 		if (loot == Generator.Category.WEAPON){
 			return Generator.randomWeapon(4);
@@ -129,9 +129,9 @@ public class DM200 extends Mob {
 
 	private boolean canVent(int target){
 		if (ventCooldown > 0) return false;
-		PathFinder.buildDistanceMap(target, BArray.not(Dungeon.level.solid, null), Dungeon.level.distance(pos, target)+1);
+		PathFinder.cur().buildDistanceMap(target, BArray.not(Dungeon.level.solid, null), Dungeon.level.distance(pos, target)+1);
 		//vent can go around blocking terrain, but not through it
-		if (PathFinder.distance[pos] == Integer.MAX_VALUE){
+		if (PathFinder.cur().distance[pos] == Integer.MAX_VALUE){
 			return false;
 		}
 		return true;

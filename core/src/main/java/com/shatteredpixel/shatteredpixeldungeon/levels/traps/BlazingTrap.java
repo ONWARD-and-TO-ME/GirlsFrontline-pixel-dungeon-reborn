@@ -42,9 +42,9 @@ public class BlazingTrap extends Trap {
 
 	@Override
 	public void activate() {
-		PathFinder.buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 2 );
-		for (int i = 0; i < PathFinder.distance.length; i++) {
-			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+		PathFinder.cur().buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 2 );
+		for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+			if (PathFinder.cur().distance[i] < Integer.MAX_VALUE) {
 				if (Dungeon.level.pit[i] || Dungeon.level.water[i])
 					GameScene.add(Blob.seed(i, 1, Fire.class));
 				else

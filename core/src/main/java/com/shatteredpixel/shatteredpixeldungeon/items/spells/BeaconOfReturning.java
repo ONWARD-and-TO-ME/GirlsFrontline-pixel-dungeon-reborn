@@ -85,7 +85,7 @@ public class BeaconOfReturning extends Spell {
 	
 	@Override
 	protected void onThrow(int cell) {
-		if (Dungeon.hero.belongings.getItem(getClass()) == null) {
+		if (Dungeon.cur().hero.belongings.getItem(getClass()) == null) {
 			Notes.remove(Notes.Landmark.BEACON_LOCATION, returnLevelId);
 		}
         returnLevelId = -1;
@@ -126,8 +126,8 @@ public class BeaconOfReturning extends Spell {
 		
 		// 检查是否有敌人，如果有则消耗两个回合
 		boolean hasEnemy = false;
-		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-			Char ch = Actor.findChar(hero.pos + PathFinder.NEIGHBOURS8[i]);
+		for (int i = 0; i < PathFinder.cur().NEIGHBOURS8.length; i++) {
+			Char ch = Actor.findChar(hero.pos + PathFinder.cur().NEIGHBOURS8[i]);
 			if (ch != null && ch.alignment == Char.Alignment.ENEMY) {
 								// if (hasEnemy) {
 								// GLog.w( Messages.get(this, "creatures") );
@@ -152,7 +152,7 @@ public class BeaconOfReturning extends Spell {
 			for(Mob m : Dungeon.level.mobs){
 				if (m.pos == hero.pos){
 					//displace mob
-					for(int i : PathFinder.NEIGHBOURS8){
+					for(int i : PathFinder.cur().NEIGHBOURS8){
 						if (Actor.findChar(m.pos+i) == null && Dungeon.level.passable[m.pos + i]){
 							m.pos += i;
 							m.sprite.point(m.sprite.worldToCamera(m.pos));
@@ -166,9 +166,9 @@ public class BeaconOfReturning extends Spell {
 			GameScene.updateFog();
 		} else {
 
-			TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+			TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
 			if (timeFreeze != null) timeFreeze.disarmPressedTraps();
-			Swiftthistle.TimeBubble timeBubble = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+			Swiftthistle.TimeBubble timeBubble = Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
 			if (timeBubble != null) timeBubble.disarmPressedTraps();
 			
 			InterlevelScene.mode = InterlevelScene.Mode.RETURN;

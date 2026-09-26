@@ -138,7 +138,7 @@ public abstract class TippedDart extends Dart {
 	public float durabilityPerUse() {
 		float use = super.durabilityPerUse();
 		
-		use /= HuntressTalent.durableTipsDurabilityDivisor(Dungeon.hero);
+		use /= HuntressTalent.durableTipsDurabilityDivisor(Dungeon.cur().hero);
 
 		//checks both destination and source position
 		float lotusPreserve = 0f;
@@ -153,7 +153,7 @@ public abstract class TippedDart extends Dart {
 			}
 			targetPos = -1;
 		}
-		int p = curUser == null ? Dungeon.hero.pos : curUser.pos;
+		int p = curUser == null ? Dungeon.cur().hero.pos : curUser.pos;
 		for (Char ch : Actor.chars()){
 			if (ch instanceof WandOfRegrowth.Lotus){
 				WandOfRegrowth.Lotus l = (WandOfRegrowth.Lotus) ch;

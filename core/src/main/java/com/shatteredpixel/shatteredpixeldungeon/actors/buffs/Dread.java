@@ -61,7 +61,7 @@ public class Dread extends Buff {
 	public boolean act() {
 
 		if (target!=null&&!Dungeon.level.heroFOV[target.pos]
-				&& Dungeon.level.distance(target.pos, Dungeon.hero.pos) >= 6) {
+				&& Dungeon.level.distance(target.pos, Dungeon.cur().hero.pos) >= 6) {
             if(target.getClass()!= RatXMAS.class)
             //极度恐惧buff也不会清除圣诞狗
             {

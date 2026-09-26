@@ -53,14 +53,14 @@ public class GeyserTrap extends Trap {
 		Sample.INSTANCE.play(Assets.Sounds.GAS, 1f, 0.75f);
 
 		Fire fire = (Fire) Dungeon.level.blobs.get(Fire.class);
-		PathFinder.buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 2 );
-		for (int i = 0; i < PathFinder.distance.length; i++) {
-			if (PathFinder.distance[i] == 2 && Random.Int(3) > 0){
+		PathFinder.cur().buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 2 );
+		for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+			if (PathFinder.cur().distance[i] == 2 && Random.Int(3) > 0){
 				Dungeon.level.setCellToWater(true, i);
 				if (fire != null){
 					fire.clear(i);
 				}
-			} else if (PathFinder.distance[i] < 2){
+			} else if (PathFinder.cur().distance[i] < 2){
 				Dungeon.level.setCellToWater(true, i);
 				if (fire != null){
 					fire.clear(i);
@@ -68,7 +68,7 @@ public class GeyserTrap extends Trap {
 			}
 		}
 
-		for (int i : PathFinder.NEIGHBOURS8){
+		for (int i : PathFinder.cur().NEIGHBOURS8){
 			Char ch = Actor.findChar(pos + i);
 			if (ch != null){
 				//trace a ballistica to our target (which will also extend past them)
@@ -85,10 +85,10 @@ public class GeyserTrap extends Trap {
 			int targetpos = -1;
 			if (centerKnockBackDirection != -1){
 				targetpos = centerKnockBackDirection;
-			} else if (ch == Dungeon.hero){
+			} else if (ch == Dungeon.cur().hero){
 				//if it is the hero, random direction that isn't into a hazard
 				ArrayList<Integer> candidates = new ArrayList<>();
-				for (int i : PathFinder.NEIGHBOURS8){
+				for (int i : PathFinder.cur().NEIGHBOURS8){
 					//add as a candidate if both cells on the trajectory are safe
 					if (!Dungeon.level.avoid[pos + i] && !Dungeon.level.avoid[pos + i + i]){
 						candidates.add(pos + i);
@@ -99,7 +99,7 @@ public class GeyserTrap extends Trap {
 				}
 			} else {
 				//random direction if it isn't the hero
-				targetpos = pos + PathFinder.NEIGHBOURS8[Random.Int(8)];
+				targetpos = pos + PathFinder.cur().NEIGHBOURS8[Random.Int(8)];
 			}
 			if (targetpos != -1){
 				//trace a ballistica in the direction of our target

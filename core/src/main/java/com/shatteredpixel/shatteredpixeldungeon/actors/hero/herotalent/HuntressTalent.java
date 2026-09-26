@@ -97,7 +97,7 @@ public final class HuntressTalent {
 			return;
 		}
 		ArrayList<Integer> grassCells = new ArrayList<>();
-		for (int i : PathFinder.NEIGHBOURS8){
+		for (int i : PathFinder.cur().NEIGHBOURS8){
 			grassCells.add(pos+i);
 		}
 		Random.shuffle(grassCells);
@@ -273,7 +273,7 @@ public final class HuntressTalent {
 	/** 预知射击：在落点挂揭示区域并进入冷却 */
 	public static void applySeerShot( Hero hero, int cell ){
 		RevealedArea a = Buff.affect(hero, RevealedArea.class, seerShotMaxDuration(hero));
-		a.depth = Dungeon.depth;
+		a.depth = Dungeon.cur().depth;
 		a.pos = cell;
 		Buff.affect(hero, Talent.SeerShotCooldown.class, 20f);
 	}

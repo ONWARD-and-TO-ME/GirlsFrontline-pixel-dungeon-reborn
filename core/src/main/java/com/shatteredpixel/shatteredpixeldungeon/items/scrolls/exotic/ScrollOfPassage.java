@@ -49,17 +49,17 @@ public class ScrollOfPassage extends ExoticScroll {
 			
 		}
 
-		TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+		TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
 		if (timeFreeze != null) timeFreeze.disarmPressedTraps();
-		Swiftthistle.TimeBubble timeBubble = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+		Swiftthistle.TimeBubble timeBubble = Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
 		if (timeBubble != null) timeBubble.disarmPressedTraps();
 
 		InterlevelScene.mode = InterlevelScene.Mode.RETURN;
         if (Dungeon.levelId % 1000 != Dungeon.levelId) {
-            InterlevelScene.returnLevel = Dungeon.depth;
+            InterlevelScene.returnLevel = Dungeon.cur().depth;
             //子层读大传回主层
         } else {
-            InterlevelScene.returnLevel = Math.max(1, (Dungeon.depth - 1 - (Dungeon.depth - 2) % 5));
+            InterlevelScene.returnLevel = Math.max(1, (Dungeon.cur().depth - 1 - (Dungeon.cur().depth - 2) % 5));
         }
         InterlevelScene.returnPos = -1;
 		Game.switchScene( InterlevelScene.class );

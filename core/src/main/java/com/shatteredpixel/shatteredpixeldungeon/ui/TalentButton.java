@@ -134,11 +134,11 @@ public class TalentButton extends Button {
 
 		Window toAdd = null;
 		boolean hasClass = false;
-		if (mode == Mode.UPGRADE && Dungeon.hero != null){
-			if (Dungeon.hero.talentPointsAvailable(tier) > 0
-					&& Dungeon.hero.pointsInTalent(talent) < talent.maxPoints()
-					&& Dungeon.hero.isAlive()) {
-				toAdd = new WndInfoTalent(talent, pointsInTalent, Dungeon.hero.heroClass, new WndInfoTalent.TalentButtonCallback(mode) {
+		if (mode == Mode.UPGRADE && Dungeon.cur().hero != null){
+			if (Dungeon.cur().hero.talentPointsAvailable(tier) > 0
+					&& Dungeon.cur().hero.pointsInTalent(talent) < talent.maxPoints()
+					&& Dungeon.cur().hero.isAlive()) {
+				toAdd = new WndInfoTalent(talent, pointsInTalent, Dungeon.cur().hero.heroClass, new WndInfoTalent.TalentButtonCallback(mode) {
 
 					@Override
 					public String prompt() {
@@ -154,9 +154,9 @@ public class TalentButton extends Button {
 			else
 				hasClass = true;
 		}
-		else if (mode == Mode.METAMORPH_CHOOSE && Dungeon.hero != null) {
-			if (Dungeon.hero.isAlive()) {
-				toAdd = new WndInfoTalent(talent, pointsInTalent, Dungeon.hero.heroClass, new WndInfoTalent.TalentButtonCallback(mode) {
+		else if (mode == Mode.METAMORPH_CHOOSE && Dungeon.cur().hero != null) {
+			if (Dungeon.cur().hero.isAlive()) {
+				toAdd = new WndInfoTalent(talent, pointsInTalent, Dungeon.cur().hero.heroClass, new WndInfoTalent.TalentButtonCallback(mode) {
 
 					@Override
 					public String prompt() {
@@ -175,9 +175,9 @@ public class TalentButton extends Button {
 			else
 				hasClass = true;
 		}
-		else if (mode == Mode.METAMORPH_REPLACE && Dungeon.hero != null) {
-			if (Dungeon.hero.isAlive()) {
-				toAdd = new WndInfoTalent(talent, pointsInTalent, Dungeon.hero.heroClass, new WndInfoTalent.TalentButtonCallback(mode) {
+		else if (mode == Mode.METAMORPH_REPLACE && Dungeon.cur().hero != null) {
+			if (Dungeon.cur().hero.isAlive()) {
+				toAdd = new WndInfoTalent(talent, pointsInTalent, Dungeon.cur().hero.heroClass, new WndInfoTalent.TalentButtonCallback(mode) {
 
 					@Override
 					public String prompt() {
@@ -188,7 +188,7 @@ public class TalentButton extends Button {
 					public void call() {
 						Talent replacing = ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.replacing;
 						int point = 0;
-						for (LinkedHashMap<Talent, Integer> tier : Dungeon.hero.talents) {
+						for (LinkedHashMap<Talent, Integer> tier : Dungeon.cur().hero.talents) {
 							if (tier.containsKey(replacing)) {
 								LinkedHashMap<Talent, Integer> newTier = new LinkedHashMap<>();
 								for (Talent t : tier.keySet()) {
@@ -200,35 +200,35 @@ public class TalentButton extends Button {
 										newTier.put(talent, 0);
 										//被蜕变的是额外天赋，则直接修改额外天赋表，而非记录蜕变关系
 										//蜕变的替换在生成初始表时，而额外天赋的加入是在生成完成后，时机滞后了，以蜕变逻辑实行，在读档的时候无法复原
-										if (Dungeon.hero.addTalents.containsKey(replacing)) {
+										if (Dungeon.cur().hero.addTalents.containsKey(replacing)) {
 											LinkedHashMap<Talent, Integer> newAddTalents = new LinkedHashMap<>();
-											for (Talent oddAdd : Dungeon.hero.addTalents.keySet()) {
+											for (Talent oddAdd : Dungeon.cur().hero.addTalents.keySet()) {
 												if (oddAdd == replacing)
-													newAddTalents.put(talent, Dungeon.hero.addTalents.get(replacing));
+													newAddTalents.put(talent, Dungeon.cur().hero.addTalents.get(replacing));
 												else
-													newAddTalents.put(oddAdd, Dungeon.hero.addTalents.get(oddAdd));
+													newAddTalents.put(oddAdd, Dungeon.cur().hero.addTalents.get(oddAdd));
 											}
-											Dungeon.hero.addTalents = newAddTalents;
+											Dungeon.cur().hero.addTalents = newAddTalents;
 										}
 										//将这个蜕变关系记录到蜕变Map中，以用于在读档时恢复蜕变关系
-										else if (!Dungeon.hero.metamorphedTalents.containsValue(replacing)) {
+										else if (!Dungeon.cur().hero.metamorphedTalents.containsValue(replacing)) {
 											//旧天赋不是键值，即旧天赋为原始天赋时，将旧天赋作为键名，新天赋作为键值保存
-											Dungeon.hero.metamorphedTalents.put(replacing, talent);
+											Dungeon.cur().hero.metamorphedTalents.put(replacing, talent);
 
 											//if what we're replacing is already a value, we need to simplify the data structure
 										} else {
 											//以旧天赋为索引寻找蜕变关系时，找到的原始天赋是新天赋，即蜕变回原始天赋时，移除蜕变关系，以简化结构
 											//A-B-A时，将删除这组蜕变关系，而非保留A-A
-											if (Dungeon.hero.metamorphedTalents.get(talent) == replacing) {
-												Dungeon.hero.metamorphedTalents.remove(talent);
+											if (Dungeon.cur().hero.metamorphedTalents.get(talent) == replacing) {
+												Dungeon.cur().hero.metamorphedTalents.remove(talent);
 
 											}
 											//以旧天赋为索引寻找到的不是原始天赋时，由于读档是以原始天赋为索引，所以要更新蜕变关系
 											//A-B-C，将更改为A-C
 											else {
-												for (Talent t2 : Dungeon.hero.metamorphedTalents.keySet()) {
-													if (Dungeon.hero.metamorphedTalents.get(t2) == replacing) {
-														Dungeon.hero.metamorphedTalents.put(t2, talent);
+												for (Talent t2 : Dungeon.cur().hero.metamorphedTalents.keySet()) {
+													if (Dungeon.cur().hero.metamorphedTalents.get(t2) == replacing) {
+														Dungeon.cur().hero.metamorphedTalents.put(t2, talent);
 													}
 												}
 											}
@@ -240,12 +240,12 @@ public class TalentButton extends Button {
 									}
 								}
 								//将新天赋Map替换掉旧的Map
-								Dungeon.hero.talents.set(ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.tier - 1, newTier);
-								onReplace(replacing, talent, Dungeon.hero);
+								Dungeon.cur().hero.talents.set(ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.tier - 1, newTier);
+								onReplace(replacing, talent, Dungeon.cur().hero);
 								//对已在玩家天赋表中的新天赋逐次加点并获得各级收益
 								for (int i = 1; i <= point; i++) {
-									Dungeon.hero.talents.get(ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.tier - 1).put(talent, i);
-									Talent.onTalentUpgraded(Dungeon.hero, talent);
+									Dungeon.cur().hero.talents.get(ScrollOfMetamorphosis.WndMetamorphReplace.INSTANCE.tier - 1).put(talent, i);
+									Talent.onTalentUpgraded(Dungeon.cur().hero, talent);
 									//我希望蜕变天赋是对天赋重新升级，令那些在升级时有收益的天赋重新获取一遍收益
 								}
 								break;
@@ -266,9 +266,9 @@ public class TalentButton extends Button {
 			else
 				hasClass = true;
 		}
-		else if (mode == Mode.DEBUG_CHOOSE && Dungeon.hero != null) {
-			if (Dungeon.hero.isAlive()) {
-				toAdd = new WndInfoTalent(talent, pointsInTalent, Dungeon.hero.heroClass, new WndInfoTalent.TalentButtonCallback(mode) {
+		else if (mode == Mode.DEBUG_CHOOSE && Dungeon.cur().hero != null) {
+			if (Dungeon.cur().hero.isAlive()) {
+				toAdd = new WndInfoTalent(talent, pointsInTalent, Dungeon.cur().hero.heroClass, new WndInfoTalent.TalentButtonCallback(mode) {
 
 					@Override
 					public String prompt() {
@@ -287,9 +287,9 @@ public class TalentButton extends Button {
 			else
 				hasClass = true;
 		}
-		else if (mode == Mode.DEBUG_REPLACE && Dungeon.hero != null) {
-			if (Dungeon.hero.isAlive()) {
-				toAdd = new WndInfoTalent(talent, pointsInTalent, Dungeon.hero.heroClass, new WndInfoTalent.TalentButtonCallback(mode) {
+		else if (mode == Mode.DEBUG_REPLACE && Dungeon.cur().hero != null) {
+			if (Dungeon.cur().hero.isAlive()) {
+				toAdd = new WndInfoTalent(talent, pointsInTalent, Dungeon.cur().hero.heroClass, new WndInfoTalent.TalentButtonCallback(mode) {
 
 					@Override
 					public String prompt() {
@@ -299,7 +299,7 @@ public class TalentButton extends Button {
 					@Override
 					public void call() {
 						Talent replacing = WndReplaceTalent.INSTANCE.replacing;
-						for (LinkedHashMap<Talent, Integer> tier : Dungeon.hero.talents) {
+						for (LinkedHashMap<Talent, Integer> tier : Dungeon.cur().hero.talents) {
 							if (tier.containsKey(replacing)) {
 								LinkedHashMap<Talent, Integer> newTier = new LinkedHashMap<>();
 								for (Talent t : tier.keySet()) {
@@ -307,35 +307,35 @@ public class TalentButton extends Button {
 										newTier.put(talent, 0);
 										//被蜕变的是额外天赋，则直接修改额外天赋表，而非记录蜕变关系
 										//蜕变的替换在生成初始表时，而额外天赋的加入是在生成完成后，时机滞后了，以蜕变逻辑实行，在读档的时候无法复原
-										if (Dungeon.hero.addTalents.containsKey(replacing)) {
+										if (Dungeon.cur().hero.addTalents.containsKey(replacing)) {
 											LinkedHashMap<Talent, Integer> newAddTalents = new LinkedHashMap<>();
-											for (Talent oddAdd : Dungeon.hero.addTalents.keySet()) {
+											for (Talent oddAdd : Dungeon.cur().hero.addTalents.keySet()) {
 												if (oddAdd == replacing)
-													newAddTalents.put(talent, Dungeon.hero.addTalents.get(replacing));
+													newAddTalents.put(talent, Dungeon.cur().hero.addTalents.get(replacing));
 												else
-													newAddTalents.put(oddAdd, Dungeon.hero.addTalents.get(oddAdd));
+													newAddTalents.put(oddAdd, Dungeon.cur().hero.addTalents.get(oddAdd));
 											}
-											Dungeon.hero.addTalents = newAddTalents;
+											Dungeon.cur().hero.addTalents = newAddTalents;
 										}
 										//将这个蜕变关系记录到蜕变Map中，以用于在读档时恢复蜕变关系
-										else if (!Dungeon.hero.metamorphedTalents.containsValue(replacing)) {
+										else if (!Dungeon.cur().hero.metamorphedTalents.containsValue(replacing)) {
 											//旧天赋不是键值，即旧天赋为原始天赋时，将旧天赋作为键名，新天赋作为键值保存
-											Dungeon.hero.metamorphedTalents.put(replacing, talent);
+											Dungeon.cur().hero.metamorphedTalents.put(replacing, talent);
 
 											//if what we're replacing is already a value, we need to simplify the data structure
 										}
 										else {
 											//以旧天赋为索引寻找蜕变关系时，找到的原始天赋是新天赋，即蜕变回原始天赋时，移除蜕变关系，以简化结构
 											//A-B-A时，将删除这组蜕变关系，而非保留A-A
-											if (Dungeon.hero.metamorphedTalents.get(talent) == replacing) {
-												Dungeon.hero.metamorphedTalents.remove(talent);
+											if (Dungeon.cur().hero.metamorphedTalents.get(talent) == replacing) {
+												Dungeon.cur().hero.metamorphedTalents.remove(talent);
 											}
 											//以旧天赋为索引寻找到的不是原始天赋时，由于读档是以原始天赋为索引，所以要更新蜕变关系
 											//A-B-C，将更改为A-C
 											else {
-												for (Talent t2 : Dungeon.hero.metamorphedTalents.keySet()) {
-													if (Dungeon.hero.metamorphedTalents.get(t2) == replacing) {
-														Dungeon.hero.metamorphedTalents.put(t2, talent);
+												for (Talent t2 : Dungeon.cur().hero.metamorphedTalents.keySet()) {
+													if (Dungeon.cur().hero.metamorphedTalents.get(t2) == replacing) {
+														Dungeon.cur().hero.metamorphedTalents.put(t2, talent);
 													}
 												}
 											}
@@ -347,16 +347,16 @@ public class TalentButton extends Button {
 									}
 								}
 								//将新天赋Map替换掉旧的Map
-								Dungeon.hero.talents.set(WndReplaceTalent.INSTANCE.tier - 1, newTier);
-								onReplace(replacing, talent, Dungeon.hero);
+								Dungeon.cur().hero.talents.set(WndReplaceTalent.INSTANCE.tier - 1, newTier);
+								onReplace(replacing, talent, Dungeon.cur().hero);
 								//对已在玩家天赋表中的新天赋逐次加点并获得各级收益
 								break;
 							}
 						}
 
 						//结束的动画
-						Dungeon.hero.sprite.emitter().start(Speck.factory(Speck.CHANGE), 0.2f, 10);
-						Transmuting.show(Dungeon.hero, replacing, talent);
+						Dungeon.cur().hero.sprite.emitter().start(Speck.factory(Speck.CHANGE), 0.2f, 10);
+						Transmuting.show(Dungeon.cur().hero, replacing, talent);
 
 						//关闭窗口
 						if (WndReplaceTalent.INSTANCE != null) {
@@ -373,7 +373,7 @@ public class TalentButton extends Button {
 		if (toAdd == null){
 			HeroClass  heroClass = HeroClass.NONE;
 			if (hasClass)
-				heroClass = Dungeon.hero.heroClass;
+				heroClass = Dungeon.cur().hero.heroClass;
 			toAdd = new WndInfoTalent(talent, pointsInTalent, heroClass, new WndInfoTalent.TalentButtonCallback(Mode.INFO) {
 				@Override
 				public void call() {
@@ -432,8 +432,8 @@ public class TalentButton extends Button {
 	}
 
 	public void upgradeTalent(){
-		if (Dungeon.hero.talentPointsAvailable(tier) > 0 && parent != null) {
-			Dungeon.hero.upgradeTalent(talent);
+		if (Dungeon.cur().hero.talentPointsAvailable(tier) > 0 && parent != null) {
+			Dungeon.cur().hero.upgradeTalent(talent);
 			float oldWidth = fill.width();
 			pointsInTalent++;
 			layout();

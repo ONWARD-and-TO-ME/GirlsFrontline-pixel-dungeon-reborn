@@ -38,8 +38,8 @@ public class RingOfSharpshooting extends Ring {
 		super.statsInfo();
 		if (isIdentified()){
 			String info = Messages.get(this, "stats", soloBuffedBonus(), new DecimalFormat("#.##").format(100f * (Math.pow(1.2, soloBonus()) - 1f)));
-            if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)) {
-                info = info + "\n\n" + Messages.get(this, "combined_stats", combinedBuffedBonus(Dungeon.hero), Messages.decimalFormat("#.##", 100.0F * (Math.pow(1.2, combinedBonus(Dungeon.hero)) - 1.0F)));
+            if (isEquipped(Dungeon.cur().hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.cur().hero)) {
+                info = info + "\n\n" + Messages.get(this, "combined_stats", combinedBuffedBonus(Dungeon.cur().hero), Messages.decimalFormat("#.##", 100.0F * (Math.pow(1.2, combinedBonus(Dungeon.cur().hero)) - 1.0F)));
             }
             return info;
         } else {

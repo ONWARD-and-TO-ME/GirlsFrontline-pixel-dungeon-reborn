@@ -82,11 +82,11 @@ public class Grass extends Item {
         }
 	}
     private static void removeGrass(int quantity){
-        Grass grass = Dungeon.hero.belongings.getItem(Grass.class);
-        grass.detach(Dungeon.hero.belongings.backpack, quantity);
+        Grass grass = Dungeon.cur().hero.belongings.getItem(Grass.class);
+        grass.detach(Dungeon.cur().hero.belongings.backpack, quantity);
     }
     private static boolean enough(int quantity){
-        Grass grass = Dungeon.hero.belongings.getItem(Grass.class);
+        Grass grass = Dungeon.cur().hero.belongings.getItem(Grass.class);
         return grass.quantity >= quantity;
     }
     private static final String far = Messages.get(Grass.class, "far");
@@ -104,9 +104,9 @@ public class Grass extends Item {
         public void onSelect(Integer target) {
             if (target != null) {
                 boolean near = false;
-                for (int i : PathFinder.NEIGHBOURS9){
+                for (int i : PathFinder.cur().NEIGHBOURS9){
                     int d = i+target;
-                    if (d == Dungeon.hero.pos) {
+                    if (d == Dungeon.cur().hero.pos) {
                         near = true;
                         break;
                     }
@@ -155,9 +155,9 @@ public class Grass extends Item {
         public void onSelect(Integer target) {
             if (target != null) {
                 boolean near = false;
-                for (int i : PathFinder.NEIGHBOURS9){
+                for (int i : PathFinder.cur().NEIGHBOURS9){
                     int d = i+target;
-                    if (d == Dungeon.hero.pos) {
+                    if (d == Dungeon.cur().hero.pos) {
                         near = true;
                         break;
                     }
@@ -167,7 +167,7 @@ public class Grass extends Item {
                     return;
                 }
                 Char ch = Actor.findChar(target);
-                if (ch!=null&&ch!=Dungeon.hero){
+                if (ch!=null&&ch!=Dungeon.cur().hero){
                     GLog.n(cant_select);
                     return;
                 }
@@ -178,23 +178,23 @@ public class Grass extends Item {
                         set(target, Terrain.GRASS);
                         GameScene.updateMap(target);
                         removeGrass(costB);
-                        Dungeon.hero.spend(1);
+                        Dungeon.cur().hero.spend(1);
                     } else if (Dungeon.level.map[target] == Terrain.INACTIVE_TRAP && !(Dungeon.level instanceof CavesBossLevel)) {
                         set(target, Terrain.GRASS);
                         GameScene.updateMap(target);
                         removeGrass(costB);
-                        Dungeon.hero.spend(1);
+                        Dungeon.cur().hero.spend(1);
                     } else if (Dungeon.level.map[target] == Terrain.GRASS) {
                         set(target, Terrain.FURROWED_GRASS);
                         GameScene.updateMap(target);
                         removeGrass(costB);
-                        Dungeon.hero.spend(1);
+                        Dungeon.cur().hero.spend(1);
                     }
                     else if (Dungeon.level.solid[target] && !Dungeon.level.flammable[target] &&
-                            !Dungeon.level.flammableB[target] && Dungeon.depth %5 != 0) {
+                            !Dungeon.level.flammableB[target] && Dungeon.cur().depth %5 != 0) {
                         Dungeon.level.flammableB[target] = true;
                         removeGrass(costB);
-                        Dungeon.hero.spend(1);
+                        Dungeon.cur().hero.spend(1);
                     }
                     else {
                         GLog.n(cant_build);
@@ -218,9 +218,9 @@ public class Grass extends Item {
             if (target != null) {
 
                 boolean near = false;
-                for (int i : PathFinder.NEIGHBOURS9){
+                for (int i : PathFinder.cur().NEIGHBOURS9){
                     int d = i+target;
-                    if (d == Dungeon.hero.pos) {
+                    if (d == Dungeon.cur().hero.pos) {
                         near = true;
                         break;
                     }
@@ -244,7 +244,7 @@ public class Grass extends Item {
                         GameScene.updateMap(target);
                         Dungeon.observe();
                         removeGrass(costC);
-                        Dungeon.hero.spend(2);
+                        Dungeon.cur().hero.spend(2);
                     } else {
                         GLog.n(cant_build);
                     }
@@ -264,7 +264,7 @@ public class Grass extends Item {
     @Override
     public String info(){
         String info = super.info();
-        Grass grass = Dungeon.hero.belongings.getItem(Grass.class);
+        Grass grass = Dungeon.cur().hero.belongings.getItem(Grass.class);
         if (grass == null)
             return info;
         if (grass.quantity >= costA)

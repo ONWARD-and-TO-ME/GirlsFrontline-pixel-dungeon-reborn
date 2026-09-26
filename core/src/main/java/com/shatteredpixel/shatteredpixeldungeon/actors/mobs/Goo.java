@@ -107,7 +107,7 @@ public class Goo extends Mob {
 		if (Dungeon.level.water[pos] && HP < HT) {
 			HP += healInc;
 
-			LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+			LockedFloor lock = Dungeon.cur().hero.buff(LockedFloor.class);
 			if (lock != null) lock.removeTime(healInc*2);
 
 			if (Dungeon.level.heroFOV[pos] ){
@@ -248,7 +248,7 @@ public class Goo extends Mob {
 			((GooSprite)sprite).spray(true);
 			yell(Messages.get(this, "gluuurp"));
 		}
-		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+		LockedFloor lock = Dungeon.cur().hero.buff(LockedFloor.class);
 		if (lock != null) lock.addTime(dmg*2);
 	}
 
@@ -260,7 +260,7 @@ public class Goo extends Mob {
 		Dungeon.level.unseal();
 		
 		GameScene.bossSlain();
-		Dungeon.level.drop( new SkeletonKey( Dungeon.depth ), pos ).sprite.drop();
+		Dungeon.level.drop( new SkeletonKey( Dungeon.cur().depth ), pos ).sprite.drop();
 
 		Badges.KILL_EXCUTION();
 		

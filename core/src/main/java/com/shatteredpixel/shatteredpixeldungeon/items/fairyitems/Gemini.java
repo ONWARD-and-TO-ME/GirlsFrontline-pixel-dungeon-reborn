@@ -28,7 +28,7 @@ public class Gemini extends FairyItems {
 
     @Override
     public void effect(Hero hero) {
-        Buff.affect(Dungeon.hero, Gemini.Contract.class).add();
+        Buff.affect(Dungeon.cur().hero, Gemini.Contract.class).add();
     }
 
     public static class Contract extends Buff{
@@ -89,8 +89,8 @@ public class Gemini extends FairyItems {
             ArrayList<Integer> placeable = new ArrayList<>();
             if (closest != null && Dungeon.level.distance(hero.pos, closest.pos) < 5){
                 //spawn guardian
-                for (int i = 0; i < PathFinder.NEIGHBOURS25.length; i++) {
-                    int p = hero.pos + PathFinder.NEIGHBOURS25[i];
+                for (int i = 0; i < PathFinder.cur().NEIGHBOURS25.length; i++) {
+                    int p = hero.pos + PathFinder.cur().NEIGHBOURS25[i];
                     if (Actor.findChar( p ) == null && Dungeon.level.passable[p]) {
                         placeable.add(p);
                     }
@@ -124,12 +124,12 @@ public class Gemini extends FairyItems {
             return true;
         }
         public static int maxHP(Geminis geminis){
-            if (Dungeon.hero == null)
+            if (Dungeon.cur().hero == null)
                 return 10;
             if (geminis instanceof GeminiShield)
-                return maxHP(Dungeon.hero, 2);
+                return maxHP(Dungeon.cur().hero, 2);
             else
-                return maxHP(Dungeon.hero, 0.75F);
+                return maxHP(Dungeon.cur().hero, 0.75F);
         }
         public int maxHP(float mul){
             return maxHP((Hero)target, mul);

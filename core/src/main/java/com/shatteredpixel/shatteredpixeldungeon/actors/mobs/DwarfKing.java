@@ -387,7 +387,7 @@ public class DwarfKing extends Mob {
 			} else {
 				bestDist = Dungeon.level.trueDistance(pos, enemy.pos);
 
-				for (int i : PathFinder.NEIGHBOURS8){
+				for (int i : PathFinder.cur().NEIGHBOURS8){
 					if (Actor.findChar(pos+i) == null
 							&& !Dungeon.level.solid[pos+i]
 							&& Dungeon.level.trueDistance(pos+i, enemy.pos) > bestDist){
@@ -403,7 +403,7 @@ public class DwarfKing extends Mob {
 			//find closest cell that's adjacent to enemy, place subject there
 			bestDist = Dungeon.level.trueDistance(enemy.pos, pos);
 			bestPos = enemy.pos;
-			for (int i : PathFinder.NEIGHBOURS8){
+			for (int i : PathFinder.cur().NEIGHBOURS8){
 				if (Actor.findChar(enemy.pos+i) == null
 						&& !Dungeon.level.solid[enemy.pos+i]
 						&& Dungeon.level.trueDistance(enemy.pos+i, pos) < bestDist){
@@ -460,7 +460,7 @@ public class DwarfKing extends Mob {
 		int preHP = HP;
 		super.damage(dmg, src);
 
-		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+		LockedFloor lock = Dungeon.cur().hero.buff(LockedFloor.class);
 		if (lock != null && !isImmune(src.getClass())) lock.addTime(dmg/3);
 
 		if (phase == 1) {
@@ -493,7 +493,7 @@ public class DwarfKing extends Mob {
 			summonsMade = 1; //monk/warlock on 3rd summon
 			sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.4f, 2 );
 			Sample.INSTANCE.play( Assets.Sounds.CHALLENGE );
-			yell(  Messages.get(this, "enraged", Dungeon.hero.name()) );
+			yell(  Messages.get(this, "enraged", Dungeon.cur().hero.name()) );
 		} else if (phase == 3 && preHP > 20 && HP < 20){
 			yell( Messages.get(this, "losing") );
 		}
@@ -613,7 +613,7 @@ public class DwarfKing extends Mob {
 
 				if (Actor.findChar(pos) != null){
 					ArrayList<Integer> candidates = new ArrayList<>();
-					for (int i : PathFinder.NEIGHBOURS8){
+					for (int i : PathFinder.cur().NEIGHBOURS8){
 						if (Dungeon.level.passable[pos+i] && Actor.findChar(pos+i) == null){
 							candidates.add(pos+i);
 						}
@@ -643,7 +643,7 @@ public class DwarfKing extends Mob {
 							target.damage(target.HT/12, new KingDamager());
 						}
 					}
-					if (!ch.isAlive() && ch == Dungeon.hero) {
+					if (!ch.isAlive() && ch == Dungeon.cur().hero) {
 						Dungeon.fail(DwarfKing.class);
 					}
 				}

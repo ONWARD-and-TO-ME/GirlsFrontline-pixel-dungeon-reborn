@@ -147,14 +147,14 @@ public class SurfaceScene extends PixelScene {
 			window.add( patch );
 		}
 		
-		Avatar a = new Avatar( Dungeon.hero.heroClass );
+		Avatar a = new Avatar( Dungeon.cur().hero.heroClass );
 		// Removing semitransparent contour
 		a.am = 2; a.aa = -1;
 		a.x = (SKY_WIDTH - a.width) / 2;
 		a.y = SKY_HEIGHT - a.height;
 		align(a);
 
-		if (Dungeon.hero.armorAbility instanceof Ratmogrify) {
+		if (Dungeon.cur().hero.armorAbility instanceof Ratmogrify) {
 			rats = new Pet[30];
 			for (int i = 0; i < rats.length; i++){
 				Pet pet = new Pet();
@@ -179,7 +179,7 @@ public class SurfaceScene extends PixelScene {
 		
 		//picks the highest between ghost's weapon, armor, and rose level/2
 		int roseLevel = 0;
-		DriedRose rose = Dungeon.hero.belongings.getItem(DriedRose.class);
+		DriedRose rose = Dungeon.cur().hero.belongings.getItem(DriedRose.class);
 		if (rose != null){
 			roseLevel = rose.level()/2;
 			if (rose.ghostWeapon() != null){
@@ -190,10 +190,10 @@ public class SurfaceScene extends PixelScene {
 			}
 		}
 		
-		int earthLevel = Dungeon.hero.belongings.getItem(WandOfLivingEarth.class) == null ? 0 : Dungeon.hero.belongings.getItem(WandOfLivingEarth.class).level();
-		int wardLevel = Dungeon.hero.belongings.getItem(WandOfWarding.class) == null ? 0 : Dungeon.hero.belongings.getItem(WandOfWarding.class).level();
+		int earthLevel = Dungeon.cur().hero.belongings.getItem(WandOfLivingEarth.class) == null ? 0 : Dungeon.cur().hero.belongings.getItem(WandOfLivingEarth.class).level();
+		int wardLevel = Dungeon.cur().hero.belongings.getItem(WandOfWarding.class) == null ? 0 : Dungeon.cur().hero.belongings.getItem(WandOfWarding.class).level();
 		
-		MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+		MagesStaff staff = Dungeon.cur().hero.belongings.getItem(MagesStaff.class);
 		if (staff != null){
 			if (staff.wandClass() == WandOfLivingEarth.class){
 				earthLevel = Math.max(earthLevel, staff.level());

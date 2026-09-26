@@ -54,7 +54,7 @@ public class Regeneration extends Buff {
 				}
 			}
 
-			ChaliceOfBlood.chaliceRegen regenBuff = Dungeon.hero.buff( ChaliceOfBlood.chaliceRegen.class);
+			ChaliceOfBlood.chaliceRegen regenBuff = Dungeon.cur().hero.buff( ChaliceOfBlood.chaliceRegen.class);
 
 			float delay = REGENERATION_DELAY;
 			if (regenBuff != null) {
@@ -65,7 +65,7 @@ public class Regeneration extends Buff {
 					delay /= RingOfEnergy.artifactChargeMultiplier(target);
 				}
 			}
-            if (Dungeon.hero.buff(ActHPtoGetFood.LockReg.class)!=null){
+            if (Dungeon.cur().hero.buff(ActHPtoGetFood.LockReg.class)!=null){
                 delay = REGENERATION_DELAY;
                 if (regenBuff != null && regenBuff.isCursed()) {
                     delay *= 1.5f;

@@ -89,8 +89,8 @@ public class SummonElemental extends Spell {
 
 		ArrayList<Integer> spawnPoints = new ArrayList<>();
 
-		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-			int p = hero.pos + PathFinder.NEIGHBOURS8[i];
+		for (int i = 0; i < PathFinder.cur().NEIGHBOURS8.length; i++) {
+			int p = hero.pos + PathFinder.cur().NEIGHBOURS8[i];
 			if (Actor.findChar( p ) == null && Dungeon.level.passable[p]) {
 				spawnPoints.add( p );
 			}
@@ -117,7 +117,7 @@ public class SummonElemental extends Spell {
 
 			summonClass = Elemental.AllyNewBornElemental.class;
 
-			detach(Dungeon.hero.belongings.backpack);
+			detach(Dungeon.cur().hero.belongings.backpack);
 			if (Random.Float() < TalentChance())
 				Talent.onScrollUsed(hero, 1);
 			Catalog.setSeen(getClass());
@@ -188,7 +188,7 @@ public class SummonElemental extends Spell {
 				return;
 			}
 
-			item.detach(Dungeon.hero.belongings.backpack);
+			item.detach(Dungeon.cur().hero.belongings.backpack);
 			if (item instanceof PotionOfLiquidFlame) {
 				Sample.INSTANCE.play(Assets.Sounds.BURNING);
 				curUser.sprite.emitter().burst( FlameParticle.FACTORY, 12 );

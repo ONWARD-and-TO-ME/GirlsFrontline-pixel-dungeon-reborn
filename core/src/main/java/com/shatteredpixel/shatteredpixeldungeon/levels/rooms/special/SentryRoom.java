@@ -241,30 +241,30 @@ public class SentryRoom extends SpecialRoom {
 				throwItems();
 			}
 
-			if (Dungeon.hero != null){
-				if (fieldOfView[Dungeon.hero.pos]
-						&& Dungeon.level.map[Dungeon.hero.pos] == Terrain.EMPTY_SP
-						&& room.inside(Dungeon.level.cellToPoint(Dungeon.hero.pos))
-						&& Dungeon.hero.buff(LostInventory.class) == null) { // 检查玩家是否没有LostInventory buff
+			if (Dungeon.cur().hero != null){
+				if (fieldOfView[Dungeon.cur().hero.pos]
+						&& Dungeon.level.map[Dungeon.cur().hero.pos] == Terrain.EMPTY_SP
+						&& room.inside(Dungeon.level.cellToPoint(Dungeon.cur().hero.pos))
+						&& Dungeon.cur().hero.buff(LostInventory.class) == null) { // 检查玩家是否没有LostInventory buff
 
 					if (curChargeDelay > 0.001f){ //helps prevent rounding errors
 						if (curChargeDelay == initialChargeDelay) {
 							((SentrySprite) sprite).charge();
 						}
-						curChargeDelay -= Dungeon.hero.cooldown();
+						curChargeDelay -= Dungeon.cur().hero.cooldown();
 						//pity mechanic so mistaps don't get people instakilled
-						if (Dungeon.hero.cooldown() >= 0.34f){
-							Dungeon.hero.interrupt();
+						if (Dungeon.cur().hero.cooldown() >= 0.34f){
+							Dungeon.cur().hero.interrupt();
 						}
 					}
 
 					if (curChargeDelay <= .001f){
 						curChargeDelay = 1f;
-						sprite.zap(Dungeon.hero.pos);
+						sprite.zap(Dungeon.cur().hero.pos);
 						((SentrySprite) sprite).charge();
 					}
 
-					spend(Dungeon.hero.cooldown());
+					spend(Dungeon.cur().hero.cooldown());
 					return true;
 
 				} else {
@@ -272,7 +272,7 @@ public class SentryRoom extends SpecialRoom {
 					sprite.idle();
 				}
 
-				spend(Dungeon.hero.cooldown());
+				spend(Dungeon.cur().hero.cooldown());
 			} else {
 				spend(1f);
 			}
@@ -284,8 +284,8 @@ public class SentryRoom extends SpecialRoom {
         }
 
 		public void onZapComplete(){
-			Dungeon.hero.damage(Random.NormalIntRange(2+Dungeon.curDepth()/2, 4+Dungeon.curDepth()), new Eye.DeathGaze());
-			if (!Dungeon.hero.isAlive()){
+			Dungeon.cur().hero.damage(Random.NormalIntRange(2+Dungeon.curDepth()/2, 4+Dungeon.curDepth()), new Eye.DeathGaze());
+			if (!Dungeon.cur().hero.isAlive()){
 				GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );
 				Dungeon.fail( getClass() );
 			}

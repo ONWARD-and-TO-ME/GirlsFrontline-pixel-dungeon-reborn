@@ -42,8 +42,8 @@ public class HallsPainter extends RegularPainter {
 			if (map[i] == Terrain.EMPTY) {
 				
 				int count = 0;
-				for (int j = 0; j < PathFinder.NEIGHBOURS8.length; j++) {
-					if ((Terrain.flags[map[i + PathFinder.NEIGHBOURS8[j]]] & Terrain.PASSABLE) > 0) {
+				for (int j = 0; j < PathFinder.cur().NEIGHBOURS8.length; j++) {
+					if ((Terrain.flags[map[i + PathFinder.cur().NEIGHBOURS8[j]]] & Terrain.PASSABLE) > 0) {
 						count++;
 					}
 				}

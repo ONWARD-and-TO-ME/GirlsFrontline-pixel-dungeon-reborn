@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -122,7 +121,7 @@ abstract public class Weapon extends KindOfWeapon {
 					enchant();
 			}
 			tier = 10;
-			while (STRReq() > hero.STR())
+			while (STRReq() > Dungeon.cur().hero.STR())
 				tier--;
 		}
 	}
@@ -185,8 +184,8 @@ abstract public class Weapon extends KindOfWeapon {
 
 		damage = enchantmentProc(attacker, defender, damage);
 		
-		if (!levelKnown && attacker == Dungeon.hero) {
-			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero, this) );
+		if (!levelKnown && attacker == Dungeon.cur().hero) {
+			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.cur().hero, this) );
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
 			if (usesLeftToID <= 0) {
@@ -261,7 +260,7 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public boolean collect(Bag container) {
 		if(super.collect(container)){
-			if (Dungeon.hero != null && Dungeon.hero.isAlive() && isIdentified() && enchantment != null){
+			if (Dungeon.cur().hero != null && Dungeon.cur().hero.isAlive() && isIdentified() && enchantment != null){
 				Catalog.setSeen(enchantment.getClass());
 			}
 			return true;
@@ -272,7 +271,7 @@ abstract public class Weapon extends KindOfWeapon {
 
 	@Override
 	public Item identify(boolean byHero) {
-		if (enchantment != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
+		if (enchantment != null && byHero && Dungeon.cur().hero != null && Dungeon.cur().hero.isAlive()){
 			Catalog.setSeen(enchantment.getClass());
 		}
 		return super.identify(byHero);
@@ -393,8 +392,8 @@ abstract public class Weapon extends KindOfWeapon {
 			lvl = TextGuessingLevel();
 		}
 		int req = STRReq(lvl);
-		if (hero != null && isEquipped(hero))
-			req += RingOfKing.updateMultiplier(hero);
+		if (Dungeon.cur().hero != null && isEquipped(Dungeon.cur().hero))
+			req += RingOfKing.updateMultiplier(Dungeon.cur().hero);
 		if (masteryPotionBonus){
 			req -= 2;
 		}
@@ -421,12 +420,12 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public int buffedLvl( int lvl ) {
         int level = super.buffedLvl(lvl);
-		if (isEquipped( hero )){
+		if (isEquipped( Dungeon.cur().hero )){
             // 56-1式天赋：火线补给T4-2电解糖分（实现见 Type561Talent）
-            level += Type561Talent.weaponLevelBonus(hero);
-			level += RingOfKing.updateMultiplier(hero);
+            level += Type561Talent.weaponLevelBonus(Dungeon.cur().hero);
+			level += RingOfKing.updateMultiplier(Dungeon.cur().hero);
 			// GSH18天赋：伴星同调——未来之星副武器有效等级向主武器看齐（实现见 GSH18Talent）
-			level += GSH18Talent.companionStarSyncBonus(hero, this);
+			level += GSH18Talent.companionStarSyncBonus(Dungeon.cur().hero, this);
 		}
         return level;
 	}
@@ -496,8 +495,8 @@ abstract public class Weapon extends KindOfWeapon {
 		if (ench == null || !ench.curse()) curseInfusionBonus = false;
 		enchantment = ench;
 		updateQuickslot();
-		if (ench != null && isIdentified() && Dungeon.hero != null
-				&& Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
+		if (ench != null && isIdentified() && Dungeon.cur().hero != null
+				&& Dungeon.cur().hero.isAlive() && Dungeon.cur().hero.belongings.contains(this)){
 			Catalog.setSeen(ench.getClass());
 		}
 		return this;

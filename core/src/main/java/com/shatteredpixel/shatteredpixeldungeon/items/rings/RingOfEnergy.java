@@ -44,10 +44,10 @@ public class RingOfEnergy extends Ring {
 			String info = Messages.get(this, "stats",
 					new DecimalFormat("#.##").format(100f * (Math.pow(1.20f, soloBuffedBonus()) - 1f)),
 					new DecimalFormat("#.##").format(100f * (Math.pow(1.15f, soloBuffedBonus()) - 1f)));
-            if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)) {
+            if (isEquipped(Dungeon.cur().hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.cur().hero)) {
                 info = info + "\n\n" + Messages.get(this, "combined_stats",
-                        new DecimalFormat("#.##").format(100f * (Math.pow(1.20f, combinedBuffedBonus(Dungeon.hero)) - 1f)),
-                        new DecimalFormat("#.##").format(100f * (Math.pow(1.15f, combinedBuffedBonus(Dungeon.hero)) - 1f)));
+                        new DecimalFormat("#.##").format(100f * (Math.pow(1.20f, combinedBuffedBonus(Dungeon.cur().hero)) - 1f)),
+                        new DecimalFormat("#.##").format(100f * (Math.pow(1.15f, combinedBuffedBonus(Dungeon.cur().hero)) - 1f)));
             }
             return info;
 		} else {

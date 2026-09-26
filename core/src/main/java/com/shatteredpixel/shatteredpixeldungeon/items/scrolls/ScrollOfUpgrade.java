@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.scrolls;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
@@ -72,7 +71,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 
 		if (!isKnown()) {
 			identify();
-			curItem = detach( hero.belongings.backpack );
+			curItem = detach( Dungeon.cur().hero.belongings.backpack );
 			identifiedByUse = true;
 		} else {
 			identifiedByUse = false;
@@ -131,7 +130,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 					scroll.onItemSelected( item );
 					scroll.readAnimation();
 					if (!identifiedByUse)
-						curItem = detach( hero.belongings.backpack );
+						curItem = detach( Dungeon.cur().hero.belongings.backpack );
 					Sample.INSTANCE.play( Assets.Sounds.READ );
 				}
 
@@ -191,9 +190,9 @@ public class ScrollOfUpgrade extends InventoryScroll {
             w.UpgradeUSED++;
 
 			if (w.cursedKnown && hadCursedEnchant && !w.hasCurseEnchant()){
-				removeCurse( Dungeon.hero );
+				removeCurse( Dungeon.cur().hero );
 			} else if (w.cursedKnown && wasCursed && !w.cursed){
-				weakenCurse( Dungeon.hero );
+				weakenCurse( Dungeon.cur().hero );
 			}
 			if (hadGoodEnchant && !w.hasGoodEnchant()){
 				GLog.w( Messages.get(Weapon.class, "incompatible") );
@@ -209,9 +208,9 @@ public class ScrollOfUpgrade extends InventoryScroll {
             a.UpgradeUSED++;
 
 			if (a.cursedKnown && hadCursedGlyph && !a.hasCurseGlyph()){
-				removeCurse( Dungeon.hero );
+				removeCurse( Dungeon.cur().hero );
 			} else if (a.cursedKnown && wasCursed && !a.cursed){
-				weakenCurse( Dungeon.hero );
+				weakenCurse( Dungeon.cur().hero );
 			}
 			if (hadGoodGlyph && !a.hasGoodGlyph()){
 				GLog.w( Messages.get(Armor.class, "incompatible") );
@@ -224,7 +223,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
             item.UpgradeUSED++;
 
 			if (item.cursedKnown && wasCursed && !item.cursed){
-				removeCurse( Dungeon.hero );
+				removeCurse( Dungeon.cur().hero );
 			}
 
 		} else {

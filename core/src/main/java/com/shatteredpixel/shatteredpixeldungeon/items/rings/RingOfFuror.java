@@ -39,8 +39,8 @@ public class RingOfFuror extends Ring {
 		super.statsInfo();
 		if (isIdentified()){
 			String info = Messages.get(this, "stats", new DecimalFormat("#.##").format(100f * (Math.pow(1.105f, soloBuffedBonus()) - 1f)));
-            if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)) {
-                info = info + "\n\n" + Messages.get(this, "combined_stats", Messages.decimalFormat("#.##", 100.0F * (Math.pow(1.105f, combinedBuffedBonus(Dungeon.hero)) - 1.0F)));
+            if (isEquipped(Dungeon.cur().hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.cur().hero)) {
+                info = info + "\n\n" + Messages.get(this, "combined_stats", Messages.decimalFormat("#.##", 100.0F * (Math.pow(1.105f, combinedBuffedBonus(Dungeon.cur().hero)) - 1.0F)));
             }
             return info;
         } else {

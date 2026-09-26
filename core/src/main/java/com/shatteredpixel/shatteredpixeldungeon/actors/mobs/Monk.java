@@ -73,7 +73,7 @@ public class Monk extends Mob {
 	
 	@Override
 	public void rollToDropLoot() {
-		Imp.Quest.process( this );
+		Imp.Quest.cur().process( this );
 		
 		super.rollToDropLoot();
 	}

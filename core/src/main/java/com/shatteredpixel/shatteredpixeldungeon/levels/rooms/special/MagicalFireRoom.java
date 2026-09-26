@@ -146,7 +146,7 @@ public class MagicalFireRoom extends SpecialRoom {
 			if (l.map[cell] == Terrain.EMPTY_SP) return false;
 
 			if (fire.cur[cell] > 0)     return false;
-			for (int i : PathFinder.NEIGHBOURS4){
+			for (int i : PathFinder.cur().NEIGHBOURS4){
 				if (fire.cur[cell+i] > 0)   return false;
 			}
 		}
@@ -183,7 +183,7 @@ public class MagicalFireRoom extends SpecialRoom {
 							cur[cell] = 0;
 							clearAll = true;
 						}
-						for (int k : PathFinder.NEIGHBOURS9){
+						for (int k : PathFinder.cur().NEIGHBOURS9){
 							if (freeze != null && freeze.volume > 0 && freeze.cur[cell + k] > 0){
 								freeze.clear(cell);
 								cur[cell] = 0;

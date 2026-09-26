@@ -94,7 +94,7 @@ public class PoisonDartTrap extends Trap {
 								public void call() {
 									int dmg = Random.NormalIntRange(4, 8) - finalTarget.drRoll();
 									finalTarget.damage(dmg, trap);
-									if (finalTarget == Dungeon.hero && !finalTarget.isAlive()){
+									if (finalTarget == Dungeon.cur().hero && !finalTarget.isAlive()){
 										Dungeon.fail( trap.getClass() );
 									}
 									Buff.affect( finalTarget, Poison.class ).set( poisonAmount() );

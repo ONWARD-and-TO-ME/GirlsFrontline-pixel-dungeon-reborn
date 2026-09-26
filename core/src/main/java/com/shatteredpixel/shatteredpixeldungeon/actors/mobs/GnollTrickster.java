@@ -122,7 +122,7 @@ public class GnollTrickster extends Gnoll {
 	public void die( Object cause ) {
 		super.die( cause );
 
-		Ghost.Quest.process();
+		Ghost.Quest.cur().process();
 	}
 
 	private static final String COMBO = "combo";

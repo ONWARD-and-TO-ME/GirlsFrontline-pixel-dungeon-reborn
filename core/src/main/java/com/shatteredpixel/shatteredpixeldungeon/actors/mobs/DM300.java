@@ -180,10 +180,10 @@ public class DM300 extends Mob {
 			//determine if DM can reach its enemy
 			boolean canReach;
 			if (enemy == null){
-				if (Dungeon.level.adjacent(pos, Dungeon.hero.pos)){
+				if (Dungeon.level.adjacent(pos, Dungeon.cur().hero.pos)){
 					canReach = true;
 				} else {
-					canReach = (Dungeon.findStep(this, Dungeon.hero.pos, Dungeon.level.openSpace, fieldOfView, true) != -1);
+					canReach = (Dungeon.findStep(this, Dungeon.cur().hero.pos, Dungeon.level.openSpace, fieldOfView, true) != -1);
 				}
 			} else {
 				if (Dungeon.level.adjacent(pos, enemy.pos)){
@@ -194,12 +194,12 @@ public class DM300 extends Mob {
 			}
 
 			if (state != HUNTING){
-				if (Dungeon.hero.invisible <= 0 && canReach){
-					beckon(Dungeon.hero.pos);
+				if (Dungeon.cur().hero.invisible <= 0 && canReach){
+					beckon(Dungeon.cur().hero.pos);
 				}
 			} else {
 
-				if (enemy == null && Dungeon.hero.invisible <= 0) enemy = Dungeon.hero;
+				if (enemy == null && Dungeon.cur().hero.invisible <= 0) enemy = Dungeon.cur().hero;
 
 				//more aggressive ability usage when DM can't reach its target
 				if (enemy != null && !canReach){
@@ -292,10 +292,10 @@ public class DM300 extends Mob {
 				chargeAnnounced = true;
 			}
 
-			if (Dungeon.hero.invisible <= 0){
-				beckon(Dungeon.hero.pos);
+			if (Dungeon.cur().hero.invisible <= 0){
+				beckon(Dungeon.cur().hero.pos);
 				state = HUNTING;
-				enemy = Dungeon.hero;
+				enemy = Dungeon.cur().hero;
 			}
 
 		}
@@ -307,7 +307,7 @@ public class DM300 extends Mob {
 	protected Char chooseEnemy() {
 		Char enemy = super.chooseEnemy();
 		if (supercharged && enemy == null){
-			enemy = Dungeon.hero;
+			enemy = Dungeon.cur().hero;
 		}
 		return enemy;
 	}
@@ -372,7 +372,7 @@ public class DM300 extends Mob {
 	}
 
 	public void ventGas( Char target ){
-		Dungeon.hero.interrupt();
+		Dungeon.cur().hero.interrupt();
 
 		int gasVented = 0;
 
@@ -389,7 +389,7 @@ public class DM300 extends Mob {
 
 		if (gasVented < 250*gasMulti){
 			int toVentAround = (int)Math.ceil(((250*gasMulti) - gasVented)/8f);
-			for (int i : PathFinder.NEIGHBOURS8){
+			for (int i : PathFinder.cur().NEIGHBOURS8){
 				GameScene.add(Blob.seed(pos+i, toVentAround, ToxicGas.class));
 			}
 
@@ -404,15 +404,15 @@ public class DM300 extends Mob {
 
 	public void dropRocks( Char target ) {
 
-		Dungeon.hero.interrupt();
+		Dungeon.cur().hero.interrupt();
 		final int rockCenter;
 
 		if (Dungeon.level.adjacent(pos, target.pos)){
 			int oppositeAdjacent = target.pos + (target.pos - pos);
 			Ballistica trajectory = new Ballistica(target.pos, oppositeAdjacent, Ballistica.MAGIC_BOLT);
 			WandOfBlastWave.throwChar(target, trajectory, 2, false, false);
-			if (target == Dungeon.hero){
-				Dungeon.hero.interrupt();
+			if (target == Dungeon.cur().hero){
+				Dungeon.cur().hero.interrupt();
 			}
 			rockCenter = trajectory.path.get(Math.min(trajectory.dist, 2));
 		} else {
@@ -421,7 +421,7 @@ public class DM300 extends Mob {
 
 		int safeCell;
 		do {
-			safeCell = rockCenter + PathFinder.NEIGHBOURS8[Random.Int(8)];
+			safeCell = rockCenter + PathFinder.cur().NEIGHBOURS8[Random.Int(8)];
 		} while (safeCell == pos
 				|| (Dungeon.level.solid[safeCell] && Random.Int(2) == 0)
 				|| (Blob.volumeAt(safeCell, CavesBossLevel.PylonEnergy.class) > 0 && Random.Int(2) == 0));
@@ -461,7 +461,7 @@ public class DM300 extends Mob {
 
 		int dmgTaken = preHP - HP;
 		if (dmgTaken > 0) {
-			LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+			LockedFloor lock = Dungeon.cur().hero.buff(LockedFloor.class);
 			if (lock != null && !isImmune(src.getClass())) lock.addTime(dmgTaken*1.5f);
 		}
 
@@ -559,7 +559,7 @@ public class DM300 extends Mob {
 			}
 
 			int bestpos = pos;
-			for (int i : PathFinder.NEIGHBOURS8){
+			for (int i : PathFinder.cur().NEIGHBOURS8){
 				if (Actor.findChar(pos+i) == null &&
 						Dungeon.level.trueDistance(bestpos, target) > Dungeon.level.trueDistance(pos+i, target)){
 					bestpos = pos+i;
@@ -569,7 +569,7 @@ public class DM300 extends Mob {
 				Sample.INSTANCE.play( Assets.Sounds.ROCKS );
 
 				Rect gate = CavesBossLevel.gate;
-				for (int i : PathFinder.NEIGHBOURS9){
+				for (int i : PathFinder.cur().NEIGHBOURS9){
 					if (Dungeon.level.map[pos+i] == Terrain.WALL || Dungeon.level.map[pos+i] == Terrain.WALL_DECO){
 						Point p = Dungeon.level.cellToPoint(pos+i);
 						if (p.y < gate.bottom && p.x > gate.left-2 && p.x < gate.right+2){
@@ -584,7 +584,7 @@ public class DM300 extends Mob {
 				spendAll(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2f : 3f);
 
 				bestpos = pos;
-				for (int i : PathFinder.NEIGHBOURS8){
+				for (int i : PathFinder.cur().NEIGHBOURS8){
 					if (Actor.findChar(pos+i) == null && Dungeon.level.openSpace[pos+i] &&
 							Dungeon.level.trueDistance(bestpos, target) > Dungeon.level.trueDistance(pos+i, target)){
 						bestpos = pos+i;

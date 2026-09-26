@@ -119,7 +119,7 @@ public class RipperDemon extends Mob {
 			if (enemy != null) {
 				lastEnemyPos = enemy.pos;
 			} else {
-				lastEnemyPos = Dungeon.hero.pos;
+				lastEnemyPos = Dungeon.cur().hero.pos;
 			}
 		}
 
@@ -151,7 +151,7 @@ public class RipperDemon extends Mob {
 				//ensure there is somewhere to land after leaping
 				if (leapVictim != null){
 					int bouncepos = -1;
-					for (int i : PathFinder.NEIGHBOURS8){
+					for (int i : PathFinder.cur().NEIGHBOURS8){
 						if ((bouncepos == -1 || Dungeon.level.trueDistance(pos, leapPos+i) < Dungeon.level.trueDistance(pos, bouncepos))
 								&& Actor.findChar(leapPos+i) == null && Dungeon.level.passable[leapPos+i]){
 							bouncepos = leapPos+i;
@@ -214,13 +214,13 @@ public class RipperDemon extends Mob {
 					int targetPos = enemy.pos;
 					if (lastEnemyPos != enemy.pos){
 						int closestIdx = 0;
-						for (int i = 1; i < PathFinder.CIRCLE8.length; i++){
-							if (Dungeon.level.trueDistance(lastEnemyPos, enemy.pos+PathFinder.CIRCLE8[i])
-									< Dungeon.level.trueDistance(lastEnemyPos, enemy.pos+PathFinder.CIRCLE8[closestIdx])){
+						for (int i = 1; i < PathFinder.cur().CIRCLE8.length; i++){
+							if (Dungeon.level.trueDistance(lastEnemyPos, enemy.pos+PathFinder.cur().CIRCLE8[i])
+									< Dungeon.level.trueDistance(lastEnemyPos, enemy.pos+PathFinder.cur().CIRCLE8[closestIdx])){
 								closestIdx = i;
 							}
 						}
-						targetPos = enemy.pos + PathFinder.CIRCLE8[(closestIdx+4)%8];
+						targetPos = enemy.pos + PathFinder.cur().CIRCLE8[(closestIdx+4)%8];
 					}
 
 					Ballistica b = new Ballistica(pos, targetPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID);
@@ -238,7 +238,7 @@ public class RipperDemon extends Mob {
 							GLog.w(Messages.get(RipperDemon.this, "leap"));
 							sprite.parent.addToBack(new TargetedCell(leapPos, 0xFF0000));
 							((RipperSprite)sprite).leapPrep( leapPos );
-							Dungeon.hero.interrupt();
+							Dungeon.cur().hero.interrupt();
 						}
 						return true;
 					}

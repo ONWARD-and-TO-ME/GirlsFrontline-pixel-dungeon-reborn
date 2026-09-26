@@ -76,18 +76,18 @@ public class SecretMazeRoom extends SecretRoom {
 			}
 		}
 		
-		PathFinder.setMapSize(width(), height());
+		PathFinder.cur().setMapSize(width(), height());
 		Point entrance = entrance();
 		int entrancePos = (entrance.x - left) + width()*(entrance.y - top);
 		
-		PathFinder.buildDistanceMap( entrancePos, passable );
+		PathFinder.cur().buildDistanceMap( entrancePos, passable );
 		
 		int bestDist = 0;
 		Point bestDistP = new Point();
-		for (int i = 0; i < PathFinder.distance.length; i++){
-			if (PathFinder.distance[i] != Integer.MAX_VALUE
-					&& PathFinder.distance[i] > bestDist){
-				bestDist = PathFinder.distance[i];
+		for (int i = 0; i < PathFinder.cur().distance.length; i++){
+			if (PathFinder.cur().distance[i] != Integer.MAX_VALUE
+					&& PathFinder.cur().distance[i] > bestDist){
+				bestDist = PathFinder.cur().distance[i];
 				bestDistP.x = (i % width()) + left;
 				bestDistP.y = (i / width()) + top;
 			}
@@ -111,7 +111,7 @@ public class SecretMazeRoom extends SecretRoom {
 		
 		level.drop(prize, level.pointToCell(bestDistP)).setType(Heap.Type.CHEST).setRoom(Heap.Room.Secret_Maze);
 		
-		PathFinder.setMapSize(level.width(), level.height());
+		PathFinder.cur().setMapSize(level.width(), level.height());
 
 		entrance().setHidden();
 	}

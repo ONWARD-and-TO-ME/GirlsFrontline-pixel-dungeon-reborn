@@ -792,9 +792,9 @@ public class Notes {
 	};
 
 	public static void addNoteToBag() {
-		if (Dungeon.hero == null)
+		if (Dungeon.cur().hero == null)
 			return;
-		ItemHolder holder = Dungeon.hero.belongings.getItem(ItemHolder.class);
+		ItemHolder holder = Dungeon.cur().hero.belongings.getItem(ItemHolder.class);
 		if (holder == null)
 			return;
         for (Record rec : records)
@@ -817,15 +817,15 @@ public class Notes {
 					continue;
 
 				//从背包内尝试寻找
-				curItem = Dungeon.hero.belongings.getItem(record);
+				curItem = Dungeon.cur().hero.belongings.getItem(record);
 				//背包有就不通过反射生成加入了
 				if (curItem != null) {
 					//已装备的也会被显示，不需要移动，跳过
 					if (curItem instanceof Bag && Dungeon.quickslot.hasItemNote((Bag) curItem))
 						continue;
-					if (curItem.isEquipped(Dungeon.hero))
+					if (curItem.isEquipped(Dungeon.cur().hero))
 						continue;
-					for (Bag bag : Dungeon.hero.belongings.getBags())
+					for (Bag bag : Dungeon.cur().hero.belongings.getBags())
 						//用背包的items执行contains而非背包自身的contains，因为背包自身的已经被重写了，会从主背包检擦到副背包
 						if (bag.items.contains(curItem)) {
 							//从旧背包中移除，前面已经在快捷栏查找过，如果快捷栏是背包会查找背包，仅在快捷栏没找到收纳此物品的背包时会进入这里

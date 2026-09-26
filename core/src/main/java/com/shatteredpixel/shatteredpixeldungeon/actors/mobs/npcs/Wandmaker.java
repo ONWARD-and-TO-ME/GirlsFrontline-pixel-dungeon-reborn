@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeons;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.items.DandelionOwner.CardSelector;
@@ -69,7 +70,7 @@ public class Wandmaker extends NPC {
 
 	@Override
 	protected boolean act() {
-		if (Dungeon.level.heroFOV[pos] && Quest.wand1 != null){
+		if (Dungeon.level.heroFOV[pos] && Quest.cur().wand1 != null){
 			Notes.add( Notes.Landmark.WANDMAKER );
 		}
 		return super.act();
@@ -95,25 +96,25 @@ public class Wandmaker extends NPC {
 	
 	@Override
 	public boolean interact(Char c) {
-		sprite.turnTo( pos, Dungeon.hero.pos );
+		sprite.turnTo( pos, Dungeon.cur().hero.pos );
 
-		if (c != Dungeon.hero){
+		if (c != Dungeon.cur().hero){
 			return true;
 		}
 
-		if (Quest.given) {
+		if (Quest.cur().given) {
 			
 			Item item;
-			switch (Quest.type) {
+			switch (Quest.cur().type) {
 				case 1:
 				default:
-					item = Dungeon.hero.belongings.getItem(CorpseDust.class);
+					item = Dungeon.cur().hero.belongings.getItem(CorpseDust.class);
 					break;
 				case 2:
-					item = Dungeon.hero.belongings.getItem(Embers.class);
+					item = Dungeon.cur().hero.belongings.getItem(Embers.class);
 					break;
 				case 3:
-					item = Dungeon.hero.belongings.getItem(Rotberry.Seed.class);
+					item = Dungeon.cur().hero.belongings.getItem(Rotberry.Seed.class);
 					break;
 			}
 
@@ -126,7 +127,7 @@ public class Wandmaker extends NPC {
 				});
 			} else {
 				Plot msg;
-				switch(Quest.type){
+				switch(Quest.cur().type){
 					case 1: default:
 						msg = new M16A1_Plot_L1.End();
 						break;
@@ -149,7 +150,7 @@ public class Wandmaker extends NPC {
 
 
 			Plot dialog;
-			switch (Quest.type){
+			switch (Quest.cur().type){
 				default:
 				case 1:
 					dialog = new M16A1_Plot_L1();
@@ -169,7 +170,7 @@ public class Wandmaker extends NPC {
 				}
 			});
 
-			Quest.given = true;
+			Quest.cur().given = true;
 			Notes.add( Notes.Landmark.WANDMAKER );
 		}
 
@@ -178,22 +179,29 @@ public class Wandmaker extends NPC {
 	
 	public static class Quest {
 
-		private static int type;
-        public static int type(){
+		public static Quest cur() {
+			return Dungeons.cur().wandmakerQuest;
+		}
+		//仅用于存档读写（始终发生在主线程），避免误序列化 worker 状态
+		public static Quest main() {
+			return Dungeons.main().wandmakerQuest;
+		}
+		private int type;
+        public int type(){
             return type;
         }
 		// 1 = corpse dust quest
 		// 2 = elemental embers quest
 		// 3 = rotberry quest
 		
-		public static boolean spawned;
+		public boolean spawned;
 		
-		private static boolean given;
+		private boolean given;
 		
-		public static Wand wand1;
-		public static Wand wand2;
+		public Wand wand1;
+		public Wand wand2;
 		
-		public static void reset() {
+		public void reset() {
 			spawned = false;
 			type = 0;
 
@@ -211,7 +219,7 @@ public class Wandmaker extends NPC {
 
 		private static final String RITUALPOS	= "ritualpos";
 		
-		public static void storeInBundle( Bundle bundle ) {
+		public void storeInBundle( Bundle bundle ) {
 			
 			Bundle node = new Bundle();
 			
@@ -235,7 +243,7 @@ public class Wandmaker extends NPC {
 			bundle.put( NODE, node );
 		}
 		
-		public static void restoreFromBundle( Bundle bundle ) {
+		public void restoreFromBundle( Bundle bundle ) {
 
 			Bundle node = bundle.getBundle( NODE );
 			
@@ -257,9 +265,9 @@ public class Wandmaker extends NPC {
 			}
 		}
 		
-		private static boolean questRoomSpawned;
+		private boolean questRoomSpawned;
 		
-		public static void spawnWandmaker( Level level, Room room ) {
+		public void spawnWandmaker( Level level, Room room ) {
 			if (questRoomSpawned) {
 				
 				questRoomSpawned = false;
@@ -300,9 +308,9 @@ public class Wandmaker extends NPC {
 			}
 		}
 		
-		public static ArrayList<Room> spawnRoom( ArrayList<Room> rooms) {
+		public ArrayList<Room> spawnRoom( ArrayList<Room> rooms) {
 			questRoomSpawned = false;
-			if (!spawned && (type != 0 || (Dungeon.depth > 6 && Random.Int( 10 - Dungeon.depth ) == 0))) {
+			if (!spawned && (type != 0 || (Dungeon.cur().depth > 6 && Random.Int( 10 - Dungeon.cur().depth ) == 0))) {
 				
 				// decide between 1,2, or 3 for quest type.
 				if (type == 0) type = Random.Int(3)+1;
@@ -325,9 +333,10 @@ public class Wandmaker extends NPC {
 			return rooms;
 		}
 		
-		public static void complete() {
+		public void complete() {
 			wand1 = null;
 			wand2 = null;
+			if (Dungeons.cur().isSearch) return;
 
 			CardSelector.INSTANCE().coolDown(1000);
 			Notes.remove( Notes.Landmark.WANDMAKER );

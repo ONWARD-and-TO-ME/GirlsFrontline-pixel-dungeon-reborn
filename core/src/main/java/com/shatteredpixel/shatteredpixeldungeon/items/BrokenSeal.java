@@ -87,7 +87,7 @@ public class BrokenSeal extends Item {
                 && (Arrays.asList(Armor.Glyph.common).contains(this.glyph.getClass())
                     || Arrays.asList(Armor.Glyph.uncommon).contains(this.glyph.getClass()));
         // 战士（UMP45）符文转移刻印判定（实现见 WarriorTalent）
-        return WarriorTalent.canTransferGlyph(Dungeon.hero, this.glyph != null, glyphCommonOrUncommon);
+        return WarriorTalent.canTransferGlyph(Dungeon.cur().hero, this.glyph != null, glyphCommonOrUncommon);
     }
 
 	public void setGlyph( Armor.Glyph glyph ){
@@ -95,12 +95,12 @@ public class BrokenSeal extends Item {
 	}
     public static boolean ExtractABLE(){
         // 战士（UMP45）符文转移+2可抽取刻印（实现见 WarriorTalent）
-        return WarriorTalent.glyphExtractable(Dungeon.hero);
+        return WarriorTalent.glyphExtractable(Dungeon.cur().hero);
     }
 
 	public int maxShield( int armTier, int armLvl ){
 		// 战士（UMP45）坚韧意志战士护盾加成（实现见 WarriorTalent）
-		return armTier + armLvl + WarriorTalent.warriorShieldBonus(Dungeon.hero);
+		return armTier + armLvl + WarriorTalent.warriorShieldBonus(Dungeon.cur().hero);
 	}
 
 	@Override
@@ -191,26 +191,26 @@ public class BrokenSeal extends Item {
 						//if index is 1, then the glyph transfer happens in affixSeal
 
 						GLog.p(Messages.get(BrokenSeal.class, "affix"));
-						Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+						Dungeon.cur().hero.sprite.operate(Dungeon.cur().hero.pos);
 						Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 						armor.affixSeal(seal);
-						seal.detach(Dungeon.hero.belongings.backpack);
+						seal.detach(Dungeon.cur().hero.belongings.backpack);
 					}
 				});
 
 			} else if (armor.glyph != null && seal.getGlyph() == null) {
 				seal.setGlyph(armor.glyph);
 				GLog.p(Messages.get(BrokenSeal.class, "affix"));
-				Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+				Dungeon.cur().hero.sprite.operate(Dungeon.cur().hero.pos);
 				Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 				armor.affixSeal(seal);
-				seal.detach(Dungeon.hero.belongings.backpack);
+				seal.detach(Dungeon.cur().hero.belongings.backpack);
 			} else {
 				GLog.p(Messages.get(BrokenSeal.class, "affix"));
-				Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+				Dungeon.cur().hero.sprite.operate(Dungeon.cur().hero.pos);
 				Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 				armor.affixSeal((BrokenSeal) curItem);
-				curItem.detach(Dungeon.hero.belongings.backpack);
+				curItem.detach(Dungeon.cur().hero.belongings.backpack);
 			}
 		}
 	};
@@ -267,7 +267,7 @@ public class BrokenSeal extends Item {
 			if (armor != null && armor.isEquipped((Hero)target) && armor.checkSeal() != null) {
 				return armor.checkSeal().maxShield(armor.tier, armor.level());
 			} else {
-				return WarriorTalent.warriorShieldBonus(Dungeon.hero);
+				return WarriorTalent.warriorShieldBonus(Dungeon.cur().hero);
 			}
 		}
 		

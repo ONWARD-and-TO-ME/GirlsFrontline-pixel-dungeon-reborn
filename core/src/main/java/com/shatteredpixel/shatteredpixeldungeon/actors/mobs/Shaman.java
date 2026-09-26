@@ -75,12 +75,12 @@ public abstract class Shaman extends Mob {
 	public float lootChance() {
 		//each drop makes future drops 1/3 as likely
 		// so loot chance looks like: 1/33, 1/100, 1/300, 1/900, etc.
-		return super.lootChance() * (float)Math.pow(1/3f, Dungeon.LimitedDrops.SHAMAN_WAND.count);
+		return super.lootChance() * (float)Math.pow(1/3f, Dungeon.LimitedDrops.SHAMAN_WAND.count());
 	}
 
 	@Override
 	public Item createLoot() {
-		Dungeon.LimitedDrops.SHAMAN_WAND.count++;
+		Dungeon.LimitedDrops.SHAMAN_WAND.used();
 		return super.createLoot();
 	}
 
@@ -112,13 +112,13 @@ public abstract class Shaman extends Mob {
 			
 			if (Random.Int( 2 ) == 0) {
 				debuff( enemy );
-				if (enemy == Dungeon.hero) Sample.INSTANCE.play( Assets.Sounds.DEBUFF );
+				if (enemy == Dungeon.cur().hero) Sample.INSTANCE.play( Assets.Sounds.DEBUFF );
 			}
 			
 			int dmg = Random.NormalIntRange( 3, 9);
 			enemy.damage( dmg, new EarthenBolt(), this );
 			
-			if (!enemy.isAlive() && enemy == Dungeon.hero) {
+			if (!enemy.isAlive() && enemy == Dungeon.cur().hero) {
 				Dungeon.fail( getClass() );
 				GLog.n( Messages.get(this, "bolt_kill") );
 			}

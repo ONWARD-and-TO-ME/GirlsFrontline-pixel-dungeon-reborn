@@ -220,7 +220,7 @@ public class DeepCaveBossLevel extends Level {
     public int randomRespawnCell( Char ch ) {
         int cell;
         do {
-            cell = entrance + PathFinder.NEIGHBOURS8[Random.Int(8)];
+            cell = entrance + PathFinder.cur().NEIGHBOURS8[Random.Int(8)];
         } while (!passable[cell]
                 || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
                 || Actor.findChar(cell) != null);
@@ -230,7 +230,7 @@ public class DeepCaveBossLevel extends Level {
     @Override
     public void occupyCell( Char ch ) {
         super.occupyCell( ch );
-        if (!enteredArena && outsideEntraceRoom( ch.pos ) && ch == Dungeon.hero) {
+        if (!enteredArena && outsideEntraceRoom( ch.pos ) && ch == Dungeon.cur().hero) {
             enteredArena = true;
             seal();
         }
@@ -243,7 +243,7 @@ public class DeepCaveBossLevel extends Level {
         for (Mob m : mobs){
             //bring the first ally with you
             if (m.alignment == Char.Alignment.ALLY){
-                m.pos = Dungeon.hero.pos + (Random.Int(2) == 0 ? +1 : -1);
+                m.pos = Dungeon.cur().hero.pos + (Random.Int(2) == 0 ? +1 : -1);
                 m.sprite.place(m.pos);
                 break;
             }

@@ -23,13 +23,13 @@ public class RepeatedCallback extends Visual {
     public static void executeChain(float[] triggerTimes, Callback callback){
         RepeatedCallback rc = new RepeatedCallback();
         rc.initChain(triggerTimes, callback);
-        Dungeon.hero.sprite.parent.add(rc);
+        Dungeon.cur().hero.sprite.parent.add(rc);
     }
 
     public static void executeChain(float step, int repeats, Callback callback){
         RepeatedCallback rc = new RepeatedCallback();
         rc.initSimple(step, repeats, callback);
-        Dungeon.hero.sprite.parent.add(rc);
+        Dungeon.cur().hero.sprite.parent.add(rc);
     }
 
     private void initChain(float[] triggerTimes, Callback callback){

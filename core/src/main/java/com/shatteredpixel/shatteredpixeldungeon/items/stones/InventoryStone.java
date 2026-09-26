@@ -20,8 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.items.stones;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
@@ -117,7 +117,7 @@ public abstract class InventoryStone extends Runestone {
 				Catalog.countUse(getClass());
                 if(!(curItem.getClass() == StoneOfIntuition.class)){
                     //非感知符石在此消耗，感知符石在使用完毕时消耗
-                    curItem = detach( hero.belongings.backpack );
+                    curItem = detach( Dungeon.cur().hero.belongings.backpack );
                 }
 			}
 		}

@@ -93,7 +93,7 @@ public class Cyclops extends Mob {
             if (healingTried > 0){
                 for (int j = 0; j < Generator.Category.POTION.classes.length; j++){
                     if (Generator.Category.POTION.classes[j] == PotionOfHealing.class){
-                        Generator.Category.POTION.probs[j] += healingTried;
+                        Generator.Category.POTION.probs()[j] += healingTried;
                     }
                 }
             }

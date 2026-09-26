@@ -228,9 +228,9 @@ public class MagesStaff extends MeleeWeapon {
 
         int oldStaffcharges = this.wand.curCharges;
 
-        if (owner == Dungeon.hero && MageTalent.hasWandPreservation(Dungeon.hero)){
+        if (owner == Dungeon.cur().hero && MageTalent.hasWandPreservation(Dungeon.cur().hero)){
             // 法师（G11）法杖保留：消耗计数保留法杖，次数耗尽则补偿奥术树脂（实现见 MageTalent）
-            if (MageTalent.spendWandPreservation(Dungeon.hero)){
+            if (MageTalent.spendWandPreservation(Dungeon.cur().hero)){
                 this.wand.level(0);
                 if (!this.wand.collect()) {
                     Dungeon.level.drop(this.wand, owner.pos);
@@ -264,8 +264,8 @@ public class MagesStaff extends MeleeWeapon {
         wand.curCharges = Math.min(wand.maxCharges, wand.curCharges+oldStaffcharges);
         if (owner != null){
             applyWandChargeBuff(owner);
-        } else if (Dungeon.hero.belongings.contains(this)){
-            applyWandChargeBuff(Dungeon.hero);
+        } else if (Dungeon.cur().hero.belongings.contains(this)){
+            applyWandChargeBuff(Dungeon.cur().hero);
         }
 
         //This is necessary to reset any particles.
@@ -357,7 +357,7 @@ public class MagesStaff extends MeleeWeapon {
             if (!cursed || !cursedKnown)    info += " " + wand.statsDesc();
             else                            info += " " + Messages.get(this, "cursed_wand");
 
-            //if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
+            //if (Dungeon.cur().hero.subClass == HeroSubClass.BATTLEMAGE){
             //    info += "\n\n" + Messages.get(wand, "bmage_desc");
             //}
             if(Dungeon.WandLock||wand.lockcharge)
@@ -456,8 +456,8 @@ public class MagesStaff extends MeleeWeapon {
                     if (overLoad == OverLoad.OVERLOADING)
                         newLevel ++;
                     String bodyText = Messages.get(MagesStaff.class, "imbue_desc", newLevel);
-                    int preservesLeft = MageTalent.wandPreservesLeft(Dungeon.hero);
-                    if (MageTalent.hasWandPreservation(Dungeon.hero)) {
+                    int preservesLeft = MageTalent.wandPreservesLeft(Dungeon.cur().hero);
+                    if (MageTalent.hasWandPreservation(Dungeon.cur().hero)) {
                         bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_talent", 100, preservesLeft);
                     }
                     else {

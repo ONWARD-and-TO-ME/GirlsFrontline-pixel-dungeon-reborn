@@ -66,7 +66,7 @@ public enum Rankings {
 			return;
 		}
 		Notes.addNoteToBag();
-		for (Item i :Dungeon.hero.belongings){
+		for (Item i :Dungeon.cur().hero.belongings){
 			if (i.buffedLvl() != i.level()) {
 				i.BuffLevelPoint = i.buffedLvl() - i.level();
 			}
@@ -94,10 +94,10 @@ public enum Rankings {
 		
 		rec.cause     = cause;
 		rec.win       = win;
-		rec.heroClass = Dungeon.hero.heroClass;
-		rec.armorTier = Dungeon.hero.tier();
-		rec.herolevel = Dungeon.hero.lvl;
-		rec.seed      = Dungeon.seed;
+		rec.heroClass = Dungeon.cur().hero.heroClass;
+		rec.armorTier = Dungeon.cur().hero.tier();
+		rec.herolevel = Dungeon.cur().hero.lvl;
+		rec.seed      = Dungeon.cur().seed;
 		// 检查是否使用了自定义种子
 		rec.customSeed = !Dungeon.customSeedText.isEmpty();
 		rec.depth     = Dungeon.curDepth();
@@ -150,7 +150,7 @@ public enum Rankings {
 	}
 
 	private int score( boolean win ) {
-		return (Statistics.goldCollected + Dungeon.hero.lvl * (win ? 31 : Statistics.deepestFloor ) * 100) * (win ? 2 : 1);
+		return (Statistics.goldCollected + Dungeon.cur().hero.lvl * (win ? 31 : Statistics.deepestFloor ) * 100) * (win ? 2 : 1);
 	}
 
 	public static final String HERO = "hero";
@@ -163,17 +163,17 @@ public enum Rankings {
 	public void saveGameData(Record rec){
 		rec.gameData = new Bundle();
 
-		Belongings belongings = Dungeon.hero.belongings;
+		Belongings belongings = Dungeon.cur().hero.belongings;
 
 		//save the hero and belongings
 		ArrayList<Item> allItems = new ArrayList<>(belongings.backpack.items);
 
 		//remove all buffs (ones tied to equipment will be re-applied)
-		for(Buff b : Dungeon.hero.buffs())
+		for(Buff b : Dungeon.cur().hero.buffs())
 			if (!(b instanceof ItemBuff))
-				Dungeon.hero.remove(b);
+				Dungeon.cur().hero.remove(b);
 
-		rec.gameData.put( HERO, Dungeon.hero );
+		rec.gameData.put( HERO, Dungeon.cur().hero );
 
 		//save stats
 		Bundle stats = new Bundle();
@@ -209,8 +209,8 @@ public enum Rankings {
 
 		Actor.clear();
 		restoreInRanking = true;
-		Dungeon.hero  = null;
-		Dungeon.seed  = rec.seed;
+		Dungeon.cur().hero  = null;
+		Dungeon.cur().seed  = rec.seed;
 		Dungeon.level = null;
 		Generator.fullReset();
 		Notes.reset();
@@ -224,7 +224,7 @@ public enum Rankings {
 
 		Badges.loadLocal(data.getBundle(BADGES));
 
-		Dungeon.hero = (Hero)data.get(HERO);
+		Dungeon.cur().hero = (Hero)data.get(HERO);
 		restoreInRanking = false;
 
 		Statistics.restoreFromBundle(data.getBundle(STATS));

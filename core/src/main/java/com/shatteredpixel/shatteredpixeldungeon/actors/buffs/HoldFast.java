@@ -64,7 +64,7 @@ public class HoldFast extends Buff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", WarriorTalent.holdFastDisplayBonus(Dungeon.hero));
+		return Messages.get(this, "desc", WarriorTalent.holdFastDisplayBonus(Dungeon.cur().hero));
 	}
 
 

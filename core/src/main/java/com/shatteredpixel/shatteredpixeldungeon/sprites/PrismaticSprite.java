@@ -35,7 +35,7 @@ public class PrismaticSprite extends MobSprite {
 	public PrismaticSprite() {
 		super();
 		
-		texture( Dungeon.hero.heroClass.spritesheet() );
+		texture( Dungeon.cur().hero.heroClass.spritesheet() );
 		updateArmor( 0 );
 		idle();
 	}

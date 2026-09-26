@@ -117,7 +117,7 @@ public abstract class RegularPainter extends Painter {
 		
 		for (Room r : rooms.toArray(new Room[0])) {
 			if (r.connected.isEmpty()){
-				GirlsFrontlinePixelDungeon.reportException( new RuntimeException("Painting a room with no connections! Room:" + r.getClass().getSimpleName() + " Seed:" + Dungeon.seed + " Depth:" + Dungeon.depth));
+				GirlsFrontlinePixelDungeon.reportException( new RuntimeException("Painting a room with no connections! Room:" + r.getClass().getSimpleName() + " Seed:" + Dungeon.cur().seed + " Depth:" + Dungeon.cur().depth));
 				if (r instanceof SpecialRoom) return false;
 			}
 			placeDoors( r );
@@ -174,9 +174,9 @@ public abstract class RegularPainter extends Painter {
 	protected void paintDoors( Level l, ArrayList<Room> rooms ) {
 
 		float hiddenDoorChance = 0;
-		if (Dungeon.depth > 1){
+		if (Dungeon.cur().depth > 1){
 			//chance for a hidden door scales from 2/20 on floor 2 to 20/20 on floor 20
-			hiddenDoorChance = Math.min(1f, Dungeon.depth / 20f);
+			hiddenDoorChance = Math.min(1f, Dungeon.cur().depth / 20f);
 		}
 		if (l.feeling == Level.Feeling.SECRETS){
 			//pull the value of extra secret doors toward 50% on secrets level feel
@@ -247,7 +247,7 @@ public abstract class RegularPainter extends Painter {
 					}
 
 					//entrance doors on floor 2 are hidden if the player hasn't picked up 2nd guidebook page
-					if (Dungeon.depth == 2
+					if (Dungeon.cur().depth == 2
 							&& !Document.ADVENTURERS_GUIDE.isPageFound(Document.GUIDE_SEARCHING)
 							&& r instanceof EntranceRoom){
 						d.type = Room.Door.Type.HIDDEN;
@@ -394,7 +394,7 @@ public abstract class RegularPainter extends Painter {
 			}
 			
 			int count = 1;
-			for (int n : PathFinder.NEIGHBOURS8) {
+			for (int n : PathFinder.cur().NEIGHBOURS8) {
 				if (grass[i + n]) {
 					count++;
 				}
@@ -435,8 +435,8 @@ public abstract class RegularPainter extends Painter {
 		}
 
 		for (int i : validCells){
-			if ((l.passable[i+PathFinder.CIRCLE4[0]] || l.passable[i+PathFinder.CIRCLE4[2]])
-					&& (l.passable[i+PathFinder.CIRCLE4[1]] || l.passable[i+PathFinder.CIRCLE4[3]])){
+			if ((l.passable[i+PathFinder.cur().CIRCLE4[0]] || l.passable[i+PathFinder.cur().CIRCLE4[2]])
+					&& (l.passable[i+PathFinder.cur().CIRCLE4[1]] || l.passable[i+PathFinder.cur().CIRCLE4[3]])){
 				validNonHallways.add(i);
 			}
 		}

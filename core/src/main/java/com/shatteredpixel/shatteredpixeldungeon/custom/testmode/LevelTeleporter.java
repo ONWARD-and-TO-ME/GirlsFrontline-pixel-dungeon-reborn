@@ -72,24 +72,24 @@ public class LevelTeleporter extends TestItem {
     public void execute( Hero hero, String action ) {
         super.execute( hero, action );
         if(action.equals(AC_DESCEND)) {
-            if(Dungeon.hero.buff(LockedFloor.class) != null || Dungeon.depth>= Constants.MAX_DEPTH) {
+            if(Dungeon.cur().hero.buff(LockedFloor.class) != null || Dungeon.cur().depth>= Constants.MAX_DEPTH) {
                 GLog.w(Messages.get(this,"cannot_send"));
                 return;
             }
-            Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+            Buff buff = Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
             if (buff != null) buff.detach();
-            buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+            buff = Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
             if (buff != null) buff.detach();
             InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
             Game.switchScene( InterlevelScene.class );
         } else if(action.equals(AC_ASCEND)){
-            if(Dungeon.hero.buff(LockedFloor.class) != null || Dungeon.depth<=1) {
+            if(Dungeon.cur().hero.buff(LockedFloor.class) != null || Dungeon.cur().depth<=1) {
                 GLog.w(Messages.get(this,"cannot_send"));
                 return;
             }
-            Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+            Buff buff = Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
             if (buff != null) buff.detach();
-            buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+            buff = Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
             if (buff != null) buff.detach();
             InterlevelScene.mode = InterlevelScene.Mode.ASCEND;
             Game.switchScene( InterlevelScene.class );
@@ -102,7 +102,7 @@ public class LevelTeleporter extends TestItem {
         } else if(action.equals(AC_TP)){
             empoweredRead();
         }else if(action.equals(AC_INTER_TP)){
-            if(Dungeon.hero.buff(LockedFloor.class) != null) {
+            if(Dungeon.cur().hero.buff(LockedFloor.class) != null) {
                 GLog.w(Messages.get(this,"cannot_send"));
                 return;
             }
@@ -171,9 +171,9 @@ public class LevelTeleporter extends TestItem {
                 @Override
                 protected void onClick() {
                     super.onClick();
-                    Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+                    Buff buff = Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
                     if (buff != null) buff.detach();
-                    buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+                    buff = Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
                     if (buff != null) buff.detach();
                     InterlevelScene.mode = InterlevelScene.Mode.RETURN;
                     InterlevelScene.returnLevel = selectedLevel;
@@ -256,7 +256,7 @@ public class LevelTeleporter extends TestItem {
     }
 
     public static void teleportToLocation(Hero hero, int pos){
-        PathFinder.buildDistanceMap(pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+        PathFinder.cur().buildDistanceMap(pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
         if (Dungeon.level.avoid[pos] || !Dungeon.level.passable[pos]
                 || Actor.findChar(pos) != null){
             GLog.w( Messages.get(ScrollOfTeleportation.class, "cant_reach") );
@@ -286,7 +286,7 @@ public class LevelTeleporter extends TestItem {
             ch.sprite.parent.add( new AlphaTweener( ch.sprite, 1, 0.4f ) );
         }
 
-        if (Dungeon.level.heroFOV[pos] || ch == Dungeon.hero ) {
+        if (Dungeon.level.heroFOV[pos] || ch == Dungeon.cur().hero ) {
             ch.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.2f, 3);
         }
     }

@@ -99,11 +99,11 @@ public abstract class ChampionEnemy extends Buff {
 	}
 
 	public static void rollForChampion(Mob m){
-		if (Dungeon.mobsToChampion <= 0) Dungeon.mobsToChampion = 8;
+		if (Dungeon.cur().mobsToChampion <= 0) Dungeon.cur().mobsToChampion = 8;
 
-		Dungeon.mobsToChampion--;
+		Dungeon.cur().mobsToChampion--;
 
-		if (Dungeon.mobsToChampion <= 0){
+		if (Dungeon.cur().mobsToChampion <= 0){
 			switch (Random.Int(6)){
 				case 0: default:    Buff.affect(m, Blazing.class);      break;
 				case 1:             Buff.affect(m, Projecting.class);   break;
@@ -132,7 +132,7 @@ public abstract class ChampionEnemy extends Buff {
 
 		@Override
 		public void detach() {
-			for (int i : PathFinder.NEIGHBOURS9){
+			for (int i : PathFinder.cur().NEIGHBOURS9){
 				if (!Dungeon.level.solid[target.pos+i]&& !Dungeon.level.water[this.target.pos + i]){
 					GameScene.add(Blob.seed(target.pos+i, 2, Fire.class));
 				}
@@ -177,10 +177,10 @@ public abstract class ChampionEnemy extends Buff {
 			}
 			
 			// 使用PathFinder构建从敌人位置出发的距离图
-			PathFinder.buildDistanceMap(enemy.pos, passable, 4);
+			PathFinder.cur().buildDistanceMap(enemy.pos, passable, 4);
 			
 			// 最终判断是否存在可行的攻击路径
-			return PathFinder.distance[target.pos] <= 4;
+			return PathFinder.cur().distance[target.pos] <= 4;
 		}
 	}
 
@@ -223,9 +223,9 @@ public abstract class ChampionEnemy extends Buff {
 					if (ch != target) passable[ch.pos] = false;
 				}
 
-				PathFinder.buildDistanceMap(enemy.pos, passable, 2);
+				PathFinder.cur().buildDistanceMap(enemy.pos, passable, 2);
 
-				return PathFinder.distance[target.pos] <= 2;
+				return PathFinder.cur().distance[target.pos] <= 2;
 			}
 		}
 	}

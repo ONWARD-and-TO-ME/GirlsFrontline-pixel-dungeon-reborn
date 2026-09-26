@@ -93,7 +93,7 @@ public class DemonSpawner extends Mob {
 		spawnCooldown--;
 		if (spawnCooldown <= 0){
 			ArrayList<Integer> candidates = new ArrayList<>();
-			for (int n : PathFinder.NEIGHBOURS8) {
+			for (int n : PathFinder.cur().NEIGHBOURS8) {
 				if (Dungeon.level.passable[pos+n] && Actor.findChar( pos+n ) == null) {
 					candidates.add( pos+n );
 				}

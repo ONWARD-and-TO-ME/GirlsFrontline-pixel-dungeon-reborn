@@ -64,8 +64,8 @@ public class WarpBeacon extends ArmorAbility {
 
 	@Override
 	public String targetingPrompt() {
-		if (Dungeon.hero.buff(WarpBeaconTracker.class) == null
-				&& MageTalent.hasRemoteBeacon(Dungeon.hero)){
+		if (Dungeon.cur().hero.buff(WarpBeaconTracker.class) == null
+				&& MageTalent.hasRemoteBeacon(Dungeon.cur().hero)){
 			return Messages.get(this, "prompt");
 		}
 		return super.targetingPrompt();
@@ -144,7 +144,7 @@ public class WarpBeacon extends ArmorAbility {
 									Char toPush = Char.hasProp(existing, Char.Property.IMMOVABLE) ? hero : existing;
 
 									ArrayList<Integer> candidates = new ArrayList<>();
-									for (int n : PathFinder.NEIGHBOURS8) {
+									for (int n : PathFinder.cur().NEIGHBOURS8) {
 										int cell = tracker.pos + n;
 										if (!Dungeon.level.solid[cell] && Actor.findChar( cell ) == null
 												&& (!Char.hasProp(toPush, Char.Property.LARGE) || Dungeon.level.openSpace[cell])) {
@@ -202,10 +202,10 @@ public class WarpBeacon extends ArmorAbility {
 				return;
 			}
 
-			PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+			PathFinder.cur().buildDistanceMap(target, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
 			if (Dungeon.level.pit[target] ||
 					(Dungeon.level.solid[target] && !Dungeon.level.passable[target]) ||
-					PathFinder.distance[hero.pos] == Integer.MAX_VALUE){
+					PathFinder.cur().distance[hero.pos] == Integer.MAX_VALUE){
 				GLog.w( Messages.get(WarpBeacon.class, "invalid_beacon") );
 				return;
 			}

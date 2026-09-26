@@ -99,29 +99,29 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		} else {
 			if (result != item) {
 				int slot = Dungeon.quickslot.getSlot(item);
-				if (item.isEquipped(Dungeon.hero)) {
+				if (item.isEquipped(Dungeon.cur().hero)) {
 					item.cursed = false; //to allow it to be unequipped
-					((EquipableItem) item).doUnequip(Dungeon.hero, false);
-					((EquipableItem) result).doEquip(Dungeon.hero);
+					((EquipableItem) item).doUnequip(Dungeon.cur().hero, false);
+					((EquipableItem) result).doEquip(Dungeon.cur().hero);
 				} else {
-					item.detach(Dungeon.hero.belongings.backpack);
+					item.detach(Dungeon.cur().hero.belongings.backpack);
 					if (!result.collect()) {
 						Dungeon.level.drop(result, curUser.pos).sprite.drop();
-					} else if (Dungeon.hero.belongings.getSimilar(result) != null){
-						result = Dungeon.hero.belongings.getSimilar(result);
+					} else if (Dungeon.cur().hero.belongings.getSimilar(result) != null){
+						result = Dungeon.cur().hero.belongings.getSimilar(result);
 					}
 				}
 				if (slot != -1
 						&& result.defaultAction != null
 						&& !Dungeon.quickslot.isNonePlaceholder(slot)
-						&& Dungeon.hero.belongings.contains(result)){
+						&& Dungeon.cur().hero.belongings.contains(result)){
 					Dungeon.quickslot.setSlot(slot, result);
 				}
 			}
 			if (result.isIdentified()){
 				Catalog.setSeen(result.getClass());
 			}
-			result.Tracker(Dungeon.hero);
+			result.Tracker(Dungeon.cur().hero);
 			Transmuting.show(curUser, item, result);
 			curUser.sprite.emitter().start(Speck.factory(Speck.CHANGE), 0.2f, 10);
 			GLog.p( Messages.get(this, "morph") );
@@ -189,7 +189,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		}
 		
 		do {
-			n = (Weapon) Reflection.newInstance(c.classes[Random.chances(c.probs)]);
+			n = (Weapon) Reflection.newInstance(c.classes[Random.chances(c.probs())]);
 		} while (Challenges.isItemBlocked(n) || n.getClass() == w.getClass());
 
 		n.clone(w);

@@ -97,7 +97,7 @@ public class Berserk extends Buff {
 				}
 			} else {
 				state = State.RECOVERING;
-				levelRecovery = LEVEL_RECOVER_START - WarriorTalent.berserkingStaminaRecoveryDelay(Dungeon.hero);
+				levelRecovery = LEVEL_RECOVER_START - WarriorTalent.berserkingStaminaRecoveryDelay(Dungeon.cur().hero);
 				if (buff != null) buff.absorbDamage(buff.shielding());
 				power = 0f;
 			}
@@ -105,12 +105,12 @@ public class Berserk extends Buff {
 			if (powerLossBuffer > 0){
 				powerLossBuffer--;
 			} else {
-				float min = Dungeon.hero.STR() * 0.015F;
+				float min = Dungeon.cur().hero.STR() * 0.015F;
                 if (power > min) {
                     power -= GameMath.gate(0.1f, power - min, 1f) * 0.067f * (float) Math.pow(Math.max(0, (target.HP / (float) target.HT) - min), 2);
-                    power = Math.max(Dungeon.hero.STR()*0.015F, power);
+                    power = Math.max(Dungeon.cur().hero.STR()*0.015F, power);
                 }
-                powerLossBuffer = WarriorTalent.endlessRagePowerLossBuffer(Dungeon.hero);
+                powerLossBuffer = WarriorTalent.endlessRagePowerLossBuffer(Dungeon.cur().hero);
 			}
 		}
 		spend(TICK);
@@ -135,7 +135,7 @@ public class Berserk extends Buff {
 			if (shield != null){
 				state = State.BERSERK;
 				int shieldAmount = Math.max(4, shield.maxShield()) * 8;
-				shieldAmount = Math.round(shieldAmount * WarriorTalent.berserkingStaminaShieldMultiplier(Dungeon.hero));
+				shieldAmount = Math.round(shieldAmount * WarriorTalent.berserkingStaminaShieldMultiplier(Dungeon.cur().hero));
 				shield.supercharge(shieldAmount);
 
 				SpellSprite.show(target, SpellSprite.BERSERK);

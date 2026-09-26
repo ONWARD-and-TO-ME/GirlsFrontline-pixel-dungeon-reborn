@@ -25,7 +25,7 @@ public class RatXMAS extends Rat{
 
     @Override
     protected boolean act() {
-        if (Dungeon.hero.armorAbility instanceof Ratmogrify){
+        if (Dungeon.cur().hero.armorAbility instanceof Ratmogrify){
             alignment = Alignment.ALLY;
             if (state == PASSIVE) state = WANDERING;
         }else if(alignment != Alignment.ALLY){
@@ -65,19 +65,19 @@ public class RatXMAS extends Rat{
     @Override
     public void rollToDropLoot() {
         super.rollToDropLoot();
-        if(Dungeon.LimitedDrops.XMAS_GIFT.count==0){
+        if(Dungeon.LimitedDrops.XMAS_GIFT.count()==0){
             if(Random.Int(5)==0){
                 Dungeon.level.drop(new XMasGift(), pos).sprite.drop();
-                Dungeon.LimitedDrops.XMAS_GIFT.count++;
+                Dungeon.LimitedDrops.XMAS_GIFT.used();
             }
         }
         if(suagr()){
             Dungeon.level.drop(new XMasSugar(), pos).sprite.drop();
-            Dungeon.LimitedDrops.XMAS_SUGAR.count++;
+            Dungeon.LimitedDrops.XMAS_SUGAR.used();
         }
     }
     private boolean suagr(){
-        switch (Dungeon.LimitedDrops.XMAS_SUGAR.count){
+        switch (Dungeon.LimitedDrops.XMAS_SUGAR.count()){
             case 0:return true;
             case 1:return Random.Int(10)<6;
             case 2:return Random.Int(10)<3;

@@ -94,8 +94,8 @@ public class ShadowClone extends ArmorAbility {
 			}
 		} else {
 			ArrayList<Integer> spawnPoints = new ArrayList<>();
-			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-				int p = hero.pos + PathFinder.NEIGHBOURS8[i];
+			for (int i = 0; i < PathFinder.cur().NEIGHBOURS8.length; i++) {
+				int p = hero.pos + PathFinder.cur().NEIGHBOURS8[i];
 				if (Actor.findChar(p) == null && Dungeon.level.passable[p]) {
 					spawnPoints.add(p);
 				}
@@ -157,7 +157,7 @@ public class ShadowClone extends ArmorAbility {
 		public ShadowAlly( int heroLevel ){
 			super();
 			int hpBonus = 15 + 5*heroLevel;
-			hpBonus = RogueTalent.perfectCopyHpBonus(Dungeon.hero, hpBonus);
+			hpBonus = RogueTalent.perfectCopyHpBonus(Dungeon.cur().hero, hpBonus);
 			if (hpBonus > 0){
 				HT += hpBonus;
 				HP += hpBonus;
@@ -196,9 +196,9 @@ public class ShadowClone extends ArmorAbility {
 		@Override
 		public int damageRoll() {
 			int damage = Random.NormalIntRange(10, 20);
-			int heroDamage = Dungeon.hero.damageRoll();
-			heroDamage /= Dungeon.hero.attackDelay(); //normalize hero damage based on atk speed
-			heroDamage = RogueTalent.shadowBladeBonusDamage(Dungeon.hero, heroDamage);
+			int heroDamage = Dungeon.cur().hero.damageRoll();
+			heroDamage /= Dungeon.cur().hero.attackDelay(); //normalize hero damage based on atk speed
+			heroDamage = RogueTalent.shadowBladeBonusDamage(Dungeon.cur().hero, heroDamage);
 			if (heroDamage > 0){
 				damage += heroDamage;
 			}
@@ -208,8 +208,8 @@ public class ShadowClone extends ArmorAbility {
 		@Override
 		public int attackProc( Char enemy, int damage ) {
 			damage = super.attackProc( enemy, damage );
-			if (RogueTalent.rollShadowBladeProc(Dungeon.hero)){
-				return Dungeon.hero.belongings.weapon().proc( this, enemy, damage );
+			if (RogueTalent.rollShadowBladeProc(Dungeon.cur().hero)){
+				return Dungeon.cur().hero.belongings.weapon().proc( this, enemy, damage );
 			} else {
 				return damage;
 			}
@@ -218,8 +218,8 @@ public class ShadowClone extends ArmorAbility {
 		@Override
 		public int drRoll() {
 			int dr = super.drRoll();
-			int heroRoll = Dungeon.hero.drRoll();
-			heroRoll = RogueTalent.clonedArmorBonusDR(Dungeon.hero, heroRoll);
+			int heroRoll = Dungeon.cur().hero.drRoll();
+			heroRoll = RogueTalent.clonedArmorBonusDR(Dungeon.cur().hero, heroRoll);
 			if (heroRoll > 0){
 				dr += heroRoll;
 			}
@@ -229,8 +229,8 @@ public class ShadowClone extends ArmorAbility {
 		@Override
 		public int defenseProc(Char enemy, int damage) {
 			damage = super.defenseProc(enemy, damage);
-			if (RogueTalent.rollClonedArmorProc(Dungeon.hero)){
-				return Dungeon.hero.belongings.ArmorProc( enemy, this, damage );
+			if (RogueTalent.rollClonedArmorProc(Dungeon.cur().hero)){
+				return Dungeon.cur().hero.belongings.ArmorProc( enemy, this, damage );
 			} else {
 				return damage;
 			}
@@ -252,7 +252,7 @@ public class ShadowClone extends ArmorAbility {
 		public boolean canInteract(Char c) {
 			if (super.canInteract(c)){
 				return true;
-			} else if (Dungeon.level.distance(pos, c.pos) <= RogueTalent.perfectCopyInteractRange(Dungeon.hero)) {
+			} else if (Dungeon.level.distance(pos, c.pos) <= RogueTalent.perfectCopyInteractRange(Dungeon.cur().hero)) {
 				return true;
 			} else {
 				return false;
@@ -261,7 +261,7 @@ public class ShadowClone extends ArmorAbility {
 
 		@Override
 		public boolean interact(Char c) {
-			if (!RogueTalent.hasPerfectCopy(Dungeon.hero)){
+			if (!RogueTalent.hasPerfectCopy(Dungeon.cur().hero)){
 				return super.interact(c);
 			}
 
@@ -278,12 +278,12 @@ public class ShadowClone extends ArmorAbility {
 			int curPos = pos;
 
 			//warp instantly with the clone
-			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
-			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
+			PathFinder.cur().buildDistanceMap(c.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+			if (PathFinder.cur().distance[pos] == Integer.MAX_VALUE){
 				return true;
 			}
-			appear(this, Dungeon.hero.pos);
-			appear(Dungeon.hero, curPos);
+			appear(this, Dungeon.cur().hero.pos);
+			appear(Dungeon.cur().hero, curPos);
 			Dungeon.observe();
 			GameScene.updateFog();
 			return true;
@@ -300,7 +300,7 @@ public class ShadowClone extends ArmorAbility {
 			ch.move( pos );
 			if (ch.pos == pos) ch.sprite.place( pos );
 
-			if (Dungeon.level.heroFOV[pos] || ch == Dungeon.hero ) {
+			if (Dungeon.level.heroFOV[pos] || ch == Dungeon.cur().hero ) {
 				ch.sprite.emitter().burst(SmokeParticle.FACTORY, 10);
 			}
 		}
@@ -327,7 +327,7 @@ public class ShadowClone extends ArmorAbility {
 		public ShadowSprite() {
 			super();
 
-			texture( Dungeon.hero.heroClass.spritesheet() );
+			texture( Dungeon.cur().hero.heroClass.spritesheet() );
 
 			TextureFilm film = new TextureFilm( HeroSprite.tiers(), 6, 12, 15 );
 

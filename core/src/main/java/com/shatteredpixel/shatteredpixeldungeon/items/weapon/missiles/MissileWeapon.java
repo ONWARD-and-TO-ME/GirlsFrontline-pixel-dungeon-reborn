@@ -76,7 +76,7 @@ abstract public class MissileWeapon extends Weapon {
 	
 	@Override
 	public int min() {
-		return Math.max(0, min( buffedLvl() + RingOfSharpshooting.levelDamageBonus(Dungeon.hero) ));
+		return Math.max(0, min( buffedLvl() + RingOfSharpshooting.levelDamageBonus(Dungeon.cur().hero) ));
 	}
 	
 	@Override
@@ -87,7 +87,7 @@ abstract public class MissileWeapon extends Weapon {
 	
 	@Override
 	public int max() {
-		return Math.max(0, max( buffedLvl() + RingOfSharpshooting.levelDamageBonus(Dungeon.hero) ));
+		return Math.max(0, max( buffedLvl() + RingOfSharpshooting.levelDamageBonus(Dungeon.cur().hero) ));
 	}
 	
 	@Override
@@ -113,16 +113,16 @@ abstract public class MissileWeapon extends Weapon {
 				
 				//try to put the upgraded into inventory, if it didn't already merge
 				if (upgraded.quantity() == 1 && !upgraded.collect()) {
-					Dungeon.level.drop(upgraded, Dungeon.hero.pos);
+					Dungeon.level.drop(upgraded, Dungeon.cur().hero.pos);
 				}
 				updateQuickslot();
 				return upgraded;
 			} else {
 				super.upgrade();
 				
-				Item similar = Dungeon.hero.belongings.getSimilar(this);
+				Item similar = Dungeon.cur().hero.belongings.getSimilar(this);
 				if (similar != null){
-					detach(Dungeon.hero.belongings.backpack);
+					detach(Dungeon.cur().hero.belongings.backpack);
 					Item result = similar.merge(this);
 					updateQuickslot();
 					return result;
@@ -155,10 +155,10 @@ abstract public class MissileWeapon extends Weapon {
 		boolean projecting = hasEnchant(Projecting.class, user);
 		// 女猎（隼）共享附魔：投掷时概率借用灵弓附魔（实现见 HuntressTalent）
 		if (!projecting && HuntressTalent.rollSharedEnchantment(user)){
-			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.hero)){
+			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.cur().hero)){
 				//do nothing
 			} else {
-				SpiritBow bow = Dungeon.hero.belongings.getItem(SpiritBow.class);
+				SpiritBow bow = Dungeon.cur().hero.belongings.getItem(SpiritBow.class);
 				if (bow != null && bow.hasEnchant(Projecting.class, user)) {
 					projecting = true;
 				}
@@ -213,12 +213,12 @@ abstract public class MissileWeapon extends Weapon {
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
 		// 女猎（隼）共享附魔：命中时概率借用灵弓附魔（实现见 HuntressTalent）
-		if (attacker == Dungeon.hero && HuntressTalent.rollSharedEnchantment(Dungeon.hero)){
-			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.hero)){
+		if (attacker == Dungeon.cur().hero && HuntressTalent.rollSharedEnchantment(Dungeon.cur().hero)){
+			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.cur().hero)){
 				//do nothing
 			} else {
-				SpiritBow bow = Dungeon.hero.belongings.getItem(SpiritBow.class);
-				if (bow != null && bow.enchantment != null && Dungeon.hero.buff(MagicImmune.class) == null) {
+				SpiritBow bow = Dungeon.cur().hero.belongings.getItem(SpiritBow.class);
+				if (bow != null && bow.enchantment != null && Dungeon.cur().hero.buff(MagicImmune.class) == null) {
 					damage = bow.enchantment.proc(this, attacker, defender, damage);
 				}
 			}
@@ -282,12 +282,12 @@ abstract public class MissileWeapon extends Weapon {
 		float usages = baseUses * (float)(Math.pow(3, level()));
 
 		// 女猎（隼）耐久弹药：投掷武器耐久系数（实现见 HuntressTalent）
-		usages *= HuntressTalent.durableProjectilesFactor(Dungeon.hero);
+		usages *= HuntressTalent.durableProjectilesFactor(Dungeon.cur().hero);
 		if (holster) {
 			usages *= MagicalHolster.HOLSTER_DURABILITY_FACTOR;
 		}
 		
-		usages *= RingOfSharpshooting.durabilityMultiplier( Dungeon.hero );
+		usages *= RingOfSharpshooting.durabilityMultiplier( Dungeon.cur().hero );
 		
 		//at 100 uses, items just last forever.
 		if (usages >= 100f) return 0;
@@ -395,7 +395,7 @@ abstract public class MissileWeapon extends Weapon {
 
 		String info = super.info();
 
-		Ring.guessSignalRing(Dungeon.hero, RingOfSharpshooting.class, false);
+		Ring.guessSignalRing(Dungeon.cur().hero, RingOfSharpshooting.class, false);
 
 		info += "\n\n" + Messages.get( MissileWeapon.class, "stats",
 				tier,
@@ -403,10 +403,10 @@ abstract public class MissileWeapon extends Weapon {
 				Math.round(augment.damageFactor(max())),
 				STRReq());
 
-		if (STRReq() > Dungeon.hero.STR()) {
+		if (STRReq() > Dungeon.cur().hero.STR()) {
 			info += " " + Messages.get(Weapon.class, "too_heavy");
-		} else if (Dungeon.hero.STR() > STRReq()){
-			info += " " + Messages.get(Weapon.class, "excess_str", Dungeon.hero.STR() - STRReq());
+		} else if (Dungeon.cur().hero.STR() > STRReq()){
+			info += " " + Messages.get(Weapon.class, "excess_str", Dungeon.cur().hero.STR() - STRReq());
 		}
 
 		if (enchantment != null && (cursedKnown || !enchantment.curse())){
@@ -414,7 +414,7 @@ abstract public class MissileWeapon extends Weapon {
 			info += " " + Messages.get(enchantment, "desc");
 		}
 
-		if (cursed && isEquipped( Dungeon.hero )) {
+		if (cursed && isEquipped( Dungeon.cur().hero )) {
 			info += "\n\n" + Messages.get(Weapon.class, "cursed_worn");
 		} else if (cursedKnown && cursed) {
 			info += "\n\n" + Messages.get(Weapon.class, "cursed");

@@ -105,7 +105,7 @@ public class Honeypot extends Item {
 		if (Actor.findChar( pos ) != null) {
 			ArrayList<Integer> candidates = new ArrayList<>();
 			
-			for (int n : PathFinder.NEIGHBOURS4) {
+			for (int n : PathFinder.cur().NEIGHBOURS4) {
 				int c = pos + n;
 				if (!Dungeon.level.solid[c] && Actor.findChar( c ) == null) {
 					candidates.add( c );
@@ -117,7 +117,7 @@ public class Honeypot extends Item {
 		
 		if (newPos != -1) {
 			Bee bee = new Bee();
-			bee.spawn( Dungeon.depth );
+			bee.spawn( Dungeon.cur().depth );
 			bee.setPotInfo( pos, owner );
 			bee.HP = bee.HT;
 			bee.pos = newPos;

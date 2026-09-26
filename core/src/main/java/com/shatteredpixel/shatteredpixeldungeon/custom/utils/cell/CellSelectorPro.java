@@ -142,11 +142,11 @@ public class CellSelectorPro extends ScrollArea {
             //The extra check prevents large sprites from blocking the player from clicking adjacent tiles
             PointF p = Camera.main.screenToCamera((int) event.current.x, (int) event.current.y);
             //hero first
-            if (Dungeon.hero.sprite != null && Dungeon.hero.sprite.overlapsPoint( p.x, p.y )){
-                PointF c = DungeonTilemap.tileCenterToWorld(Dungeon.hero.pos);
+            if (Dungeon.cur().hero.sprite != null && Dungeon.cur().hero.sprite.overlapsPoint( p.x, p.y )){
+                PointF c = DungeonTilemap.tileCenterToWorld(Dungeon.cur().hero.pos);
                 if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
                     if(trigger) {
-                        select(Dungeon.hero.pos, event.button);
+                        select(Dungeon.cur().hero.pos, event.button);
                     }
                     return;
                 }
@@ -204,7 +204,7 @@ public class CellSelectorPro extends ScrollArea {
     }
 
     public void select( int cell, int button ) {
-        if (enabled && Dungeon.hero.ready && !GameScene.interfaceBlockingHero()
+        if (enabled && Dungeon.cur().hero.ready && !GameScene.interfaceBlockingHero()
             /*&& listener != null*/ && cell != -1) {
 
             switch (button){

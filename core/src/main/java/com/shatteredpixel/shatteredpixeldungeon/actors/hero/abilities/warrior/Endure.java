@@ -123,7 +123,7 @@ public class Endure extends ArmorAbility {
 			}
 
 			enduring = false;
-			damageBonus *= WarriorTalent.sustainedRetributionDamageMultiplier(Dungeon.hero);
+			damageBonus *= WarriorTalent.sustainedRetributionDamageMultiplier(Dungeon.cur().hero);
 
 			int nearby = 0;
 			for (Char ch : Actor.chars()){
@@ -131,9 +131,9 @@ public class Endure extends ArmorAbility {
 					nearby ++;
 				}
 			}
-			damageBonus *= WarriorTalent.evenTheOddsMultiplier(Dungeon.hero, nearby);
+			damageBonus *= WarriorTalent.evenTheOddsMultiplier(Dungeon.cur().hero, nearby);
 
-			hitsLeft = WarriorTalent.sustainedRetributionHits(Dungeon.hero);
+			hitsLeft = WarriorTalent.sustainedRetributionHits(Dungeon.cur().hero);
 			damageBonus /= hitsLeft;
 
 			if (damageBonus > 0) {

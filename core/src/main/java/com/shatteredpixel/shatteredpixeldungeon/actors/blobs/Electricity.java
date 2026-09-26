@@ -74,7 +74,7 @@ public class Electricity extends Blob {
 						}
 						if (cur[cell] % 2 == 1) {
 							ch.damage(Math.round(Random.Float(2 + Dungeon.curDepth() / 5f)), this);
-							if (!ch.isAlive() && ch == Dungeon.hero){
+							if (!ch.isAlive() && ch == Dungeon.cur().hero){
 								Dungeon.fail( getClass() );
 								GLog.n( Messages.get(this, "ondeath") );
 							}
@@ -105,7 +105,7 @@ public class Electricity extends Blob {
 		}
 		cur[cell] = Math.max(cur[cell], power);
 		
-		for (int c : PathFinder.NEIGHBOURS4){
+		for (int c : PathFinder.cur().NEIGHBOURS4){
 			if (water[cell + c] && cur[cell + c] < power){
 				spreadFromCell(cell + c, power);
 			}

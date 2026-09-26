@@ -62,7 +62,7 @@ public class CavesFissureRoom extends StandardRoom {
 	public void paint(Level level) {
 
 		boolean pathable = true;
-		PathFinder.setMapSize(width()-2, height()-2);
+		PathFinder.cur().setMapSize(width()-2, height()-2);
 
 		do {
 			Painter.fill(level, this, Terrain.WALL);
@@ -121,7 +121,7 @@ public class CavesFissureRoom extends StandardRoom {
 
 			//just become an empty room if we can't make at least 2 lines
 			if (lineAngles.size() < 2) {
-				PathFinder.setMapSize(level.width(), level.height());
+				PathFinder.cur().setMapSize(level.width(), level.height());
 				return;
 			}
 
@@ -206,18 +206,18 @@ public class CavesFissureRoom extends StandardRoom {
 			//ensures that there is always a path to any non-chasm tile
 			//TODO some copypasta from PatchRoom here, maybe standardize this as a static function in Room?
 			pathable = true;
-			boolean[] passable = new boolean[PathFinder.distance.length];
+			boolean[] passable = new boolean[PathFinder.cur().distance.length];
 
 			for (Point p : shrink().getPoints()){
 				int i = xyToRoomCoords(p.x, p.y);
 				passable[i] = level.map[level.pointToCell(p)] != Terrain.CHASM;
 			}
 
-			PathFinder.buildDistanceMap(doorPoint, passable);
+			PathFinder.cur().buildDistanceMap(doorPoint, passable);
 
 			for (Point p : shrink().getPoints()){
 				int i = xyToRoomCoords(p.x, p.y);
-				if (passable[i] && PathFinder.distance[i] == Integer.MAX_VALUE){
+				if (passable[i] && PathFinder.cur().distance[i] == Integer.MAX_VALUE){
 					pathable = false;
 					break;
 				}
@@ -225,7 +225,7 @@ public class CavesFissureRoom extends StandardRoom {
 
 		} while (!pathable);
 
-		PathFinder.setMapSize(level.width(), level.height());
+		PathFinder.cur().setMapSize(level.width(), level.height());
 
 	}
 

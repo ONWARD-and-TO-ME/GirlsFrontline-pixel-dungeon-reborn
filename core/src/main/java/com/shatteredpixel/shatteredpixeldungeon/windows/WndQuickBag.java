@@ -65,7 +65,7 @@ public class WndQuickBag extends Window {
 
 		ArrayList<Item> items = new ArrayList<>();
 
-		for (Item i : bag == null ? Dungeon.hero.belongings : bag){
+		for (Item i : bag == null ? Dungeon.cur().hero.belongings : bag){
 			if (i.defaultAction == null){
 				continue;
 			}
@@ -73,9 +73,9 @@ public class WndQuickBag extends Window {
 				continue;
 			}
 			if (i instanceof Artifact
-					&& !i.isEquipped(Dungeon.hero)
-					&& (!(i instanceof CloakOfShadows) || !RogueTalent.activatesLostCloak(Dungeon.hero))
-                    && (!(i instanceof RedBook) || !Dungeon.hero.hasTalent(Talent.Type56Three_Book))){
+					&& !i.isEquipped(Dungeon.cur().hero)
+					&& (!(i instanceof CloakOfShadows) || !RogueTalent.activatesLostCloak(Dungeon.cur().hero))
+                    && (!(i instanceof RedBook) || !Dungeon.cur().hero.hasTalent(Talent.Type56Three_Book))){
 				continue;
 			}
 			items.add(i);
@@ -99,13 +99,13 @@ public class WndQuickBag extends Window {
 			InventorySlot slot = new InventorySlot(i){
 				@Override
 				protected void onClick() {
-					if (Dungeon.hero == null || !Dungeon.hero.isAlive() || !Dungeon.hero.belongings.contains(item)){
+					if (Dungeon.cur().hero == null || !Dungeon.cur().hero.isAlive() || !Dungeon.cur().hero.belongings.contains(item)){
 						Game.scene().addToFront(new WndUseItem(WndQuickBag.this, item));
 						return;
 					}
 
 					hide();
-					item.execute(Dungeon.hero);
+					item.execute(Dungeon.cur().hero);
 					if (item.usesTargeting && bag != null){
 						int idx = Dungeon.quickslot.getSlot(WndQuickBag.bag);
 						if (idx != -1){
@@ -162,9 +162,9 @@ public class WndQuickBag extends Window {
 	public static final Comparator<Item> quickBagComparator = new Comparator<Item>() {
 		@Override
 		public int compare( Item lhs, Item rhs ) {
-			if (lhs.isEquipped(Dungeon.hero) && !rhs.isEquipped(Dungeon.hero)){
+			if (lhs.isEquipped(Dungeon.cur().hero) && !rhs.isEquipped(Dungeon.cur().hero)){
 				return -1;
-			} else if (!lhs.isEquipped(Dungeon.hero) && rhs.isEquipped(Dungeon.hero)){
+			} else if (!lhs.isEquipped(Dungeon.cur().hero) && rhs.isEquipped(Dungeon.cur().hero)){
 				return 1;
 			} else {
 				return Generator.Category.order(lhs) - Generator.Category.order(rhs);

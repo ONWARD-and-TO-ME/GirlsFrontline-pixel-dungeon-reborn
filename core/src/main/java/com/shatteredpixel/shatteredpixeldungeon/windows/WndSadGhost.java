@@ -89,11 +89,11 @@ public class WndSadGhost extends Window {
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
 
-		RewardButton btnWeapon = new RewardButton( Ghost.Quest.weapon );
+		RewardButton btnWeapon = new RewardButton( Ghost.Quest.cur().weapon );
 		btnWeapon.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.top() + message.height() + BTN_GAP, BTN_SIZE, BTN_SIZE );
 		add( btnWeapon );
 
-		RewardButton btnArmor = new RewardButton( Ghost.Quest.armor );
+		RewardButton btnArmor = new RewardButton( Ghost.Quest.cur().armor );
 		btnArmor.setRect( btnWeapon.right() + BTN_GAP, btnWeapon.top(), BTN_SIZE, BTN_SIZE );
 		add(btnArmor);
 
@@ -106,15 +106,15 @@ public class WndSadGhost extends Window {
 
 		if (reward == null) return;
 
-		if (reward instanceof Weapon && Ghost.Quest.enchant != null){
-			((Weapon) reward).enchant(Ghost.Quest.enchant);
-		} else if (reward instanceof Armor && Ghost.Quest.glyph != null){
-			((Armor) reward).inscribe(Ghost.Quest.glyph);
+		if (reward instanceof Weapon && Ghost.Quest.cur().enchant != null){
+			((Weapon) reward).enchant(Ghost.Quest.cur().enchant);
+		} else if (reward instanceof Armor && Ghost.Quest.cur().glyph != null){
+			((Armor) reward).inscribe(Ghost.Quest.cur().glyph);
 		}
 
 		reward.identify(false);
-		if (reward.doPickUp( Dungeon.hero )) {
-			GLog.i( Messages.get(Dungeon.hero, "you_now_have", reward.name()) );
+		if (reward.doPickUp( Dungeon.cur().hero )) {
+			GLog.i( Messages.get(Dungeon.cur().hero, "you_now_have", reward.name()) );
 		} else {
 			Dungeon.level.drop( reward, ghost.pos ).sprite.drop();
 		}
@@ -122,7 +122,7 @@ public class WndSadGhost extends Window {
 		ghost.yell( Messages.get(this, "farewell") );
 		ghost.die( null );
 
-		Ghost.Quest.complete();
+		Ghost.Quest.cur().complete();
 	}
 
 	private class RewardButton extends Component {

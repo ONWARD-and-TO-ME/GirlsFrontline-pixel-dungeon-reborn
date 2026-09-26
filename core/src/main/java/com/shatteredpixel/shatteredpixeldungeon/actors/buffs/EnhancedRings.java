@@ -84,7 +84,7 @@ public class EnhancedRings extends FlavourBuff{
 
 	@Override
 	public float iconFadePercent() {
-		float max = RogueTalent.enhancedRingsMaxCooldown(Dungeon.hero);
+		float max = RogueTalent.enhancedRingsMaxCooldown(Dungeon.cur().hero);
 		return Math.max(0, (max-visualcooldown()) / max);
 	}
 

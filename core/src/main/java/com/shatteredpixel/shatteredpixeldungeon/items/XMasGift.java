@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -78,7 +77,7 @@ public class XMasGift extends Item {
 			detach( hero.belongings.backpack );
 
 			Item gift = RandomFood();
-            if(!gift.doPickUp(Dungeon.hero)){
+            if(!gift.doPickUp(Dungeon.cur().hero)){
                 hero.spend( TIME_TO_OPEN );
                 hero.busy();
                 Dungeon.level.drop(gift, hero.pos).sprite.drop();
@@ -87,7 +86,7 @@ public class XMasGift extends Item {
 		}
 	}
     public void GiftCost(){
-        detach(hero.belongings.backpack);
+        detach(Dungeon.cur().hero.belongings.backpack);
     }
 	private Item RandomFood(){
         int i =Random.Int(6);

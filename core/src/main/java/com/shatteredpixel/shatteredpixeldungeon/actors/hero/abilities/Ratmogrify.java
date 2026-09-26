@@ -86,8 +86,8 @@ public class Ratmogrify extends ArmorAbility {
 			} else {
 				ArrayList<Integer> spawnPoints = new ArrayList<>();
 
-				for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-					int p = hero.pos + PathFinder.NEIGHBOURS8[i];
+				for (int i = 0; i < PathFinder.cur().NEIGHBOURS8.length; i++) {
+					int p = hero.pos + PathFinder.cur().NEIGHBOURS8[i];
 					if (Actor.findChar( p ) == null && Dungeon.level.passable[p]) {
 						spawnPoints.add( p );
 					}
@@ -256,8 +256,8 @@ public class Ratmogrify extends ArmorAbility {
 		@Override
 		public int damageRoll() {
 			int damage = original.damageRoll();
-			if (!allied && Dungeon.hero.hasTalent(Talent.RATSISTANCE)){
-				damage *= Math.pow(0.9f, Dungeon.hero.pointsInTalent(Talent.RATSISTANCE));
+			if (!allied && Dungeon.cur().hero.hasTalent(Talent.RATSISTANCE)){
+				damage *= Math.pow(0.9f, Dungeon.cur().hero.pointsInTalent(Talent.RATSISTANCE));
 			}
 			return damage;
 		}

@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeons;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.custom.seedfinder.SeedFinder;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
@@ -108,13 +109,24 @@ public abstract class SpecialRoom extends Room {
 			PoolRoom.class, SentryRoom.class, StorageRoom.class, ToxicGasRoom.class, MagicalFireRoom.class, TrapsRoom.class
 	) );
 
-	public static ArrayList<Class<? extends Room>> runSpecials = new ArrayList<>();
-	public static ArrayList<Class<? extends Room>> floorSpecials = new ArrayList<>();
-	
-	private static int pitNeededDepth = -1;
+	//每局状态改为挂在 Dungeons 实例上，通过 cur()/main() 路由
+	private static ArrayList<Class<? extends Room>> runSpecials(){
+		return Dungeons.cur().spRunSpecials;
+	}
+	private static ArrayList<Class<? extends Room>> floorSpecials(){
+		return Dungeons.cur().spFloorSpecials;
+	}
+	private static int pitNeededDepth(){
+		return Dungeons.cur().spPitNeededDepth;
+	}
+	private static void setPitNeededDepth(int d){
+		Dungeons.cur().spPitNeededDepth = d;
+	}
 	
 	public static void initForRun() {
-		runSpecials = new ArrayList<>();
+		Dungeons d = Dungeons.cur();
+		ArrayList<Class<? extends Room>> runSpecials = d.spRunSpecials;
+		runSpecials.clear();
 
 		ArrayList<Class<?extends Room>> runEquipSpecials = (ArrayList<Class<?extends Room>>)EQUIP_SPECIALS.clone();
 		ArrayList<Class<?extends Room>> runConsSpecials = (ArrayList<Class<?extends Room>>)CONSUMABLE_SPECIALS.clone();
@@ -132,28 +144,33 @@ public abstract class SpecialRoom extends Room {
 			if (!runConsSpecials.isEmpty())     runSpecials.add(runConsSpecials.remove(0));
 		}
 
-		pitNeededDepth = -1;
+		d.spPitNeededDepth = -1;
 	}
 	
 	public static void initForFloor(){
-		floorSpecials = new ArrayList<>(runSpecials);
+		Dungeons d = Dungeons.cur();
+		ArrayList<Class<? extends Room>> floorSpecials = d.spFloorSpecials;
+		floorSpecials.clear();
+		floorSpecials.addAll(d.spRunSpecials);
 		
 		//laboratory rooms spawn at set intervals every chapter
-        int region  = 1+Dungeon.depth/5;
-        int depth   = Dungeon.depth%5;
+        int region  = 1+Dungeon.cur().depth/5;
+        int depth   = Dungeon.cur().depth%5;
         int labRoom = Random.Int(5-depth);
-		if (depth > 1 && region > Dungeon.LimitedDrops.LaboratoryRoom.count && labRoom == 0){
+		if (depth > 1 && region > Dungeon.LimitedDrops.LaboratoryRoom.count() && labRoom == 0){
 			floorSpecials.add(0, LaboratoryRoom.class);
             Dungeon.LimitedDrops.LaboratoryRoom.used();
 		}
         int fairy   =  Random.Int(5-depth);
-        if (depth>=3 && region > Dungeon.LimitedDrops.FairyRoom.count && fairy == 0){
+        if (depth>=3 && region > Dungeon.LimitedDrops.FairyRoom.count() && fairy == 0){
             floorSpecials.add(0, FairyRoom.class);
             Dungeon.LimitedDrops.FairyRoom.used();
         }
 	}
 	
 	private static void useType( Class<?extends Room> type ) {
+		ArrayList<Class<? extends Room>> floorSpecials = floorSpecials();
+		ArrayList<Class<? extends Room>> runSpecials = runSpecials();
 		floorSpecials.remove( type );
 		if (CRYSTAL_KEY_SPECIALS.contains(type)){
 			floorSpecials.removeAll(CRYSTAL_KEY_SPECIALS);
@@ -167,12 +184,13 @@ public abstract class SpecialRoom extends Room {
 	}
 
 	public static void resetPitRoom(int depth){
-		if (pitNeededDepth == depth) pitNeededDepth = -1;
+		if (pitNeededDepth() == depth) setPitNeededDepth(-1);
 	}
 	
 	public static SpecialRoom createRoom(){
-        if (Dungeon.depth == pitNeededDepth){
-            pitNeededDepth = -1;
+		ArrayList<Class<? extends Room>> floorSpecials = floorSpecials();
+        if (Dungeon.cur().depth == pitNeededDepth()){
+            setPitNeededDepth(-1);
 
             useType( PitRoom.class );
             return new PitRoom();
@@ -189,7 +207,7 @@ public abstract class SpecialRoom extends Room {
             if (SeedFinder.SeedFinding)
                 secret = false;
             else {
-                AlchemistsToolkit toolkit = Dungeon.hero.belongings.getItem(AlchemistsToolkit.class);
+                AlchemistsToolkit toolkit = Dungeon.cur().hero.belongings.getItem(AlchemistsToolkit.class);
                 secret = toolkit != null && toolkit.Secret;
             }
             if (secret && random != 0) {
@@ -206,7 +224,7 @@ public abstract class SpecialRoom extends Room {
 		
 		} else {
 			
-			if (Dungeon.bossLevel(Dungeon.depth + 1)){
+			if (Dungeon.bossLevel(Dungeon.cur().depth + 1)){
 				floorSpecials.remove(WeakFloorRoom.class);
 			}
 
@@ -217,7 +235,7 @@ public abstract class SpecialRoom extends Room {
 			Room r = Reflection.newInstance(floorSpecials.get( index ));
 
 			if (r instanceof WeakFloorRoom){
-				pitNeededDepth = Dungeon.depth + 1;
+				setPitNeededDepth(Dungeon.cur().depth + 1);
 			}
 			
 			useType( r.getClass() );
@@ -230,20 +248,22 @@ public abstract class SpecialRoom extends Room {
 	private static final String PIT	    = "pit_needed";
 	
 	public static void restoreRoomsFromBundle( Bundle bundle ) {
-		runSpecials.clear();
+		Dungeons d = Dungeons.main();
+		d.spRunSpecials.clear();
 		if (bundle.contains( ROOMS )) {
 			for (Class<? extends Room> type : bundle.getClassArray(ROOMS)) {
-				runSpecials.add(type);
+				d.spRunSpecials.add(type);
 			}
 		} else {
 			initForRun();
 			GirlsFrontlinePixelDungeon.reportException(new Exception("specials array didn't exist!"));
 		}
-		pitNeededDepth = bundle.getInt(PIT);
+		d.spPitNeededDepth = bundle.getInt(PIT);
 	}
 	
 	public static void storeRoomsInBundle( Bundle bundle ) {
-		bundle.put( ROOMS, runSpecials.toArray(new Class[0]) );
-		bundle.put( PIT, pitNeededDepth );
+		Dungeons d = Dungeons.main();
+		bundle.put( ROOMS, d.spRunSpecials.toArray(new Class[0]) );
+		bundle.put( PIT, d.spPitNeededDepth );
 	}
 }

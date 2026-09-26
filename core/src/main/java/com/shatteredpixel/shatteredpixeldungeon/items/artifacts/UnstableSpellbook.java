@@ -151,10 +151,10 @@ public class UnstableSpellbook extends Artifact {
 								Scroll scroll = Reflection.newInstance(ExoticScroll.regToExo.get(fScroll.getClass()));
 								charge--;
 								scroll.BookRead();
-								Talent.onArtifactUsed(Dungeon.hero);
+								Talent.onArtifactUsed(Dungeon.cur().hero);
 							} else {
 								fScroll.doRead();
-								Talent.onArtifactUsed(Dungeon.hero);
+								Talent.onArtifactUsed(Dungeon.cur().hero);
 							}
 							updateQuickslot();
 						}
@@ -166,7 +166,7 @@ public class UnstableSpellbook extends Artifact {
 					});
 				} else {
 					scroll.doRead();
-					Talent.onArtifactUsed(Dungeon.hero);
+					Talent.onArtifactUsed(Dungeon.cur().hero);
 				}
 				updateQuickslot();
 			}
@@ -185,7 +185,7 @@ public class UnstableSpellbook extends Artifact {
 
 		@Override
 		public boolean act() {
-			curUser = Dungeon.hero;
+			curUser = Dungeon.cur().hero;
 			curItem = scroll;
 			scroll.anonymize();
 			Game.runOnRenderThread(new Callback() {
@@ -244,7 +244,7 @@ public class UnstableSpellbook extends Artifact {
 	public String desc() {
 		String desc = super.desc();
 
-		if (isEquipped(Dungeon.hero)) {
+		if (isEquipped(Dungeon.cur().hero)) {
 			if (cursed) {
 				desc += "\n\n" + Messages.get(this, "desc_cursed");
 			}
@@ -328,7 +328,7 @@ public class UnstableSpellbook extends Artifact {
 		@Override
 		public void onSelect(Item item) {
 			if (item != null && item instanceof Scroll && item.isIdentified()){
-				Hero hero = Dungeon.hero;
+				Hero hero = Dungeon.cur().hero;
 				for (int i = 0; ( i <= 1 && i < scrolls.size() ); i++){
 					if (scrolls.get(i).equals(item.getClass())){
 						hero.sprite.operate( hero.pos );

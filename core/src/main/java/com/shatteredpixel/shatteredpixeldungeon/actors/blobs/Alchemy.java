@@ -51,7 +51,7 @@ public class Alchemy extends Blob {
 					if (off[cell] >= 4){
 						int n;
 						do {
-							n = cell + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
+							n = cell + PathFinder.cur().NEIGHBOURS8[Random.Int( 8 )];
 						} while (!Dungeon.level.passable[n] && !Dungeon.level.avoid[n]);
 						Dungeon.level.drop( new EnergyCrystal((int)Math.ceil(off[cell]/4f)), n ).sprite.drop( cell );
 						off[cell] = 1;

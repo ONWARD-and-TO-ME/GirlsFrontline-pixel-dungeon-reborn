@@ -25,36 +25,58 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 public class PathFinder {
-	
-	public static int[] distance;
-	private static int[] maxVal;
-	
-	private static boolean[] goals;
-	private static int[] queue;
-	
-	private static int size = 0;
-	private static int width = 0;
 
-	private static int[] dir;
-	private static int[] dirLR;
+	//游戏主线程共享的主上下文
+	private static final PathFinder MAIN = new PathFinder();
+
+	//查种 worker 线程的私有上下文
+	private static final ThreadLocal<PathFinder> SEARCH_CTX = new ThreadLocal<>();
+
+	public static PathFinder cur() {
+		PathFinder s = SEARCH_CTX.get();
+		return (s != null) ? s : MAIN;
+	}
+
+	public static void enterSearchContext() {
+		SEARCH_CTX.set(new PathFinder());
+	}
+
+	public static void exitSearchContext() {
+		SEARCH_CTX.remove();
+	}
+
+	private PathFinder() {
+	}
+
+	public int[] distance;
+	private int[] maxVal;
+	
+	private boolean[] goals;
+	private int[] queue;
+	
+	private int size = 0;
+	private int width = 0;
+
+	private int[] dir;
+	private int[] dirLR;
 
 	//performance-light shortcuts for some common pathfinder cases
 	//they are in array-access order for increased memory performance
-	public static int[] NEIGHBOURS4;
-	public static int[] NEIGHBOURS8;
-	public static int[] NEIGHBOURS9;
-	public static int[] NEIGHBOURS16;
-	public static int[] NEIGHBOURS25;
+	public int[] NEIGHBOURS4;
+	public int[] NEIGHBOURS8;
+	public int[] NEIGHBOURS9;
+	public int[] NEIGHBOURS16;
+	public int[] NEIGHBOURS25;
 
 	//similar to their equivalent neighbour arrays, but the order is clockwise.
 	//Useful for some logic functions, but is slower due to lack of array-access order.
-	public static int[] CIRCLE4;
-	public static int[] CIRCLE8;
+	public int[] CIRCLE4;
+	public int[] CIRCLE8;
 	
-	public static void setMapSize( int width, int height ) {
+	public void setMapSize( int width, int height ) {
 		
-		PathFinder.width = width;
-		PathFinder.size = width * height;
+		this.width = width;
+		size = width * height;
 		
 		distance = new int[size];
 		goals = new boolean[size];
@@ -89,7 +111,7 @@ public class PathFinder {
 		CIRCLE8 = new int[]{-width-1, -width, -width+1, +1, +width+1, +width, +width-1, -1};
 	}
 
-	public static LinkedList<Integer> find( int from, int to, boolean[] passable ) {
+	public LinkedList<Integer> find( int from, int to, boolean[] passable ) {
 
 		if (!buildDistanceMap( from, to, passable )) {
 			return null;
@@ -121,7 +143,7 @@ public class PathFinder {
 		return result;
 	}
 	
-	public static int getStep( int from, int to, boolean[] passable ) {
+	public int getStep( int from, int to, boolean[] passable ) {
 		
 		if (!buildDistanceMap( from, to, passable )) {
 			return -1;
@@ -144,7 +166,7 @@ public class PathFinder {
 		return best;
 	}
 	
-	public static int getStepBack( int cur, int from, boolean[] passable ) {
+	public int getStepBack( int cur, int from, boolean[] passable ) {
 
 		int d = buildEscapeDistanceMap( cur, from, 5, passable );
 		for (int i=0; i < size; i++) {
@@ -174,7 +196,7 @@ public class PathFinder {
 		return mins;
 	}
 	
-	private static boolean buildDistanceMap( int from, int to, boolean[] passable ) {
+	private boolean buildDistanceMap( int from, int to, boolean[] passable ) {
 		
 		if (from == to) {
 			return false;
@@ -218,7 +240,7 @@ public class PathFinder {
 		return pathFound;
 	}
 	
-	public static void buildDistanceMap( int to, boolean[] passable, int limit ) {
+	public void buildDistanceMap( int to, boolean[] passable, int limit ) {
 		
 		System.arraycopy(maxVal, 0, distance, 0, maxVal.length);
 		
@@ -254,7 +276,7 @@ public class PathFinder {
 		}
 	}
 	
-	private static boolean buildDistanceMap( int from, boolean[] to, boolean[] passable ) {
+	private boolean buildDistanceMap( int from, boolean[] to, boolean[] passable ) {
 		
 		if (to[from]) {
 			return false;
@@ -302,7 +324,7 @@ public class PathFinder {
 		return pathFound;
 	}
 	
-	private static int buildEscapeDistanceMap( int cur, int from, int lookAhead, boolean[] passable ) {
+	private int buildEscapeDistanceMap( int cur, int from, int lookAhead, boolean[] passable ) {
 		
 		System.arraycopy(maxVal, 0, distance, 0, maxVal.length);
 		
@@ -350,7 +372,7 @@ public class PathFinder {
 		return dist;
 	}
 	
-	public static void buildDistanceMap( int to, boolean[] passable ) {
+	public void buildDistanceMap( int to, boolean[] passable ) {
 		
 		System.arraycopy(maxVal, 0, distance, 0, maxVal.length);
 		
@@ -382,7 +404,7 @@ public class PathFinder {
 		}
 	}
 
-	public static int direction(int pos, Integer target) {
+	public int direction(int pos, Integer target) {
 		return 0;
 	}
 }

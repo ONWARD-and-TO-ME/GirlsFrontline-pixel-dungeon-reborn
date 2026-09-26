@@ -45,7 +45,7 @@ public class DeadBomb extends TargetSpell{
         }
     }
     private void deadBomb(Char target){
-        Char fear= Dungeon.hero;
+        Char fear= Dungeon.cur().hero;
         if(!target.isAlive()||Mob.Alignment.ALLY==target.alignment){
             //并非存活或者目标是友方单位，属于误入这个函数，将直接退出
             GLog.n("如果看到这里，请联系制作组反馈");

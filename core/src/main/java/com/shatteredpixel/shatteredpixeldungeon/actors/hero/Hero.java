@@ -467,14 +467,14 @@ public class Hero extends Char {
     }
 
     public boolean hasTalentA( Talent talent ){
-        if (TierOfTalent.Tier(talent) >= 3 && Dungeon.hero.subClass == HeroSubClass.NONE)
+        if (TierOfTalent.Tier(talent) >= 3 && Dungeon.cur().hero.subClass == HeroSubClass.NONE)
             return false;
 
-        if (TierOfTalent.Tier(talent) >= 4 && Dungeon.hero.armorAbility == null)
+        if (TierOfTalent.Tier(talent) >= 4 && Dungeon.cur().hero.armorAbility == null)
             return false;
 
         int need = Talent.tierLevelThresholds[TierOfTalent.Tier(talent)] - 1;
-        return Dungeon.hero.lvl >= need && pointsInTalentA(talent) >= 0;
+        return Dungeon.cur().hero.lvl >= need && pointsInTalentA(talent) >= 0;
     }
     public boolean hasTalentB( Talent talent){
         return pointsInTalentA(talent) >= 0;
@@ -524,7 +524,7 @@ public class Hero extends Char {
 		if (tier == 4)
 			return point;
 
-        int lvl = Dungeon.hero.pointsInTalent(Talent.HIGH_EDUCATION);
+        int lvl = Dungeon.cur().hero.pointsInTalent(Talent.HIGH_EDUCATION);
 		point += lvl / 3
 				+ (lvl % 3 >= tier ? 1 : 0);
         return point;
@@ -619,7 +619,7 @@ public class Hero extends Char {
 			case 3: accuracy *= 2f; break;
 		}
 
-        BasicBuffs.Accuracy acc = Dungeon.hero.buff(BasicBuffs.Accuracy.class);
+        BasicBuffs.Accuracy acc = Dungeon.cur().hero.buff(BasicBuffs.Accuracy.class);
         if (acc != null)
             accuracy *= acc.percent();
 
@@ -669,7 +669,7 @@ public class Hero extends Char {
 		
 		float evasion = defenseSkill;
 
-        BasicBuffs.Evasion eva = Dungeon.hero.buff(BasicBuffs.Evasion.class);
+        BasicBuffs.Evasion eva = Dungeon.cur().hero.buff(BasicBuffs.Evasion.class);
         if (eva != null)
             evasion *= eva.percent();
 
@@ -734,8 +734,8 @@ public class Hero extends Char {
 		} else {
 			dmg = RingOfForce.damageRoll(this);
 		}
-        if (Dungeon.hero.subClass == HeroSubClass.GUN_MASTER) {
-            Hunger hunger = Dungeon.hero.buff(Hunger.class);
+        if (Dungeon.cur().hero.subClass == HeroSubClass.GUN_MASTER) {
+            Hunger hunger = Dungeon.cur().hero.buff(Hunger.class);
             if (hunger != null) {
                 if (!hunger.isStarving()) {
                     dmg = Math.round(dmg * dmgMul());
@@ -748,13 +748,13 @@ public class Hero extends Char {
 	}
 	private float dmgMul(){
         float mul = 1 ;
-        Hunger hunger = Dungeon.hero.buff(Hunger.class);
+        Hunger hunger = Dungeon.cur().hero.buff(Hunger.class);
         if (hunger==null)
             return 1;
 		float full = hunger.full();
 		mul += 0.00045F * full;
-        if (Dungeon.hero.hasTalent(Talent.GUN_1V2)) {
-            mul += 0.00015f * Dungeon.hero.pointsInTalent(Talent.GUN_1V2) * full;
+        if (Dungeon.cur().hero.hasTalent(Talent.GUN_1V2)) {
+            mul += 0.00015f * Dungeon.cur().hero.pointsInTalent(Talent.GUN_1V2) * full;
             mul = Math.min(1.35f, mul);
         }
         return mul;
@@ -774,9 +774,9 @@ public class Hero extends Char {
 
 		if (belongings.armor() != null && belongings.armor().hasGlyph(Swiftness.class, this)) {
 			boolean enemyNear = false;
-			PathFinder.buildDistanceMap(pos, Dungeon.level.passable, 2);
+			PathFinder.cur().buildDistanceMap(pos, Dungeon.level.passable, 2);
 			for (Char ch : Actor.chars()) {
-				if (PathFinder.distance[ch.pos] != Integer.MAX_VALUE && alignment != ch.alignment) {
+				if (PathFinder.cur().distance[ch.pos] != Integer.MAX_VALUE && alignment != ch.alignment) {
 					enemyNear = true;
 					break;
 				}
@@ -850,7 +850,7 @@ public class Hero extends Char {
 			return false;
 		}
 
-		KindOfWeapon wep = Dungeon.hero.belongings.weapon();
+		KindOfWeapon wep = Dungeon.cur().hero.belongings.weapon();
 		//can always attack adjacent enemies
 		if (Dungeon.level.adjacent(pos, enemy.pos)) {
 			if (!(wep instanceof Weapon) || ((Weapon) wep).reach(this) > 0)
@@ -1198,8 +1198,8 @@ public class Hero extends Char {
 			Heap heap = Dungeon.level.heaps.get( dst );
 			if (heap != null && (heap.type != Type.HEAP && heap.type != Type.FOR_SALE)) {
 				
-				if ((heap.type == Type.LOCKED_CHEST && Notes.keyCount(new GoldenKey(Dungeon.depth)) < 1)
-					|| (heap.type == Type.CRYSTAL_CHEST && Notes.keyCount(new CrystalKey(Dungeon.depth)) < 1)){
+				if ((heap.type == Type.LOCKED_CHEST && Notes.keyCount(new GoldenKey(Dungeon.cur().depth)) < 1)
+					|| (heap.type == Type.CRYSTAL_CHEST && Notes.keyCount(new CrystalKey(Dungeon.cur().depth)) < 1)){
 
 						GLog.w( Messages.get(this, "locked_chest") );
 						ready();
@@ -1245,17 +1245,17 @@ public class Hero extends Char {
 			int door = Dungeon.level.map[doorCell];
 			
 			if (door == Terrain.LOCKED_DOOR
-					&& Notes.keyCount(new IronKey(Dungeon.depth)) > 0) {
+					&& Notes.keyCount(new IronKey(Dungeon.cur().depth)) > 0) {
 				
 				hasKey = true;
 				
 			} else if (door == Terrain.CRYSTAL_DOOR
-					&& Notes.keyCount(new CrystalKey(Dungeon.depth)) > 0) {
+					&& Notes.keyCount(new CrystalKey(Dungeon.cur().depth)) > 0) {
 
 				hasKey = true;
 
 			} else if (door == Terrain.LOCKED_EXIT
-					&& Notes.keyCount(new SkeletonKey(Dungeon.depth)) > 0) {
+					&& Notes.keyCount(new SkeletonKey(Dungeon.cur().depth)) > 0) {
 
 				hasKey = true;
 				
@@ -1371,7 +1371,7 @@ public class Hero extends Char {
 		//TODO this is slightly brittle, it assumes there are no disjointed sets of entrance tiles
 		} else if (Dungeon.level.map[pos] == Terrain.ENTRANCE) {
 			
-			if (Dungeon.depth == 1) {
+			if (Dungeon.cur().depth == 1) {
 				
 				if (belongings.getItem( Amulet.class ) == null) {
 					Game.runOnRenderThread(new Callback() {
@@ -1489,8 +1489,8 @@ public class Hero extends Char {
 	public int attackProc( final Char enemy, int damage ) {
 		final int baseDMG = damage;
 		damage = super.attackProc( enemy, damage );
-        if (Dungeon.hero.buff(LloydsBeacon.beaconRecharge.class)!=null
-                && Dungeon.hero.buff(LloydsBeacon.beaconRecharge.class).isCursed()){
+        if (Dungeon.cur().hero.buff(LloydsBeacon.beaconRecharge.class)!=null
+                && Dungeon.cur().hero.buff(LloydsBeacon.beaconRecharge.class).isCursed()){
             //装备诅咒鸽子时攻击视为拥有转移
             LloydsBeacon.proc(enemy);
         }
@@ -1527,7 +1527,7 @@ public class Hero extends Char {
 			break;
 		default:
 		}
-        BasicBuffs.Increase increase = Dungeon.hero.buff(BasicBuffs.Increase.class);
+        BasicBuffs.Increase increase = Dungeon.cur().hero.buff(BasicBuffs.Increase.class);
         if (increase != null)
             damage *= increase.percent();
 
@@ -1537,15 +1537,15 @@ public class Hero extends Char {
 	
 	@Override
 	public int defenseProc( Char enemy, int damage ) {
-        BasicBuffs.Reduce reduce = Dungeon.hero.buff(BasicBuffs.Reduce.class);
+        BasicBuffs.Reduce reduce = Dungeon.cur().hero.buff(BasicBuffs.Reduce.class);
 		if (reduce != null)
             damage *= reduce.percent();
 
 		if (damage > 0 && subClass == HeroSubClass.BERSERKER)
 			Buff.affect(this, Berserk.class).damage(damage);
 
-        if (Dungeon.hero.buff(LloydsBeacon.beaconRecharge.class)!=null
-                && Dungeon.hero.buff(LloydsBeacon.beaconRecharge.class).isCursed())
+        if (Dungeon.cur().hero.buff(LloydsBeacon.beaconRecharge.class)!=null
+                && Dungeon.cur().hero.buff(LloydsBeacon.beaconRecharge.class).isCursed())
             LloydsBeacon.proc(this);
 
         if (belongings.armor() != null)
@@ -1936,7 +1936,7 @@ public class Hero extends Char {
 		} else if (Dungeon.level.triggers.get(cell)!=null && Dungeon.level.triggers.get(cell).canBeTouched()){
 			curAction = new HeroAction.InteractTrigger(Dungeon.level.triggers.get(cell));
 		} else if ((cell == Dungeon.level.exit || Dungeon.level.map[cell] == Terrain.EXIT || Dungeon.level.map[cell] == Terrain.UNLOCKED_EXIT)
-		&& Dungeon.depth < Constants.MAX_DEPTH) {
+		&& Dungeon.cur().depth < Constants.MAX_DEPTH) {
 			curAction = new HeroAction.Descend( cell );
 		} else if (cell == Dungeon.level.entrance || Dungeon.level.map[cell] == Terrain.ENTRANCE) {
 			curAction = new HeroAction.Ascend( cell );
@@ -2214,12 +2214,12 @@ public class Hero extends Char {
 		Dungeon.observe();
 		GameScene.updateFog();
 
-		Dungeon.hero.belongings.identify();
+		Dungeon.cur().hero.belongings.identify();
 
-		int pos = Dungeon.hero.pos;
+		int pos = Dungeon.cur().hero.pos;
 
 		ArrayList<Integer> passable = new ArrayList<>();
-		for (Integer ofs : PathFinder.NEIGHBOURS8) {
+		for (Integer ofs : PathFinder.cur().NEIGHBOURS8) {
 			int cell = pos + ofs;
 			if ((Dungeon.level.passable[cell] || Dungeon.level.avoid[cell]) && Dungeon.level.heaps.get( cell ) == null) {
 				passable.add( cell );
@@ -2227,7 +2227,7 @@ public class Hero extends Char {
 		}
 		Collections.shuffle( passable );
 
-		ArrayList<Item> items = new ArrayList<>(Dungeon.hero.belongings.backpack.items);
+		ArrayList<Item> items = new ArrayList<>(Dungeon.cur().hero.belongings.backpack.items);
 		for (Integer cell : passable) {
 			if (items.isEmpty()) {
 				break;
@@ -2376,18 +2376,18 @@ public class Hero extends Char {
 			if (Dungeon.level.distance(pos, doorCell) <= 1) {
 				boolean hasKey = true;
 				if (door == Terrain.LOCKED_DOOR) {
-					hasKey = Notes.remove(new IronKey(Dungeon.depth));
+					hasKey = Notes.remove(new IronKey(Dungeon.cur().depth));
 					if (hasKey) Level.set(doorCell, Terrain.DOOR);
 				} else if (door == Terrain.CRYSTAL_DOOR) {
-					hasKey = Notes.remove(new CrystalKey(Dungeon.depth));
+					hasKey = Notes.remove(new CrystalKey(Dungeon.cur().depth));
 					if (hasKey) {
-						Notes.remove(Notes.Landmark.DISTANT_WELL, Dungeon.depth-1);
+						Notes.remove(Notes.Landmark.DISTANT_WELL, Dungeon.cur().depth-1);
 						Level.set(doorCell, Terrain.EMPTY);
 						Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 						CellEmitter.get( doorCell ).start( Speck.factory( Speck.DISCOVER ), 0.025f, 20 );
 					}
 				} else {
-					hasKey = Notes.remove(new SkeletonKey(Dungeon.depth));
+					hasKey = Notes.remove(new SkeletonKey(Dungeon.cur().depth));
 					if (hasKey) Level.set(doorCell, Terrain.UNLOCKED_EXIT);
 				}
 
@@ -2407,9 +2407,9 @@ public class Hero extends Char {
 				if (heap.type == Type.SKELETON || heap.type == Type.REMAINS) {
 					Sample.INSTANCE.play( Assets.Sounds.BONES );
 				} else if (heap.type == Type.LOCKED_CHEST){
-					hasKey = Notes.remove(new GoldenKey(Dungeon.depth));
+					hasKey = Notes.remove(new GoldenKey(Dungeon.cur().depth));
 				} else if (heap.type == Type.CRYSTAL_CHEST){
-					hasKey = Notes.remove(new CrystalKey(Dungeon.depth));
+					hasKey = Notes.remove(new CrystalKey(Dungeon.cur().depth));
 				}
 
 				if (hasKey) {
@@ -2527,7 +2527,7 @@ public class Hero extends Char {
 							chance *= Type561Talent.trapDetectionMultiplier(this);
 						//unintentional door detection scales from 20% at floor 0 to 0% at floor 25
 						} else {
-							chance=     0.2f*(1f-Dungeon.depth/25f);
+							chance=     0.2f*(1f-Dungeon.cur().depth/25f);
 						}
 
 						if (Random.Float() < chance) {

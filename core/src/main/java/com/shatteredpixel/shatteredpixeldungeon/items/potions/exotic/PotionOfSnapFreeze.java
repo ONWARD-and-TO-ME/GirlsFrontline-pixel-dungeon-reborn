@@ -41,7 +41,7 @@ public class PotionOfSnapFreeze extends ExoticPotion {
 	
 	@Override
 	public void shatter(int cell) {
-		Talent.onPotionUsed(Dungeon.hero, 1F, cell);
+		Talent.onPotionUsed(Dungeon.cur().hero, 1F, cell);
 		
 		if (Dungeon.level.heroFOV[cell]) {
 			identify();
@@ -50,7 +50,7 @@ public class PotionOfSnapFreeze extends ExoticPotion {
 			Sample.INSTANCE.play( Assets.Sounds.SHATTER );
 		}
 		
-		for (int offset : PathFinder.NEIGHBOURS9){
+		for (int offset : PathFinder.cur().NEIGHBOURS9){
 			if (!Dungeon.level.solid[cell+offset]) {
 				
 				Freezing.affect( cell + offset );

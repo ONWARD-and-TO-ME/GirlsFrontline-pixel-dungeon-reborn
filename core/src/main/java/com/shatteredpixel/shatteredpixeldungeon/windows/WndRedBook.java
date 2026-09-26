@@ -139,7 +139,7 @@ public class WndRedBook extends Window {
                 if (!book.canCast(spell))
                     GLog.w(Messages.get(RedBook.class, "no_spell"));
                 else
-                    spell.onCast(book, Dungeon.hero);
+                    spell.onCast(book, Dungeon.cur().hero);
             }
 
         }

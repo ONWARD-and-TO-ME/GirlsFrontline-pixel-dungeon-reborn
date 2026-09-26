@@ -43,12 +43,12 @@ public class CardCalculator {
         int m4Add = 0;
         int add = 0;
         if (hasCard(RareCard.HS2000.DESERT_EAGLE)) {
-            int dmg = shieldAttack(Dungeon.hero, 1);
+            int dmg = shieldAttack(Dungeon.cur().hero, 1);
             m4Add += dmg;
             add += GameMath.gate(0.25F, mulByDelay / 3F, 0.5F) * dmg;
         }
         if (hasCard(FinalCard.HS2000.CAWS)) {
-            int dmg = shieldAttack(Dungeon.hero, 3);
+            int dmg = shieldAttack(Dungeon.cur().hero, 3);
             m4Add += dmg;
             add += GameMath.gate(0.25F, mulByDelay / 3F, 0.5F) * dmg;
         }
@@ -170,7 +170,7 @@ public class CardCalculator {
         float max = m.max() * maxMul;
         float dmg = Random.NormalFloat(min + (max - min) * minimax, max * maxMul);
         dmg = m.augment.damageFactor(Math.round(dmg * lastMul));
-        return onM4A1damageRoll(Dungeon.hero, dmg);
+        return onM4A1damageRoll(Dungeon.cur().hero, dmg);
     }
     public static float M4A1damageRoll( float mul ){
         return M4A1damageRoll(0F, 1F, mul);
@@ -178,9 +178,9 @@ public class CardCalculator {
     public static float M4A1max( float mul ){
 //        M4A1 m = M4A1.INSTANCE();
 //        float dmg = m.augment.damageFactor(m.max()) * mul;
-//        return onM4A1damageRoll(Dungeon.hero, dmg);
+//        return onM4A1damageRoll(Dungeon.cur().hero, dmg);
         //暂时还是不吃强化符石好了
-        return onM4A1damageRoll(Dungeon.hero, M4A1.INSTANCE().max() * mul);
+        return onM4A1damageRoll(Dungeon.cur().hero, M4A1.INSTANCE().max() * mul);
     }
     public static int shieldPerHit(){
         int s = 1;
@@ -281,7 +281,7 @@ public class CardCalculator {
         if (hasCard(RareCard.VHS.Zas_M21)) {
             float mul = 1F;
             ArrayList<Char> mobs = new ArrayList<>();
-            for (int i : PathFinder.NEIGHBOURS25) {
+            for (int i : PathFinder.cur().NEIGHBOURS25) {
                 Char m = Actor.findChar(i + enemy.pos);
                 if (m == null || m.alignment == Char.Alignment.ALLY || m instanceof NPC)
                     continue;
@@ -345,14 +345,14 @@ public class CardCalculator {
     }
     public static float crit(){
         float rate = 0F;
-        if (Dungeon.hero.buff(IntensifySkill.Intensify.class) != null)
+        if (Dungeon.cur().hero.buff(IntensifySkill.Intensify.class) != null)
             rate += 0.3F;
         if (hasCard(FirstCard.WA2000))
             rate += 0.3F;
         if (hasCard(CommonCard.UNIVERSAL.Mk48))
             rate += 0.2F;
         if (hasCard(CommonCard.WA2000.SSG3000)
-                && Dungeon.hero.buff(IntensifySkill.Intensify.class) != null)
+                && Dungeon.cur().hero.buff(IntensifySkill.Intensify.class) != null)
             rate += 0.6F;
         if (hasCard(RareCard.WA2000.PKP))
             rate += 0.5F;
@@ -378,7 +378,7 @@ public class CardCalculator {
             chance += 0.4F;
         if (hasCard(RareCard.WA2000.Px4))
             chance += 1F;
-        if (Dungeon.hero.buff(IntensifySkill.Intensify.class) != null && hasCard(CommonCard.UNIVERSAL.C96))
+        if (Dungeon.cur().hero.buff(IntensifySkill.Intensify.class) != null && hasCard(CommonCard.UNIVERSAL.C96))
             chance += 1.5F;
         return chance;
     }

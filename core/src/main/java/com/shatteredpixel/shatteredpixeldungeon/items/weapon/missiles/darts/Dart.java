@@ -99,8 +99,8 @@ public class Dart extends MissileWeapon {
 	private static Launcher bow;
 	
 	private void updateLauncher(){
-		if (Dungeon.hero.belongings.weapon() instanceof Launcher){
-			bow = (Launcher) Dungeon.hero.belongings.weapon();
+		if (Dungeon.cur().hero.belongings.weapon() instanceof Launcher){
+			bow = (Launcher) Dungeon.cur().hero.belongings.weapon();
 		} else {
 			bow = null;
 		}

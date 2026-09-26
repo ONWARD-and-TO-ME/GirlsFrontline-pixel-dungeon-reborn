@@ -87,7 +87,7 @@ public class FieldPot extends NPC {
 
     @Override
     protected boolean canAttack( Char enemy ){
-        return Dungeon.hero.pointsInTalent(Talent.Type56_433)>0&&distance(enemy)<=2;
+        return Dungeon.cur().hero.pointsInTalent(Talent.Type56_433)>0&&distance(enemy)<=2;
     }
 
     @Override
@@ -103,7 +103,7 @@ public class FieldPot extends NPC {
 
     @Override
     public float attackDelay() {
-        return 10-2*Dungeon.hero.pointsInTalent(Talent.Type56_433);
+        return 10-2*Dungeon.cur().hero.pointsInTalent(Talent.Type56_433);
     }
     @Override
     public int defenseSkill( Char target ) {
@@ -112,7 +112,7 @@ public class FieldPot extends NPC {
 
     @Override
     public int drRoll() {
-        return Random.NormalIntRange(Dungeon.depth/2,Dungeon.depth);
+        return Random.NormalIntRange(Dungeon.cur().depth/2,Dungeon.cur().depth);
     }
 	
 	@Override
@@ -126,7 +126,7 @@ public class FieldPot extends NPC {
 		
 		Sample.INSTANCE.play( Assets.Sounds.GHOST );
 
-		if (c != Dungeon.hero){
+		if (c != Dungeon.cur().hero){
 			return super.interact(c);
 		}else {
             ((Hero) c).curAction = new HeroAction.Alchemy( pos );

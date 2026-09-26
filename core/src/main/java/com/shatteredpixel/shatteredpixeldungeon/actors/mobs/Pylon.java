@@ -81,13 +81,13 @@ public class Pylon extends Mob {
 
 		ArrayList<Integer> shockCells = new ArrayList<>();
 
-		shockCells.add(pos + PathFinder.CIRCLE8[targetNeighbor]);
+		shockCells.add(pos + PathFinder.cur().CIRCLE8[targetNeighbor]);
 
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
-			shockCells.add(pos + PathFinder.CIRCLE8[(targetNeighbor+3)%8]);
-			shockCells.add(pos + PathFinder.CIRCLE8[(targetNeighbor+5)%8]);
+			shockCells.add(pos + PathFinder.cur().CIRCLE8[(targetNeighbor+3)%8]);
+			shockCells.add(pos + PathFinder.cur().CIRCLE8[(targetNeighbor+5)%8]);
 		} else {
-			shockCells.add(pos + PathFinder.CIRCLE8[(targetNeighbor+4)%8]);
+			shockCells.add(pos + PathFinder.cur().CIRCLE8[(targetNeighbor+4)%8]);
 		}
 
 		sprite.flash();
@@ -122,7 +122,7 @@ public class Pylon extends Mob {
 			ch.sprite.flash();
 			ch.damage(Random.NormalIntRange(10, 20), new Electricity(), this);
 
-			if (ch == Dungeon.hero && !ch.isAlive()){
+			if (ch == Dungeon.cur().hero && !ch.isAlive()){
 				Dungeon.fail(DM300.class);
 				GLog.n( Messages.get(Electricity.class, "ondeath") );
 			}

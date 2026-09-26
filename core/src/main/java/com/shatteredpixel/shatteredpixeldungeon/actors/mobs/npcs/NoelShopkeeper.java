@@ -46,7 +46,7 @@ public class NoelShopkeeper extends ImpShopkeeper {
 
     @Override
     public boolean interact(Char c) {
-        if (c != Dungeon.hero) {
+        if (c != Dungeon.cur().hero) {
             return true;
         }
         Game.runOnRenderThread(new Callback() {
@@ -73,12 +73,12 @@ public class NoelShopkeeper extends ImpShopkeeper {
                             int place;
                             Char target;
                             do{
-                                place = Dungeon.hero.pos + PathFinder.NEIGHBOURS9[Random.Int(9)];
+                                place = Dungeon.cur().hero.pos + PathFinder.cur().NEIGHBOURS9[Random.Int(9)];
                                 target = Actor.findChar(place);
                             }while(
                                     target!=null&&target.properties().contains(Property.IMMOVABLE)
                             );
-                            Dungeon.level.drop(item, place).sprite.drop(Dungeon.hero.pos);
+                            Dungeon.level.drop(item, place).sprite.drop(Dungeon.cur().hero.pos);
                         } else if (index == 2) {
                             Dungeon.gold-= NoelShopkeeper.PlayNeed;
                             PlayGame.gameStart();

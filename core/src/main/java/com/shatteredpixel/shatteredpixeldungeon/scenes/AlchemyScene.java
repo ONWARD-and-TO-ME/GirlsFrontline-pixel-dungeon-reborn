@@ -191,7 +191,7 @@ public class AlchemyScene extends PixelScene {
 			protected void onClick() {
 				super.onClick();
 				if (lastRecipe != null)
-					populate(lastIngredients, Dungeon.hero.belongings);
+					populate(lastIngredients, Dungeon.cur().hero.belongings);
 			}
 		};
 		repeat.setRect(left + 24, pos + 2, 16, 16);
@@ -349,9 +349,9 @@ public class AlchemyScene extends PixelScene {
 					for (int i = 0; i < inputs.length; i++) {
 						if (inputs[i].item() == null) {
 							if (item instanceof LiquidMetal){
-								inputs[i].item(item.detachAll(Dungeon.hero.belongings.backpack));
+								inputs[i].item(item.detachAll(Dungeon.cur().hero.belongings.backpack));
 							} else {
-								inputs[i].item(item.detach(Dungeon.hero.belongings.backpack));
+								inputs[i].item(item.detach(Dungeon.cur().hero.belongings.backpack));
 							}
 							break;
 						}
@@ -483,7 +483,7 @@ public class AlchemyScene extends PixelScene {
 
 			int resultQuantity = result.quantity();
 			if (!result.collect()){
-				Dungeon.level.drop(result, Dungeon.hero.pos);
+				Dungeon.level.drop(result, Dungeon.cur().hero.pos);
 			}
 
 			Statistics.itemsCrafted++;
@@ -514,7 +514,7 @@ public class AlchemyScene extends PixelScene {
 
 		boolean foundItems = true;
 		for (Item i : lastIngredients)
-			if (Dungeon.hero.belongings.getSimilar(i) == null)
+			if (Dungeon.cur().hero.belongings.getSimilar(i) == null)
 				//atm no quantity check as items are always loaded individually
 				//currently found can be true if we need, say, 3x of an item but only have 2x of it
 				foundItems = false;
@@ -574,7 +574,7 @@ public class AlchemyScene extends PixelScene {
 				if (input != null && input.item() != null) {
 					Item item = input.item();
 					if (!item.collect())
-						Dungeon.level.drop(item, Dungeon.hero.pos);
+						Dungeon.level.drop(item, Dungeon.cur().hero.pos);
 					input.item(null);
 				}
 			}
@@ -705,7 +705,7 @@ public class AlchemyScene extends PixelScene {
 					Item item = InputButton.this.item;
 					if (item != null) {
 						if (!item.collect()) {
-							Dungeon.level.drop(item, Dungeon.hero.pos);
+							Dungeon.level.drop(item, Dungeon.cur().hero.pos);
 						}
 						InputButton.this.item(null);
 						updateState();

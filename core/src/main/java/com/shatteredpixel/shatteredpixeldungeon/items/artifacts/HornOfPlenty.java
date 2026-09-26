@@ -103,7 +103,7 @@ public class HornOfPlenty extends Artifact {
                 if (FairyItems.inFairyRoom(hero))
                     satietyPerCharge *= 1.1F;
 
-				Hunger hunger = Buff.affect(Dungeon.hero, Hunger.class);
+				Hunger hunger = Buff.affect(Dungeon.cur().hero, Hunger.class);
 				int chargesToUse = Math.max( 1, (int)(hunger.hunger()/satietyPerCharge));
 				if (chargesToUse > charge) chargesToUse = charge;
 
@@ -181,7 +181,7 @@ public class HornOfPlenty extends Artifact {
 	public String desc() {
 		String desc = super.desc();
 
-		if ( isEquipped( Dungeon.hero ) ){
+		if ( isEquipped( Dungeon.cur().hero ) ){
 			if (!cursed) {
 				if (level() < levelCap)
 					desc += "\n\n" +Messages.get(this, "desc_hint");
@@ -323,7 +323,7 @@ public class HornOfPlenty extends Artifact {
 					((HornOfPlenty)curItem).gainFoodValue(((Food)item));
 				}
 			}
-            Hero hero = Dungeon.hero;
+            Hero hero = Dungeon.cur().hero;
             hero.sprite.operate( hero.pos );
             hero.busy();
             hero.spend( Food.TIME_TO_EAT );

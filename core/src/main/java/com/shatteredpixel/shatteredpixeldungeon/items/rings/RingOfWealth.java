@@ -63,8 +63,8 @@ public class RingOfWealth extends Ring {
 		super.statsInfo();
 		if (isIdentified()){
             String info = Messages.get(this, "stats", new DecimalFormat("#.##").format(100f * (Math.pow(1.20f, soloBuffedBonus()) - 1f)));
-            if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)) {
-                info = info + "\n\n" + Messages.get(this, "combined_stats", Messages.decimalFormat("#.##", 100.0F * (Math.pow(1.2F, combinedBuffedBonus(Dungeon.hero)) - 1.0F)));
+            if (isEquipped(Dungeon.cur().hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.cur().hero)) {
+                info = info + "\n\n" + Messages.get(this, "combined_stats", Messages.decimalFormat("#.##", 100.0F * (Math.pow(1.2F, combinedBuffedBonus(Dungeon.cur().hero)) - 1.0F)));
             }
 			if (Dungeon.isChallenged(Challenges.TEST_MODE))
 				info += "\n" + triesToDrop + "\n" + dropsToRare;
@@ -251,8 +251,8 @@ public class RingOfWealth extends Ring {
 	}
 
 	private static Item genHighValueConsumable(){
-		if (Dungeon.hero.buff(Wealth.class).ring().canGuessType())
-			Dungeon.hero.buff(Wealth.class).ring().guessType("以HighValue判断为财富瞄准镜。");
+		if (Dungeon.cur().hero.buff(Wealth.class).ring().canGuessType())
+			Dungeon.cur().hero.buff(Wealth.class).ring().guessType("以HighValue判断为财富瞄准镜。");
 		switch (Random.Int(4)){
 			case 0: default:
 				Item i = genMidValueConsumable();
@@ -271,7 +271,7 @@ public class RingOfWealth extends Ring {
 	}
 
     private static Item genEquipmentDrop(int level) {
-        int floorset = (Dungeon.depth + level) / 5;
+        int floorset = (Dungeon.cur().depth + level) / 5;
         Item result;
         switch (Random.Int(5)) {
             case 0:

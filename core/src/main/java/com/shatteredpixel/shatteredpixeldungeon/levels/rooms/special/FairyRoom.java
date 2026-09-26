@@ -56,7 +56,7 @@ public class FairyRoom extends SpecialRoom {
         del.pos = pos;
         level.mobs.add( del );
 
-        itemPos = PathFinder.NEIGHBOURS4[ Random.Int(4) ] + pos;
+        itemPos = PathFinder.cur().NEIGHBOURS4[ Random.Int(4) ] + pos;
         Painter.set(level, itemPos, Terrain.PEDESTAL);
 
         entrance().set( Door.Type.UNLOCKED );

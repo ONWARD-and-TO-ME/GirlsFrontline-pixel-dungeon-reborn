@@ -109,7 +109,7 @@ public class Spinner extends Mob {
 				if (enemy != null && enemySeen) {
 					lastEnemyPos = enemy.pos;
 				} else {
-					lastEnemyPos = Dungeon.hero.pos;
+					lastEnemyPos = Dungeon.cur().hero.pos;
 				}
 			}
 		}
@@ -197,15 +197,15 @@ public class Spinner extends Mob {
 		int webPos = webPos();
 		if (webPos != -1){
 			int i;
-			for ( i = 0; i < PathFinder.CIRCLE8.length; i++){
-				if ((enemy.pos + PathFinder.CIRCLE8[i]) == webPos){
+			for ( i = 0; i < PathFinder.cur().CIRCLE8.length; i++){
+				if ((enemy.pos + PathFinder.cur().CIRCLE8[i]) == webPos){
 					break;
 				}
 			}
 
 			//spread to the tile hero was moving towards and the two adjacent ones
-			int leftPos = enemy.pos + PathFinder.CIRCLE8[left(i)];
-			int rightPos = enemy.pos + PathFinder.CIRCLE8[right(i)];
+			int leftPos = enemy.pos + PathFinder.cur().CIRCLE8[left(i)];
+			int rightPos = enemy.pos + PathFinder.cur().CIRCLE8[right(i)];
 
 			if (Dungeon.level.passable[leftPos]) applyWebToCell(leftPos);
 			if (Dungeon.level.passable[webPos])  applyWebToCell(webPos);
@@ -214,7 +214,7 @@ public class Spinner extends Mob {
 			webCoolDown = 10;
 
 			if (Dungeon.level.heroFOV[enemy.pos]){
-				Dungeon.hero.interrupt();
+				Dungeon.cur().hero.interrupt();
 			}
 		}
 		next();

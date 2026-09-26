@@ -120,7 +120,7 @@ public class WndZeroLevelHeroSelect extends Window {
 			InterlevelScene.mode = InterlevelScene.Mode.RESTART_ZERO;
 			Game.switchScene(InterlevelScene.class);
 		} else {
-			Dungeon.hero = null;
+			Dungeon.cur().hero = null;
 			InterlevelScene.start();
 			Game.switchScene(GameScene.class);
 		}
@@ -138,9 +138,9 @@ public class WndZeroLevelHeroSelect extends Window {
 		if (GamesInProgress.selectedClass == null){
 			GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		}
-		// 确保 Dungeon.hero 非 null，避免更新日志等界面访问 hero 时 NPE
-		if (Dungeon.hero == null){
-			Dungeon.hero = new Hero(GamesInProgress.selectedClass);
+		// 确保 Dungeon.cur().hero 非 null，避免更新日志等界面访问 hero 时 NPE
+		if (Dungeon.cur().hero == null){
+			Dungeon.cur().hero = new Hero(GamesInProgress.selectedClass);
 		}
 		super.onBackPressed();
 	}

@@ -118,7 +118,7 @@ public class Typhoon extends Hydra {
         }else if (!beamCharged){
             ((TyphoonSprite)sprite).charge( enemy.pos );
             TNTFindHero( enemy.pos );
-            Dungeon.hero.interrupt();
+            Dungeon.cur().hero.interrupt();
             beamTime = attackDelay()*14f;
             spendAttack( attackDelay() );
             beamCharged = true;
@@ -142,10 +142,10 @@ public class Typhoon extends Hydra {
     public void updateTNT(){
         if (beamTarget==-1)
             return;
-        Ballistica b = new Ballistica(pos, Dungeon.hero.pos, Ballistica.STOP_SOLID);
+        Ballistica b = new Ballistica(pos, Dungeon.cur().hero.pos, Ballistica.STOP_SOLID);
         for (int p : b.path) {
             Char ch = Actor.findChar( p );
-            if (ch == Dungeon.hero) {
+            if (ch == Dungeon.cur().hero) {
                 TNTFindHero( beamTarget );
                 //玩家在激光的可攻击范围内，显示瞄准弹道
             }
@@ -164,7 +164,7 @@ public class Typhoon extends Hydra {
         boolean containHero = false;
         //初始默认对玩家的瞄准弹道为黄色、对目标地点的弹道不包括玩家
         for (int p : b.path) {
-            if (p==Dungeon.hero.pos) {
+            if (p==Dungeon.cur().hero.pos) {
                 color = 0xFF0000;
                 containHero = true;
                 //包括时对玩家的瞄准弹道变为红色
@@ -172,15 +172,15 @@ public class Typhoon extends Hydra {
             if (p == b.collisionPos)
                 break;
         }
-        if (enemy==Dungeon.hero){
+        if (enemy==Dungeon.cur().hero){
             color = 0xFF0000;
             //目标是玩家时，也将对玩家的瞄准弹道变为红色
         }else if (enemy==null||!enemy.isAlive()){
             //目标不是玩家，但目标死了
             color = 0xFF0000;
         }
-        if (Dungeon.hero.buff(Invisibility.class)!=null
-                ||Dungeon.hero.buff(CloakOfShadows.cloakStealth.class)!=null) {
+        if (Dungeon.cur().hero.buff(Invisibility.class)!=null
+                ||Dungeon.cur().hero.buff(CloakOfShadows.cloakStealth.class)!=null) {
             //玩家隐身，那么对玩家的弹道显示为黄色
             color = 0xFFFF00;
         }
@@ -194,7 +194,7 @@ public class Typhoon extends Hydra {
             }
         }else {
             //不包括时，显示目标地点，显示对玩家的瞄准弹道
-            Ballistica m = new Ballistica(pos, Dungeon.hero.pos, Ballistica.STOP_SOLID);
+            Ballistica m = new Ballistica(pos, Dungeon.cur().hero.pos, Ballistica.STOP_SOLID);
             for (int p : m.path) {
                 sprite.parent.add(new TargetedCell(p, color));
                 if (p == m.collisionPos)
@@ -238,7 +238,7 @@ public class Typhoon extends Hydra {
                     CellEmitter.center( pos ).burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
                 }
 
-                if (!ch.isAlive() && ch == Dungeon.hero) {
+                if (!ch.isAlive() && ch == Dungeon.cur().hero) {
                     Dungeon.fail( getClass() );
                     GLog.n( Messages.get(this, "deathgaze_kill") );
                 }

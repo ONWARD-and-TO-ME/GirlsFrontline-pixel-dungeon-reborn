@@ -125,9 +125,9 @@ public class BeamFocuser extends Item {
 			wep.bones = false;
 			wep.keptThoughLostInvent = true;
 
-			focuser.detach( Dungeon.hero.belongings.backpack );
+			focuser.detach( Dungeon.cur().hero.belongings.backpack );
 
-			Dungeon.hero.sprite.operate( Dungeon.hero.pos );
+			Dungeon.cur().hero.sprite.operate( Dungeon.cur().hero.pos );
 			Sample.INSTANCE.play( Assets.Sounds.UNLOCK );
 
 			GLog.p( Messages.get( BeamFocuser.class, "succeed", wep.name() ) );

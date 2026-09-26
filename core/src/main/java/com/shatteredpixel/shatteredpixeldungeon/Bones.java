@@ -56,7 +56,7 @@ public class Bones {
 			return;
 		}
 
-		item = pickItem(Dungeon.hero);
+		item = pickItem(Dungeon.cur().hero);
 
 		Bundle bundle = new Bundle();
 		bundle.put( LEVEL, depth );
@@ -120,6 +120,10 @@ public class Bones {
 	}
 
 	public static Item get() {
+		//查种生成中不读不写遗物，避免文件 IO 和跨 worker 污染
+		if (Dungeon.cur().isSearch) {
+			return null;
+		}
 		if (depth == -1) {
 
 			try {

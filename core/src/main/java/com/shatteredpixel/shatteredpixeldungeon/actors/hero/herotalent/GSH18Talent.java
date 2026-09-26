@@ -309,7 +309,7 @@ public final class GSH18Talent {
 		if (splashDamage <= 0) return;
 
 		// 获取目标周围3x3范围的所有格子
-		for (int i : PathFinder.NEIGHBOURS9) {
+		for (int i : PathFinder.cur().NEIGHBOURS9) {
 			int cell = enemy.pos + i;
 			if (Dungeon.level.insideMap(cell) && cell != enemy.pos) { // 排除目标自身
 				Char ch = Actor.findChar(cell);

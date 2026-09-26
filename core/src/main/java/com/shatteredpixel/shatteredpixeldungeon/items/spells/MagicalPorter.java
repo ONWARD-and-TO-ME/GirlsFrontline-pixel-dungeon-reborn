@@ -40,7 +40,7 @@ public class MagicalPorter extends InventorySpell {
 
 	@Override
 	protected void onCast(Hero hero) {
-		if (Dungeon.depth >= 25){
+		if (Dungeon.cur().depth >= 25){
 			GLog.w(Messages.get(this, "nowhere"));
 		} else {
 			super.onCast(hero);
@@ -49,14 +49,14 @@ public class MagicalPorter extends InventorySpell {
 
 	@Override
 	protected boolean usableOnItem(Item item) {
-		return !item.isEquipped(Dungeon.hero);
+		return !item.isEquipped(Dungeon.cur().hero);
 	}
 
 	@Override
 	protected void onItemSelected(Item item) {
 		
 		Item result = item.detachAll(curUser.belongings.backpack);
-		int portDepth = 5 * (1 + Dungeon.depth/5);
+		int portDepth = 5 * (1 + Dungeon.cur().depth/5);
 		ArrayList<Item> ported = Dungeon.portedItems.get(portDepth);
 		if (ported == null) {
 			Dungeon.portedItems.put(portDepth, ported = new ArrayList<>());

@@ -40,16 +40,16 @@ public class BackpackCleaner extends TestItem {
     private void clearAllItem(){
         int count = 0;
 
-        for (Item it : Dungeon.hero.belongings.backpack.items.toArray(new Item[0])){
+        for (Item it : Dungeon.cur().hero.belongings.backpack.items.toArray(new Item[0])){
             if(!it.unique){
                 if(!(it instanceof Key) && !(it.isEquipped(curUser))){
-                    it.detachAll(Dungeon.hero.belongings.backpack);
+                    it.detachAll(Dungeon.cur().hero.belongings.backpack);
                     ++count;
                 }
             }else if(it instanceof Bag){
                 for(Item item_in_bag: ((Bag) it).items.toArray(new Item[0])){
                     if(!item_in_bag.unique){
-                        item_in_bag.detachAll(Dungeon.hero.belongings.backpack);
+                        item_in_bag.detachAll(Dungeon.cur().hero.belongings.backpack);
                         ++count;
                     }
                 }
@@ -64,18 +64,18 @@ public class BackpackCleaner extends TestItem {
 
     private void clearAllEquipment(){
         int count = 0;
-        for (Item it : Dungeon.hero.belongings.backpack.items.toArray(new Item[0])){
+        for (Item it : Dungeon.cur().hero.belongings.backpack.items.toArray(new Item[0])){
             if(!it.unique){
                 if(isEquipment(it)){
                     if(!it.isEquipped(curUser)){
-                        it.detachAll(Dungeon.hero.belongings.backpack);
+                        it.detachAll(Dungeon.cur().hero.belongings.backpack);
                         ++count;
                     }
                 }
             }else if(it instanceof Bag){
                 for(Item item_in_bag: ((Bag) it).items.toArray(new Item[0])){
                     if(isEquipment(item_in_bag) && !item_in_bag.unique){
-                        item_in_bag.detachAll(Dungeon.hero.belongings.backpack);
+                        item_in_bag.detachAll(Dungeon.cur().hero.belongings.backpack);
                         ++count;
                     }
                 }
@@ -86,18 +86,18 @@ public class BackpackCleaner extends TestItem {
 
     private void clearAllMisc(){
         int count = 0;
-        for (Item it : Dungeon.hero.belongings.backpack.items.toArray(new Item[0])){
+        for (Item it : Dungeon.cur().hero.belongings.backpack.items.toArray(new Item[0])){
             if(!it.unique){
                 if(!isEquipment(it)){
                     if(!it.isEquipped(curUser)){
-                        it.detachAll(Dungeon.hero.belongings.backpack);
+                        it.detachAll(Dungeon.cur().hero.belongings.backpack);
                         ++count;
                     }
                 }
             }else if(it instanceof Bag){
                 for(Item item_in_bag: ((Bag) it).items.toArray(new Item[0])){
                     if(!isEquipment(item_in_bag) && !item_in_bag.unique){
-                        item_in_bag.detachAll(Dungeon.hero.belongings.backpack);
+                        item_in_bag.detachAll(Dungeon.cur().hero.belongings.backpack);
                         ++count;
                     }
                 }

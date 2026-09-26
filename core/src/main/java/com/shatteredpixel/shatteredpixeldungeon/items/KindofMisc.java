@@ -102,7 +102,7 @@ public abstract class KindofMisc extends EquipableItem {
 							// to unequip the equipped one, but don't want to trigger any other
 							// item detaching logic
 							int slot = Dungeon.quickslot.getSlot(KindofMisc.this);
-							Dungeon.hero.belongings.backpack.items.remove(KindofMisc.this);
+							Dungeon.cur().hero.belongings.backpack.items.remove(KindofMisc.this);
 							if (equipped.doUnequip(hero, true, false)) {
 								//swap out equip in misc slot if needed
 								if (index == 0 && KindofMisc.this instanceof Ring){
@@ -112,10 +112,10 @@ public abstract class KindofMisc extends EquipableItem {
 									hero.belongings.ring = (Ring) hero.belongings.misc;
 									hero.belongings.misc = null;
 								}
-								Dungeon.hero.belongings.backpack.items.add(KindofMisc.this);
+								Dungeon.cur().hero.belongings.backpack.items.add(KindofMisc.this);
 								doEquip(hero);
 							} else {
-								Dungeon.hero.belongings.backpack.items.add(KindofMisc.this);
+								Dungeon.cur().hero.belongings.backpack.items.add(KindofMisc.this);
 							}
 							if (slot != -1) Dungeon.quickslot.setSlot(slot, KindofMisc.this);
 							updateQuickslot();

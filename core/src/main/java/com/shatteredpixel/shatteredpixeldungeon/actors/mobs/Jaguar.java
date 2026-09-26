@@ -46,9 +46,9 @@ public class Jaguar extends Mob {
 
     @Override
     public boolean canAttack(Char enemy) {
-        PathFinder.buildDistanceMap( enemy.pos, BArray.not( Dungeon.level.solid, null ), RANGE );
+        PathFinder.cur().buildDistanceMap( enemy.pos, BArray.not( Dungeon.level.solid, null ), RANGE );
 
-        return PathFinder.distance[pos] <= RANGE;
+        return PathFinder.cur().distance[pos] <= RANGE;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class Jaguar extends Mob {
 
     public void fireBomb(int cell) {
 
-        for (int n : PathFinder.NEIGHBOURS8) {
+        for (int n : PathFinder.cur().NEIGHBOURS8) {
             int c = cell + n;
             if ( c >= 0 && Blob.volumeAt( c, GooWarn.class ) == 0 ) {
                 GameScene.add( Blob.seed( c, Math.round( 1 + TIME_TO_EXPLODE ), GooWarn.class) );
@@ -158,7 +158,7 @@ public class Jaguar extends Mob {
             }
 
             boolean terrainAffected = false;
-            for (int n : PathFinder.NEIGHBOURS8) {
+            for (int n : PathFinder.cur().NEIGHBOURS8) {
                 int c = target + n;
                 if (c >= 0 && c < Dungeon.level.length()) {
                     if (Dungeon.level.heroFOV[c]) {
@@ -173,7 +173,7 @@ public class Jaguar extends Mob {
                             Buff.prolong(ch, Weakness.class, 4f);
                         }
 
-                        if (ch == Dungeon.hero && !ch.isAlive()) {
+                        if (ch == Dungeon.cur().hero && !ch.isAlive()) {
                             Dungeon.fail( Jaguar.this.getClass() );
                             break;
                         }
@@ -197,7 +197,7 @@ public class Jaguar extends Mob {
                 if (ch.alignment == Alignment.ALLY) {
                     Buff.prolong(ch, Weakness.class, 8f);
 
-                    if (ch == Dungeon.hero && !ch.isAlive()) {
+                    if (ch == Dungeon.cur().hero && !ch.isAlive()) {
                         Dungeon.fail( Jaguar.this.getClass() );
                     }
                 }

@@ -91,7 +91,7 @@ public class HeroicLeap extends ArmorAbility {
 					Dungeon.observe();
 					GameScene.updateFog();
 
-					for (int i : PathFinder.NEIGHBOURS8) {
+					for (int i : PathFinder.cur().NEIGHBOURS8) {
 						Char mob = Actor.findChar(hero.pos + i);
 						if (mob != null && mob != hero && mob.alignment != Char.Alignment.ALLY) {
 							// 战士（UMP45）T4 巨力撞击/冲击波（实现见 WarriorTalent）

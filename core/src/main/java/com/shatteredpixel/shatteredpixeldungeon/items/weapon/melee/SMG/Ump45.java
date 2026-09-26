@@ -123,13 +123,13 @@ public class Ump45 extends SubMachineGun {
             //中心格为固体
             else {
                 int j =0;
-                for (int i : PathFinder.NEIGHBOURS8){
+                for (int i : PathFinder.cur().NEIGHBOURS8){
                     if (!Dungeon.level.solid[cell+i]){
                         //累计邻格非固体格子数量
                         j++;
                     }
                 }
-                for (int i : PathFinder.NEIGHBOURS8){
+                for (int i : PathFinder.cur().NEIGHBOURS8){
                     if (!Dungeon.level.solid[cell+i]){
                         //给予邻格非固体格子均分的气体量
                         GameScene.add( Blob.seed( cell+i, centerVolume/j, SmokeScreen.class ) );

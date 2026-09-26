@@ -57,16 +57,16 @@ public class Fadeleaf extends Plant {
 					return;
 				}
 
-				TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+				TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
 				if (timeFreeze != null) timeFreeze.disarmPressedTraps();
-				Swiftthistle.TimeBubble timeBubble = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+				Swiftthistle.TimeBubble timeBubble = Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
 				if (timeBubble != null) timeBubble.disarmPressedTraps();
 				
 				InterlevelScene.mode = InterlevelScene.Mode.RETURN;
                 if (Dungeon.levelId%1000 != Dungeon.levelId)
-                    InterlevelScene.returnLevel = Dungeon.depth;
+                    InterlevelScene.returnLevel = Dungeon.cur().depth;
                 else
-                    InterlevelScene.returnLevel = Math.max(1, (Dungeon.depth - 1));
+                    InterlevelScene.returnLevel = Math.max(1, (Dungeon.cur().depth - 1));
 				InterlevelScene.returnPos = -2;
 				Game.switchScene( InterlevelScene.class );
 				

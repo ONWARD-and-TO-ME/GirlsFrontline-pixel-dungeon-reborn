@@ -97,29 +97,29 @@ public class Invisibility extends FlavourBuff {
 		dispel(false);
 	}
 	public static void dispel(boolean Scroll) {
-		if (Dungeon.hero == null) return;
+		if (Dungeon.cur().hero == null) return;
 
-        if (!Scroll || !RogueTalent.mysticalUpgradeBlocksScrollDispel(Dungeon.hero)) {
-            for (Invisibility invis : Dungeon.hero.buffs(Invisibility.class)) {
+        if (!Scroll || !RogueTalent.mysticalUpgradeBlocksScrollDispel(Dungeon.cur().hero)) {
+            for (Invisibility invis : Dungeon.cur().hero.buffs(Invisibility.class)) {
                 invis.dispelA();
             }
-            CloakOfShadows.cloakStealth cloakBuff = Dungeon.hero.buff(CloakOfShadows.cloakStealth.class);
+            CloakOfShadows.cloakStealth cloakBuff = Dungeon.cur().hero.buff(CloakOfShadows.cloakStealth.class);
             if (cloakBuff != null) {
                 cloakBuff.dispel();
             }
-			Preparation prep = Dungeon.hero.buff( Preparation.class );
+			Preparation prep = Dungeon.cur().hero.buff( Preparation.class );
 			if (prep != null){
 				prep.detach();
 			}
         }
 		
 		//these aren't forms of invisibility, but do dispel at the same time as it.
-		TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero.buff( TimekeepersHourglass.timeFreeze.class );
+		TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.cur().hero.buff( TimekeepersHourglass.timeFreeze.class );
 		if (timeFreeze != null) {
 			timeFreeze.detach();
 		}
 		
-		Swiftthistle.TimeBubble bubble =  Dungeon.hero.buff( Swiftthistle.TimeBubble.class );
+		Swiftthistle.TimeBubble bubble =  Dungeon.cur().hero.buff( Swiftthistle.TimeBubble.class );
 		if (bubble != null){
 			bubble.detach();
 		}

@@ -63,7 +63,7 @@ public abstract class WellWater extends Blob {
 		
 		Heap heap;
 		
-		if (pos == Dungeon.hero.pos && affectHero( Dungeon.hero )) {
+		if (pos == Dungeon.cur().hero.pos && affectHero( Dungeon.cur().hero )) {
 			
 			cur[pos] = 0;
 			return true;
@@ -93,7 +93,7 @@ public abstract class WellWater extends Blob {
 				
 			} else {
 				ArrayList<Integer> path8 = new ArrayList<>();
-				for (int i : PathFinder.NEIGHBOURS8) path8.add(i + pos);
+				for (int i : PathFinder.cur().NEIGHBOURS8) path8.add(i + pos);
 				Random.shuffle(path8);
 				int newPlace = -1;
 				for (int i : path8)

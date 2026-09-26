@@ -51,9 +51,9 @@ public class ShockBomb extends Bomb {
 		super.explode(cell);
 
 		ArrayList<Char> affected = new ArrayList<>();
-		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 3 );
-		for (int i = 0; i < PathFinder.distance.length; i++) {
-			if (PathFinder.distance[i] < Integer.MAX_VALUE
+		PathFinder.cur().buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 3 );
+		for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+			if (PathFinder.cur().distance[i] < Integer.MAX_VALUE
 				&& Actor.findChar(i) != null) {
 				affected.add(Actor.findChar(i));
 			}
@@ -79,7 +79,7 @@ public class ShockBomb extends Bomb {
 		}
 
 		CellEmitter.center(cell).burst(SparkParticle.FACTORY, 20);
-		Dungeon.hero.sprite.parent.addToFront(new Lightning(arcs, null));
+		Dungeon.cur().hero.sprite.parent.addToFront(new Lightning(arcs, null));
 		Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 	}
 	

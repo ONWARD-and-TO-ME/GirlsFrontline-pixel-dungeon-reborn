@@ -81,8 +81,8 @@ public class DistortionTrap extends Trap{
 
 		ArrayList<Integer> candidates = new ArrayList<>();
 
-		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-			int p = pos + PathFinder.NEIGHBOURS8[i];
+		for (int i = 0; i < PathFinder.cur().NEIGHBOURS8.length; i++) {
+			int p = pos + PathFinder.cur().NEIGHBOURS8[i];
 			if (Actor.findChar( p ) == null && (Dungeon.level.passable[p] || Dungeon.level.avoid[p])) {
 				candidates.add( p );
 			}
@@ -105,7 +105,7 @@ public class DistortionTrap extends Trap{
 			Mob mob;
 			switch (summoned){
 				case 1:
-					if (Dungeon.depth != 5 && Random.Int(100) == 0){
+					if (Dungeon.cur().depth != 5 && Random.Int(100) == 0){
 						mob = new RatKing();
                         break;
                     } else if (Random.Int(100)<1) {

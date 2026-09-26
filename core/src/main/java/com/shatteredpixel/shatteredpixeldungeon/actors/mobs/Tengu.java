@@ -156,7 +156,7 @@ public class Tengu extends Mob {
 			HP = hpBracket * ((beforeHitHP/hpBracket)-1) + 1;
 		}
 		
-		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+		LockedFloor lock = Dungeon.cur().hero.buff(LockedFloor.class);
 		if (lock != null) {
 			int multiple = state == PrisonBossLevel.State.FIGHT_START ? 1 : 4;
 			lock.addTime(dmg*multiple);
@@ -202,7 +202,7 @@ public class Tengu extends Mob {
 	@Override
 	public void die( Object cause ) {
 		
-		if (Dungeon.hero.subClass == HeroSubClass.NONE) {
+		if (Dungeon.cur().hero.subClass == HeroSubClass.NONE) {
 			Dungeon.level.drop( new TengusMask(), pos ).sprite.drop();
 		}
 		
@@ -256,7 +256,7 @@ public class Tengu extends Mob {
 					newPos = ((PrisonBossLevel)Dungeon.level).randomTenguCellPos();
 					tries--;
 				} while ( tries > 0 && (level.trueDistance(newPos, enemy.pos) <= 3.5f
-						|| level.trueDistance(newPos, Dungeon.hero.pos) <= 3.5f
+						|| level.trueDistance(newPos, Dungeon.cur().hero.pos) <= 3.5f
 						|| Actor.findChar(newPos) != null));
 
 				if (tries <= 0) newPos = pos;
@@ -283,8 +283,8 @@ public class Tengu extends Mob {
 						(level.solid[newPos] ||
 								level.distance(newPos, enemy.pos) < 5 ||
 								level.distance(newPos, enemy.pos) > 7 ||
-								level.distance(newPos, Dungeon.hero.pos) < 5 ||
-								level.distance(newPos, Dungeon.hero.pos) > 7 ||
+								level.distance(newPos, Dungeon.cur().hero.pos) < 5 ||
+								level.distance(newPos, Dungeon.cur().hero.pos) > 7 ||
 								level.distance(newPos, pos) < 5 ||
 								Actor.findChar(newPos) != null ||
 								Dungeon.level.heaps.get(newPos) != null));
@@ -335,7 +335,7 @@ public class Tengu extends Mob {
 					}
 				});
 			}
-			yell(Messages.get(this, "notice", Dungeon.hero.name()));
+			yell(Messages.get(this, "notice", Dungeon.cur().hero.name()));
 		}
 	}
 	
@@ -399,7 +399,7 @@ public class Tengu extends Mob {
 					chooseEnemy();
 					if (enemy == null){
 						//if nothing else can be targeted, target hero
-						enemy = Dungeon.hero;
+						enemy = Dungeon.cur().hero;
 					}
 					target = enemy.pos;
 				}
@@ -554,7 +554,7 @@ public class Tengu extends Mob {
 		int targetCell = -1;
 		
 		//Targets closest cell which is adjacent to target
-		for (int i : PathFinder.NEIGHBOURS8){
+		for (int i : PathFinder.cur().NEIGHBOURS8){
 			int cell = target.pos + i;
 			if (targetCell == -1 ||
 					Dungeon.level.trueDistance(cell, thrower.pos) < Dungeon.level.trueDistance(targetCell, thrower.pos)){
@@ -606,10 +606,10 @@ public class Tengu extends Mob {
 			} else if (timer == 1){
 				FloatingText.show(p.x, p.y, bombPos, "1...", CharSprite.NEGATIVE);
 			} else {
-				PathFinder.buildDistanceMap( bombPos, BArray.not( Dungeon.level.solid, null ), 2 );
-				for (int cell = 0; cell < PathFinder.distance.length; cell++) {
+				PathFinder.cur().buildDistanceMap( bombPos, BArray.not( Dungeon.level.solid, null ), 2 );
+				for (int cell = 0; cell < PathFinder.cur().distance.length; cell++) {
 
-					if (PathFinder.distance[cell] < Integer.MAX_VALUE) {
+					if (PathFinder.cur().distance[cell] < Integer.MAX_VALUE) {
 						Char ch = Actor.findChar(cell);
 						if (ch != null && !(ch instanceof Tengu)) {
 							int dmg = Random.NormalIntRange(5 + Dungeon.curDepth(), 10 + Dungeon.curDepth() * 2);
@@ -619,7 +619,7 @@ public class Tengu extends Mob {
 								ch.damage(dmg, Bomb.class);
 							}
 
-							if (ch == Dungeon.hero && !ch.isAlive()) {
+							if (ch == Dungeon.cur().hero && !ch.isAlive()) {
 								Dungeon.fail(Tengu.class);
 							}
 						}
@@ -648,9 +648,9 @@ public class Tengu extends Mob {
 		@Override
 		public void fx(boolean on) {
 			if (on && bombPos != -1){
-				PathFinder.buildDistanceMap( bombPos, BArray.not( Dungeon.level.solid, null ), 2 );
-				for (int i = 0; i < PathFinder.distance.length; i++) {
-					if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+				PathFinder.cur().buildDistanceMap( bombPos, BArray.not( Dungeon.level.solid, null ), 2 );
+				for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+					if (PathFinder.cur().distance[i] < Integer.MAX_VALUE) {
 						Emitter e = CellEmitter.get(i);
 						e.pour( SmokeParticle.FACTORY, 0.25f );
 						smokeEmitters.add(e);
@@ -725,8 +725,8 @@ public class Tengu extends Mob {
 		
 		Ballistica aim = new Ballistica(thrower.pos, target.pos, Ballistica.WONT_STOP);
 		
-		for (int i = 0; i < PathFinder.CIRCLE8.length; i++){
-			if (aim.sourcePos+PathFinder.CIRCLE8[i] == aim.path.get(1)){
+		for (int i = 0; i < PathFinder.cur().CIRCLE8.length; i++){
+			if (aim.sourcePos+PathFinder.cur().CIRCLE8[i] == aim.path.get(1)){
 				thrower.sprite.zap(target.pos);
 				Buff.append(thrower, Tengu.FireAbility.class).direction = i;
 				
@@ -782,14 +782,14 @@ public class Tengu extends Mob {
 		}
 		
 		private void spreadFromCell( int cell ){
-			if (!Dungeon.level.solid[cell + PathFinder.CIRCLE8[left(direction)]]){
-				toCells.add(cell + PathFinder.CIRCLE8[left(direction)]);
+			if (!Dungeon.level.solid[cell + PathFinder.cur().CIRCLE8[left(direction)]]){
+				toCells.add(cell + PathFinder.cur().CIRCLE8[left(direction)]);
 			}
-			if (!Dungeon.level.solid[cell + PathFinder.CIRCLE8[direction]]){
-				toCells.add(cell + PathFinder.CIRCLE8[direction]);
+			if (!Dungeon.level.solid[cell + PathFinder.cur().CIRCLE8[direction]]){
+				toCells.add(cell + PathFinder.cur().CIRCLE8[direction]);
 			}
-			if (!Dungeon.level.solid[cell + PathFinder.CIRCLE8[right(direction)]]){
-				toCells.add(cell + PathFinder.CIRCLE8[right(direction)]);
+			if (!Dungeon.level.solid[cell + PathFinder.cur().CIRCLE8[right(direction)]]){
+				toCells.add(cell + PathFinder.cur().CIRCLE8[right(direction)]);
 			}
 		}
 		
@@ -894,7 +894,7 @@ public class Tengu extends Mob {
 		int targetCell = -1;
 		
 		//Targets closest cell which is adjacent to target, and not adjacent to thrower or another shocker
-		for (int i : PathFinder.NEIGHBOURS8){
+		for (int i : PathFinder.cur().NEIGHBOURS8){
 			int cell = target.pos + i;
 			if (Dungeon.level.distance(cell, thrower.pos) >= 2 && !Dungeon.level.solid[cell]){
 				boolean validTarget = true;
@@ -949,7 +949,7 @@ public class Tengu extends Mob {
 				target.sprite.parent.add(new Lightning(shockerPos - 1 - Dungeon.level.width(), shockerPos + 1 + Dungeon.level.width(), null));
 				target.sprite.parent.add(new Lightning(shockerPos - 1 + Dungeon.level.width(), shockerPos + 1 - Dungeon.level.width(), null));
 				
-				if (Dungeon.level.distance(Dungeon.hero.pos, shockerPos) <= 1){
+				if (Dungeon.level.distance(Dungeon.cur().hero.pos, shockerPos) <= 1){
 					Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 				}
 				
@@ -960,7 +960,7 @@ public class Tengu extends Mob {
 				target.sprite.parent.add(new Lightning(shockerPos - Dungeon.level.width(), shockerPos + Dungeon.level.width(), null));
 				target.sprite.parent.add(new Lightning(shockerPos - 1, shockerPos + 1, null));
 				
-				if (Dungeon.level.distance(Dungeon.hero.pos, shockerPos) <= 1){
+				if (Dungeon.level.distance(Dungeon.cur().hero.pos, shockerPos) <= 1){
 					Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 				}
 				
@@ -974,9 +974,9 @@ public class Tengu extends Mob {
 		
 		private void spreadblob(){
 			GameScene.add(Blob.seed(shockerPos, 1, ShockerBlob.class));
-			for (int i = shockingOrdinals ? 0 : 1; i < PathFinder.CIRCLE8.length; i += 2){
-				if (!Dungeon.level.solid[shockerPos+PathFinder.CIRCLE8[i]]) {
-					GameScene.add(Blob.seed(shockerPos + PathFinder.CIRCLE8[i], 2, ShockerBlob.class));
+			for (int i = shockingOrdinals ? 0 : 1; i < PathFinder.cur().CIRCLE8.length; i += 2){
+				if (!Dungeon.level.solid[shockerPos+PathFinder.cur().CIRCLE8[i]]) {
+					GameScene.add(Blob.seed(shockerPos + PathFinder.cur().CIRCLE8[i], 2, ShockerBlob.class));
 				}
 			}
 		}
@@ -1028,7 +1028,7 @@ public class Tengu extends Mob {
 							if (ch != null && !(ch instanceof Tengu)){
 								ch.damage(2 + Dungeon.curDepth(), new Electricity());
 								
-								if (ch == Dungeon.hero && !ch.isAlive()) {
+								if (ch == Dungeon.cur().hero && !ch.isAlive()) {
 									Dungeon.fail(Tengu.class);
 									GLog.n( Messages.get(Electricity.class, "ondeath") );
 								}

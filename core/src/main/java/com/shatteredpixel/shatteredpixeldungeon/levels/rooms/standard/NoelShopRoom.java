@@ -62,7 +62,7 @@ public class NoelShopRoom extends ShopRoom {
         for (Door door : connected.values()) {
             door.set(Door.Type.REGULAR);
         }
-        if (Imp.Quest.isCompleted()) {
+        if (Imp.Quest.cur().isCompleted()) {
             KeeperSpawned = true;
             placeItems(level);
             placeShopkeeper(level);
@@ -73,9 +73,9 @@ public class NoelShopRoom extends ShopRoom {
 
     public static boolean openShop(){
         if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)||Challenges.activeChallenges()>=2){
-            return Dungeon.hero.buff(Elphelt.Finish.class)!=null|| SeedFinder.SeedFinding;
+            return Dungeon.cur().hero.buff(Elphelt.Finish.class)!=null|| SeedFinder.SeedFinding;
         }else
-            return Imp.Quest.isCompleted()||SeedFinder.SeedFinding;
+            return Imp.Quest.cur().isCompleted()||SeedFinder.SeedFinding;
     }
     public void PlaceShop(Level level, int center, ArrayList<Integer> list){
         placeShopkeeper(level, center);

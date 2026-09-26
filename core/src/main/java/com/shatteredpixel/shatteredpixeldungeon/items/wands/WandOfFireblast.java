@@ -117,7 +117,7 @@ public class WandOfFireblast extends DamageWand {
 		//ignite cells that share a side with an adjacent cell, are flammable, and are further from the source pos
 		//This prevents short-range casts not igniting barricades or bookshelves
 		for (int cell : adjacentCells){
-			for (int i : PathFinder.NEIGHBOURS8){
+			for (int i : PathFinder.cur().NEIGHBOURS8){
 				if (Dungeon.level.trueDistance(cell+i, bolt.collisionPos) < Dungeon.level.trueDistance(cell, bolt.collisionPos)
 						&& Dungeon.level.flammable[cell+i]
 						&& Fire.volumeAt(cell+i, Fire.class) == 0){
@@ -149,7 +149,7 @@ public class WandOfFireblast extends DamageWand {
     public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
         float procChance = 0.0F;
 
-        for(int i : PathFinder.NEIGHBOURS9) {
+        for(int i : PathFinder.cur().NEIGHBOURS9) {
             if (Actor.findChar(defender.pos + i) != null && Actor.findChar(defender.pos + i).buff(Burning.class) != null) {
                 procChance += 0.25F;
             } else if (Fire.volumeAt(defender.pos + i, Fire.class) > 0) {
@@ -164,7 +164,7 @@ public class WandOfFireblast extends DamageWand {
             Blob fire = (Blob)Dungeon.level.blobs.get(Fire.class);
             CellEmitter.center(defender.pos).burst(BlastParticle.FACTORY, 30);
             if (fire != null) {
-                for(int i : PathFinder.NEIGHBOURS9) {
+                for(int i : PathFinder.cur().NEIGHBOURS9) {
                     CellEmitter.get(defender.pos + i).burst(SmokeParticle.FACTORY, 4);
                     if (Fire.volumeAt(defender.pos + i, Fire.class) > 0) {
                         Dungeon.level.destroy(defender.pos + i);

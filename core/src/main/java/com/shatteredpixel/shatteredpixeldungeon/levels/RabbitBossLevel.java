@@ -146,7 +146,7 @@ public class RabbitBossLevel extends Level {
 	public int randomRespawnCell(Char ch) {
         int cell;
         do {
-            cell = entrance + PathFinder.NEIGHBOURS8[Random.Int(8)];
+            cell = entrance + PathFinder.cur().NEIGHBOURS8[Random.Int(8)];
         }while (solid[cell]);
 		return cell; //random cell adjacent to the entrance.
 	}
@@ -155,7 +155,7 @@ public class RabbitBossLevel extends Level {
 	public void occupyCell(Char ch) {
 		super.occupyCell(ch);
 
-		if (ch == Dungeon.hero) {
+		if (ch == Dungeon.cur().hero) {
 			//hero enters tengu's chamber
 			if (state == State.READY) {
 				progress();
@@ -234,8 +234,8 @@ public class RabbitBossLevel extends Level {
 				heap.destroy();
 			}
 		}
-		for (HeavyBoomerang.CircleBack b : Dungeon.hero.buffs(HeavyBoomerang.CircleBack.class)){
-			if (b.activeDepth() == Dungeon.depth
+		for (HeavyBoomerang.CircleBack b : Dungeon.cur().hero.buffs(HeavyBoomerang.CircleBack.class)){
+			if (b.activeDepth() == Dungeon.cur().depth
 					&& (safeArea == null || !safeArea.inside(cellToPoint(b.returnPos())))){
 				storedItems.add(b.cancel());
 			}
@@ -296,13 +296,13 @@ public class RabbitBossLevel extends Level {
 				GameScene.updateMap(entrance);
 				GameScene.updateMap(exit);
 
-				Dungeon.hero.interrupt();
-				Dungeon.hero.pos = entrance;
-				Dungeon.hero.sprite.interruptMotion();
-				Dungeon.hero.sprite.place(Dungeon.hero.pos);
+				Dungeon.cur().hero.interrupt();
+				Dungeon.cur().hero.pos = entrance;
+				Dungeon.cur().hero.sprite.interruptMotion();
+				Dungeon.cur().hero.sprite.place(Dungeon.cur().hero.pos);
 
 				elphelt.pos = CENTER_POS;
-				elphelt.die(Dungeon.hero);
+				elphelt.die(Dungeon.cur().hero);
 				
 				state = State.WON;
 				unseal();

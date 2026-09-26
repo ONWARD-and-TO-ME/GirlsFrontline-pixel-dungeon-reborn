@@ -47,14 +47,14 @@ public class HolyBomb extends Bomb {
 		super.explode(cell);
 		
 		if (Dungeon.level.heroFOV[cell]) {
-			new Flare(10, 64).show(Dungeon.hero.sprite.parent, DungeonTilemap.tileCenterToWorld(cell), 2f);
+			new Flare(10, 64).show(Dungeon.cur().hero.sprite.parent, DungeonTilemap.tileCenterToWorld(cell), 2f);
 		}
 		
 		ArrayList<Char> affected = new ArrayList<>();
 		
-		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 2 );
-		for (int i = 0; i < PathFinder.distance.length; i++) {
-			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+		PathFinder.cur().buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 2 );
+		for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+			if (PathFinder.cur().distance[i] < Integer.MAX_VALUE) {
 				Char ch = Actor.findChar(i);
 				if (ch != null) {
 					affected.add(ch);

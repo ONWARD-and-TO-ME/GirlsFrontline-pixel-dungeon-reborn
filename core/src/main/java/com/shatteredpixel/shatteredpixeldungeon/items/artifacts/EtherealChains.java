@@ -114,8 +114,8 @@ public class EtherealChains extends Artifact {
 			if (target != null && (Dungeon.level.visited[target] || Dungeon.level.mapped[target])){
 
 				//chains cannot be used to go where it is impossible to walk to
-				PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
-				if (PathFinder.distance[curUser.pos] == Integer.MAX_VALUE){
+				PathFinder.cur().buildDistanceMap(target, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+				if (PathFinder.cur().distance[curUser.pos] == Integer.MAX_VALUE){
 					GLog.w( Messages.get(EtherealChains.class, "cant_reach") );
 					return;
 				}
@@ -211,7 +211,7 @@ public class EtherealChains extends Artifact {
 		
 		//don't pull if there are no solid objects next to the pull location
 		boolean solidFound = false;
-		for (int i : PathFinder.NEIGHBOURS8){
+		for (int i : PathFinder.cur().NEIGHBOURS8){
 			if (Dungeon.level.solid[chain.collisionPos + i]){
 				solidFound = true;
 				break;
@@ -275,7 +275,7 @@ public class EtherealChains extends Artifact {
 	public String desc() {
 		String desc = super.desc();
 
-		if (isEquipped( Dungeon.hero )){
+		if (isEquipped( Dungeon.cur().hero )){
 			desc += "\n\n";
 			if (cursed)
 				desc += Messages.get(this, "desc_cursed");

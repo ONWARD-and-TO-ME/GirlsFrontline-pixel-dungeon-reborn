@@ -221,17 +221,17 @@ public class Alchemize extends Spell {
 
 		private void consumeAlchemize(){
 			if (Random.Float() < ((Spell) curItem).TalentChance())
-				Talent.onScrollUsed(Dungeon.hero, 1);
+				Talent.onScrollUsed(Dungeon.cur().hero, 1);
 			Catalog.setSeen(curItem.getClass());
 			Catalog.countUse(curItem.getClass());
 			Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 			if (curItem.quantity() <= 1){
-				curItem.detachAll(Dungeon.hero.belongings.backpack);
+				curItem.detachAll(Dungeon.cur().hero.belongings.backpack);
 				if (owner != null) {
 					owner.hide();
 				}
 			} else {
-				curItem.detach(Dungeon.hero.belongings.backpack);
+				curItem.detach(Dungeon.cur().hero.belongings.backpack);
 				if (owner != null){
 					owner.hide();
 				}

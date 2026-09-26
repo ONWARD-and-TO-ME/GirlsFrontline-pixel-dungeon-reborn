@@ -80,7 +80,7 @@ public class GreatCrab extends Crab {
 				&& state != SLEEPING
 				&& paralysed == 0
 				&& src instanceof Wand
-				&& enemy == Dungeon.hero
+				&& enemy == Dungeon.cur().hero
 				&& enemy.invisible == 0){
 			GLog.n( Messages.get(this, "noticed") );
 			sprite.showStatus( CharSprite.NEUTRAL, Messages.get(this, "def_verb") );
@@ -111,7 +111,7 @@ public class GreatCrab extends Crab {
 	public void die( Object cause ) {
 		super.die( cause );
 
-		Ghost.Quest.process();
+		Ghost.Quest.cur().process();
 	}
 
 	@Override

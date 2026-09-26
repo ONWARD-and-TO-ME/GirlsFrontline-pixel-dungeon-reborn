@@ -15,8 +15,8 @@ public class JournalScene extends PixelScene {
 	@Override
 	public void create() {
 		super.create();
-		if (Dungeon.hero == null)
-			Dungeon.hero = new Hero();
+		if (Dungeon.cur().hero == null)
+			Dungeon.cur().hero = new Hero();
 		if (Dungeon.level == null){
 			Dungeon.level = new RabbitBossLevel();
 			Dungeon.level.create(0, 0);

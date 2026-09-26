@@ -48,7 +48,7 @@ public class RotGardenRoom extends SpecialRoom {
 
 		Door entrance = entrance();
 		entrance.set(Door.Type.LOCKED);
-		level.addItemToSpawn(new IronKey(Dungeon.depth));
+		level.addItemToSpawn(new IronKey(Dungeon.cur().depth));
 
 		//define basic terrain, mostly high grass with some chaotically placed wall tiles
 		Painter.fill(level, this, Terrain.WALL);
@@ -76,14 +76,14 @@ public class RotGardenRoom extends SpecialRoom {
 			}
 
 			//place the heart in a slightly random location sufficiently far from the entrance
-			PathFinder.buildDistanceMap(entryPos, passable);
+			PathFinder.cur().buildDistanceMap(entryPos, passable);
 			candidates.clear();
 			openCells = 0;
 			for (Point p : getPoints()) {
 				int i = level.pointToCell(p);
-				if (PathFinder.distance[i] != Integer.MAX_VALUE) {
+				if (PathFinder.cur().distance[i] != Integer.MAX_VALUE) {
 					openCells++;
-					if (PathFinder.distance[i] >= 7) {
+					if (PathFinder.cur().distance[i] >= 7) {
 						candidates.add(i);
 					}
 				} else {
@@ -97,7 +97,7 @@ public class RotGardenRoom extends SpecialRoom {
 			int closestPos = 7;
 			while (candidates.size() > 5) {
 				for (Integer i : candidates.toArray(new Integer[0])) {
-					if (candidates.size() > 5 && PathFinder.distance[i] == closestPos) {
+					if (candidates.size() > 5 && PathFinder.cur().distance[i] == closestPos) {
 						candidates.remove(i);
 					}
 				}
@@ -127,9 +127,9 @@ public class RotGardenRoom extends SpecialRoom {
 
 		//look for open diagonals near the hard and create open cardinals near them.
 		//This is important so that the heart can spread gas
-		for (int i = 0; i < PathFinder.CIRCLE8.length; i+=2){
-			if (level.map[heartPos + PathFinder.CIRCLE8[i]] != Terrain.WALL){
-				Painter.set(level, heartPos + PathFinder.CIRCLE8[i+1], Terrain.HIGH_GRASS);
+		for (int i = 0; i < PathFinder.cur().CIRCLE8.length; i+=2){
+			if (level.map[heartPos + PathFinder.cur().CIRCLE8[i]] != Terrain.WALL){
+				Painter.set(level, heartPos + PathFinder.cur().CIRCLE8[i+1], Terrain.HIGH_GRASS);
 			}
 		}
 
@@ -140,7 +140,7 @@ public class RotGardenRoom extends SpecialRoom {
 			return false;
 		}
 
-		for (int i : PathFinder.NEIGHBOURS9){
+		for (int i : PathFinder.cur().NEIGHBOURS9){
 			if (level.findMob(pos+i) != null){
 				return false;
 			}
@@ -150,20 +150,20 @@ public class RotGardenRoom extends SpecialRoom {
 
 		//if lasher isn't near heart, we can just use cardinal directions
 		if (level.distance(pos, heartPos) > 2){
-			for (int i : PathFinder.NEIGHBOURS4){
+			for (int i : PathFinder.cur().NEIGHBOURS4){
 				newPassable[pos+i] = false;
 			}
 			//if it is near, has to count as blocking all adjacent
 			// so that we can guarantee a safe tile to stay still in next to the heart
 		} else {
-			for (int i : PathFinder.NEIGHBOURS8){
+			for (int i : PathFinder.cur().NEIGHBOURS8){
 				newPassable[pos+i] = false;
 			}
 		}
 
-		PathFinder.buildDistanceMap(heartPos, newPassable);
+		PathFinder.cur().buildDistanceMap(heartPos, newPassable);
 
-		if (PathFinder.distance[entryPos] == Integer.MAX_VALUE){
+		if (PathFinder.cur().distance[entryPos] == Integer.MAX_VALUE){
 			System.arraycopy(passable, 0, newPassable, 0, passable.length);
 			return false;
 		} else {

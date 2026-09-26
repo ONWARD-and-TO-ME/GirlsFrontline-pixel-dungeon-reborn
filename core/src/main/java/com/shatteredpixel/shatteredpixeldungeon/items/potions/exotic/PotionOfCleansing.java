@@ -54,7 +54,7 @@ public class PotionOfCleansing extends ExoticPotion {
 	@Override
 	public void shatter(int cell) {
 
-		Talent.onPotionUsed(Dungeon.hero, 1F, cell);
+		Talent.onPotionUsed(Dungeon.cur().hero, 1F, cell);
 		if (Actor.findChar(cell) == null){
 			super.shatter(cell);
 		} else {

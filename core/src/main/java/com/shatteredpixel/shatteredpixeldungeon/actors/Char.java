@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -181,7 +180,7 @@ public abstract class Char extends Actor {
 		if (heap != null && heap.type == Heap.Type.HEAP) {
 			int n;
 			do {
-				n = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
+				n = pos + PathFinder.cur().NEIGHBOURS8[Random.Int( 8 )];
 			} while (!Dungeon.level.passable[n] && !Dungeon.level.avoid[n]);
 			Dungeon.level.drop( heap.pickUp(), n ).sprite.drop( pos );
 		}
@@ -222,9 +221,9 @@ public abstract class Char extends Actor {
 		int curPos = pos;
 
 		//warp instantly with allies in this case（法师G11盟军传送，实现见 MageTalent）
-		if (c == hero && MageTalent.hasAllyWarp(hero)){
-			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
-			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
+		if (c == Dungeon.cur().hero && MageTalent.hasAllyWarp(Dungeon.cur().hero)){
+			PathFinder.cur().buildDistanceMap(c.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+			if (PathFinder.cur().distance[pos] == Integer.MAX_VALUE){
 				return true;
 			}
 			ScrollOfTeleportation.appear(this, c.pos);
@@ -247,12 +246,12 @@ public abstract class Char extends Actor {
 
 		c.spend( 1 / c.speed() );
 
-		if (c == hero){
-			if (hero.subClass == HeroSubClass.FREERUNNER){
-				Buff.affect(hero, Momentum.class).gainStack();
+		if (c == Dungeon.cur().hero){
+			if (Dungeon.cur().hero.subClass == HeroSubClass.FREERUNNER){
+				Buff.affect(Dungeon.cur().hero, Momentum.class).gainStack();
 			}
 
-			hero.busy();
+			Dungeon.cur().hero.busy();
 		}
 
 		return true;
@@ -370,8 +369,8 @@ public abstract class Char extends Actor {
 			if (prep != null){
 				dmg = prep.damageRoll(this);
 				// 盗贼（UMP9）赏金猎人：预谋伤害掷骰挂标记（实现见 RogueTalent）
-				if (this == hero) {
-					RogueTalent.onPreparationDamageRoll(hero);
+				if (this == Dungeon.cur().hero) {
+					RogueTalent.onPreparationDamageRoll(Dungeon.cur().hero);
 				}
 			} else {
 				dmg = damageRoll();
@@ -417,7 +416,7 @@ public abstract class Char extends Actor {
 
 			if (visibleFight) {
 				if (effectiveDamage > 0 || !enemy.blockSound(Random.Float(0.96f, 1.05f))) {
-                    if (enemy == hero && hero.heroClass == HeroClass.WARRIOR)
+                    if (enemy == Dungeon.cur().hero && Dungeon.cur().hero.heroClass == HeroClass.WARRIOR)
                         Sample.INSTANCE.play( Assets.Sounds.HIT_PARRY, 1, Random.Float(0.96f, 1.05f));
                     else
                         hitSound(Random.Float(0.87f, 1.15f));
@@ -454,16 +453,16 @@ public abstract class Char extends Actor {
 			enemy.sprite.flash();
 
 			if (!enemy.isAlive() && visibleFight) {
-				if (enemy == hero) {
+				if (enemy == Dungeon.cur().hero) {
 
-					if (this == hero) {
+					if (this == Dungeon.cur().hero) {
 						return true;
 					}
 
 					Dungeon.fail( getClass() );
 					GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );
 
-				} else if (this == hero) {
+				} else if (this == Dungeon.cur().hero) {
 					GLog.i( Messages.capitalize(Messages.get(Char.class, "defeat", enemy.name())) );
 				}
 			}
@@ -608,7 +607,7 @@ public abstract class Char extends Actor {
 	}
 	public void damage( int dmg, Object src ) {
         if (buff(Empulse.class) != null){
-            dmg += dmg * hero.pointsInTalent(Talent.EMP_Two)/10;
+            dmg += dmg * Dungeon.cur().hero.pointsInTalent(Talent.EMP_Two)/10;
         }
 
 		if (!isAlive() || dmg < 0) {
@@ -902,7 +901,7 @@ public abstract class Char extends Actor {
 
 		if (travelling && Dungeon.level.adjacent( step, pos ) && buff( Vertigo.class ) != null) {
 			sprite.interruptMotion();
-			int newPos = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
+			int newPos = pos + PathFinder.cur().NEIGHBOURS8[Random.Int( 8 )];
 			if (!(Dungeon.level.passable[newPos] || Dungeon.level.avoid[newPos])
 					|| (properties().contains(Property.LARGE) && !Dungeon.level.openSpace[newPos])
 					|| Actor.findChar( newPos ) != null)
@@ -919,7 +918,7 @@ public abstract class Char extends Actor {
 
 		pos = step;
 
-		if (this != hero) {
+		if (this != Dungeon.cur().hero) {
 			sprite.visible = Dungeon.level.heroFOV[pos];
 		}
 		

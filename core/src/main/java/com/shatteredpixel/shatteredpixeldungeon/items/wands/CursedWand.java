@@ -220,7 +220,7 @@ public class CursedWand {
 					toDamage.damage(damage, origin == null ? toHeal : origin);
 					toDamage.sprite.emitter().start(ShadowParticle.UP, 0.05f, 10);
 
-					if (toDamage == Dungeon.hero){
+					if (toDamage == Dungeon.cur().hero){
 						Sample.INSTANCE.play(Assets.Sounds.CURSED);
 						if (!toDamage.isAlive()) {
 							if (origin != null) {
@@ -293,16 +293,16 @@ public class CursedWand {
 
 			//inter-level teleportation
 			case 2:
-				if (Dungeon.depth > 1 && !Dungeon.bossLevel() && user == Dungeon.hero) {
+				if (Dungeon.cur().depth > 1 && !Dungeon.bossLevel() && user == Dungeon.cur().hero) {
 
 					//each depth has 1 more weight than the previous depth.
-					float[] depths = new float[Dungeon.depth-1];
-					for (int i = 1; i < Dungeon.depth; i++) depths[i-1] = i;
+					float[] depths = new float[Dungeon.cur().depth-1];
+					for (int i = 1; i < Dungeon.cur().depth; i++) depths[i-1] = i;
 					int depth = 1+Random.chances(depths);
 
-					TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+					TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
 					if (timeFreeze != null) timeFreeze.disarmPressedTraps();
-					Swiftthistle.TimeBubble timeBubble = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+					Swiftthistle.TimeBubble timeBubble = Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
 					if (timeBubble != null) timeBubble.disarmPressedTraps();
 
 					InterlevelScene.mode = InterlevelScene.Mode.RETURN;
@@ -348,7 +348,7 @@ public class CursedWand {
 				int spawnCell = targetPos;
 				if (ch != null){
 					ArrayList<Integer> candidates = new ArrayList<>();
-					for (int n : PathFinder.NEIGHBOURS8) {
+					for (int n : PathFinder.cur().NEIGHBOURS8) {
 						int cell = targetPos + n;
 						if (Dungeon.level.passable[cell] && Actor.findChar( cell ) == null) {
 							candidates.add( cell );
@@ -416,11 +416,11 @@ public class CursedWand {
 			//random transmogrification
 			case 3:
 				//skips this effect if there is no item to transmogrify
-				if (origin == null || user != Dungeon.hero){
+				if (origin == null || user != Dungeon.cur().hero){
 					return cursedEffect(origin, user, targetPos);
 				}
-				if (!Dungeon.hero.belongings.contains(origin)){
-					MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+				if (!Dungeon.cur().hero.belongings.contains(origin)){
+					MagesStaff staff = Dungeon.cur().hero.belongings.getItem(MagesStaff.class);
 					if (origin instanceof Wand
 							&& staff != null && staff.wand == origin){
 						ScrollOfTransmutation.changeStaff(staff);
@@ -429,7 +429,7 @@ public class CursedWand {
 					}
 					return cursedEffect(origin, user, targetPos);
 				}
-				origin.detach(Dungeon.hero.belongings.backpack);
+				origin.detach(Dungeon.cur().hero.belongings.backpack);
 				Item result;
 				do {
 					result = Generator.random(Random.oneOf(Generator.Category.WEAPON, Generator.Category.ARMOR,

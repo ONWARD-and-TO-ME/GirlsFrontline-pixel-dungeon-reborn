@@ -97,7 +97,7 @@ public class Thief extends Mob {
 	public float lootChance() {
 		//each drop makes future drops 1/3 as likely
 		// so loot chance looks like: 1/33, 1/100, 1/300, 1/900, etc.
-		return super.lootChance() * (float)Math.pow(1/3f, Dungeon.LimitedDrops.THEIF_MISC.count);
+		return super.lootChance() * (float)Math.pow(1/3f, Dungeon.LimitedDrops.THEIF_MISC.count());
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class Thief extends Mob {
 
 	@Override
 	public Item createLoot() {
-		Dungeon.LimitedDrops.THEIF_MISC.count++;
+		Dungeon.LimitedDrops.THEIF_MISC.used();
 		return super.createLoot();
 	}
 
@@ -210,7 +210,7 @@ public class Thief extends Mob {
 					state = HUNTING;
 				} else if (item != null
 						&& !Dungeon.level.heroFOV[pos]
-						&& Dungeon.level.distance(Dungeon.hero.pos, pos) >= 6) {
+						&& Dungeon.level.distance(Dungeon.cur().hero.pos, pos) >= 6) {
 
 					int count = 32;
 					int newPos;

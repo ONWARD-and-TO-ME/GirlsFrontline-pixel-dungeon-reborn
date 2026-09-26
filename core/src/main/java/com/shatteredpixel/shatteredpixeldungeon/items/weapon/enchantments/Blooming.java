@@ -56,7 +56,7 @@ public class Blooming extends Weapon.Enchantment {
 			}
 			
 			ArrayList<Integer> positions = new ArrayList<>();
-			for (int i : PathFinder.NEIGHBOURS8){
+			for (int i : PathFinder.cur().NEIGHBOURS8){
 				positions.add(i);
 			}
 			Random.shuffle( positions );

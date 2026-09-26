@@ -56,22 +56,21 @@ public class ArmoryRoom extends SpecialRoom {
 		}
 		
 		int n = Random.IntRange( 2, 3 );
-		prizeCats = new float[]{1,1,1,1};
+		float[] prizeCats = new float[]{1,1,1,1};
 		for (int i=0; i < n; i++) {
 			int pos;
 			do {
 				pos = level.pointToCell(random());
 			} while (level.map[pos] != Terrain.EMPTY || level.heaps.get( pos ) != null);
-			level.drop( prize( level ), pos ).setRoom(Heap.Room.Armory);
+			level.drop( prize( level, prizeCats ), pos ).setRoom(Heap.Room.Armory);
 		}
 		
 		entrance.set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.depth ) );
+		level.addItemToSpawn( new IronKey( Dungeon.cur().depth ) );
 	}
 
 	//only a max of 1 prize from each category can be dropped at a time
-	private static float[] prizeCats;
-	private static Item prize( Level level ) {
+	private Item prize( Level level, float[] prizeCats ) {
 		int index = Random.chances(prizeCats);
 		prizeCats[index] = 0;
 		switch (index){

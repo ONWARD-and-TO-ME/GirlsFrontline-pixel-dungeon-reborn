@@ -62,13 +62,13 @@ public class RegrowthBomb extends Bomb {
 		
 		ArrayList<Integer> plantCandidates = new ArrayList<>();
 		
-		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 2 );
-		for (int i = 0; i < PathFinder.distance.length; i++) {
-			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+		PathFinder.cur().buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 2 );
+		for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+			if (PathFinder.cur().distance[i] < Integer.MAX_VALUE) {
 				Char ch = Actor.findChar(i);
 				int t = Dungeon.level.map[i];
 				if (ch != null){
-					if (ch.alignment == Dungeon.hero.alignment) {
+					if (ch.alignment == Dungeon.cur().hero.alignment) {
 						//same as a healing potion
 						PotionOfHealing.cure(ch);
 						PotionOfHealing.heal(ch);

@@ -78,9 +78,9 @@ public class SmokeBomb extends ArmorAbility {
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
 
-			PathFinder.buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid,null), 6);
+			PathFinder.cur().buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid,null), 6);
 
-			if ( PathFinder.distance[target] == Integer.MAX_VALUE ||
+			if ( PathFinder.cur().distance[target] == Integer.MAX_VALUE ||
 					!Dungeon.level.heroFOV[target] ||
 					Actor.findChar( target ) != null) {
 
@@ -157,13 +157,13 @@ public class SmokeBomb extends ArmorAbility {
 
 			alignment = Alignment.ALLY;
 
-			HP = HT = 20*RogueTalent.bodyReplacementPoints(Dungeon.hero);
+			HP = HT = 20*RogueTalent.bodyReplacementPoints(Dungeon.cur().hero);
 		}
 
 		@Override
 		public int drRoll() {
-			return Random.NormalIntRange(RogueTalent.bodyReplacementPoints(Dungeon.hero),
-					3*RogueTalent.bodyReplacementPoints(Dungeon.hero));
+			return Random.NormalIntRange(RogueTalent.bodyReplacementPoints(Dungeon.cur().hero),
+					3*RogueTalent.bodyReplacementPoints(Dungeon.cur().hero));
 		}
 
 		{

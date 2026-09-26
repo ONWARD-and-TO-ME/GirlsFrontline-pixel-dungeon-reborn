@@ -446,7 +446,7 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable {
 		public void setHidden(){
 			int num = Unlock();
 			//保证无论是否拥有天赋都使用相同数量的随机数
-			setHidden(Dungeon.hero, num);
+			setHidden(Dungeon.cur().hero, num);
 		}
 
 		public void setHidden(Hero hero, int num){

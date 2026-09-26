@@ -62,12 +62,12 @@ public class Gun561Old extends ShootGun_OLD {
 		float rate=1f;
 		float duration=0f;
 
-		if(Dungeon.hero.subClass==HeroSubClass.PULSETROOPER){
-			rate=Dungeon.hero.pointsInTalent(Talent.MORE_POWER)/6f;
+		if(Dungeon.cur().hero.subClass==HeroSubClass.PULSETROOPER){
+			rate=Dungeon.cur().hero.pointsInTalent(Talent.MORE_POWER)/6f;
 
 			Sample.INSTANCE.play( Assets.Sounds.LIGHTNING);
 
-			switch(Dungeon.hero.pointsInTalent(Talent.ENDURE_EMP)){
+			switch(Dungeon.cur().hero.pointsInTalent(Talent.ENDURE_EMP)){
 				case 0:default:duration=5f;break;
 				case 1:        duration=8f;break;
 				case 2:        duration=11f;break;
@@ -82,7 +82,7 @@ public class Gun561Old extends ShootGun_OLD {
 			}
 		}
 
-		for(int n : PathFinder.NEIGHBOURS9) {
+		for(int n : PathFinder.cur().NEIGHBOURS9) {
 			int c =cell + n;
 			if (c >= 0 && c < Dungeon.level.length()) {
 				Char target = Actor.findChar(c);
@@ -111,18 +111,18 @@ public class Gun561Old extends ShootGun_OLD {
 				}
 
 				if (target != null) {
-					int damage=Random.NormalIntRange(Dungeon.hero.HT/2+5,Dungeon.hero.HT/2+8);
+					int damage=Random.NormalIntRange(Dungeon.cur().hero.HT/2+5,Dungeon.cur().hero.HT/2+8);
 					rate*=(n==0?1f:0.75f);
 					target.damage((int)(damage*rate),this);
 				}
 			}
 		}
 
-		if(!Dungeon.hero.isAlive()){
+		if(!Dungeon.cur().hero.isAlive()){
 			Dungeon.fail(getClass());
 		}
 
-		Hero hero=Dungeon.hero;
+		Hero hero=Dungeon.cur().hero;
 		cooldownTurns=200-20*hero.pointsInTalent(Talent.FAST_RELOAD);
 
 		if(hero.hasTalent(Talent.SIMPLE_RELOAD)){

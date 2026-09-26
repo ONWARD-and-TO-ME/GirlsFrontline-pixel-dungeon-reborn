@@ -57,7 +57,7 @@ public abstract class Puppet extends DirectableAlly {
     }
     public void dropCore(){
         Dungeon.level.drop(core.broken(), pos).seen = true;
-        for (int i : PathFinder.NEIGHBOURS9)
+        for (int i : PathFinder.cur().NEIGHBOURS9)
             Dungeon.level.mapped[pos + i] = true;
         GameScene.updateFog(pos, 1);
     }
@@ -67,9 +67,9 @@ public abstract class Puppet extends DirectableAlly {
         return super.act();
     }
     private static Hero hero(){
-        return Dungeon.hero == null
+        return Dungeon.cur().hero == null
                 ? new Hero()
-                : Dungeon.hero;
+                : Dungeon.cur().hero;
         //在读档时Dungeon.hero总是优先于Level的读档，所以轮到Level中的Mob的读档时，Dungeon.hero总是非null的。
         //此处加一个判null只是为了图鉴系统处不闪退。
     }

@@ -88,8 +88,8 @@ public class DangerIndicator extends Tag {
 	@Override
 	public void update() {
 		
-		if (Dungeon.hero.isAlive()) {
-			int v =  Dungeon.hero.visibleEnemies();
+		if (Dungeon.cur().hero.isAlive()) {
+			int v =  Dungeon.cur().hero.visibleEnemies();
 			if (v != lastNumber) {
 				lastNumber = v;
 				if (visible = lastNumber > 0) {
@@ -109,14 +109,14 @@ public class DangerIndicator extends Tag {
 	
 	@Override
 	protected void onClick() {
-		if (Dungeon.hero.visibleEnemies() > 0) {
+		if (Dungeon.cur().hero.visibleEnemies() > 0) {
 
-			Mob target = Dungeon.hero.visibleEnemy(++enemyIndex);
+			Mob target = Dungeon.cur().hero.visibleEnemy(++enemyIndex);
 
 			QuickSlotButton.target(target);
-			if (Dungeon.hero.canAttack(target)) AttackIndicator.target(target);
+			if (Dungeon.cur().hero.canAttack(target)) AttackIndicator.target(target);
 
-			if (Dungeon.hero.curAction == null) Camera.main.panTo(target.sprite.center(), 5f);
+			if (Dungeon.cur().hero.curAction == null) Camera.main.panTo(target.sprite.center(), 5f);
 		}
 	}
 

@@ -152,12 +152,12 @@ public class WndUpgrade extends Window {
 				scroll.playReadAnimation();
 				item = scroll.upgradeItem( item );
 				Sample.INSTANCE.play( Assets.Sounds.READ );
-				scroll.detach( Dungeon.hero.belongings.backpack );
+				scroll.detach( Dungeon.cur().hero.belongings.backpack );
 
 				hide();
 
 				//背包里还有升级磁盘且物品仍可升级：再次弹出窗口，实现连续升级
-				ScrollOfUpgrade more = Dungeon.hero.belongings.getItem( ScrollOfUpgrade.class );
+				ScrollOfUpgrade more = Dungeon.cur().hero.belongings.getItem( ScrollOfUpgrade.class );
 				if (more != null && more.quantity() > 0 && item.isUpgradable()){
 					GameScene.show( new WndUpgrade( more, item ) );
 				}
@@ -181,7 +181,7 @@ public class WndUpgrade extends Window {
 		add( btnBack );
 
 		//读盘动画（约1回合）结束前禁止连续点击
-		btnUpgrade.enable( Dungeon.hero.ready );
+		btnUpgrade.enable( Dungeon.cur().hero.ready );
 
 		resize( WIDTH, (int)btnBack.bottom() );
 	}
@@ -189,7 +189,7 @@ public class WndUpgrade extends Window {
 	@Override
 	public synchronized void update() {
 		super.update();
-		if (!btnUpgrade.active && Dungeon.hero.ready){
+		if (!btnUpgrade.active && Dungeon.cur().hero.ready){
 			btnUpgrade.enable( true );
 		}
 	}

@@ -26,6 +26,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeons;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FetidRat;
@@ -88,10 +89,10 @@ public class Ghost extends NPC {
 	}
 	@Override
 	protected boolean act() {
-		if (Quest.processed()) {
-			target = Dungeon.hero.pos;
+		if (Quest.cur().processed()) {
+			target = Dungeon.cur().hero.pos;
 		}
-		if (Dungeon.level.heroFOV[pos] && !Quest.completed()){
+		if (Dungeon.level.heroFOV[pos] && !Quest.cur().completed()){
 			Notes.add( Notes.Landmark.GHOST );
 		}
 		return super.act();
@@ -104,7 +105,7 @@ public class Ghost extends NPC {
 	
 	@Override
 	public float speed() {
-		return Quest.processed() ? 2f : 0.5f;
+		return Quest.cur().processed() ? 2f : 0.5f;
 	}
 	
 	@Override
@@ -131,24 +132,24 @@ public class Ghost extends NPC {
 		
 		Sample.INSTANCE.play( Assets.Sounds.GHOST );
 
-		if (c != Dungeon.hero){
+		if (c != Dungeon.cur().hero){
 			return super.interact(c);
 		}
 		
-		if (Quest.given) {
-			if (Quest.weapon != null) {
-				if (Quest.processed) {
+		if (Quest.cur().given) {
+			if (Quest.cur().weapon != null) {
+				if (Quest.cur().processed) {
 					Game.runOnRenderThread(new Callback() {
 						@Override
 						public void call() {
-							GameScene.show(new WndSadGhost(Ghost.this, Quest.type));
+							GameScene.show(new WndSadGhost(Ghost.this, Quest.cur().type));
 						}
 					});
 				} else {
 					Game.runOnRenderThread(new Callback() {
 						@Override
 						public void call() {
-							switch (Quest.type) {
+							switch (Quest.cur().type) {
 								case 1:
 								default:
 									GameScene.show(new WndDialog(new STAR15_Plot_L1.End()));
@@ -182,7 +183,7 @@ public class Ghost extends NPC {
 		} else {
 			Mob questBoss;
 			Plot txt_quest;
-			switch (Quest.type){
+			switch (Quest.cur().type){
 				case 1: default:
 					questBoss = new FetidRat();
 					txt_quest = new STAR15_Plot_L1();
@@ -201,7 +202,7 @@ public class Ghost extends NPC {
 
 			if (questBoss.pos != -1) {
 				GameScene.add(questBoss);
-				Quest.given = true;
+				Quest.cur().given = true;
 				Notes.add( Notes.Landmark.GHOST );
 				Game.runOnRenderThread(new Callback() {
 					@Override
@@ -220,24 +221,31 @@ public class Ghost extends NPC {
 	}
 
 	public static class Quest {
-		public static boolean active(){
-			return spawned && given && !processed && depth == Dungeon.depth;
+		public static Quest cur() {
+			return Dungeons.cur().ghostQuest;
 		}
-		public static boolean spawned;
+		//仅用于存档读写（始终发生在主线程），避免误序列化 worker 状态
+		public static Quest main() {
+			return Dungeons.main().ghostQuest;
+		}
+		public boolean active(){
+			return spawned && given && !processed && depth == Dungeon.cur().depth;
+		}
+		public boolean spawned;
 
-		private static int type;
+		private int type;
 
-		private static boolean given;
-		public static boolean processed;
+		private boolean given;
+		public boolean processed;
 		
-		private static int depth;
+		private int depth;
 		
-		public static Weapon weapon;
-		public static Armor armor;
-		public static Weapon.Enchantment enchant;
-		public static Armor.Glyph glyph;
+		public Weapon weapon;
+		public Armor armor;
+		public Weapon.Enchantment enchant;
+		public Armor.Glyph glyph;
 		
-		public static void reset() {
+		public void reset() {
 			spawned = false;
 			
 			weapon = null;
@@ -258,7 +266,7 @@ public class Ghost extends NPC {
 		private static final String ENCHANT		= "enchant";
 		private static final String GLYPH		= "glyph";
 		
-		public static void storeInBundle( Bundle bundle ) {
+		public void storeInBundle( Bundle bundle ) {
 			
 			Bundle node = new Bundle();
 			
@@ -284,7 +292,7 @@ public class Ghost extends NPC {
 			bundle.put( NODE, node );
 		}
 		
-		public static void restoreFromBundle( Bundle bundle ) {
+		public void restoreFromBundle( Bundle bundle ) {
 			
 			Bundle node = bundle.getBundle( NODE );
 
@@ -308,8 +316,8 @@ public class Ghost extends NPC {
 			}
 		}
 		
-		public static void spawn( SewerLevel level ) {
-			if (!spawned && Dungeon.depth > 1 && Random.Int( 5 - Dungeon.depth ) == 0) {
+		public void spawn( SewerLevel level ) {
+			if (!spawned && Dungeon.cur().depth > 1 && Random.Int( 5 - Dungeon.cur().depth ) == 0) {
 				
 				Ghost ghost = new Ghost();
 				do {
@@ -320,11 +328,11 @@ public class Ghost extends NPC {
 				spawned = true;
 				//dungeon depth determines type of quest.
 				//depth2=fetid rat, 3=gnoll trickster, 4=great crab
-				type = Dungeon.depth-1;
+				type = Dungeon.cur().depth-1;
 				
 				given = false;
 				processed = false;
-				depth = Dungeon.depth;
+				depth = Dungeon.cur().depth;
 
 				//50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
 				switch (Random.chances(new float[]{0, 0, 10, 6, 3, 1})){
@@ -337,7 +345,7 @@ public class Ghost extends NPC {
 				//50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
 				int wepTier = Random.chances(new float[]{0, 0, 10, 6, 3, 1});
 				Generator.Category c = Generator.wepTiers[wepTier - 1];
-				weapon = (MeleeWeapon) Reflection.newInstance(c.classes[Random.chances(c.probs)]);
+				weapon = (MeleeWeapon) Reflection.newInstance(c.classes[Random.chances(c.probs())]);
 
 				//50%:+0, 30%:+1, 15%:+2, 5%:+3
 				float itemLevelRoll = Random.Float();
@@ -365,27 +373,28 @@ public class Ghost extends NPC {
 			}
 		}
 		
-		public static void process() {
-			if (spawned && given && !processed && (depth == Dungeon.depth)) {
+		public void process() {
+			if (spawned && given && !processed && (depth == Dungeon.cur().depth)) {
 				GLog.n( Messages.get(Ghost.class, "find_me") );
 				Sample.INSTANCE.play( Assets.Sounds.GHOST );
 				processed = true;
 			}
 		}
 		
-		public static void complete() {
+		public void complete() {
 			weapon = null;
 			armor = null;
+			if (Dungeons.cur().isSearch) return;
 			CardSelector.INSTANCE().coolDown(1000);
 			
 			Notes.remove( Notes.Landmark.GHOST );
 		}
 
-		public static boolean processed(){
+		public boolean processed(){
 			return spawned && processed;
 		}
 		
-		public static boolean completed(){
+		public boolean completed(){
 			return processed() && weapon == null && armor == null;
 		}
 	}

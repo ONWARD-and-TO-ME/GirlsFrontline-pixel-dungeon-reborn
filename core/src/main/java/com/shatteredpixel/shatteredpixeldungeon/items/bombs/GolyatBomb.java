@@ -53,7 +53,7 @@ public class GolyatBomb extends Bomb {
         else {
             boolean terrainAffected = false;
             Rect gate = CavesBossLevel.gate;
-            for (int i : PathFinder.NEIGHBOURS4){
+            for (int i : PathFinder.cur().NEIGHBOURS4){
                 //直向邻格的破坏
                 int c = cell + i;
                 if (c >= 0 && c < Dungeon.level.length()-1){
@@ -83,7 +83,7 @@ public class GolyatBomb extends Bomb {
                 GameScene.updateMap(cell);
                 terrainAffected = true;
             }
-            for (int i : PathFinder.NEIGHBOURS9){
+            for (int i : PathFinder.cur().NEIGHBOURS9){
                 //对陷阱的破坏提升到 3*3 范围
                 int d = cell + i;
                 if (outMap(d)) {
@@ -95,7 +95,7 @@ public class GolyatBomb extends Bomb {
                     terrainAffected = true;
                 }
             }
-            for (int i : PathFinder.NEIGHBOURS25){
+            for (int i : PathFinder.cur().NEIGHBOURS25){
                 //对失效陷阱的破坏提升到 5*5 范围
                 int e = cell + i;
                 if (outMap(e)) {

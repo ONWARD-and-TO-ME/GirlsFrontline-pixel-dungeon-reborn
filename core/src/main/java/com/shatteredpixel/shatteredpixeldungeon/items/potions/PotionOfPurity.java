@@ -43,18 +43,16 @@ public class PotionOfPurity extends Potion {
 	
 	private static final int DISTANCE	= 3;
 	
-	private static ArrayList<Class> affectedBlobs;
-
+	private static final ArrayList<Class> affectedBlobs = new ArrayList<>(new BlobImmunity().immunities());
+	
 	{
 		icon = ItemSpriteSheet.Icons.POTION_PURITY;
-		
-		affectedBlobs = new ArrayList<>(new BlobImmunity().immunities());
 	}
 
 	@Override
 	public void shatter( int cell ) {
 		
-		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), DISTANCE );
+		PathFinder.cur().buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), DISTANCE );
 		
 		ArrayList<Blob> blobs = new ArrayList<>();
 		for (Class c : affectedBlobs){
@@ -65,7 +63,7 @@ public class PotionOfPurity extends Potion {
 		}
 		
 		for (int i=0; i < Dungeon.level.length(); i++) {
-			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+			if (PathFinder.cur().distance[i] < Integer.MAX_VALUE) {
 				
 				for (Blob blob : blobs) {
 					blob.clear(i);

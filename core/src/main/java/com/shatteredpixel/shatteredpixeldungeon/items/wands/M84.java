@@ -61,7 +61,7 @@ public class M84 extends Wand {
         Blob paralyticGas = Blob.seed(bolt.collisionPos, 50 + 10 * level(), ParalyticGas.class);
         GameScene.add(paralyticGas);
 
-        for (int i : PathFinder.NEIGHBOURS9) {
+        for (int i : PathFinder.cur().NEIGHBOURS9) {
             Char ch = Actor.findChar(bolt.collisionPos + i);
             if (ch != null) {
                 //processSoulMark(ch, chargesPerCast());

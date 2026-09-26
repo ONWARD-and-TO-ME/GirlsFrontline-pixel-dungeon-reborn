@@ -59,7 +59,7 @@ public class ColdWarLevel extends RegularLevel {
 	
 	@Override
 	protected ArrayList<Room> initRooms() {
-		return Wandmaker.Quest.spawnRoom(super.initRooms());
+		return Wandmaker.Quest.cur().spawnRoom(super.initRooms());
 	}
 	@Override
 	protected int standardRooms(boolean forceMax) {

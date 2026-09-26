@@ -61,7 +61,7 @@ public class SewerLevel extends RegularLevel {
 	}
 
 	public void playLevelMusic(){
-		if (Ghost.Quest.active()){
+		if (Ghost.Quest.cur().active()){
 			Music.INSTANCE.play(Assets.Music.SEWERS_2, true);
 		} else {
 			Music.INSTANCE.play(Assets.Music.SEWERS_1, true);
@@ -103,7 +103,7 @@ public class SewerLevel extends RegularLevel {
 	
 	@Override
 	protected Class<?>[] trapClasses() {
-		return Dungeon.depth == 1 ?
+		return Dungeon.cur().depth == 1 ?
 				new Class<?>[]{ WornDartTrap.class } :
 				new Class<?>[]{
 						ChillingTrap.class, ShockingTrap.class, ToxicTrap.class, WornDartTrap.class,
@@ -113,7 +113,7 @@ public class SewerLevel extends RegularLevel {
 
 	@Override
 	protected float[] trapChances() {
-		return Dungeon.depth == 1 ?
+		return Dungeon.cur().depth == 1 ?
 				new float[]{1} :
 				new float[]{
 						4, 4, 4, 4,
@@ -123,8 +123,8 @@ public class SewerLevel extends RegularLevel {
 	
 	@Override
 	protected void createItems() {
-		Ghost.Quest.spawn( this );
-		if (Dungeon.depth == 1) {
+		Ghost.Quest.cur().spawn( this );
+		if (Dungeon.cur().depth == 1) {
 			if (SPDSettings.isBirthday())
 				itemsToSpawn.add(new WholeCake(Messages.get(WholeCake.class, "ONWARD"), Messages.get(WholeCake.class, "TO_ME")));
 			if (SPDSettings.isSpecialDay())

@@ -163,7 +163,7 @@ public class HallsBossLevel extends Level {
 		}
 
 		//ensures a path to the exit exists
-		return (PathFinder.getStep(entrance, exit, passable) != -1);
+		return (PathFinder.cur().getStep(entrance, exit, passable) != -1);
 	}
 
 	@Override
@@ -192,7 +192,7 @@ public class HallsBossLevel extends Level {
 		int pos = entrance;
 		int cell;
 		do {
-			cell = pos + PathFinder.NEIGHBOURS8[Random.Int(8)];
+			cell = pos + PathFinder.cur().NEIGHBOURS8[Random.Int(8)];
 		} while (!passable[cell]
 				|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
 				|| Actor.findChar(cell) != null);
@@ -204,7 +204,7 @@ public class HallsBossLevel extends Level {
 		super.occupyCell( ch );
 
 		if (map[entrance] == Terrain.ENTRANCE && map[exit] != Terrain.EXIT
-				&& ch == Dungeon.hero && Dungeon.level.distance(ch.pos, entrance) >= 2) {
+				&& ch == Dungeon.cur().hero && Dungeon.level.distance(ch.pos, entrance) >= 2) {
 			seal();
 		}
 	}

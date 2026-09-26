@@ -141,8 +141,8 @@ public class LloydsBeacon extends Artifact {
 				return;
 			}
 			
-			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-				Char ch = Actor.findChar(hero.pos + PathFinder.NEIGHBOURS8[i]);
+			for (int i = 0; i < PathFinder.cur().NEIGHBOURS8.length; i++) {
+				Char ch = Actor.findChar(hero.pos + PathFinder.cur().NEIGHBOURS8[i]);
 				if (ch != null && ch.alignment == Char.Alignment.ENEMY) {
 					GLog.w( Messages.get(this, "creatures") );
 					return;
@@ -153,7 +153,7 @@ public class LloydsBeacon extends Artifact {
 		if (action.equals(AC_ZAP) ){
 
 			curUser = hero;
-			int chargesToUse = Dungeon.depth / 20 + 1;
+			int chargesToUse = Dungeon.cur().depth / 20 + 1;
 
 			if (!isEquipped( hero )) {
 				GLog.i( Messages.get(Artifact.class, "need_to_equip") );
@@ -191,15 +191,15 @@ public class LloydsBeacon extends Artifact {
             float blind = 10;
             float weak  = 50;
 			if (returnLevelId == Dungeon.levelId) {
-                PathFinder.buildDistanceMap(returnPos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
-                if (PathFinder.distance[hero.pos] == Integer.MAX_VALUE){
+                PathFinder.cur().buildDistanceMap(returnPos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+                if (PathFinder.cur().distance[hero.pos] == Integer.MAX_VALUE){
                     cd *= 4;
                 }
 				ScrollOfTeleportation.appear( hero, returnPos );
 				for(Mob m : Dungeon.level.mobs){
 					if (m.pos == hero.pos){
 						//displace mob
-						for(int i : PathFinder.NEIGHBOURS8){
+						for(int i : PathFinder.cur().NEIGHBOURS8){
 							if (Actor.findChar(m.pos+i) == null && Dungeon.level.passable[m.pos + i]){
 								m.pos += i;
 								m.sprite.point(m.sprite.worldToCamera(m.pos));
@@ -214,8 +214,8 @@ public class LloydsBeacon extends Artifact {
 			}
             else {
 
-                PathFinder.buildDistanceMap(Dungeon.level.entrance, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
-                if (PathFinder.distance[hero.pos] == Integer.MAX_VALUE){
+                PathFinder.cur().buildDistanceMap(Dungeon.level.entrance, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+                if (PathFinder.cur().distance[hero.pos] == Integer.MAX_VALUE){
                     cd *= 4;
                 }
 				TimekeepersHourglass.timeFreeze timeFreeze = hero.buff(TimekeepersHourglass.timeFreeze.class);
@@ -242,15 +242,15 @@ public class LloydsBeacon extends Artifact {
         else if (action.equals( AC_FAIRY )){
             int cd = 50;
             int front = ((RegularLevel) Dungeon.level).getRoom(FairyRoom.class).itemPos;
-            PathFinder.buildDistanceMap(front, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
-            if (PathFinder.distance[curUser.pos] == Integer.MAX_VALUE){
+            PathFinder.cur().buildDistanceMap(front, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+            if (PathFinder.cur().distance[curUser.pos] == Integer.MAX_VALUE){
                 cd *= 4;
             }
             ScrollOfTeleportation.appear( hero, front );
             for(Mob m : Dungeon.level.mobs){
                 if (m.pos == hero.pos){
                     //displace mob
-                    for(int i : PathFinder.NEIGHBOURS8){
+                    for(int i : PathFinder.cur().NEIGHBOURS8){
                         if (Actor.findChar(m.pos+i) == null && Dungeon.level.passable[m.pos + i]){
                             m.pos += i;
                             m.sprite.point(m.sprite.worldToCamera(m.pos));
@@ -281,19 +281,19 @@ public class LloydsBeacon extends Artifact {
                 return;
             if (Dungeon.level.solid[target] && !Dungeon.level.passable[target] && !Dungeon.level.avoid[target])
                 return;
-            if (Dungeon.level.avoid[target] && Dungeon.hero.buff(Levitation.class) == null )
+            if (Dungeon.level.avoid[target] && Dungeon.cur().hero.buff(Levitation.class) == null )
                 return;
             if (Dungeon.level.visited[target] || Dungeon.level.mapped[target]){
                 int cd = 50;
-                PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
-                if (PathFinder.distance[curUser.pos] == Integer.MAX_VALUE){
+                PathFinder.cur().buildDistanceMap(target, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+                if (PathFinder.cur().distance[curUser.pos] == Integer.MAX_VALUE){
                     cd *= 4;
                 }
-                ScrollOfTeleportation.appear( Dungeon.hero, target );
+                ScrollOfTeleportation.appear( Dungeon.cur().hero, target );
                 for(Mob m : Dungeon.level.mobs){
-                    if (m.pos == Dungeon.hero.pos){
+                    if (m.pos == Dungeon.cur().hero.pos){
                         //displace mob
-                        for(int i : PathFinder.NEIGHBOURS8){
+                        for(int i : PathFinder.cur().NEIGHBOURS8){
                             if (Actor.findChar(m.pos+i) == null && Dungeon.level.passable[m.pos + i]){
                                 m.pos += i;
                                 m.sprite.point(m.sprite.worldToCamera(m.pos));
@@ -302,15 +302,15 @@ public class LloydsBeacon extends Artifact {
                         }
                     }
                 }
-                Dungeon.level.occupyCell( Dungeon.hero );
+                Dungeon.level.occupyCell( Dungeon.cur().hero );
                 Dungeon.observe();
                 GameScene.updateFog();
                 LloydsBeacon.this.cd = cd;
                 float blind = 10;
                 float weak  = 50;
-                if (!FairyItems.inFairyRoom(Dungeon.hero)) {
-                    Buff.prolong(Dungeon.hero, Blindness.class, blind);
-                    Buff.prolong(Dungeon.hero, Weakness.class, weak);
+                if (!FairyItems.inFairyRoom(Dungeon.cur().hero)) {
+                    Buff.prolong(Dungeon.cur().hero, Blindness.class, blind);
+                    Buff.prolong(Dungeon.cur().hero, Weakness.class, weak);
                 }
             }
 
@@ -334,11 +334,11 @@ public class LloydsBeacon extends Artifact {
             if (ch == null) return;
             Sample.INSTANCE.play(Assets.Sounds.ZAP);
             Invisibility.dispel();
-            charge -= Dungeon.depth / 20 + 1;
+            charge -= Dungeon.cur().depth / 20 + 1;
             updateQuickslot();
             
-            PathFinder.buildDistanceMap(Dungeon.level.entrance, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
-            if (ch == Dungeon.hero && PathFinder.distance[ch.pos] == Integer.MAX_VALUE){
+            PathFinder.cur().buildDistanceMap(Dungeon.level.entrance, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+            if (ch == Dungeon.cur().hero && PathFinder.cur().distance[ch.pos] == Integer.MAX_VALUE){
                 GLog.w( Messages.get(LloydsBeacon.class, "preventing") );
                 return;
             }

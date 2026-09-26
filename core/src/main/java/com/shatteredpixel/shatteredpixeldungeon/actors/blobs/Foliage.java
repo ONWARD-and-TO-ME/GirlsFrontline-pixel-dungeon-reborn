@@ -68,7 +68,7 @@ public class Foliage extends Blob {
 			}
 		}
 		
-		Hero hero = Dungeon.hero;
+		Hero hero = Dungeon.cur().hero;
 		if (hero.isAlive() && cur[hero.pos] > 0) {
 			Shadows s = Buff.affect( hero, Shadows.class );
 			if (s != null){

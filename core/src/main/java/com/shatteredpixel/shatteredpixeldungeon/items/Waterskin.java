@@ -166,15 +166,15 @@ public class Waterskin extends Item {
 
             Set<Talent> clsTalentsAtTier = clsTalents.get(tier).keySet();
             for (Talent talent : clsTalentsAtTier){
-                if (Dungeon.hero.talents.get(tier).containsKey(talent))
+                if (Dungeon.cur().hero.talents.get(tier).containsKey(talent))
                     continue;
                 talents.add(talent);
             }
         }
         if (!talents.isEmpty()) {
             Talent add = talents.get(Random.Int(talents.size()));
-            Dungeon.hero.talents.get(tier).put(add, 0);
-            Dungeon.hero.addTalents.put(add, tier);
+            Dungeon.cur().hero.talents.get(tier).put(add, 0);
+            Dungeon.cur().hero.addTalents.put(add, tier);
         }
     }
 	// 更新贴图的辅助方法

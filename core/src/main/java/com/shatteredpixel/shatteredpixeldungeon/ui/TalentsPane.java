@@ -46,14 +46,14 @@ public class TalentsPane extends ScrollPane {
 	RenderedTextBlock blockText;
 
 	public TalentsPane( TalentButton.Mode mode ) {
-		this( mode, Dungeon.hero.talents );
+		this( mode, Dungeon.cur().hero.talents );
 	}
 
 	//单层构造，用于Replace窗口（确保ScrollPane的controller先于TalentButton注册，使按钮能正常高亮）
 	public TalentsPane( LinkedHashMap<Talent, Integer> talents, int tier, TalentButton.Mode mode, boolean hideTitle ) {
 		super(new Component());
 
-		Ratmogrify.useRatroicEnergy = Dungeon.hero != null && Dungeon.hero.armorAbility instanceof Ratmogrify;
+		Ratmogrify.useRatroicEnergy = Dungeon.cur().hero != null && Dungeon.cur().hero.armorAbility instanceof Ratmogrify;
 
 		TalentTierPane pane = new TalentTierPane(talents, tier, mode);
 		if (hideTitle) pane.title.text(" ");
@@ -80,7 +80,7 @@ public class TalentsPane extends ScrollPane {
 	public TalentsPane( TalentButton.Mode mode, ArrayList<LinkedHashMap<Talent, Integer>> talents ) {
 		super(new Component());
 
-		Ratmogrify.useRatroicEnergy = Dungeon.hero != null && Dungeon.hero.armorAbility instanceof Ratmogrify;
+		Ratmogrify.useRatroicEnergy = Dungeon.cur().hero != null && Dungeon.cur().hero.armorAbility instanceof Ratmogrify;
 
 		int tiersAvailable = 1;
 
@@ -96,10 +96,10 @@ public class TalentsPane extends ScrollPane {
 			}
 		} else {
 			while (tiersAvailable < Talent.MAX_TALENT_TIERS
-					&& Dungeon.hero.lvl+1 >= Talent.tierLevelThresholds[tiersAvailable+1]){
+					&& Dungeon.cur().hero.lvl+1 >= Talent.tierLevelThresholds[tiersAvailable+1]){
 				tiersAvailable++;
 			}
-			if (tiersAvailable > 3 && Dungeon.hero.armorAbility == null){
+			if (tiersAvailable > 3 && Dungeon.cur().hero.armorAbility == null){
 				tiersAvailable = 3;
 			}
 		}
@@ -226,9 +226,9 @@ public class TalentsPane extends ScrollPane {
 				stars.clear();
 			}
 
-			int totStars = Talent.tierLevelThresholds[tier+1] - Talent.tierLevelThresholds[tier] + Dungeon.hero.bonusTalentPoints(tier);
-			int openStars = Dungeon.hero.talentPointsAvailable(tier);
-			int usedStars = Dungeon.hero.talentPointsSpent(tier);
+			int totStars = Talent.tierLevelThresholds[tier+1] - Talent.tierLevelThresholds[tier] + Dungeon.cur().hero.bonusTalentPoints(tier);
+			int openStars = Dungeon.cur().hero.talentPointsAvailable(tier);
+			int usedStars = Dungeon.cur().hero.talentPointsSpent(tier);
 			for (int i = 0; i < totStars; i++){
 				Image im = new Speck().image(Speck.STAR);
 				stars.add(im);

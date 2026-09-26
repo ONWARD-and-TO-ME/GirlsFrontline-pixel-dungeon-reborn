@@ -161,7 +161,7 @@ public class MirrorImage extends NPC {
 		}
 		if (hero.belongings.weapon() != null){
 			damage = hero.belongings.weapon().proc( this, enemy, damage );
-			if (!enemy.isAlive() && enemy == Dungeon.hero){
+			if (!enemy.isAlive() && enemy == Dungeon.cur().hero){
 				Dungeon.fail(getClass());
 				GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );
 			}

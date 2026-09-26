@@ -83,7 +83,7 @@ public class WndResurrect extends Window {
 				GameScene.selectItem( itemSelector );
 			}
 		};
-		btnItem1.item(Dungeon.hero.belongings.weapon());
+		btnItem1.item(Dungeon.cur().hero.belongings.weapon());
 		btnItem1.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.bottom() + BTN_GAP, BTN_SIZE, BTN_SIZE );
 		add( btnItem1 );
 
@@ -94,7 +94,7 @@ public class WndResurrect extends Window {
 				GameScene.selectItem( itemSelector );
 			}
 		};
-		btnItem2.item(Dungeon.hero.belongings.armor());
+		btnItem2.item(Dungeon.cur().hero.belongings.armor());
 		btnItem2.setRect( btnItem1.right() + BTN_GAP, btnItem1.top(), BTN_SIZE, BTN_SIZE );
 		add( btnItem2 );
 		
@@ -105,7 +105,7 @@ public class WndResurrect extends Window {
 				
 				Statistics.ankhsUsed++;
 
-				ankh.detach(Dungeon.hero.belongings.backpack);
+				ankh.detach(Dungeon.cur().hero.belongings.backpack);
 
 				if (btnItem1.item != null){
 					btnItem1.item.keptThoughLostInvent = true;
@@ -114,15 +114,15 @@ public class WndResurrect extends Window {
 					btnItem2.item.keptThoughLostInvent = true;
 				}
 
-				if (Dungeon.hero.heroClass == HeroClass.Dandelion){
+				if (Dungeon.cur().hero.heroClass == HeroClass.Dandelion){
 					Item item;
-					if ((item = Dungeon.hero.belongings.getItem(CardSelector.class)) != null)
+					if ((item = Dungeon.cur().hero.belongings.getItem(CardSelector.class)) != null)
 						item.keptThoughLostInvent = true;
-					if ((item = Dungeon.hero.belongings.getItem(IntensifySkill.class)) != null)
+					if ((item = Dungeon.cur().hero.belongings.getItem(IntensifySkill.class)) != null)
 						item.keptThoughLostInvent = true;
-					if ((item = Dungeon.hero.belongings.getItem(ThrowingSkill.class)) != null)
+					if ((item = Dungeon.cur().hero.belongings.getItem(ThrowingSkill.class)) != null)
 						item.keptThoughLostInvent = true;
-					if ((item = Dungeon.hero.belongings.getItem(M4A1.class)) != null)
+					if ((item = Dungeon.cur().hero.belongings.getItem(M4A1.class)) != null)
 						item.keptThoughLostInvent = true;
 				}
 

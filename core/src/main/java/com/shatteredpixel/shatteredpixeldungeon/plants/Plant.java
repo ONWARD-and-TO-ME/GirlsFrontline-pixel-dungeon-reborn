@@ -56,8 +56,6 @@ public abstract class Plant implements Bundlable {
 	
 	public int image;
 	public int pos;
-	public static Level level;
-
 	protected Class<? extends Plant.Seed> seedClass;
 
 	public Seed seed(){
@@ -72,7 +70,7 @@ public abstract class Plant implements Bundlable {
 		}
 
 		// 女猎（隼）自然援助：视野内植物触发时获得树肤（实现见 HuntressTalent）
-		HuntressTalent.naturesAidOnPlant(Dungeon.hero, pos);
+		HuntressTalent.naturesAidOnPlant(Dungeon.cur().hero, pos);
 
 		wither();
 		activate( ch );
@@ -87,13 +85,7 @@ public abstract class Plant implements Bundlable {
 		activate(ch);
 	}
 	public Level activateLevel(){
-		if (Dungeon.level == null) {
-			Level level = Plant.level;
-			Plant.level = null;
-			return level;
-		}
-
-		return Dungeon.level;
+		return Dungeon.cur().level;
 	}
 	
 	public void wither() {
@@ -139,7 +131,7 @@ public abstract class Plant implements Bundlable {
 
 	public String desc() {
 		String desc = Messages.get(this, "desc");
-		if (Dungeon.hero.subClass == HeroSubClass.WARDEN){
+		if (Dungeon.cur().hero.subClass == HeroSubClass.WARDEN){
 			desc += "\n\n" + Messages.get(this, "warden_desc");
 		}
 		return desc;
@@ -177,8 +169,8 @@ public abstract class Plant implements Bundlable {
 			} else {
 				Catalog.countUse(getClass());
 				Dungeon.level.plant( this, cell );
-				if (Dungeon.hero.subClass == HeroSubClass.WARDEN) {
-					for (int i : PathFinder.NEIGHBOURS8) {
+				if (Dungeon.cur().hero.subClass == HeroSubClass.WARDEN) {
+					for (int i : PathFinder.cur().NEIGHBOURS8) {
 						int c = Dungeon.level.map[cell + i];
 						if ( c == Terrain.EMPTY || c == Terrain.EMPTY_DECO
 								|| c == Terrain.EMBERS || c == Terrain.GRASS){
@@ -239,7 +231,7 @@ public abstract class Plant implements Bundlable {
 		@Override
 		public String desc() {
 			String desc = Messages.get(plantClass, "desc");
-			if (Dungeon.hero.subClass == HeroSubClass.WARDEN){
+			if (Dungeon.cur().hero.subClass == HeroSubClass.WARDEN){
 				desc += "\n\n" + Messages.get(plantClass, "warden_desc");
 			}
 			return desc;

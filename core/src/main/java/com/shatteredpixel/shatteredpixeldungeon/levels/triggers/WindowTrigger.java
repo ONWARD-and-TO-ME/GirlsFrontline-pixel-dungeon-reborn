@@ -13,7 +13,7 @@ import com.watabou.utils.Reflection;
 public abstract class WindowTrigger extends Trigger{
 	@Override
 	public void activate(Char ch){
-		if(ch==Dungeon.hero){
+		if(ch==Dungeon.cur().hero){
 			Game.runOnRenderThread(()->GameScene.show(getWindow()));
 		}
 	}

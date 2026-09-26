@@ -70,13 +70,13 @@ public class GolyatPlus extends Mob {
         if (cause == Chasm.class) return;
 
         boolean heroKilled = false;
-        for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-            Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
+        for (int i = 0; i < PathFinder.cur().NEIGHBOURS8.length; i++) {
+            Char ch = findChar( pos + PathFinder.cur().NEIGHBOURS8[i] );
             if (ch != null && ch.isAlive()) {
                 int damage = 999;
                 damage = Math.max( 0,  damage - (ch.drRoll() + ch.drRoll()) );
                 ch.damage( damage, this, this );
-                if (ch == Dungeon.hero && !ch.isAlive()) {
+                if (ch == Dungeon.cur().hero && !ch.isAlive()) {
                     heroKilled = true;
                 }
             }

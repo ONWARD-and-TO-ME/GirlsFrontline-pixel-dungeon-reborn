@@ -42,7 +42,7 @@ public class Noisemaker extends Bomb {
 
 	public void setTrigger(int cell){
 
-		Buff.affect(Dungeon.hero, Trigger.class).set(cell);
+		Buff.affect(Dungeon.cur().hero, Trigger.class).set(cell);
 
 		CellEmitter.center( cell ).start( Speck.factory( Speck.SCREAM ), 0.3f, 3 );
 		Sample.INSTANCE.play( Assets.Sounds.ALERT );
@@ -64,7 +64,7 @@ public class Noisemaker extends Bomb {
 		int left;
 		
 		public void set(int cell){
-			floor = Dungeon.depth;
+			floor = Dungeon.cur().depth;
 			this.cell = cell;
 			left = 6;
 		}
@@ -72,7 +72,7 @@ public class Noisemaker extends Bomb {
 		@Override
 		public boolean act() {
 
-			if (Dungeon.depth != floor){
+			if (Dungeon.cur().depth != floor){
 				spend(TICK);
 				return true;
 			}

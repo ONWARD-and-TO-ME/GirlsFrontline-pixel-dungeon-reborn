@@ -143,26 +143,26 @@ public class ShootGun extends MeleeWeapon {
     public void onShootComplete(int cell, int lvl) {
         BombDestroy(cell);
         int shield = BombAttack(cell, lvl);
-        if(!Dungeon.hero.isAlive()){
+        if(!Dungeon.cur().hero.isAlive()){
             Dungeon.fail(getClass());
         }
-        if (Dungeon.hero.hasTalent(Talent.GUN_3)){
-            shield+=(Dungeon.hero.HT-Dungeon.hero.HP)*Dungeon.hero.pointsInTalent(Talent.GUN_3)/10;
-            if (Dungeon.hero.HP<=Dungeon.hero.HT*(1+Dungeon.hero.pointsInTalent(Talent.GUN_3))/10){
-                shield+=Math.round((Dungeon.hero.HT-Dungeon.hero.HP)*(0.05F+0.05F*Dungeon.hero.pointsInTalent(Talent.GUN_3)));
+        if (Dungeon.cur().hero.hasTalent(Talent.GUN_3)){
+            shield+=(Dungeon.cur().hero.HT-Dungeon.cur().hero.HP)*Dungeon.cur().hero.pointsInTalent(Talent.GUN_3)/10;
+            if (Dungeon.cur().hero.HP<=Dungeon.cur().hero.HT*(1+Dungeon.cur().hero.pointsInTalent(Talent.GUN_3))/10){
+                shield+=Math.round((Dungeon.cur().hero.HT-Dungeon.cur().hero.HP)*(0.05F+0.05F*Dungeon.cur().hero.pointsInTalent(Talent.GUN_3)));
             }
         }
         if (shield>0) {
-            Buff.affect(Dungeon.hero, Barrier.class).setShield(shield);
+            Buff.affect(Dungeon.cur().hero, Barrier.class).setShield(shield);
         }
         hasCharge=false;
         int down = 0;
-        switch (Dungeon.hero.pointsInTalent(Talent.Type56Three_Bomb)){
+        switch (Dungeon.cur().hero.pointsInTalent(Talent.Type56Three_Bomb)){
             case 1: down = 15; break;
             case 2: down = 35; break;
             case 3: down = 50; break;
         }
-        down += Dungeon.hero.pointsInTalent(Talent.FAST_RELOAD) * 20;
+        down += Dungeon.cur().hero.pointsInTalent(Talent.FAST_RELOAD) * 20;
         EMPCharge();
         cooldownLeft = cooldownTurns - down;
         cooldown = true;
@@ -178,7 +178,7 @@ public class ShootGun extends MeleeWeapon {
                 //爆炸粒子
             }
         }
-        for(int n : PathFinder.NEIGHBOURS9) {
+        for(int n : PathFinder.cur().NEIGHBOURS9) {
             //对九格先执行一遍破坏
             int c =cell + n;
             if (c >= 0 && c < Dungeon.level.length()) {
@@ -204,9 +204,9 @@ public class ShootGun extends MeleeWeapon {
     }
     protected int BombAdd(){
         int add = 0;
-        if (Dungeon.hero.subClass == HeroSubClass.GUN_MASTER){
+        if (Dungeon.cur().hero.subClass == HeroSubClass.GUN_MASTER){
             int min, max;
-            int time = (Dungeon.hero.HT - Dungeon.hero.HP)/5;
+            int time = (Dungeon.cur().hero.HT - Dungeon.cur().hero.HP)/5;
             min = time;
             max = 5 * time;
             add = Random.Int(min, max);
@@ -218,13 +218,13 @@ public class ShootGun extends MeleeWeapon {
         resetEMP();
         //重置EMP回合数
         int attack = 0;
-        int[] path = PathFinder.NEIGHBOURS9;
-        if (Dungeon.hero.buff(GunBomb.BombDamage.class)!=null){
-            path = PathFinder.NEIGHBOURS25;
-            Dungeon.hero.buff(GunBomb.BombDamage.class).detach();
+        int[] path = PathFinder.cur().NEIGHBOURS9;
+        if (Dungeon.cur().hero.buff(GunBomb.BombDamage.class)!=null){
+            path = PathFinder.cur().NEIGHBOURS25;
+            Dungeon.cur().hero.buff(GunBomb.BombDamage.class).detach();
         }
-        if (Dungeon.hero.pointsInTalent(Talent.GUN_2V2)>=2){
-            path = PathFinder.NEIGHBOURS25;
+        if (Dungeon.cur().hero.pointsInTalent(Talent.GUN_2V2)>=2){
+            path = PathFinder.cur().NEIGHBOURS25;
         }
         for(int m : path) {
             //再执行伤害，以完整保留掉落物
@@ -234,17 +234,17 @@ public class ShootGun extends MeleeWeapon {
                 Char target = Actor.findChar(d);
 
                 if (target != null) {
-                    if(Dungeon.hero.hasTalent(Talent.EMP_Three)) {
-                        attack += Dungeon.hero.pointsInTalent(Talent.EMP_Three);
+                    if(Dungeon.cur().hero.hasTalent(Talent.EMP_Three)) {
+                        attack += Dungeon.cur().hero.pointsInTalent(Talent.EMP_Three);
                     }
                     //天赋3计数
                     int damage= BombDamage(lvl);
                     damage+=BombAdd();
-                    if (Dungeon.hero.hasTalent(Talent.GUN_1V3)){
-                        damage = (int) (damage + (damage*(0.02f*Dungeon.hero.pointsInTalent(Talent.GUN_1V3)))*((float) (Dungeon.hero.HT - Dungeon.hero.HP) /Dungeon.hero.HT*100));
+                    if (Dungeon.cur().hero.hasTalent(Talent.GUN_1V3)){
+                        damage = (int) (damage + (damage*(0.02f*Dungeon.cur().hero.pointsInTalent(Talent.GUN_1V3)))*((float) (Dungeon.cur().hero.HT - Dungeon.cur().hero.HP) /Dungeon.cur().hero.HT*100));
                     }
                     boolean in = false;
-                    for (int n:PathFinder.NEIGHBOURS9){
+                    for (int n:PathFinder.cur().NEIGHBOURS9){
                         //与内圈比对
                         int e = cell + n;
                         if (e == d){
@@ -259,18 +259,18 @@ public class ShootGun extends MeleeWeapon {
 
                     if(target.isAlive()){
                         int bufftime = 6;
-                        if (target == Dungeon.hero){
+                        if (target == Dungeon.cur().hero){
                             shield = damage;
                             //炸到自身给等量盾
                             EMPduration=Math.min(3, EMPduration);
                             //EMP最多生效3回合
                             bufftime = 3;
                         }
-                        if (Dungeon.hero.hasTalent(Talent.GUN_2V2)){
-                            if (Dungeon.hero.pointsInTalent(Talent.GUN_2V2)>=1){
+                        if (Dungeon.cur().hero.hasTalent(Talent.GUN_2V2)){
+                            if (Dungeon.cur().hero.pointsInTalent(Talent.GUN_2V2)>=1){
                                 Buff.affect(target, Vulnerable.class,bufftime);
                             }
-                            if (Dungeon.hero.pointsInTalent(Talent.GUN_2V2)>=3){
+                            if (Dungeon.cur().hero.pointsInTalent(Talent.GUN_2V2)>=3){
                                 Buff.affect(target, Cripple.class,bufftime);
                             }
                         }
@@ -287,27 +287,27 @@ public class ShootGun extends MeleeWeapon {
         }
         if (attack>0){
             attack = Math.min(attack, 6);
-            for (Buff b : Dungeon.hero.buffs()){
+            for (Buff b : Dungeon.cur().hero.buffs()){
                 if (b instanceof Artifact.ArtifactBuff){
-                    if (!((Artifact.ArtifactBuff) b).isCursed()) ((Artifact.ArtifactBuff) b).charge(Dungeon.hero, attack);
+                    if (!((Artifact.ArtifactBuff) b).isCursed()) ((Artifact.ArtifactBuff) b).charge(Dungeon.cur().hero, attack);
                 }
             }
-            Dungeon.hero.belongings.charge((float) attack /4);
-            ScrollOfRecharging.chargeParticle(Dungeon.hero);
+            Dungeon.cur().hero.belongings.charge((float) attack /4);
+            ScrollOfRecharging.chargeParticle(Dungeon.cur().hero);
         }
         return shield;
     }
     protected void resetEMP(){
-        if (Dungeon.hero.subClass== HeroSubClass.EMP_BOMB){
+        if (Dungeon.cur().hero.subClass== HeroSubClass.EMP_BOMB){
             EMPduration = 3;
-            if(Dungeon.hero.hasTalent(Talent.EMP_One)){
-                EMPduration+=2*Dungeon.hero.pointsInTalent(Talent.EMP_One);
+            if(Dungeon.cur().hero.hasTalent(Talent.EMP_One)){
+                EMPduration+=2*Dungeon.cur().hero.pointsInTalent(Talent.EMP_One);
             }
         }
     }
     protected void EMPCharge(){
-        if (Dungeon.hero.hasTalent(Talent.EMP_Two)){
-            Buff.affect(Dungeon.hero, EMPCharge.class, 7+5*Dungeon.hero.pointsInTalent(Talent.EMP_Two));
+        if (Dungeon.cur().hero.hasTalent(Talent.EMP_Two)){
+            Buff.affect(Dungeon.cur().hero, EMPCharge.class, 7+5*Dungeon.cur().hero.pointsInTalent(Talent.EMP_Two));
         }
     }
     protected int BombDamage(int lvl){
@@ -412,7 +412,7 @@ public class ShootGun extends MeleeWeapon {
         }
         @Override
         public boolean act() {
-            if (Dungeon.hero.buff(LostInventory.class) != null && !keptThoughLostInvent) {
+            if (Dungeon.cur().hero.buff(LostInventory.class) != null && !keptThoughLostInvent) {
                 //进入重生且没有在重生时选中的56榴弹不允许充能cd
                 spend(1.0F);
                 return true;
@@ -448,7 +448,7 @@ public class ShootGun extends MeleeWeapon {
             if (target instanceof Hero && ((Hero) target).belongings.weapon() != null){
                 delayMul = ((Hero) target).belongings.weapon().mulByDelay(target);
             }
-            if (Random.Float() < delayMul/(5-Dungeon.hero.pointsInTalent(Talent.EMP_Two))) {
+            if (Random.Float() < delayMul/(5-Dungeon.cur().hero.pointsInTalent(Talent.EMP_Two))) {
                 Buff.affect(enemy, Empulse.class, 2);
                 enemy.sprite.emitter().burst(EnergyParticle.FACTORY, 10);
             }

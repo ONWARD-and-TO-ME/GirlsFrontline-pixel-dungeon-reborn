@@ -43,7 +43,7 @@ public class DeepCaveLevel extends RegularLevel {
 
     @Override
     protected ArrayList<Room> initRooms() {
-        return Blacksmith.Quest.spawn(super.initRooms());
+        return Blacksmith.Quest.cur().spawn(super.initRooms());
     }
 
     @Override

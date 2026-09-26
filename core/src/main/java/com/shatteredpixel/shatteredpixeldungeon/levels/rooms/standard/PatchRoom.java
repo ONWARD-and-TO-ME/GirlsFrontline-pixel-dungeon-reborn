@@ -36,7 +36,7 @@ public abstract class PatchRoom extends StandardRoom {
 
 		int attempts = 0;
 		if (ensurePath){
-			PathFinder.setMapSize(width()-2, height()-2);
+			PathFinder.cur().setMapSize(width()-2, height()-2);
 			boolean valid;
 			do {
 				patch = Patch.generate(width()-2, height()-2, fill, clustering, true);
@@ -61,11 +61,11 @@ public abstract class PatchRoom extends StandardRoom {
 					}
 				}
 				
-				PathFinder.buildDistanceMap(startPoint, BArray.not(patch, null));
+				PathFinder.cur().buildDistanceMap(startPoint, BArray.not(patch, null));
 				
 				valid = true;
 				for (int i = 0; i < patch.length; i++){
-					if (!patch[i] && PathFinder.distance[i] == Integer.MAX_VALUE){
+					if (!patch[i] && PathFinder.cur().distance[i] == Integer.MAX_VALUE){
 						valid = false;
 						break;
 					}
@@ -76,7 +76,7 @@ public abstract class PatchRoom extends StandardRoom {
 					attempts = 0;
 				}
 			} while (!valid);
-			PathFinder.setMapSize(level.width(), level.height());
+			PathFinder.cur().setMapSize(level.width(), level.height());
 		} else {
 			patch = Patch.generate(width()-2, height()-2, fill, clustering, true);
 		}

@@ -118,13 +118,13 @@ public interface Card {
         return Messages.get(Card.class, "extra_cap_delay", percent);
     }
     static Hero hero(){
-        return Dungeon.hero;
+        return Dungeon.cur().hero;
     }
     String extraKey = ".extra";
     default String failText(){ return Messages.get(Card.class, "fail"); }
     Class<? extends Card> getCardClass();
     default float chance() {
-        return chance(Dungeon.hero);
+        return chance(Dungeon.cur().hero);
     }
     default float chance( Hero hero ){
         return 0;

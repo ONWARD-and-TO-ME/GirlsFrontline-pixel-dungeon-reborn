@@ -362,7 +362,7 @@ public class InventoryPane extends Component {
 			KeyEvent.addKeyListener(keyBlocker);
 		}
 
-		Belongings stuff = Dungeon.hero.belongings;
+		Belongings stuff = Dungeon.cur().hero.belongings;
 
 		if (lastBag == null || !stuff.getBags().contains(lastBag)){
 			lastBag = stuff.backpack;
@@ -427,7 +427,7 @@ public class InventoryPane extends Component {
 			}
 		}
 
-		boolean lostInvent = Dungeon.hero.buff(LostInventory.class) != null;
+		boolean lostInvent = Dungeon.cur().hero.buff(LostInventory.class) != null;
 		for (InventorySlot b : equipped){
 			b.enable(lastEnabled
 					&& !(b.item() instanceof WndBag.Placeholder)
@@ -457,9 +457,9 @@ public class InventoryPane extends Component {
 	public void setSelector(WndBag.ItemSelector selector){
 		this.selector = selector;
 		if (selector.preferredBag() == Belongings.Backpack.class){
-			lastBag = Dungeon.hero.belongings.backpack;
+			lastBag = Dungeon.cur().hero.belongings.backpack;
 		} else if (selector.preferredBag() != null) {
-			Bag preferred = Dungeon.hero.belongings.getItem(selector.preferredBag());
+			Bag preferred = Dungeon.cur().hero.belongings.getItem(selector.preferredBag());
 			if (preferred != null) lastBag = preferred;
 		}
 		updateInventory();
@@ -509,10 +509,10 @@ public class InventoryPane extends Component {
 	public synchronized void update() {
 		super.update();
 
-		if (lastEnabled != (Dungeon.hero.ready || !Dungeon.hero.isAlive())) {
-			lastEnabled = (Dungeon.hero.ready || !Dungeon.hero.isAlive());
+		if (lastEnabled != (Dungeon.cur().hero.ready || !Dungeon.cur().hero.isAlive())) {
+			lastEnabled = (Dungeon.cur().hero.ready || !Dungeon.cur().hero.isAlive());
 
-			boolean lostInvent = Dungeon.hero.buff(LostInventory.class) != null;
+			boolean lostInvent = Dungeon.cur().hero.buff(LostInventory.class) != null;
 			for (InventorySlot b : equipped){
 				b.enable(lastEnabled
 						&& !(b.item() instanceof WndBag.Placeholder)
@@ -559,7 +559,7 @@ public class InventoryPane extends Component {
 
 		@Override
 		protected void onClick() {
-			if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.hero)){
+			if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.cur().hero)){
 				updateInventory();
 				return;
 			}
@@ -595,7 +595,7 @@ public class InventoryPane extends Component {
 
 		@Override
 		protected void onMiddleClick() {
-			if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.hero)){
+			if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.cur().hero)){
 				updateInventory();
 				return;
 			}
@@ -608,7 +608,7 @@ public class InventoryPane extends Component {
 			}
 
 			if (selector == null && item.defaultAction != null){
-				item.execute(Dungeon.hero);
+				item.execute(Dungeon.cur().hero);
 				if (item.usesTargeting) {
 					targetingSlot = this;
 					InventoryPane.useTargeting();
@@ -620,7 +620,7 @@ public class InventoryPane extends Component {
 
 		@Override
 		protected void onRightClick() {
-			if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.hero)){
+			if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.cur().hero)){
 				updateInventory();
 				return;
 			}

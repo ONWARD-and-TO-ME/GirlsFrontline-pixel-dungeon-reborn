@@ -183,7 +183,7 @@ public class Eye extends Mob {
 					CellEmitter.center( pos ).burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
 				}
 
-				if (!ch.isAlive() && ch == Dungeon.hero) {
+				if (!ch.isAlive() && ch == Dungeon.cur().hero) {
 					Dungeon.fail( getClass() );
 					GLog.n( Messages.get(this, "deathgaze_kill") );
 				}
@@ -209,7 +209,7 @@ public class Eye extends Mob {
 				loot = new Dewdrop();
 				int ofs;
 				do {
-					ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
+					ofs = PathFinder.cur().NEIGHBOURS8[Random.Int(8)];
 				} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
 				if (Dungeon.level.heaps.get(pos+ofs) == null) {
 					Dungeon.level.drop(new Dewdrop(), pos + ofs).sprite.drop(pos);

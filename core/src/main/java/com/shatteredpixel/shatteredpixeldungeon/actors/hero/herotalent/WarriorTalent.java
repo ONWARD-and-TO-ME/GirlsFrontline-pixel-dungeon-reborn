@@ -231,7 +231,7 @@ public final class WarriorTalent {
 
 	/** 坚守：副护甲贡献的闪避上限 */
 	public static int secondArmorCap(){
-		return 2 * Dungeon.hero.pointsInTalent(Talent.HOLD_FAST);
+		return 2 * Dungeon.cur().hero.pointsInTalent(Talent.HOLD_FAST);
 	}
 
 	// ===================== 坚韧意志（IRON_WILL）战士护盾 =====================

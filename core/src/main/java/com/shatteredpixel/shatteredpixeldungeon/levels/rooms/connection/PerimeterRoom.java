@@ -43,9 +43,15 @@ public class PerimeterRoom extends ConnectionRoom {
 	}
 	
 	public static void fillPerimiterPaths( Level l, Room r, int floor ){
-		
-		corners = null;
-		
+
+		//corners 必须为局部变量：本方法会被查种 worker 并发调用，
+		//static 字段会被其它线程置空/覆盖导致 NPE
+		Point[] corners = new Point[4];
+		corners[0] = new Point(r.left+1, r.top+1);
+		corners[1] = new Point(r.right-1, r.top+1);
+		corners[2] = new Point(r.right-1, r.bottom-1);
+		corners[3] = new Point(r.left+1, r.bottom-1);
+
 		ArrayList<Point> pointsToFill = new ArrayList<>();
 		for (Point door : r.connected.values()) {
 			Point p = new Point(door);
@@ -78,7 +84,7 @@ public class PerimeterRoom extends ConnectionRoom {
 					}
 				}
 			}
-			fillBetweenPoints(l, r, from, to, floor);
+			fillBetweenPoints(l, r, from, to, floor, corners);
 			pointsFilled.add(to);
 			pointsToFill.remove(to);
 		}
@@ -109,11 +115,10 @@ public class PerimeterRoom extends ConnectionRoom {
 				1;
 	}
 	
-	private static Point[] corners;
-	
 	//picks the smallest path to fill between two points
-	private static void fillBetweenPoints(Level level, Room r, Point from, Point to, int floor){
-		
+	//corners 由调用方传入，禁止使用 static 可变状态（查种 worker 并发生成楼层）
+	private static void fillBetweenPoints(Level level, Room r, Point from, Point to, int floor, Point[] corners){
+
 		//doors are along the same side
 		if (((from.x == r.left+1 || from.x == r.right-1) && from.x == to.x)
 				|| ((from.y == r.top+1 || from.y == r.bottom-1) && from.y == to.y)){
@@ -125,16 +130,7 @@ public class PerimeterRoom extends ConnectionRoom {
 					floor);
 			return;
 		}
-		
-		//set up corners
-		if (corners == null){
-			corners = new Point[4];
-			corners[0] = new Point(r.left+1, r.top+1);
-			corners[1] = new Point(r.right-1, r.top+1);
-			corners[2] = new Point(r.right-1, r.bottom-1);
-			corners[3] = new Point(r.left+1, r.bottom-1);
-		}
-		
+
 		//doors on adjacent sides
 		for (Point c : corners){
 			if ((c.x == from.x || c.y == from.y) && (c.x == to.x || c.y == to.y)){
@@ -165,7 +161,7 @@ public class PerimeterRoom extends ConnectionRoom {
 			}
 		}
 		//treat this as two connections with adjacent sides
-		fillBetweenPoints(level, r, from, side, floor);
-		fillBetweenPoints(level, r, side, to, floor);
+		fillBetweenPoints(level, r, from, side, floor, corners);
+		fillBetweenPoints(level, r, side, to, floor, corners);
 	}
 }

@@ -114,7 +114,7 @@ public class Bomb extends Item {
 		}
 		if (Actor.findChar( cell ) != null && !(Actor.findChar( cell ) instanceof Hero) ){
 			ArrayList<Integer> candidates = new ArrayList<>();
-			for (int i : PathFinder.NEIGHBOURS8)
+			for (int i : PathFinder.cur().NEIGHBOURS8)
 				if (Dungeon.level.passable[cell + i])
 					candidates.add(cell + i);
 			int newCell = candidates.isEmpty() ? cell : Random.element(candidates);
@@ -152,7 +152,7 @@ public class Bomb extends Item {
 			}
 			
 			boolean terrainAffected = false;
-			for (int n : PathFinder.NEIGHBOURS9) {
+			for (int n : PathFinder.cur().NEIGHBOURS9) {
 				int c = cell + n;
 				if (c >= 0 && c < Dungeon.level.length()) {
 					if (Dungeon.level.heroFOV[c]) {
@@ -197,7 +197,7 @@ public class Bomb extends Item {
 					ch.damage(dmg, this);
 				}
 				
-				if (ch == Dungeon.hero && !ch.isAlive()) {
+				if (ch == Dungeon.cur().hero && !ch.isAlive()) {
 					Dungeon.fail(Bomb.class);
 				}
 			}

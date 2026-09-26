@@ -79,7 +79,7 @@ public class TestBomb extends Bomb {
                 if (target instanceof NPC) {
                     int pos;
                     do {
-                        pos = Dungeon.hero.pos + PathFinder.NEIGHBOURS9[Random.Int(9)];
+                        pos = Dungeon.cur().hero.pos + PathFinder.cur().NEIGHBOURS9[Random.Int(9)];
                     }while (outMap(pos));
                     ScrollOfTeleportation.appear(target, pos);
                 }

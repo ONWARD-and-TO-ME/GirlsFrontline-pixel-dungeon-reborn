@@ -15,9 +15,9 @@ public class RingOfKing extends Ring {
 		super.statsInfo();
 		if (isIdentified()){
 			int solo = soloBuffedBonus();
-			int combined = combinedBuffedBonus(Dungeon.hero);
+			int combined = combinedBuffedBonus(Dungeon.cur().hero);
 			String info = Messages.get(this, "stats", solo, solo);
-			if (isEquipped(Dungeon.hero) && solo != combined)
+			if (isEquipped(Dungeon.cur().hero) && solo != combined)
 				info = info + "\n\n" + Messages.get(this, "combined_stats", combined, combined);
 			return info;
 		} else {

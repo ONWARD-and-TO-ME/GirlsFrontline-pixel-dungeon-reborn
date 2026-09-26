@@ -49,7 +49,7 @@ public class MazeConnectionRoom extends ConnectionRoom {
 
 		int num = Door.Unlock();
 		for (Door door : connected.values()) {
-			door.setHidden(Dungeon.hero, num);
+			door.setHidden(Dungeon.cur().hero, num);
 		}
 	}
 	

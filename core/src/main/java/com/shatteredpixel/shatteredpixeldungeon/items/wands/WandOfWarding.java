@@ -344,7 +344,7 @@ public class WandOfWarding extends Wand {
 				Wand.wandProc(enemy, wandLevel, 1);
 			}
 
-			if (!enemy.isAlive() && enemy == Dungeon.hero) {
+			if (!enemy.isAlive() && enemy == Dungeon.cur().hero) {
 				Dungeon.fail( getClass() );
 			}
 
@@ -410,11 +410,11 @@ public class WandOfWarding extends Wand {
 		private void onDismiss(){
 			if (wand_owner_ID == -1)
 				return;
-			WandOfWarding wand = Dungeon.hero.belongings.findItem(wand_owner_ID, WandOfWarding.class);
+			WandOfWarding wand = Dungeon.cur().hero.belongings.findItem(wand_owner_ID, WandOfWarding.class);
 			if (wand == null)
-				wand = Dungeon.hero.belongings.getItem(WandOfWarding.class);
+				wand = Dungeon.cur().hero.belongings.getItem(WandOfWarding.class);
 			if (wand == null){
-				MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+				MagesStaff staff = Dungeon.cur().hero.belongings.getItem(MagesStaff.class);
 				if (staff != null && staff.wand instanceof WandOfWarding)
 					wand = (WandOfWarding) staff.wand;
 			}
@@ -436,7 +436,7 @@ public class WandOfWarding extends Wand {
 		}
 		@Override
 		public boolean interact( Char c ) {
-			if (c != Dungeon.hero){
+			if (c != Dungeon.cur().hero){
 				return true;
 			}
 			Game.runOnRenderThread(new Callback() {

@@ -65,13 +65,13 @@ public class Skeleton extends Mob {
 		if (cause == Chasm.class) return;
 		
 		boolean heroKilled = false;
-		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-			Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
+		for (int i = 0; i < PathFinder.cur().NEIGHBOURS8.length; i++) {
+			Char ch = findChar( pos + PathFinder.cur().NEIGHBOURS8[i] );
 			if (ch != null && ch.isAlive()) {
 				int damage = Random.NormalIntRange(6, 12);
 				damage = Math.max( 0,  damage - (ch.drRoll() + ch.drRoll()) );
 				ch.damage( damage, this, this );
-				if (ch == Dungeon.hero && !ch.isAlive()) {
+				if (ch == Dungeon.cur().hero && !ch.isAlive()) {
 					heroKilled = true;
 				}
 			}
@@ -91,12 +91,12 @@ public class Skeleton extends Mob {
 	public float lootChance() {
 		//each drop makes future drops 1/2 as likely
 		// so loot chance looks like: 1/6, 1/12, 1/24, 1/48, etc.
-		return super.lootChance() * (float)Math.pow(1/2f, Dungeon.LimitedDrops.SKELE_WEP.count);
+		return super.lootChance() * (float)Math.pow(1/2f, Dungeon.LimitedDrops.SKELE_WEP.count());
 	}
 
 	@Override
 	public Item createLoot() {
-		Dungeon.LimitedDrops.SKELE_WEP.count++;
+		Dungeon.LimitedDrops.SKELE_WEP.used();
 		return super.createLoot();
 	}
 

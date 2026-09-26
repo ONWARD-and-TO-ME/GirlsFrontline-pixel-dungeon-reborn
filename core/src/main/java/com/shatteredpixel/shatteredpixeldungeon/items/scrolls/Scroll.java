@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.scrolls;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
@@ -201,7 +200,7 @@ public abstract class Scroll extends Item implements ColorItem {
 			Catalog.countUse(getClass());
 		}
         Invisibility.dispel(true);
-        Talent.onScrollUsed(hero, mulOnTalentUsed);
+        Talent.onScrollUsed(Dungeon.cur().hero, mulOnTalentUsed);
 		curUser.spend( TIME_TO_READ );
 		curUser.busy();
 		((HeroSprite)curUser.sprite).read();
@@ -219,7 +218,7 @@ public abstract class Scroll extends Item implements ColorItem {
 				updateQuickslot();
 			}
 
-			if (Dungeon.hero.isAlive()) {
+			if (Dungeon.cur().hero.isAlive()) {
 				Catalog.setSeen(getClass());
 			}
 		}

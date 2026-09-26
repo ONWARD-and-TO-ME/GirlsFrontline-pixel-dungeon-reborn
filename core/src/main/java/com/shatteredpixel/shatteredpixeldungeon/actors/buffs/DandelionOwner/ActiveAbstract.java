@@ -32,8 +32,8 @@ public interface ActiveAbstract {
                 return true;
 
             Vector_Fire_Aura aura = null;
-            if (Dungeon.hero != null)
-                aura = Dungeon.hero.buff(Vector_Fire_Aura.class);
+            if (Dungeon.cur().hero != null)
+                aura = Dungeon.cur().hero.buff(Vector_Fire_Aura.class);
             if (aura != null)
                 return aura.contain(target().pos);
 

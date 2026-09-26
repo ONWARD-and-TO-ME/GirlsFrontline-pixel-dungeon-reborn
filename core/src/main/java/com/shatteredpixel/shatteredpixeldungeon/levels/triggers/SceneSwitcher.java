@@ -36,7 +36,7 @@ public class SceneSwitcher extends Trigger{
 	
 	@Override
 	public void activate(Char ch){
-		if(ch == Dungeon.hero){
+		if(ch == Dungeon.cur().hero){
 			try{
 				Dungeon.saveAll();
 			}catch(IOException e){

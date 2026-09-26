@@ -72,7 +72,7 @@ public class SpreadWave extends Image {
     }
 
     public static void blast(PointF p, float radius, float time, int color, Callback callback) {
-        Group parent = Dungeon.hero.sprite.parent;
+        Group parent = Dungeon.cur().hero.sprite.parent;
         SpreadWave b = (SpreadWave)parent.recycle(SpreadWave.class);
         parent.bringToFront(b);
         b.reset(p, radius, time, color, callback);

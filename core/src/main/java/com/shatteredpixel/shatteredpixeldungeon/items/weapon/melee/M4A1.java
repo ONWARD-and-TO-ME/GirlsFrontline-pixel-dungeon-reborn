@@ -146,12 +146,12 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 						return;
 					}
 					lateThrowingReady = false;
-					float delay = delayFactor(Dungeon.hero);
+					float delay = delayFactor(Dungeon.cur().hero);
 					if (delay * 4 < 1F)
 						coolDownLeft = 1;
 					else
 						coolDownLeft = Math.round(delay * 4);
-					Dungeon.hero.spendAndNext(delay * 2);
+					Dungeon.cur().hero.spendAndNext(delay * 2);
 					updateQuickslot();
 				}
 			}
@@ -177,12 +177,12 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 						return;
 					}
 					lateThrowingReady = false;
-					float delay = delayFactor(Dungeon.hero);
+					float delay = delayFactor(Dungeon.cur().hero);
 					if (delay * 4 < 1F)
 						coolDownLeft = 1;
 					else
 						coolDownLeft = Math.round(delay * 4);
-					Dungeon.hero.spendAndNext(delay * 2);
+					Dungeon.cur().hero.spendAndNext(delay * 2);
 				}
 			}
 
@@ -193,7 +193,7 @@ public class M4A1 extends MeleeWeapon implements ActionIndicator.Action {
 		};
 	}
 	public static M4A1 INSTANCE(){
-		M4A1 m = Dungeon.hero.belongings.getItem(M4A1.class);
+		M4A1 m = Dungeon.cur().hero.belongings.getItem(M4A1.class);
 		if (m == null)
 			m = new M4A1();
 		return m;

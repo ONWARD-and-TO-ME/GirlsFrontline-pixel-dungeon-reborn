@@ -62,7 +62,7 @@ public class LaboratoryRoom extends SpecialRoom {
 		}
 		Painter.set( level, pot, Terrain.ALCHEMY );
 		
-		int chapter = 1 + Dungeon.depth/5;
+		int chapter = 1 + Dungeon.cur().depth/5;
 		Blob.seed( pot.x + level.width() * pot.y, 1, Alchemy.class, level, false );
 
 		int pos;
@@ -118,7 +118,7 @@ public class LaboratoryRoom extends SpecialRoom {
 		}
 
 		entrance.set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.depth ) );
+		level.addItemToSpawn( new IronKey( Dungeon.cur().depth ) );
 		
 	}
 	

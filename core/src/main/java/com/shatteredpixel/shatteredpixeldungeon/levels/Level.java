@@ -225,28 +225,28 @@ public abstract class Level implements Bundlable {
 
 			if (Dungeon.posNeeded()) {
 				addItemToSpawn( new PotionOfStrength() );
-				Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
+				Dungeon.LimitedDrops.STRENGTH_POTIONS.used();
 			}
 			if (Dungeon.souNeeded()) {
 				addItemToSpawn( new ScrollOfUpgrade() );
-				Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
+				Dungeon.LimitedDrops.UPGRADE_SCROLLS.used();
 			}
 			if (Dungeon.asNeeded()) {
 				addItemToSpawn( new Stylus() );
-				Dungeon.LimitedDrops.ARCANE_STYLI.count++;
+				Dungeon.LimitedDrops.ARCANE_STYLI.used();
 			}
 			//one scroll of transmutation is guaranteed to spawn somewhere on chapter 2-4
-			int enchChapter = (int)((Dungeon.seed / 10) % 3) + 1;
-			if ( Dungeon.depth / 5 == enchChapter &&
-					Dungeon.seed % 4 + 1 == Dungeon.depth % 5){
+			int enchChapter = (int)((Dungeon.cur().seed / 10) % 3) + 1;
+			if ( Dungeon.cur().depth / 5 == enchChapter &&
+					Dungeon.cur().seed % 4 + 1 == Dungeon.cur().depth % 5){
 				addItemToSpawn( new StoneOfEnchantment() );
 			}
 			
-			if ( Dungeon.depth == ((Dungeon.seed % 3) + 1)){
+			if ( Dungeon.cur().depth == ((Dungeon.cur().seed % 3) + 1)){
 				addItemToSpawn( new StoneOfIntuition() );
 			}
 			
-			if (Dungeon.depth > 1) {
+			if (Dungeon.cur().depth > 1) {
 				//50% chance of getting a level feeling
 				//~7.15% chance for each feeling
 				switch (Random.Int( 14 )) {
@@ -303,13 +303,10 @@ public abstract class Level implements Bundlable {
 		Random.popGenerator();
 		creating = false;
 
-		for (Integer pos : triggeredPlant.keySet()){
-			for (Plant plant : triggeredPlant.get(pos)) {
-				Plant.level = this;
+		for (Integer pos : triggeredPlant.keySet())
+			for (Plant plant : triggeredPlant.get(pos))
 				plant.activate(pos);
-			}
-		}
-		triggeredPlant = new HashMap<>();
+		triggeredPlant.clear();
 	}
 	
 	public void setSize(int w, int h){
@@ -341,7 +338,7 @@ public abstract class Level implements Bundlable {
 
 		openSpace   = new boolean[length];
 		
-		PathFinder.setMapSize(w, h);
+		PathFinder.cur().setMapSize(w, h);
 	}
 	
 	public void reset() {
@@ -533,11 +530,11 @@ public abstract class Level implements Bundlable {
 	
 	public Mob createMob() {
 		if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
-			mobsToSpawn = Bestiary.getMobRotation(Dungeon.depth);
+			mobsToSpawn = Bestiary.getMobRotation(Dungeon.cur().depth);
 		}
 
 		Mob m = Reflection.newInstance(mobsToSpawn.remove(0));
-        if(Dungeon.isXMAS() && Random.Int(100)<8&&Dungeon.depth<=5)
+        if(Dungeon.isXMAS() && Random.Int(100)<8&&Dungeon.cur().depth<=5)
             m = Reflection.newInstance(RatXMAS.class);
         //打开圣诞开关，满足概率，并且楼层是5层以内，直接替换成RatXMAS
 		if (Dungeon.isChallenged(Challenges.CHAMPION_ENEMIES))
@@ -552,7 +549,7 @@ public abstract class Level implements Bundlable {
 	public void seal(){
 		if (!locked) {
 			locked = true;
-			Buff.affect(Dungeon.hero, LockedFloor.class);
+			Buff.affect(Dungeon.cur().hero, LockedFloor.class);
 		}
 	}
 
@@ -560,8 +557,8 @@ public abstract class Level implements Bundlable {
 		if (locked) {
             prevent = false;
 			locked = false;
-			if (Dungeon.hero.buff(LockedFloor.class) != null){
-				Dungeon.hero.buff(LockedFloor.class).detach();
+			if (Dungeon.cur().hero.buff(LockedFloor.class) != null){
+				Dungeon.cur().hero.buff(LockedFloor.class).detach();
 			}
 		}
 	}
@@ -576,8 +573,8 @@ public abstract class Level implements Bundlable {
 				items.addAll(b.getStuckItems());
 			}
 		}
-		for (HeavyBoomerang.CircleBack b : Dungeon.hero.buffs(HeavyBoomerang.CircleBack.class)){
-			if (b.activeDepth() == Dungeon.depth) items.add(b.cancel());
+		for (HeavyBoomerang.CircleBack b : Dungeon.cur().hero.buffs(HeavyBoomerang.CircleBack.class)){
+			if (b.activeDepth() == Dungeon.cur().depth) items.add(b.cancel());
 		}
 		return items;
 	}
@@ -677,7 +674,7 @@ public abstract class Level implements Bundlable {
 
 	public boolean spawnMob(int disLimit){
         //此处是循环刷怪所用到的生成怪物
-		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+		PathFinder.cur().buildDistanceMap(Dungeon.cur().hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
 
 		Mob mob = Dungeon.level.createMob();
         if(mob.state!=mob.PASSIVE){
@@ -685,10 +682,10 @@ public abstract class Level implements Bundlable {
             //从默认警戒/进攻改为，当初始行动逻辑不为中立/被动时，再赋予警戒/进攻
         }
 		mob.pos = Dungeon.level.randomRespawnCell( mob );
-		if (Dungeon.hero.isAlive() && mob.pos != -1 && PathFinder.distance[mob.pos] >= disLimit) {
+		if (Dungeon.cur().hero.isAlive() && mob.pos != -1 && PathFinder.cur().distance[mob.pos] >= disLimit) {
 			GameScene.add( mob );
 			if (Statistics.amuletObtained) {
-				mob.beckon( Dungeon.hero.pos );
+				mob.beckon( Dungeon.cur().hero.pos );
 			}
 			if (!mob.buffs(ChampionEnemy.class).isEmpty()){
 				GLog.w(Messages.get(ChampionEnemy.class, "warn"));
@@ -789,11 +786,11 @@ public abstract class Level implements Bundlable {
 			if (solid[i]){
 				openSpace[i] = false;
 			} else {
-				for (int j = 1; j < PathFinder.CIRCLE8.length; j += 2){
-					if (solid[i+PathFinder.CIRCLE8[j]]) {
+				for (int j = 1; j < PathFinder.cur().CIRCLE8.length; j += 2){
+					if (solid[i+PathFinder.cur().CIRCLE8[j]]) {
 						openSpace[i] = false;
-					} else if (!solid[i+PathFinder.CIRCLE8[(j+1)%8]]
-							&& !solid[i+PathFinder.CIRCLE8[(j+2)%8]]){
+					} else if (!solid[i+PathFinder.cur().CIRCLE8[(j+1)%8]]
+							&& !solid[i+PathFinder.cur().CIRCLE8[(j+2)%8]]){
 						openSpace[i] = true;
 						break;
 					}
@@ -835,8 +832,8 @@ public abstract class Level implements Bundlable {
 			
 			boolean d = false;
 			
-			for (int j=0; j < PathFinder.NEIGHBOURS9.length; j++) {
-				int n = i + PathFinder.NEIGHBOURS9[j];
+			for (int j=0; j < PathFinder.cur().NEIGHBOURS9.length; j++) {
+				int n = i + PathFinder.cur().NEIGHBOURS9[j];
 				if (n >= 0 && n < length() && map[n] != Terrain.WALL && map[n] != Terrain.WALL_DECO) {
 					d = true;
 					break;
@@ -848,12 +845,12 @@ public abstract class Level implements Bundlable {
 	}
 
 	public void cleanWalls(int cell){
-		for (int i=0; i < PathFinder.NEIGHBOURS9.length; i++) {
-			int cellAndAround=cell+PathFinder.NEIGHBOURS9[i];
+		for (int i=0; i < PathFinder.cur().NEIGHBOURS9.length; i++) {
+			int cellAndAround=cell+PathFinder.cur().NEIGHBOURS9[i];
 
 			boolean d = false;
-			for (int j=0; j < PathFinder.NEIGHBOURS9.length; j++) {
-				int n = cellAndAround + PathFinder.NEIGHBOURS9[j];
+			for (int j=0; j < PathFinder.cur().NEIGHBOURS9.length; j++) {
+				int n = cellAndAround + PathFinder.cur().NEIGHBOURS9[j];
 				if (n >= 0 && n < length && map[n] != Terrain.WALL && map[n] != Terrain.WALL_DECO) {
 					d = true;
 					break;
@@ -888,16 +885,16 @@ public abstract class Level implements Bundlable {
         level.breakable[cell]		= (flags & Terrain.BREAKABLE) != 0;
         level.special[cell]		    = (flags & Terrain.SPECIAL) != 0;
 
-		for (int i : PathFinder.NEIGHBOURS9){
+		for (int i : PathFinder.cur().NEIGHBOURS9){
 			i = cell + i;
 			if (level.solid[i]){
 				level.openSpace[i] = false;
 			} else {
-				for (int j = 1; j < PathFinder.CIRCLE8.length; j += 2){
-					if (level.solid[i+PathFinder.CIRCLE8[j]]) {
+				for (int j = 1; j < PathFinder.cur().CIRCLE8.length; j += 2){
+					if (level.solid[i+PathFinder.cur().CIRCLE8[j]]) {
 						level.openSpace[i] = false;
-					} else if (!level.solid[i+PathFinder.CIRCLE8[(j+1)%8]]
-							&& !level.solid[i+PathFinder.CIRCLE8[(j+2)%8]]){
+					} else if (!level.solid[i+PathFinder.cur().CIRCLE8[(j+1)%8]]
+							&& !level.solid[i+PathFinder.cur().CIRCLE8[(j+2)%8]]){
 						level.openSpace[i] = true;
 						break;
 					}
@@ -940,7 +937,7 @@ public abstract class Level implements Bundlable {
 			
 			int n;
 			do {
-				n = cell + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
+				n = cell + PathFinder.cur().NEIGHBOURS8[Random.Int( 8 )];
 			} while (!passable[n] && !avoid[n]);
 			return drop( item, n );
 			
@@ -988,7 +985,7 @@ public abstract class Level implements Bundlable {
 	public void throwPath(ArrayList<Item> items, int pos){
 		ArrayList<Integer> dropPlace = new ArrayList<>();
 
-		for (int c : PathFinder.NEIGHBOURS9)
+		for (int c : PathFinder.cur().NEIGHBOURS9)
 			if (passable[c + pos])
 				dropPlace.add(c + pos);
 
@@ -1130,12 +1127,12 @@ public abstract class Level implements Bundlable {
 		if (!ch.flying){
 
 			// 女猎（隼）恢复步伐：踩草地变高草/垄草（实现见 HuntressTalent）
-			if (ch == Dungeon.hero){
-				HuntressTalent.onGrassTrampled(Dungeon.hero, ch.pos);
+			if (ch == Dungeon.cur().hero){
+				HuntressTalent.onGrassTrampled(Dungeon.cur().hero, ch.pos);
 			}
 
 			if (pit[ch.pos]){
-				if (ch == Dungeon.hero) {
+				if (ch == Dungeon.cur().hero) {
 					Chasm.heroFall(ch.pos);
 				} else if (ch instanceof Mob) {
 					Chasm.mobFall( (Mob)ch );
@@ -1193,10 +1190,10 @@ public abstract class Level implements Bundlable {
 		if (trap != null) {
 			
 			TimekeepersHourglass.timeFreeze timeFreeze =
-					Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+					Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
 			
 			Swiftthistle.TimeBubble bubble =
-					Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+					Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
 			
 			if (bubble != null){
 				
@@ -1216,8 +1213,8 @@ public abstract class Level implements Bundlable {
 				
 			} else {
 
-				if (Dungeon.hero.pos == cell) {
-					Dungeon.hero.interrupt();
+				if (Dungeon.cur().hero.pos == cell) {
+					Dungeon.cur().hero.interrupt();
 				}
 
 				trap.trigger();
@@ -1299,7 +1296,7 @@ public abstract class Level implements Bundlable {
 		
 		int sense = 1;
 		//Currently only the hero can get mind vision
-		if (c.isAlive() && c == Dungeon.hero) {
+		if (c.isAlive() && c == Dungeon.cur().hero) {
 			for (MindVision b : c.buffs( MindVision.class ))
 				sense = Math.max( b.distance, sense );
 
@@ -1332,13 +1329,13 @@ public abstract class Level implements Bundlable {
 		}
 
 		// 女猎（隼）灵鹰：鹰眼+3时灵鹰额外揭示周围敌人（实现见 HuntressTalent）
-		int hawkRange = HuntressTalent.hawkMindRange(Dungeon.hero);
+		int hawkRange = HuntressTalent.hawkMindRange(Dungeon.cur().hero);
 		if (c instanceof SpiritHawk.HawkAlly && hawkRange > 0){
 			int range = hawkRange;
 			for (Mob mob : mobs) {
 				int p = mob.pos;
 				if (!fieldOfView[p] && distance(c.pos, p) <= range) {
-					for (int i : PathFinder.NEIGHBOURS9) {
+					for (int i : PathFinder.cur().NEIGHBOURS9) {
 						fieldOfView[mob.pos + i] = true;
 					}
 				}
@@ -1346,7 +1343,7 @@ public abstract class Level implements Bundlable {
 		}
 
 		//Currently only the hero can get mind vision or awareness
-		if (c.isAlive() && c == Dungeon.hero) {
+		if (c.isAlive() && c == Dungeon.cur().hero) {
 
 			if (heroMindFov == null || heroMindFov.length != length()){
 				heroMindFov = new boolean[length];
@@ -1354,10 +1351,10 @@ public abstract class Level implements Bundlable {
 				BArray.setFalse(heroMindFov);
 			}
 
-			Dungeon.hero.mindVisionEnemies.clear();
+			Dungeon.cur().hero.mindVisionEnemies.clear();
 			if (c.buff( MindVision.class ) != null) {
 				for (Mob mob : mobs) {
-					for (int i : PathFinder.NEIGHBOURS9) {
+					for (int i : PathFinder.cur().NEIGHBOURS9) {
 						heroMindFov[mob.pos + i] = true;
 					}
 				}
@@ -1368,7 +1365,7 @@ public abstract class Level implements Bundlable {
 				if (range > 0) for (Mob mob : mobs) {
 					int p = mob.pos;
 					if (!fieldOfView[p] && distance(c.pos, p) <= range) {
-						for (int i : PathFinder.NEIGHBOURS9) {
+						for (int i : PathFinder.cur().NEIGHBOURS9) {
 							heroMindFov[mob.pos + i] = true;
 						}
 					}
@@ -1378,7 +1375,7 @@ public abstract class Level implements Bundlable {
 			if (c.buff( Awareness.class ) != null) {
 				for (Heap heap : heaps.valueList()) {
 					int p = heap.pos;
-					for (int i : PathFinder.NEIGHBOURS9) heroMindFov[p+i] = true;
+					for (int i : PathFinder.cur().NEIGHBOURS9) heroMindFov[p+i] = true;
 				}
 			}
 
@@ -1388,12 +1385,12 @@ public abstract class Level implements Bundlable {
 					continue;
 				}
 				int p = ch.pos;
-				for (int i : PathFinder.NEIGHBOURS9) heroMindFov[p+i] = true;
+				for (int i : PathFinder.cur().NEIGHBOURS9) heroMindFov[p+i] = true;
 			}
 
 			for (TalismanOfForesight.HeapAwareness h : c.buffs(TalismanOfForesight.HeapAwareness.class)){
-				if (Dungeon.depth != h.depth) continue;
-				for (int i : PathFinder.NEIGHBOURS9) heroMindFov[h.pos+i] = true;
+				if (Dungeon.cur().depth != h.depth) continue;
+				for (int i : PathFinder.cur().NEIGHBOURS9) heroMindFov[h.pos+i] = true;
 			}
 
 			for (Mob m : mobs){
@@ -1409,14 +1406,14 @@ public abstract class Level implements Bundlable {
 			}
 
 			for (RevealedArea a : c.buffs(RevealedArea.class)){
-				if (Dungeon.depth != a.depth) continue;
-				for (int i : PathFinder.NEIGHBOURS9) heroMindFov[a.pos+i] = true;
+				if (Dungeon.cur().depth != a.depth) continue;
+				for (int i : PathFinder.cur().NEIGHBOURS9) heroMindFov[a.pos+i] = true;
 			}
 
 			//set mind vision chars
 			for (Mob mob : mobs) {
 				if (heroMindFov[mob.pos] && !fieldOfView[mob.pos]){
-					Dungeon.hero.mindVisionEnemies.add(mob);
+					Dungeon.cur().hero.mindVisionEnemies.add(mob);
 				}
 			}
 
@@ -1425,7 +1422,7 @@ public abstract class Level implements Bundlable {
 
 		}
 
-		if (c == Dungeon.hero) {
+		if (c == Dungeon.cur().hero) {
 			for (Heap heap : heaps.valueList())
 				if (!heap.seen && fieldOfView[heap.pos])
 					heap.seen = true;

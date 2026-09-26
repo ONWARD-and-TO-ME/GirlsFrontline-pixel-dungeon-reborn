@@ -28,7 +28,7 @@ public class RabbitWeaponGenoise extends Wand {
 
     @Override
     public void onZap(Ballistica beam) {
-        for (int n : PathFinder.NEIGHBOURS8) {
+        for (int n : PathFinder.cur().NEIGHBOURS8) {
             int c = beam.collisionPos + n;
             if ( c >= 0 ) {
                 GameScene.add( Blob.seedStrict( c, Math.round(1 + TIME_TO_EXPLODE), GooWarn.class ) );

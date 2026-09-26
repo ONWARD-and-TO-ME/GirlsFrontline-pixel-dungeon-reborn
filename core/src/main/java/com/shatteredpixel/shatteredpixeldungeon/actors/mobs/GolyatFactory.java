@@ -85,12 +85,12 @@ public class GolyatFactory extends Mob {
 	
 	@Override
 	public float lootChance() {
-		return super.lootChance() * ((6f - Dungeon.LimitedDrops.FACTORY_HP.count) / 6f);
+		return super.lootChance() * ((6f - Dungeon.LimitedDrops.FACTORY_HP.count()) / 6f);
 	}
 	
 	@Override
 	public Item createLoot(){
-		Dungeon.LimitedDrops.FACTORY_HP.count++;
+		Dungeon.LimitedDrops.FACTORY_HP.used();
 		return super.createLoot();
 	}
 	
@@ -180,7 +180,7 @@ public class GolyatFactory extends Mob {
 	public void summonMinion(){
 		if (Actor.findChar(summoningPos) != null) {
 			int pushPos = pos;
-			for (int c : PathFinder.NEIGHBOURS8) {
+			for (int c : PathFinder.cur().NEIGHBOURS8) {
 				if (Actor.findChar(summoningPos + c) == null
 						&& Dungeon.level.passable[summoningPos + c]
 						&& (Dungeon.level.openSpace[summoningPos + c] || !hasProp(Actor.findChar(summoningPos), Property.LARGE))
@@ -269,7 +269,7 @@ public class GolyatFactory extends Mob {
 			if (enemySeen && Dungeon.level.distance(pos, enemy.pos) <= 4 && myGolyat == null){
 				
 				summoningPos = -1;
-				for (int c : PathFinder.NEIGHBOURS8){
+				for (int c : PathFinder.cur().NEIGHBOURS8){
 					if (Actor.findChar(enemy.pos+c) == null
 							&& Dungeon.level.passable[enemy.pos+c]
 							&& fieldOfView[enemy.pos+c]
@@ -302,7 +302,7 @@ public class GolyatFactory extends Mob {
 					//teleport them to the closest spot next to the enemy that can be seen
 					if (!Dungeon.level.adjacent(myGolyat.pos, enemy.pos)){
 						int telePos = -1;
-						for (int c : PathFinder.NEIGHBOURS8){
+						for (int c : PathFinder.cur().NEIGHBOURS8){
 							if (Actor.findChar(enemy.pos+c) == null
 									&& Dungeon.level.passable[enemy.pos+c]
 									&& fieldOfView[enemy.pos+c]

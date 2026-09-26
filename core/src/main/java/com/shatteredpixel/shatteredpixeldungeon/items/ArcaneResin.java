@@ -132,7 +132,7 @@ public class ArcaneResin extends Item {
 					if (resinToUse < quantity()){
 						quantity(quantity()-resinToUse);
 					} else {
-						detachAll(Dungeon.hero.belongings.backpack);
+						detachAll(Dungeon.cur().hero.belongings.backpack);
 					}
 
 					w.resinBonus++;
@@ -177,9 +177,9 @@ public class ArcaneResin extends Item {
 
         @Override
         public void onComplete() {
-            if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE){
+            if (Dungeon.cur().hero != null && Dungeon.cur().hero.heroClass == HeroClass.MAGE){
                 // 法师（G11）法杖保留：炼金完成消耗一次计数（实现见 MageTalent）
-                MageTalent.spendWandPreservation(Dungeon.hero);
+                MageTalent.spendWandPreservation(Dungeon.cur().hero);
             }
         }
 
@@ -188,7 +188,7 @@ public class ArcaneResin extends Item {
 			Wand w = (Wand)ingredients.get(0);
 			int level = w.level() - w.resinBonus;
             int quantity = 2 * (level + 1);
-            quantity += MageTalent.arcaneResinExtraQuantity(Dungeon.hero);
+            quantity += MageTalent.arcaneResinExtraQuantity(Dungeon.cur().hero);
 			return new ArcaneResin().quantity(quantity);
 		}
 	}

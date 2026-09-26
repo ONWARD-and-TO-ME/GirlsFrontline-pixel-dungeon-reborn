@@ -50,12 +50,12 @@ public class DisplacingDart extends TippedDart {
 			ArrayList<Integer> visiblePositions = new ArrayList<>();
 			ArrayList<Integer> nonVisiblePositions = new ArrayList<>();
 
-			PathFinder.buildDistanceMap(attacker.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+			PathFinder.cur().buildDistanceMap(attacker.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
 
 			for (int pos = 0; pos < Dungeon.level.length(); pos++){
 				if (Dungeon.level.passable[pos]
-						&& PathFinder.distance[pos] >= 8
-						&& PathFinder.distance[pos] <= 10
+						&& PathFinder.cur().distance[pos] >= 8
+						&& PathFinder.cur().distance[pos] <= 10
 						&& (!Char.hasProp(defender, Char.Property.LARGE) || Dungeon.level.openSpace[pos])
 						&& Actor.findChar(pos) == null){
 

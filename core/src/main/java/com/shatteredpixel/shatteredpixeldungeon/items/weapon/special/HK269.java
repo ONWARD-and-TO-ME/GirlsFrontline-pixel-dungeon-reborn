@@ -128,7 +128,7 @@ public class HK269 extends Item {
 			CellEmitter.center(target).burst(BlastParticle.FACTORY, 25);
 		}
 		boolean terrainAffected = false;
-		for (int n : PathFinder.NEIGHBOURS9) {
+		for (int n : PathFinder.cur().NEIGHBOURS9) {
 			int c = target + n;
 			if (c >= 0 && c < Dungeon.level.length()) {
 				if (Dungeon.level.heroFOV[c]) {
@@ -148,7 +148,7 @@ public class HK269 extends Item {
 		}
 
 		// 范围内每个敌人单独计算
-		for (int n : PathFinder.NEIGHBOURS9) {
+		for (int n : PathFinder.cur().NEIGHBOURS9) {
 			int c = target + n;
 			if (c < 0 || c >= Dungeon.level.length()) continue;
 

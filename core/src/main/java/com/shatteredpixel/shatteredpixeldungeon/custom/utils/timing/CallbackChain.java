@@ -21,7 +21,7 @@ public class CallbackChain extends Visual {
     public static void executeChain(float[] triggerTimes, Callback[] callbacks){
         CallbackChain cbc = new CallbackChain();
         cbc.initChain(triggerTimes, callbacks);
-        Dungeon.hero.sprite.parent.add(cbc);
+        Dungeon.cur().hero.sprite.parent.add(cbc);
     }
 
     private void initChain(float[] triggerTimes, Callback[] callbacks){

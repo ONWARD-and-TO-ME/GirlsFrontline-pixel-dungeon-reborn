@@ -36,7 +36,7 @@ public class Gun562Old extends ShootGun_OLD {
 			CellEmitter.center(cell).burst(BlastParticle.FACTORY,30);
 		}
 
-		for (int i : PathFinder.NEIGHBOURS9) {
+		for (int i : PathFinder.cur().NEIGHBOURS9) {
 			int targetCell = cell + i;
 // 检查是否在地图范围内
 			if (targetCell >= 0 && targetCell < Dungeon.level.length()) {
@@ -60,9 +60,9 @@ public class Gun562Old extends ShootGun_OLD {
 				if (null!=target){
 					int damage=curUser.HT*2/3;
 					target.damage(Math.round(damage),this);
-					if(Dungeon.hero.hasTalent(Talent.ENHANCE_GRENADE)){
+					if(Dungeon.cur().hero.hasTalent(Talent.ENHANCE_GRENADE)){
 						Buff.affect(target,Bleeding.class ).set( Math.round(damage*0.4f));
-						if(Dungeon.hero.pointsInTalent(Talent.ENHANCE_GRENADE)>=2){
+						if(Dungeon.cur().hero.pointsInTalent(Talent.ENHANCE_GRENADE)>=2){
 							Buff.affect(target,Cripple.class,3f);
 						}
 					}
@@ -70,11 +70,11 @@ public class Gun562Old extends ShootGun_OLD {
 			}
 		}
 
-		if(!Dungeon.hero.isAlive()){
+		if(!Dungeon.cur().hero.isAlive()){
 			Dungeon.fail(getClass());
 		}
 
-		cooldownTurns = (Dungeon.hero.pointsInTalent(Talent.ENHANCE_GRENADE)>=3? 170: 200);
+		cooldownTurns = (Dungeon.cur().hero.pointsInTalent(Talent.ENHANCE_GRENADE)>=3? 170: 200);
 
 		super.onShootComplete(cell);
 	}

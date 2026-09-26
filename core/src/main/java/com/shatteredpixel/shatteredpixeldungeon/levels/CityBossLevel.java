@@ -133,7 +133,7 @@ public class CityBossLevel extends Level {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		impShop = (ImpShopRoom) bundle.get( IMP_SHOP );
-		if (map[topDoor] != Terrain.LOCKED_DOOR && Imp.Quest.isCompleted() && !impShop.shopSpawned()){
+		if (map[topDoor] != Terrain.LOCKED_DOOR && Imp.Quest.cur().isCompleted() && !impShop.shopSpawned()){
 			spawnShop();
 		}
 	}
@@ -281,7 +281,7 @@ public class CityBossLevel extends Level {
 	public int randomRespawnCell( Char ch ) {
 		int cell;
 		do {
-			cell = entrance + PathFinder.NEIGHBOURS8[Random.Int(8)];
+			cell = entrance + PathFinder.cur().NEIGHBOURS8[Random.Int(8)];
 		} while (!passable[cell]
 				|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
 				|| Actor.findChar(cell) != null);
@@ -294,7 +294,7 @@ public class CityBossLevel extends Level {
 		super.occupyCell( ch );
 
 		if (map[bottomDoor] != Terrain.LOCKED_DOOR && map[topDoor] == Terrain.LOCKED_DOOR
-				&& ch.pos < bottomDoor && ch == Dungeon.hero) {
+				&& ch.pos < bottomDoor && ch == Dungeon.cur().hero) {
 
 			seal();
 
@@ -308,13 +308,13 @@ public class CityBossLevel extends Level {
 		//moves intelligent allies with the hero, preferring closer pos to entrance door
 		int doorPos = pointToCell(new Point(arena.left + arena.width()/2, arena.bottom));
 		Mob.holdAllies(this, doorPos);
-		Mob.restoreAllies(this, Dungeon.hero.pos, doorPos);
+		Mob.restoreAllies(this, Dungeon.cur().hero.pos, doorPos);
 
 		DwarfKing boss = new DwarfKing();
 		boss.state = boss.WANDERING;
 		boss.pos = pointToCell(arena.center());
 		GameScene.add( boss );
-		boss.beckon(Dungeon.hero.pos);
+		boss.beckon(Dungeon.cur().hero.pos);
 
 		if (heroFOV[boss.pos]) {
 			boss.notice();
@@ -344,7 +344,7 @@ public class CityBossLevel extends Level {
 		set( topDoor, Terrain.DOOR );
 		GameScene.updateMap( topDoor );
 
-		if (Imp.Quest.isCompleted()) {
+		if (Imp.Quest.cur().isCompleted()) {
 			spawnShop();
 		}
 		Dungeon.observe();

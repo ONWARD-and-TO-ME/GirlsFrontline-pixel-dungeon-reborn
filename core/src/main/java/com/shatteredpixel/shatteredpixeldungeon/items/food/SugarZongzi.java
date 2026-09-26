@@ -15,11 +15,11 @@ public class SugarZongzi extends Food {
 
     @Override
     protected void satisfy( Hero hero ){
-        if (Dungeon.hero.hasTalent(Talent.GUN_1V2)){
-            if (Dungeon.hero.HP < Dungeon.hero.HT) {
-                int add = (int) (Dungeon.hero.HT*(0.05F));
-                Dungeon.hero.HP = Math.min( Dungeon.hero.HP + add, Dungeon.hero.HT );
-                Dungeon.hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+        if (Dungeon.cur().hero.hasTalent(Talent.GUN_1V2)){
+            if (Dungeon.cur().hero.HP < Dungeon.cur().hero.HT) {
+                int add = (int) (Dungeon.cur().hero.HT*(0.05F));
+                Dungeon.cur().hero.HP = Math.min( Dungeon.cur().hero.HP + add, Dungeon.cur().hero.HT );
+                Dungeon.cur().hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
             }
         }
         energy+=50;
@@ -29,8 +29,8 @@ public class SugarZongzi extends Food {
     }
     @Override
     protected float eatingTime(){
-        if(Dungeon.hero.hasTalent(Talent.Type56Two_FOOD)
-                || Dungeon.hero.hasTalent(Talent.Type56_21V2))
+        if(Dungeon.cur().hero.hasTalent(Talent.Type56Two_FOOD)
+                || Dungeon.cur().hero.hasTalent(Talent.Type56_21V2))
             return 0;
         else
             return super.eatingTime();

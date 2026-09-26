@@ -110,7 +110,7 @@ public class ScrollOfChallenge extends ExoticScroll {
 		public void setup(int pos){
 
 			int dist;
-			if (Dungeon.depth == 5 || Dungeon.depth == 10 || Dungeon.depth == 20){
+			if (Dungeon.cur().depth == 5 || Dungeon.cur().depth == 10 || Dungeon.cur().depth == 20){
 				dist = 1; //smaller boss arenas
 			} else {
 
@@ -131,9 +131,9 @@ public class ScrollOfChallenge extends ExoticScroll {
 				}
 			}
 
-			PathFinder.buildDistanceMap( pos, BArray.or( Dungeon.level.passable, Dungeon.level.avoid, null ), dist );
-			for (int i = 0; i < PathFinder.distance.length; i++) {
-				if (PathFinder.distance[i] < Integer.MAX_VALUE && !arenaPositions.contains(i)) {
+			PathFinder.cur().buildDistanceMap( pos, BArray.or( Dungeon.level.passable, Dungeon.level.avoid, null ), dist );
+			for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+				if (PathFinder.cur().distance[i] < Integer.MAX_VALUE && !arenaPositions.contains(i)) {
 					arenaPositions.add(i);
 				}
 			}

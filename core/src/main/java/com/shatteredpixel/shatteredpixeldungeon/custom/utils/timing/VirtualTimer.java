@@ -26,7 +26,7 @@ public class VirtualTimer extends Visual {
 
     public static void countTime(float time, Callback callback){
         VirtualTimer tv = new VirtualTimer();
-        Dungeon.hero.sprite.parent.add(tv);
+        Dungeon.cur().hero.sprite.parent.add(tv);
         tv.initTimer(time, callback);
     }
 }

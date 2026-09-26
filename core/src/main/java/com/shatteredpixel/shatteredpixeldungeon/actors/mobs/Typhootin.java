@@ -173,7 +173,7 @@ public class Typhootin extends Mob {
             HP += Random.Int( 1, HT - HP );
             sprite.emitter().burst( ElmoParticle.FACTORY, 5 );
 
-            if (Dungeon.level.heroFOV[step] && Dungeon.hero.isAlive()) {
+            if (Dungeon.level.heroFOV[step] && Dungeon.cur().hero.isAlive()) {
                 GLog.n( Messages.get(this, "repair") );
             }
         }
@@ -209,7 +209,7 @@ public class Typhootin extends Mob {
     @Override
     public void damage(int dmg, Object src) {
         super.damage(dmg, src);
-        LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+        LockedFloor lock = Dungeon.cur().hero.buff(LockedFloor.class);
         if (lock != null && !isImmune(src.getClass())) lock.addTime(dmg*1.5f);
     }
 
@@ -220,7 +220,7 @@ public class Typhootin extends Mob {
 
         Dungeon.level.unseal();
         GameScene.bossSlain();
-        Dungeon.level.drop( new SkeletonKey( Dungeon.depth  ), pos ).sprite.drop();
+        Dungeon.level.drop( new SkeletonKey( Dungeon.cur().depth  ), pos ).sprite.drop();
 
 
         for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])){

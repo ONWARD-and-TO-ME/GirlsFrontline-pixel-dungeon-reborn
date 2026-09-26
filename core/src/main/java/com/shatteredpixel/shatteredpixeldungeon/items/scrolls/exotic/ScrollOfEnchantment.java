@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -67,7 +66,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 	public void doRead() {
         if (!isKnown()) {
             identify();
-            curItem = detach( hero.belongings.backpack );
+            curItem = detach( Dungeon.cur().hero.belongings.backpack );
             identifiedByUse = true;
         } else {
             identifiedByUse = false;

@@ -108,7 +108,7 @@ public class Food extends Item {
 
 	public static float eatingTimeStatic(){
 		for (Talent talent : eatingTimeTalent)
-			if (Dungeon.hero.hasTalent(talent))
+			if (Dungeon.cur().hero.hasTalent(talent))
 				return TIME_TO_EAT - 2;
 
 		return TIME_TO_EAT;
@@ -129,10 +129,10 @@ public class Food extends Item {
 	}
     public float energy(){
         float buffEnergy = energy;
-		buffEnergy += 30 * Dungeon.hero.pointsInTalent(Talent.Type56Two_FOOD);
-		Hunger hunger = Dungeon.hero.buff(Hunger.class);
+		buffEnergy += 30 * Dungeon.cur().hero.pointsInTalent(Talent.Type56Two_FOOD);
+		Hunger hunger = Dungeon.cur().hero.buff(Hunger.class);
 		if (hunger != null && hunger.isStarving())
-			buffEnergy += 50 * Dungeon.hero.pointsInTalent(Talent.NICE_FOOD);
+			buffEnergy += 50 * Dungeon.cur().hero.pointsInTalent(Talent.NICE_FOOD);
         return buffEnergy;
     }
 	

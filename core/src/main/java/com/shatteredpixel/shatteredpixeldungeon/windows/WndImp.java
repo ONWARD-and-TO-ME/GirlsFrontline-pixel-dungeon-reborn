@@ -57,7 +57,7 @@ public class WndImp extends Window {
 		RedButton btnReward = new RedButton( Messages.get(this, "reward") ) {
 			@Override
 			protected void onClick() {
-				takeReward( imp, tokens, Imp.Quest.reward );
+				takeReward( imp, tokens, Imp.Quest.cur().reward );
 			}
 		};
 		btnReward.setRect( 0, message.top() + message.height() + GAP, WIDTH, BTN_HEIGHT );
@@ -70,18 +70,18 @@ public class WndImp extends Window {
 		
 		hide();
 		
-		tokens.detachAll( Dungeon.hero.belongings.backpack );
+		tokens.detachAll( Dungeon.cur().hero.belongings.backpack );
 		if (reward == null) return;
 
 		reward.identify(false);
-		if (reward.doPickUp( Dungeon.hero )) {
-			GLog.i( Messages.get(Dungeon.hero, "you_now_have", reward.name()) );
+		if (reward.doPickUp( Dungeon.cur().hero )) {
+			GLog.i( Messages.get(Dungeon.cur().hero, "you_now_have", reward.name()) );
 		} else {
 			Dungeon.level.drop( reward, imp.pos ).sprite.drop();
 		}
 		
 		imp.flee();
 		
-		Imp.Quest.complete();
+		Imp.Quest.cur().complete();
 	}
 }

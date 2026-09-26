@@ -161,7 +161,7 @@ public class LiquidMetal extends Item {
 					m.repair(quantity()*durabilityPerMetal);
 					GLog.i(Messages.get(LiquidMetal.class, "apply", quantity()));
 					Catalog.countUses(LiquidMetal.class, quantity());
-					detachAll(Dungeon.hero.belongings.backpack);
+					detachAll(Dungeon.cur().hero.belongings.backpack);
 				}
 
 				curUser.sprite.operate(curUser.pos);

@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeons;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -258,8 +259,18 @@ public class Generator {
 		// until they are all 0, and then they reset. Those generator classes should define
 		// defaultProbs. If defaultProbs is null then a deck system isn't used.
 		//Artifacts in particular don't reset, no duplicates!
+		//probs 字段本身仅作为初始模板（static 块填充后不再修改），
+		//每局实际使用的概率数组通过 probs()/setProbs() 路由到 Dungeons 当前上下文
 		public float[] probs;
 		public float[] defaultProbs = null;
+
+		public float[] probs(){
+			return Dungeons.cur().genCatProbs[ordinal()];
+		}
+
+		public void setProbs(float[] p){
+			Dungeons.cur().genCatProbs[ordinal()] = p;
+		}
 
 		//game has two decks of 35 items for overall category probs
 		//one deck has a ring and extra armor, the other has an artifact and extra thrown weapon
@@ -583,11 +594,8 @@ public class Generator {
 			{0,  0,  0, 20, 80}
 	};
 
-	private static boolean usingFirstDeck = false;
-	private static HashMap<Category,Float> categoryProbs = new LinkedHashMap<>();
-
 	public static void fullReset() {
-		usingFirstDeck = Random.Int(2) == 0;
+		Dungeons.cur().genUsingFirstDeck = Random.Int(2) == 0;
 		generalReset();
 		for (Category cat : Category.values()) {
 			reset(cat);
@@ -597,24 +605,26 @@ public class Generator {
 	}
 
 	public static void generalReset(){
+		Dungeons d = Dungeons.cur();
 		for (Category cat : Category.values()) {
-			categoryProbs.put( cat, usingFirstDeck ? cat.firstProb : cat.secondProb );
+			d.genCategoryProbs.put( cat, d.genUsingFirstDeck ? cat.firstProb : cat.secondProb );
 		}
 	}
 
 	public static void reset(Category cat){
-		if (cat.defaultProbs != null) cat.probs = cat.defaultProbs.clone();
+		if (cat.defaultProbs != null) cat.setProbs(cat.defaultProbs.clone());
 	}
 
 	
 	public static Item random() {
-		Category cat = Random.chances( categoryProbs );
+		Dungeons d = Dungeons.cur();
+		Category cat = Random.chances( d.genCategoryProbs );
 		if (cat == null){
-			usingFirstDeck = !usingFirstDeck;
+			d.genUsingFirstDeck = !d.genUsingFirstDeck;
 			generalReset();
-			cat = Random.chances( categoryProbs );
+			cat = Random.chances( d.genCategoryProbs );
 		}
-		categoryProbs.put( cat, categoryProbs.get( cat ) - 1);
+		d.genCategoryProbs.put( cat, d.genCategoryProbs.get( cat ) - 1);
 		return random( cat );
 	}
 	
@@ -631,18 +641,18 @@ public class Generator {
 				//if we're out of artifacts, return a ring instead.
 				return item != null ? item : random(Category.RING);
 			default:
-				int i = Random.chances(cat.probs);
+				int i = Random.chances(cat.probs());
 				if (i == -1) {
 					reset(cat);
-					i = Random.chances(cat.probs);
+					i = Random.chances(cat.probs());
 				}
-				if (cat.defaultProbs != null) cat.probs[i]--;
+				if (cat.defaultProbs != null) cat.probs()[i]--;
 				return ((Item) Reflection.newInstance(cat.classes[i])).random();
 		}
 	}
 
     public static Item randomUsingDefaults() {
-        return randomUsingDefaults(Random.chances(categoryProbs));
+        return randomUsingDefaults(Random.chances(Dungeons.cur().genCategoryProbs));
     }
 
     //overrides any deck systems and always uses default probs
@@ -700,7 +710,7 @@ public class Generator {
 	 * 都读取 WEP_T5.probs，故只需在此一处放开/屏蔽 P90。
 	 */
 	public static void refreshUnlockables() {
-		Category.WEP_T5.probs[P90_INDEX] = SPDSettings.p90Unlocked() ? P90_UNLOCKED_PROB : 0;
+		Category.WEP_T5.probs()[P90_INDEX] = SPDSettings.p90Unlocked() ? P90_UNLOCKED_PROB : 0;
 	}
 
 	public static MeleeWeapon randomWeapon(){
@@ -712,7 +722,7 @@ public class Generator {
 		floorSet = (int)GameMath.gate(0, floorSet, WeaponTierProbs.length-1);
 		
 		Category c = wepTiers[Random.chances(WeaponTierProbs[floorSet])];
-		MeleeWeapon w = (MeleeWeapon)Reflection.newInstance(c.classes[Random.chances(c.probs)]);
+		MeleeWeapon w = (MeleeWeapon)Reflection.newInstance(c.classes[Random.chances(c.probs())]);
 		w.random();
 		return w;
 	}
@@ -734,7 +744,7 @@ public class Generator {
 		floorSet = (int)GameMath.gate(0, floorSet, floorSetTierProbs.length-1);
 		
 		Category c = misTiers[Random.chances(floorSetTierProbs[floorSet])];
-		MissileWeapon w = (MissileWeapon)Reflection.newInstance(c.classes[Random.chances(c.probs)]);
+		MissileWeapon w = (MissileWeapon)Reflection.newInstance(c.classes[Random.chances(c.probs())]);
 		w.random();
 		return w;
 	}
@@ -743,9 +753,9 @@ public class Generator {
 	public static Artifact randomArtifact() {
 
 		Category cat = Category.ARTIFACT;
-        Random.pushGenerator(Dungeon.seed);
-		int i = Random.chances( cat.probs );
-        int j = Random.chances( cat.probs );
+        Random.pushGenerator(Dungeon.cur().seed);
+		int i = Random.chances( cat.probs() );
+        int j = Random.chances( cat.probs() );
         Random.popGenerator();
 
 		//if no artifacts are left, return null
@@ -758,9 +768,9 @@ public class Generator {
 
         if(item.getClass() == LloydsBeacon.class){
             item = Reflection.newInstance((Class<? extends Artifact>) cat.classes[j]);
-            cat.probs[j]=0;
+            cat.probs()[j]=0;
         }else {
-            cat.probs[i]=0;
+            cat.probs()[i]=0;
         }
         return (Artifact) item.random();
 
@@ -769,8 +779,8 @@ public class Generator {
 	public static boolean removeArtifact(Class<?extends Artifact> artifact) {
 		Category cat = Category.ARTIFACT;
 		for (int i = 0; i < cat.classes.length; i++){
-			if (cat.classes[i].equals(artifact) && cat.probs[i] > 0) {
-				cat.probs[i] = 0;
+			if (cat.classes[i].equals(artifact) && cat.probs()[i] > 0) {
+				cat.probs()[i] = 0;
 				return true;
 			}
 		}
@@ -782,9 +792,10 @@ public class Generator {
 	private static final String CATEGORY_PROBS = "_probs";
 	
 	public static void storeInBundle(Bundle bundle) {
-		bundle.put(FIRST_DECK, usingFirstDeck);
+		Dungeons d = Dungeons.main();
+		bundle.put(FIRST_DECK, d.genUsingFirstDeck);
 
-		Float[] genProbs = categoryProbs.values().toArray(new Float[0]);
+		Float[] genProbs = d.genCategoryProbs.values().toArray(new Float[0]);
 		float[] storeProbs = new float[genProbs.length];
 		for (int i = 0; i < storeProbs.length; i++){
 			storeProbs[i] = genProbs[i];
@@ -793,29 +804,31 @@ public class Generator {
 
 		for (Category cat : Category.values()){
 			if (cat.defaultProbs == null) continue;
+			float[] curProbs = cat.probs();
 			boolean needsStore = false;
-			for (int i = 0; i < cat.probs.length; i++){
-				if (cat.probs[i] != cat.defaultProbs[i]){
+			for (int i = 0; i < curProbs.length; i++){
+				if (curProbs[i] != cat.defaultProbs[i]){
 					needsStore = true;
 					break;
 				}
 			}
 
 			if (needsStore){
-				bundle.put(cat.name().toLowerCase() + CATEGORY_PROBS, cat.probs);
+				bundle.put(cat.name().toLowerCase() + CATEGORY_PROBS, curProbs);
 			}
 		}
 	}
 
 	public static void restoreFromBundle(Bundle bundle) {
 		fullReset();
+		Dungeons d = Dungeons.main();
 
-		usingFirstDeck = bundle.getBoolean(FIRST_DECK);
+		d.genUsingFirstDeck = bundle.getBoolean(FIRST_DECK);
 
 		if (bundle.contains(GENERAL_PROBS)){
 			float[] probs = bundle.getFloatArray(GENERAL_PROBS);
 			for (int i = 0; i < probs.length; i++){
-				categoryProbs.put(Category.values()[i], probs[i]);
+				d.genCategoryProbs.put(Category.values()[i], probs[i]);
 			}
 		}
 
@@ -823,7 +836,7 @@ public class Generator {
 			if (bundle.contains(cat.name().toLowerCase() + CATEGORY_PROBS)){
 				float[] probs = bundle.getFloatArray(cat.name().toLowerCase() + CATEGORY_PROBS);
 				if (cat.defaultProbs != null && probs.length == cat.defaultProbs.length){
-					cat.probs = probs;
+					d.genCatProbs[cat.ordinal()] = probs;
 				}
 			}
 		}

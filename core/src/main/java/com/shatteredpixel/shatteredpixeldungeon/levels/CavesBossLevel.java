@@ -210,7 +210,7 @@ public class CavesBossLevel extends Level {
 		}
 		int cell;
 		do {
-			cell = entrance + PathFinder.NEIGHBOURS8[Random.Int(8)];
+			cell = entrance + PathFinder.cur().NEIGHBOURS8[Random.Int(8)];
 		} while (!passable[cell]
 				|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
 				|| Actor.findChar(cell) != null);
@@ -234,7 +234,7 @@ public class CavesBossLevel extends Level {
 
 		//seal the level when the hero moves near to a pylon, the level isn't already sealed, and the gate hasn't been destroyed
 		int gatePos = pointToCell(new Point(gate.left, gate.top));
-		if (ch == Dungeon.hero && !locked && solid[gatePos]){
+		if (ch == Dungeon.cur().hero && !locked && solid[gatePos]){
 			for (int pos : pylonPositions){
 				if (Dungeon.level.distance(ch.pos, pos) <= 3){
 					seal();
@@ -254,7 +254,7 @@ public class CavesBossLevel extends Level {
 		if (heap != null) {
 			int n;
 			do {
-				n = entrance + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
+				n = entrance + PathFinder.cur().NEIGHBOURS8[Random.Int( 8 )];
 			} while (!Dungeon.level.passable[n]);
 			Dungeon.level.drop( heap.pickUp(), n ).sprite.drop( entrance );
 		}
@@ -263,7 +263,7 @@ public class CavesBossLevel extends Level {
 		if (ch != null) {
 			int n;
 			do {
-				n = entrance + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
+				n = entrance + PathFinder.cur().NEIGHBOURS8[Random.Int( 8 )];
 			} while (!Dungeon.level.passable[n]);
 			ch.pos = n;
 			ch.sprite.place(n);
@@ -335,7 +335,7 @@ public class CavesBossLevel extends Level {
 		} else if (!pylons.isEmpty()) {
 			Pylon closest = null;
 			for (Pylon p : pylons){
-				if (closest == null || trueDistance(p.pos, Dungeon.hero.pos) < trueDistance(closest.pos, Dungeon.hero.pos)){
+				if (closest == null || trueDistance(p.pos, Dungeon.cur().hero.pos) < trueDistance(closest.pos, Dungeon.cur().hero.pos)){
 					closest = p;
 				}
 			}
@@ -795,7 +795,7 @@ public class CavesBossLevel extends Level {
 							ch.damage( Random.NormalIntRange(6, 12), Electricity.class);
 							ch.sprite.flash();
 
-							if (ch == Dungeon.hero && !ch.isAlive()) {
+							if (ch == Dungeon.cur().hero && !ch.isAlive()) {
 								Dungeon.fail(DM300.class);
 								GLog.n( Messages.get(Electricity.class, "ondeath") );
 							}

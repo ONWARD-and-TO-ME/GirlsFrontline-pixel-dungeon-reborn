@@ -158,8 +158,8 @@ public class Hunger extends Buff implements Hero.Doom {
 		if (level < minLevel && !overrideLimits) {
             float over = minLevel -level;
 			level = minLevel;
-            if (Dungeon.hero.buff(ActHPtoGetFood.LockReg.class)!=null){
-                Dungeon.hero.buff(ActHPtoGetFood.LockReg.class).lost(over);
+            if (Dungeon.cur().hero.buff(ActHPtoGetFood.LockReg.class)!=null){
+                Dungeon.cur().hero.buff(ActHPtoGetFood.LockReg.class).lost(over);
             }
         } else if (level > STARVING) {
 			float excess = level - STARVING;
@@ -212,7 +212,7 @@ public class Hunger extends Buff implements Hero.Doom {
 			result = Messages.get(this, "desc_intro_hungry");
 		} else {
 			result = Messages.get(this, "desc_intro_starving");
-			if(Dungeon.hero.heroClass == HeroClass.TYPE561_OLD){
+			if(Dungeon.cur().hero.heroClass == HeroClass.TYPE561_OLD){
 				result += Messages.get(this, "desc_type561");
 			}
 		}

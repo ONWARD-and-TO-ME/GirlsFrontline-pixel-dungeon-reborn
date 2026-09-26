@@ -143,7 +143,7 @@ public class WndTradeItem extends WndInfoItem {
 
 		pos = btnBuy.bottom();
 
-		final MasterThievesArmband.Thievery thievery = Dungeon.hero.buff(MasterThievesArmband.Thievery.class);
+		final MasterThievesArmband.Thievery thievery = Dungeon.cur().hero.buff(MasterThievesArmband.Thievery.class);
 		if (thievery != null && !thievery.isCursed() && thievery.chargesToUse(item) > 0) {
 			final float chance = thievery.stealChance(item);
 			final int chargesToUse = thievery.chargesToUse(item);
@@ -151,7 +151,7 @@ public class WndTradeItem extends WndInfoItem {
 				@Override
 				protected void onClick() {
 					if (thievery.steal(item)) {
-						Hero hero = Dungeon.hero;
+						Hero hero = Dungeon.cur().hero;
 						Item item = heap.pickUp();
 						hide();
 
@@ -194,7 +194,7 @@ public class WndTradeItem extends WndInfoItem {
 	
 	public static void sell( Item item ) {
 		
-		Hero hero = Dungeon.hero;
+		Hero hero = Dungeon.cur().hero;
 
 		if (item.isEquipped( hero ) && !((EquipableItem)item).doUnequip( hero, false )) {
 			return;
@@ -215,7 +215,7 @@ public class WndTradeItem extends WndInfoItem {
 			sell( item );
 		} else {
 			
-			Hero hero = Dungeon.hero;
+			Hero hero = Dungeon.cur().hero;
 			
 			item = item.detach( hero.belongings.backpack );
             SellItemPlace(item);
@@ -247,8 +247,8 @@ public class WndTradeItem extends WndInfoItem {
 			}
 		}
 		if (randomPos == -1) {
-			for (int i : PathFinder.NEIGHBOURS9) {
-				int pos = Dungeon.hero.pos + i;
+			for (int i : PathFinder.cur().NEIGHBOURS9) {
+				int pos = Dungeon.cur().hero.pos + i;
 				if (Char.hasProp(Actor.findChar(pos), Char.Property.IMMOVABLE))
 					continue;
 				if (Dungeon.level.solid[pos])
@@ -279,7 +279,7 @@ public class WndTradeItem extends WndInfoItem {
 			item.identify(false);
 		}
 		item.sold = false;
-		if (!item.doPickUp( Dungeon.hero )) {
+		if (!item.doPickUp( Dungeon.cur().hero )) {
 			Dungeon.level.drop( item, heap.pos ).sprite.drop();
 		}
 	}

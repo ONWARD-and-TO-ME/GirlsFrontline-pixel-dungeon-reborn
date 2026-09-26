@@ -21,7 +21,7 @@ public class GunBomb extends BookSpell{
 
     @Override
     public void onCast(RedBook book, Hero hero) {
-        Buff.affect(Dungeon.hero,BombDamage.class, 2f);
+        Buff.affect(Dungeon.cur().hero,BombDamage.class, 2f);
         super.onCast(book, hero);
     }
 

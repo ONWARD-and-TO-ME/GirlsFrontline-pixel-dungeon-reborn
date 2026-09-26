@@ -140,12 +140,12 @@ public class Swarm extends Mob {
 	@Override
 	public float lootChance() {
 		lootChance = 1f/(6 * (generation+1) );
-		return super.lootChance() * (5f - Dungeon.LimitedDrops.SWARM_HP.count) / 5f;
+		return super.lootChance() * (5f - Dungeon.LimitedDrops.SWARM_HP.count()) / 5f;
 	}
 	
 	@Override
 	public Item createLoot(){
-		Dungeon.LimitedDrops.SWARM_HP.count++;
+		Dungeon.LimitedDrops.SWARM_HP.used();
 		return super.createLoot();
 	}
 }

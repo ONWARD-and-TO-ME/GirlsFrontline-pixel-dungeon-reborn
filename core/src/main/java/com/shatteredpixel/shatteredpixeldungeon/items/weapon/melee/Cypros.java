@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -371,7 +370,7 @@ public class Cypros extends MeleeWeapon {
         int DEF = 5;
         int DEF_UPGRADE = 2;
         int baseDEF=DEF+DEF_UPGRADE*buffedLvl();
-        int REM=-2*Math.max(0,STRReq()-hero.STR);
+        int REM=-2*Math.max(0,STRReq()-Dungeon.cur().hero.STR);
         int DEF_GAIN=Math.max(0,baseDEF+REM);
         return Messages.get(Cypros.class,"DEF",DEF_GAIN);
     }

@@ -46,7 +46,7 @@ public class Genoise implements Bundlable {
         }
 
         boolean terrainAffected = false;
-        for (int n : PathFinder.NEIGHBOURS9) {
+        for (int n : PathFinder.cur().NEIGHBOURS9) {
             int c = target + n;
             if (c >= 0 && c < Dungeon.level.length()) {
                 if (Dungeon.level.heroFOV[c]) {
@@ -76,10 +76,10 @@ public class Genoise implements Bundlable {
                     //drRoll的作用是计算怪物自身的防御
                     //综上，蛋糕炸弹的伤害计算就是基础20~30、成长1-2的基础伤害、对中心格伤害翻倍、计算怪物防御
                     if (dmg > 0) {
-                        ch.damage( dmg , Dungeon.hero );
+                        ch.damage( dmg , Dungeon.cur().hero );
                     }
 
-                    if (ch == Dungeon.hero && !ch.isAlive()) {
+                    if (ch == Dungeon.cur().hero && !ch.isAlive()) {
                         Dungeon.fail( getClass() );
                     }
                 }

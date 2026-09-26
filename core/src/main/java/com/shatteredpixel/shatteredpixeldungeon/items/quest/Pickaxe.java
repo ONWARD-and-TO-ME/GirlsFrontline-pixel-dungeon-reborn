@@ -80,14 +80,14 @@ public class Pickaxe extends MeleeWeapon {
 		
 		if (action.equals(AC_MINE)) {
 			
-			if (Dungeon.depth < 11 || Dungeon.depth > 15) {
+			if (Dungeon.cur().depth < 11 || Dungeon.cur().depth > 15) {
 				GLog.w( Messages.get(this, "no_vein") );
 				return;
 			}
 			
-			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
+			for (int i = 0; i < PathFinder.cur().NEIGHBOURS8.length; i++) {
 				
-				final int pos = hero.pos + PathFinder.NEIGHBOURS8[i];
+				final int pos = hero.pos + PathFinder.cur().NEIGHBOURS8[i];
 				if (Dungeon.level.map[pos] == Terrain.WALL_DECO) {
 				
 					hero.spend( TIME_TO_MINE );
@@ -105,8 +105,8 @@ public class Pickaxe extends MeleeWeapon {
 							GameScene.updateMap( pos );
 							
 							DarkGold gold = new DarkGold();
-							if (gold.doPickUp( Dungeon.hero )) {
-								GLog.i( Messages.get(Dungeon.hero, "you_now_have", gold.name()) );
+							if (gold.doPickUp( Dungeon.cur().hero )) {
+								GLog.i( Messages.get(Dungeon.cur().hero, "you_now_have", gold.name()) );
 							} else {
 								Dungeon.level.drop( gold, hero.pos ).sprite.drop();
 							}

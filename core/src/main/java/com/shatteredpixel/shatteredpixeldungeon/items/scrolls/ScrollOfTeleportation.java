@@ -65,11 +65,11 @@ public class ScrollOfTeleportation extends Scroll {
 	}
 	
 	public static boolean teleportToLocation(Char ch, int pos){
-		PathFinder.buildDistanceMap(pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
-		if (PathFinder.distance[ch.pos] == Integer.MAX_VALUE
+		PathFinder.cur().buildDistanceMap(pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+		if (PathFinder.cur().distance[ch.pos] == Integer.MAX_VALUE
 				|| (!Dungeon.level.passable[pos] && !Dungeon.level.avoid[pos])
 				|| Actor.findChar(pos) != null){
-			if (ch == Dungeon.hero){
+			if (ch == Dungeon.cur().hero){
 				GLog.w( Messages.get(ScrollOfTeleportation.class, "cant_reach") );
 			}
 			return false;
@@ -77,7 +77,7 @@ public class ScrollOfTeleportation extends Scroll {
 		
 		appear( ch, pos );
 		Dungeon.level.occupyCell( ch );
-		if (ch == Dungeon.hero) {
+		if (ch == Dungeon.cur().hero) {
 			Dungeon.observe();
 			GameScene.updateFog();
 		}
@@ -119,12 +119,12 @@ public class ScrollOfTeleportation extends Scroll {
 			appear( ch, pos );
 			Dungeon.level.occupyCell( ch );
 			
-			if (ch == Dungeon.hero) {
+			if (ch == Dungeon.cur().hero) {
 				GLog.i( Messages.get(ScrollOfTeleportation.class, "tele") );
 				
 				Dungeon.observe();
 				GameScene.updateFog();
-				Dungeon.hero.interrupt();
+				Dungeon.cur().hero.interrupt();
 			}
 			return true;
 			
@@ -175,7 +175,7 @@ public class ScrollOfTeleportation extends Scroll {
 				SpecialRoom room = (SpecialRoom) level.room(pos);
 				if (room.entrance() != null){
 					doorPos = level.pointToCell(room.entrance());
-					for (int i : PathFinder.NEIGHBOURS8){
+					for (int i : PathFinder.cur().NEIGHBOURS8){
 						if (!room.inside(level.cellToPoint(doorPos + i))
 								&& level.passable[doorPos + i]
 								&& Actor.findChar(doorPos + i) == null){
@@ -222,10 +222,10 @@ public class ScrollOfTeleportation extends Scroll {
 			passable = BArray.or(passable, Dungeon.level.openSpace, null);
 		}
 
-		PathFinder.buildDistanceMap(ch.pos, passable);
+		PathFinder.cur().buildDistanceMap(ch.pos, passable);
 
 		for (int i = 0; i < Dungeon.level.length(); i++){
-			if (PathFinder.distance[i] < Integer.MAX_VALUE
+			if (PathFinder.cur().distance[i] < Integer.MAX_VALUE
 					&& !Dungeon.level.secret[i]
 					&& Actor.findChar(i) == null){
 				if (preferNotSeen && !Dungeon.level.visited[i]){
@@ -254,12 +254,12 @@ public class ScrollOfTeleportation extends Scroll {
 		appear( ch, pos );
 		Dungeon.level.occupyCell( ch );
 
-		if (ch == Dungeon.hero) {
+		if (ch == Dungeon.cur().hero) {
 			GLog.i( Messages.get(ScrollOfTeleportation.class, "tele") );
 
 			Dungeon.observe();
 			GameScene.updateFog();
-			Dungeon.hero.interrupt();
+			Dungeon.cur().hero.interrupt();
 		}
 
 		return true;
@@ -274,7 +274,7 @@ public class ScrollOfTeleportation extends Scroll {
 			Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 		}
 
-		if (Dungeon.level.heroFOV[ch.pos] && ch != Dungeon.hero ) {
+		if (Dungeon.level.heroFOV[ch.pos] && ch != Dungeon.cur().hero ) {
 			CellEmitter.get(ch.pos).start(Speck.factory(Speck.LIGHT), 0.2f, 3);
 		}
 
@@ -286,7 +286,7 @@ public class ScrollOfTeleportation extends Scroll {
 			ch.sprite.parent.add( new AlphaTweener( ch.sprite, 1, 0.4f ) );
 		}
 
-		if (Dungeon.level.heroFOV[pos] || ch == Dungeon.hero ) {
+		if (Dungeon.level.heroFOV[pos] || ch == Dungeon.cur().hero ) {
 			ch.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.2f, 3);
 		}
 	}

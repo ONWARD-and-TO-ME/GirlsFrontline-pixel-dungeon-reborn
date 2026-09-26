@@ -37,7 +37,7 @@ public class PotionOfEarthenArmor extends ExoticPotion {
 	@Override
 	public void apply( Hero hero ) {
 		identify();
-		Talent.onPotionUsed(Dungeon.hero, 1F);
+		Talent.onPotionUsed(Dungeon.cur().hero, 1F);
 		
 		Buff.affect(hero, Barkskin.class).set( 2 + hero.lvl/3, 50 );
 	}

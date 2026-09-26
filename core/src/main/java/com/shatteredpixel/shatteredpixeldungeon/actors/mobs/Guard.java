@@ -80,9 +80,9 @@ public class Guard extends Mob {
 	public int attackProc( Char enemy, int damage ) {
 		damage = super.attackProc( enemy, damage );
 
-		if (enemy == Dungeon.hero) {
+		if (enemy == Dungeon.cur().hero) {
 
-			Hero hero = Dungeon.hero;
+			Hero hero = Dungeon.cur().hero;
 			KindOfWeapon weapon = hero.belongings.weapon;
 
 			if (weapon != null  && !weapon.cursed) {
@@ -109,9 +109,9 @@ public class Guard extends Mob {
     @Override
     public Item createLoot(){
 
-        if (Random.Int(3) < 1 && Random.Int(9) >= Dungeon.LimitedDrops.GUARD_HP.count ){
+        if (Random.Int(3) < 1 && Random.Int(9) >= Dungeon.LimitedDrops.GUARD_HP.count() ){
             //照搬的术士Warlock
-            Dungeon.LimitedDrops.GUARD_HP.count++;
+            Dungeon.LimitedDrops.GUARD_HP.used();
             return new PotionOfHealing();
         } else {
             Item i = Generator.random(Generator.Category.POTION);
@@ -126,7 +126,7 @@ public class Guard extends Mob {
             if (healingTried > 0){
                 for (int j = 0; j < Generator.Category.POTION.classes.length; j++){
                     if (Generator.Category.POTION.classes[j] == PotionOfHealing.class){
-                        Generator.Category.POTION.probs[j] += healingTried;
+                        Generator.Category.POTION.probs()[j] += healingTried;
                     }
                 }
             }

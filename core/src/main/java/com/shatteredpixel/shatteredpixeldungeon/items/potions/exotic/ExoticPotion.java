@@ -98,9 +98,9 @@ public class ExoticPotion extends Potion {
 		if (!isKnown()) {
 			handler.know(exoToReg.get(this.getClass()));
 			updateQuickslot();
-			Potion p = Dungeon.hero.belongings.getItem(getClass());
+			Potion p = Dungeon.cur().hero.belongings.getItem(getClass());
 			if (p != null)  p.setAction();
-			p = Dungeon.hero.belongings.getItem(exoToReg.get(this.getClass()));
+			p = Dungeon.cur().hero.belongings.getItem(exoToReg.get(this.getClass()));
 			if (p != null)  p.setAction();
 		}
 	}

@@ -37,7 +37,7 @@ public class PotionOfStamina extends ExoticPotion {
 	@Override
 	public void apply(Hero hero) {
 		identify();
-		Talent.onPotionUsed(Dungeon.hero, 1F);
+		Talent.onPotionUsed(Dungeon.cur().hero, 1F);
 		
 		Buff.affect(hero, Stamina.class, Stamina.DURATION);
 	}

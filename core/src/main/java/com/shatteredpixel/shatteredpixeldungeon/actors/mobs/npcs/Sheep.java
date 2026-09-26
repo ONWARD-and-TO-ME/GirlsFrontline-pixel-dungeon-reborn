@@ -79,8 +79,8 @@ public class Sheep extends NPC {
 	public boolean interact(Char c) {
 		Bestiary.setSeen(getClass());
 		sprite.showStatus( CharSprite.NEUTRAL, Messages.get(this, Random.element( LINE_KEYS )) );
-		if (c == Dungeon.hero) {
-			Dungeon.hero.spendAndNext(1f);
+		if (c == Dungeon.cur().hero) {
+			Dungeon.cur().hero.spendAndNext(1f);
 			Sample.INSTANCE.play(Assets.Sounds.DOGCHONG, 1, Random.Float(0.91f, 1.1f));
 		}
 		return true;

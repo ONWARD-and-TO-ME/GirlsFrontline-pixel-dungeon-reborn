@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeons;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
@@ -60,9 +61,9 @@ public class Imp extends NPC {
 	@Override
 	protected boolean act() {
 		
-		if (!Quest.given && Dungeon.level.heroFOV[pos]) {
+		if (!Quest.cur().given && Dungeon.level.heroFOV[pos]) {
 			if (!seenBefore) {
-				yell( Messages.get(this, "hey", Dungeon.hero.name() ) );
+				yell( Messages.get(this, "hey", Dungeon.cur().hero.name() ) );
 			}
 			Notes.add( Notes.Landmark.IMP );
 			seenBefore = true;
@@ -94,16 +95,16 @@ public class Imp extends NPC {
 	@Override
 	public boolean interact(Char c) {
 		
-		sprite.turnTo( pos, Dungeon.hero.pos );
+		sprite.turnTo( pos, Dungeon.cur().hero.pos );
 
-		if (c != Dungeon.hero){
+		if (c != Dungeon.cur().hero){
 			return true;
 		}
 
-		if (Quest.given) {
+		if (Quest.cur().given) {
 			
-			DwarfToken tokens = Dungeon.hero.belongings.getItem( DwarfToken.class );
-			if (tokens != null && (tokens.quantity() >= 5 || (!Quest.alternative && tokens.quantity() >= 4))) {
+			DwarfToken tokens = Dungeon.cur().hero.belongings.getItem( DwarfToken.class );
+			if (tokens != null && (tokens.quantity() >= 5 || (!Quest.cur().alternative && tokens.quantity() >= 4))) {
 				Game.runOnRenderThread(new Callback() {
 					@Override
 					public void call() {
@@ -111,12 +112,12 @@ public class Imp extends NPC {
 					}
 				});
 			} else {
-				Game.runOnRenderThread(() ->GameScene.show( (new WndDialog(Quest.alternative ? new P7_Plot_L1.End() : new P7_Plot_L2.End()) )));
+				Game.runOnRenderThread(() ->GameScene.show( (new WndDialog(Quest.cur().alternative ? new P7_Plot_L1.End() : new P7_Plot_L2.End()) )));
 			}
 		} else {
-			Game.runOnRenderThread(() ->GameScene.show( (new WndDialog(Quest.alternative ? new P7_Plot_L1() : new P7_Plot_L2()) )));
-			Quest.given = true;
-			Quest.completed = false;
+			Game.runOnRenderThread(() ->GameScene.show( (new WndDialog(Quest.cur().alternative ? new P7_Plot_L1() : new P7_Plot_L2()) )));
+			Quest.cur().given = true;
+			Quest.cur().completed = false;
 			Notes.add( Notes.Landmark.IMP );
 		}
 
@@ -125,7 +126,7 @@ public class Imp extends NPC {
 	
 	public void flee() {
 		
-		yell( Messages.get(this, "cya", Dungeon.hero.name()) );
+		yell( Messages.get(this, "cya", Dungeon.cur().hero.name()) );
 		
 		destroy();
 		sprite.die();
@@ -133,15 +134,22 @@ public class Imp extends NPC {
 
 	public static class Quest {
 		
-		private static boolean alternative;
+		public static Quest cur() {
+			return Dungeons.cur().impQuest;
+		}
+		//仅用于存档读写（始终发生在主线程），避免误序列化 worker 状态
+		public static Quest main() {
+			return Dungeons.main().impQuest;
+		}
+		private boolean alternative;
 		
-		public static boolean spawned;
-		private static boolean given;
-		private static boolean completed;
+		public boolean spawned;
+		private boolean given;
+		private boolean completed;
 		
-		public static Ring reward;
+		public Ring reward;
 		
-		public static void reset() {
+		public void reset() {
 			spawned = false;
 
 			reward = null;
@@ -155,7 +163,7 @@ public class Imp extends NPC {
 		private static final String COMPLETED	= "completed";
 		private static final String REWARD		= "reward";
 		
-		public static void storeInBundle( Bundle bundle ) {
+		public void storeInBundle( Bundle bundle ) {
 			
 			Bundle node = new Bundle();
 			
@@ -172,7 +180,7 @@ public class Imp extends NPC {
 			bundle.put( NODE, node );
 		}
 		
-		public static void restoreFromBundle( Bundle bundle ) {
+		public void restoreFromBundle( Bundle bundle ) {
 
 			Bundle node = bundle.getBundle( NODE );
 			
@@ -185,8 +193,8 @@ public class Imp extends NPC {
 			}
 		}
 		
-		public static void spawn( CityLevel level ) {
-			if (!spawned && Dungeon.depth > 16 && Random.Int( 20 - Dungeon.depth ) == 0) {
+		public void spawn( CityLevel level ) {
+			if (!spawned && Dungeon.cur().depth > 16 && Random.Int( 20 - Dungeon.cur().depth ) == 0) {
 				
 				Imp npc = new Imp();
 				do {
@@ -197,14 +205,14 @@ public class Imp extends NPC {
 						level.traps.get( npc.pos) != null ||
 						level.findMob( npc.pos ) != null ||
 						//The imp doesn't move, so he cannot obstruct a passageway
-						!(level.passable[npc.pos + PathFinder.CIRCLE4[0]] && level.passable[npc.pos + PathFinder.CIRCLE4[2]]) ||
-						!(level.passable[npc.pos + PathFinder.CIRCLE4[1]] && level.passable[npc.pos + PathFinder.CIRCLE4[3]]));
+						!(level.passable[npc.pos + PathFinder.cur().CIRCLE4[0]] && level.passable[npc.pos + PathFinder.cur().CIRCLE4[2]]) ||
+						!(level.passable[npc.pos + PathFinder.cur().CIRCLE4[1]] && level.passable[npc.pos + PathFinder.cur().CIRCLE4[3]]));
 				level.mobs.add( npc );
 				
 				spawned = true;
 
 				//always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
-				switch (Dungeon.depth){
+				switch (Dungeon.cur().depth){
 					case 17: default:
 						alternative = true;
 						break;
@@ -226,8 +234,8 @@ public class Imp extends NPC {
 			}
 		}
 		
-		public static void process( Mob mob ) {
-			if (spawned && given && !completed && Dungeon.depth != 20) {
+		public void process( Mob mob ) {
+			if (spawned && given && !completed && Dungeon.cur().depth != 20) {
 				if ((alternative && mob instanceof Monk) ||
 					(!alternative && mob instanceof Golem)) {
 					
@@ -236,15 +244,16 @@ public class Imp extends NPC {
 			}
 		}
 		
-		public static void complete() {
+		public void complete() {
 			reward = null;
 			completed = true;
+			if (Dungeons.cur().isSearch) return;
 			CardSelector.INSTANCE().coolDown(1000);
 			
 			Notes.remove( Notes.Landmark.IMP );
 		}
 		
-		public static boolean isCompleted() {
+		public boolean isCompleted() {
 			return completed;
 		}
 	}

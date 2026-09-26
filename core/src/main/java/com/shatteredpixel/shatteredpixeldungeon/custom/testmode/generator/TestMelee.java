@@ -1,6 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.custom.testmode.generator;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -157,13 +157,13 @@ public class TestMelee extends TestItem {
             if(wpn instanceof MagesStaff){
                 wpn=new MagesStaff(new WandOfMagicMissile());
                 wpn.identify();
-                GameScene.pickUp(wpn,hero.pos);
+                GameScene.pickUp(wpn,Dungeon.cur().hero.pos);
                 Sample.INSTANCE.play(Assets.Sounds.ITEM);
             }
             if(wpn.collect()) {
-                GameScene.pickUp( wpn, hero.pos );
+                GameScene.pickUp( wpn, Dungeon.cur().hero.pos );
                 Sample.INSTANCE.play( Assets.Sounds.ITEM );
-                GLog.i(Messages.get(hero, "you_now_have", wpn.name()));
+                GLog.i(Messages.get(Dungeon.cur().hero, "you_now_have", wpn.name()));
             } else {
                 wpn.doDrop(curUser);
             }

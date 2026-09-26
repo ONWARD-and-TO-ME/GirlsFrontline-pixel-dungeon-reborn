@@ -37,7 +37,7 @@ public class PrisonPainter extends RegularPainter {
 		
 		for (Room r : rooms) {
 			if (r instanceof EntranceRoom) {
-				Wandmaker.Quest.spawnWandmaker(level, r);
+				Wandmaker.Quest.cur().spawnWandmaker(level, r);
 				break;
 			}
 		}

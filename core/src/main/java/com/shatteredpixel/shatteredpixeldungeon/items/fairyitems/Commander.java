@@ -25,7 +25,7 @@ public class Commander extends FairyItems {
         }
         @Override
         public String desc(){
-            return Messages.get(this, "desc", (int)count(), Dungeon.LimitedDrops.DropLevel.count);
+            return Messages.get(this, "desc", (int)count(), Dungeon.LimitedDrops.DropLevel.count());
         }
     }
 }

@@ -82,7 +82,7 @@ public class WandOfLightning extends DamageWand {
 		if (Dungeon.level.water[bolt.collisionPos]) multipler = 1f;
 
 		for (Char ch : affected){
-			if (ch == Dungeon.hero) Camera.main.shake( 2, 0.3f );
+			if (ch == Dungeon.cur().hero) Camera.main.shake( 2, 0.3f );
 			ch.sprite.centerEmitter().burst( SparkParticle.FACTORY, 3 );
 			ch.sprite.flash();
 
@@ -122,12 +122,12 @@ public class WandOfLightning extends DamageWand {
         }
 
         ArrayList<Char> hitThisArc = new ArrayList();
-        PathFinder.buildDistanceMap(ch.pos, BArray.not(Dungeon.level.solid, (boolean[])null), dist);
+        PathFinder.cur().buildDistanceMap(ch.pos, BArray.not(Dungeon.level.solid, (boolean[])null), dist);
 
-        for(int i = 0; i < PathFinder.distance.length; ++i) {
-            if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+        for(int i = 0; i < PathFinder.cur().distance.length; ++i) {
+            if (PathFinder.cur().distance[i] < Integer.MAX_VALUE) {
                 Char n = Actor.findChar(i);
-                if ((n != Dungeon.hero || PathFinder.distance[i] <= 1) && n != null && !this.affected.contains(n)) {
+                if ((n != Dungeon.cur().hero || PathFinder.cur().distance[i] <= 1) && n != null && !this.affected.contains(n)) {
                     hitThisArc.add(n);
                 }
             }

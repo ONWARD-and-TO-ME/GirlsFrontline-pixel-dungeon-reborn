@@ -38,8 +38,8 @@ public class Core_Calling extends Buff {
                 callingTimes.set(i, callingTimes.get(i) - 1);
 
         ArrayList<Integer> placeable = new ArrayList<>();
-        for (int i = 0; i < PathFinder.NEIGHBOURS25.length; i++) {
-            int p = target.pos + PathFinder.NEIGHBOURS25[i];
+        for (int i = 0; i < PathFinder.cur().NEIGHBOURS25.length; i++) {
+            int p = target.pos + PathFinder.cur().NEIGHBOURS25[i];
             if (Actor.findChar(p) == null && Dungeon.level.passable[p])
                 placeable.add(p);
         }

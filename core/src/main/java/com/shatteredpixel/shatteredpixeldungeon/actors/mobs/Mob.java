@@ -260,7 +260,7 @@ public abstract class Mob extends Char {
 		if ( enemy == null || !enemy.isAlive() || !Actor.chars().contains(enemy) || state == WANDERING) {
 			newEnemy = true;
 		//We are amoked and current enemy is the hero
-		} else if (buff( Amok.class ) != null && enemy == Dungeon.hero) {
+		} else if (buff( Amok.class ) != null && enemy == Dungeon.cur().hero) {
 			newEnemy = true;
 		//We are charmed and current enemy is what charmed us
 		} else if (buff(Charm.class) != null && buff(Charm.class).object == enemy.id()) {
@@ -301,8 +301,8 @@ public abstract class Mob extends Char {
 					
 					if (enemies.isEmpty()) {
 						//try to find the hero third
-						if (fieldOfView[Dungeon.hero.pos] && Dungeon.hero.invisible <= 0) {
-							enemies.add(Dungeon.hero);
+						if (fieldOfView[Dungeon.cur().hero.pos] && Dungeon.cur().hero.invisible <= 0) {
+							enemies.add(Dungeon.cur().hero);
 						}
 					}
 				}
@@ -327,8 +327,8 @@ public abstract class Mob extends Char {
 						enemies.add(mob);
 
 				//and look for the hero
-				if (fieldOfView[Dungeon.hero.pos] && Dungeon.hero.invisible <= 0) {
-					enemies.add(Dungeon.hero);
+				if (fieldOfView[Dungeon.cur().hero.pos] && Dungeon.cur().hero.invisible <= 0) {
+					enemies.add(Dungeon.cur().hero);
 				}
 				
 			}
@@ -351,7 +351,7 @@ public abstract class Mob extends Char {
 				for (Char curr : enemies){
 					if (closest == null
 							|| Dungeon.level.distance(pos, curr.pos) < Dungeon.level.distance(pos, closest.pos)
-							|| Dungeon.level.distance(pos, curr.pos) == Dungeon.level.distance(pos, closest.pos) && curr == Dungeon.hero){
+							|| Dungeon.level.distance(pos, curr.pos) == Dungeon.level.distance(pos, closest.pos) && curr == Dungeon.cur().hero){
 						closest = curr;
 					}
 				}
@@ -479,7 +479,7 @@ public abstract class Mob extends Char {
 					newPath = true;
 					//If the next cell on the path can't be moved into, see if there is another cell that could replace it
 					if (!path.isEmpty()) {
-						for (int i : PathFinder.NEIGHBOURS8) {
+						for (int i : PathFinder.cur().NEIGHBOURS8) {
 							if (Dungeon.level.adjacent(pos, nextCell + i) && Dungeon.level.adjacent(nextCell + i, path.getFirst())) {
 								if (Dungeon.level.passable[nextCell+i]
 										&& (flying || !Dungeon.level.avoid[nextCell+i])
@@ -553,8 +553,8 @@ public abstract class Mob extends Char {
 	@Override
 	public void updateSpriteState() {
 		super.updateSpriteState();
-		if (Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class) != null
-				|| Dungeon.hero.buff(Swiftthistle.TimeBubble.class) != null)
+		if (Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class) != null
+				|| Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class) != null)
 			sprite.add( CharSprite.State.PARALYSED );
 	}
 	
@@ -588,7 +588,7 @@ public abstract class Mob extends Char {
 	public int defenseSkill( Char enemy ) {
 		if ( !surprisedBy(enemy)
 				&& paralysed == 0
-				&& !(alignment == Alignment.ALLY && enemy == Dungeon.hero)) {
+				&& !(alignment == Alignment.ALLY && enemy == Dungeon.cur().hero)) {
 			return this.defenseSkill;
 		} else {
 			return 0;
@@ -613,8 +613,8 @@ public abstract class Mob extends Char {
 			Badges.validateRogueUnlock();
 			//TODO this is somewhat messy, it would be nicer to not have to manually handle delays here
 			// playing the strong hit sound might work best as another property of weapon?
-			if (Dungeon.hero.belongings.weapon() instanceof SpiritBow.SpiritArrow
-				|| Dungeon.hero.belongings.weapon() instanceof Dart){
+			if (Dungeon.cur().hero.belongings.weapon() instanceof SpiritBow.SpiritArrow
+				|| Dungeon.cur().hero.belongings.weapon() instanceof Dart){
 				Sample.INSTANCE.playDelayed(Assets.Sounds.HIT_STRONG, 0.125f);
 			} else {
 				Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
@@ -638,13 +638,13 @@ public abstract class Mob extends Char {
 			
 			//physical damage that doesn't come from the hero is less effective
 			// 法师（G11）术士·噬魂衰减/转饥饿系数（实现见 MageTalent）
-			if (enemy != Dungeon.hero){
-				restoration = Math.round(restoration * MageTalent.soulSiphonFactor(Dungeon.hero));
+			if (enemy != Dungeon.cur().hero){
+				restoration = Math.round(restoration * MageTalent.soulSiphonFactor(Dungeon.cur().hero));
 			}
 			if (restoration > 0) {
-				Buff.affect(Dungeon.hero, Hunger.class).affectHunger(restoration*MageTalent.soulEaterHungerFactor(Dungeon.hero));
-				Dungeon.hero.HP = (int) Math.ceil(Math.min(Dungeon.hero.HT, Dungeon.hero.HP + (restoration * 0.4f)));
-				Dungeon.hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
+				Buff.affect(Dungeon.cur().hero, Hunger.class).affectHunger(restoration*MageTalent.soulEaterHungerFactor(Dungeon.cur().hero));
+				Dungeon.cur().hero.HP = (int) Math.ceil(Math.min(Dungeon.cur().hero.HT, Dungeon.cur().hero.HP + (restoration * 0.4f)));
+				Dungeon.cur().hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
 			}
 		}
 
@@ -656,7 +656,7 @@ public abstract class Mob extends Char {
 	}
 
 	public boolean surprisedBy( Char enemy, boolean attacking ){
-		return enemy == Dungeon.hero
+		return enemy == Dungeon.cur().hero
 				&& (enemy.invisible > 0 || !enemySeen)
 				&& (!attacking || ((Hero)enemy).canSurpriseAttack());
 	}
@@ -684,8 +684,8 @@ public abstract class Mob extends Char {
 					alerted = true;
 					//assume the hero is hitting us in these common cases
 					if (src instanceof Wand || src instanceof ArmorAbility) {
-						aggro(Dungeon.hero);
-						target = Dungeon.hero.pos;
+						aggro(Dungeon.cur().hero);
+						target = Dungeon.cur().hero.pos;
 					}
 				}
 			}
@@ -705,7 +705,7 @@ public abstract class Mob extends Char {
 		
 		Dungeon.level.mobs.remove( this );
 		
-		if (Dungeon.hero.isAlive()) {
+		if (Dungeon.cur().hero.isAlive()) {
 			
 			if (alignment == Alignment.ENEMY) {
 				Statistics.enemiesSlain++;
@@ -713,11 +713,11 @@ public abstract class Mob extends Char {
 				Statistics.qualifiedForNoKilling = false;
 				Bestiary.setSeen(getClass());
 				Bestiary.countEncounter(getClass());
-				int exp = Dungeon.hero.lvl <= maxLvl ? EXP : 0;
+				int exp = Dungeon.cur().hero.lvl <= maxLvl ? EXP : 0;
 				if (exp > 0) {
-					Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "exp", Hero.expGain(Dungeon.hero, exp)));
+					Dungeon.cur().hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "exp", Hero.expGain(Dungeon.cur().hero, exp)));
 				}
-				Dungeon.hero.earnExp(exp, getClass());
+				Dungeon.cur().hero.earnExp(exp, getClass());
 			}
 		}
 	}
@@ -725,7 +725,7 @@ public abstract class Mob extends Char {
 	@Override
 	public void die( Object cause ) {
         if(properties().contains(Property.BOSS)){
-            LloydsBeacon beacon = Dungeon.hero.belongings.getItem(LloydsBeacon.class);
+            LloydsBeacon beacon = Dungeon.cur().hero.belongings.getItem(LloydsBeacon.class);
             if (beacon != null && beacon.level() < beacon.levelCap) {
                 beacon.upgrade();
 				Catalog.countUses(LloydsBeacon.class, beacon.level() == 3 ? 4 : 3);
@@ -747,12 +747,12 @@ public abstract class Mob extends Char {
 			rollToDropLoot();
 
 			// 战士（UMP45）致命势能：击杀后下次动作瞬发（实现见 WarriorTalent）
-			if (cause == Dungeon.hero){
-				WarriorTalent.onMobSlain(Dungeon.hero, cause, this);
+			if (cause == Dungeon.cur().hero){
+				WarriorTalent.onMobSlain(Dungeon.cur().hero, cause, this);
 			}
 		}
 
-		if (Dungeon.hero.isAlive() && !Dungeon.level.heroFOV[pos]) {
+		if (Dungeon.cur().hero.isAlive() && !Dungeon.level.heroFOV[pos]) {
 			GLog.i( Messages.get(this, "died") );
 		}
 
@@ -762,7 +762,7 @@ public abstract class Mob extends Char {
 
 		if (!(this instanceof Wraith)
 				&& soulMarked
-				&& MageTalent.rollNecromancerWraith(Dungeon.hero)) {
+				&& MageTalent.rollNecromancerWraith(Dungeon.cur().hero)) {
 			Wraith w = Wraith.spawnAt(pos);
 			if (w != null) {
 				Buff.affect(w, Corruption.class);
@@ -781,12 +781,12 @@ public abstract class Mob extends Char {
 	public float lootChance(){
 		float lootChance = this.lootChance;
 
-		lootChance *= RingOfWealth.dropChanceMultiplier( Dungeon.hero );
+		lootChance *= RingOfWealth.dropChanceMultiplier( Dungeon.cur().hero );
 
 		return lootChance;
 	}
 	public boolean doDrop(){
-		return Dungeon.hero.lvl <= maxLvl + 2 + Dungeon.LimitedDrops.DropLevel.count;
+		return Dungeon.cur().hero.lvl <= maxLvl + 2 + Dungeon.LimitedDrops.DropLevel.count();
 	}
 
 	public void rollToDropLoot(){
@@ -802,7 +802,7 @@ public abstract class Mob extends Char {
 			}
 		}
 		Lucky.LuckProc lucky = buff(Lucky.LuckProc.class);
-		RingOfWealth.Wealth wealth = Dungeon.hero.buff(RingOfWealth.Wealth.class);
+		RingOfWealth.Wealth wealth = Dungeon.cur().hero.buff(RingOfWealth.Wealth.class);
 		//ring of wealth logic
 		if (wealth != null) {
 			int rolls = 1;
@@ -811,7 +811,7 @@ public abstract class Mob extends Char {
 			Ring type = wealth.ring();
 			if ( lucky != null )
 				type = null;
-			ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(Dungeon.hero, rolls, type);
+			ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(Dungeon.cur().hero, rolls, type);
 			if (!bonus.isEmpty()) {
 				for (Item b : bonus) Dungeon.level.drop(b, pos).sprite.drop();
 				if (bonus.size() > 1 || lucky != null && lucky.doDrop())
@@ -827,12 +827,12 @@ public abstract class Mob extends Char {
 		}
 
 		//soul eater talent（法师G11术士·噬魂，实现见 MageTalent）
-		if (buff(SoulMark.class) != null && MageTalent.rollSoulEater(Dungeon.hero)){
-			Talent.onFoodEaten(Dungeon.hero, 0, null);
+		if (buff(SoulMark.class) != null && MageTalent.rollSoulEater(Dungeon.cur().hero)){
+			Talent.onFoodEaten(Dungeon.cur().hero, 0, null);
 		}
 
 		//bounty hunter talent（盗贼UMP9赏金猎人，实现见 RogueTalent）
-		RogueTalent.rollBountyGold(Dungeon.hero, pos);
+		RogueTalent.rollBountyGold(Dungeon.cur().hero, pos);
 
 	}
 	
@@ -917,7 +917,7 @@ public abstract class Mob extends Char {
 
 	//returns true when a mob sees the hero, and is currently targeting them.
 	public boolean focusingHero() {
-		return enemySeen && (target == Dungeon.hero.pos);
+		return enemySeen && (target == Dungeon.cur().hero.pos);
 	}
 
 	public interface AiState {
@@ -1154,7 +1154,7 @@ public abstract class Mob extends Char {
 	private static ArrayList<Mob> heldAllies = new ArrayList<>();
 
 	public static void holdAllies( Level level ){
-		holdAllies(level, Dungeon.hero.pos);
+		holdAllies(level, Dungeon.cur().hero.pos);
 	}
 
 	public static void holdAllies( Level level, int holdFromPos ){
@@ -1186,7 +1186,7 @@ public abstract class Mob extends Char {
 		if (!heldAllies.isEmpty()){
 			
 			ArrayList<Integer> candidatePositions = new ArrayList<>();
-			for (int i : PathFinder.NEIGHBOURS8) {
+			for (int i : PathFinder.cur().NEIGHBOURS8) {
 				if (!Dungeon.level.solid[i+pos] && level.findMob(i+pos) == null){
 					candidatePositions.add(i+pos);
 				}

@@ -56,7 +56,7 @@ public class RevealedArea extends FlavourBuff{
 
 	@Override
 	public float iconFadePercent() {
-		float max = HuntressTalent.seerShotMaxDuration(Dungeon.hero);
+		float max = HuntressTalent.seerShotMaxDuration(Dungeon.cur().hero);
 		return Math.max(0, (max-visualcooldown()) / max);
 	}
 

@@ -199,7 +199,7 @@ public class SecondTitleScene extends PixelScene {
 	}
 
     public static void enterMainGame(){
-        Dungeon.hero = null;
+        Dungeon.cur().hero = null;
         ActionIndicator.clearAll();
         GamesInProgress.curSlot = 0;
         GamesInProgress.Info gameInfo = GamesInProgress.check(GamesInProgress.curSlot);

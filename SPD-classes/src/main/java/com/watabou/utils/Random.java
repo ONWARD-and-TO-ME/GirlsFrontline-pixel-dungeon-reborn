@@ -34,25 +34,70 @@ public class Random {
 	//we store a stack of random number generators, which may be seeded deliberately or randomly.
 	//top of the stack is what is currently being used to generate new numbers.
 	//the base generator is always created with no seed, and cannot be popped.
-	private static ArrayDeque<java.util.Random> generators;
+
+	//游戏主上下文：Render / Actor / Interlevel 等游戏本体线程共享同一栈。
+	//这些线程之间靠 GameScene 的 wait/notify 串行化，不会并发访问。
+	//保留 synchronized 以保证可见性（与原实现语义一致）。
+	private static final ArrayDeque<java.util.Random> mainGenerators = new ArrayDeque<>();
 	static {
-		resetGenerators();
+		mainGenerators.push(new java.util.Random());
 	}
 
-	public static synchronized void resetGenerators(){
-		generators = new ArrayDeque<>();
-		generators.push(new java.util.Random());
+	//查种线程私有栈：进入查种上下文后，本线程的所有随机操作走该栈，与游戏主上下文隔离。
+	private static final ThreadLocal<ArrayDeque<java.util.Random>> searchGenerators = new ThreadLocal<>();
+
+	/** 进入查种上下文：当前线程此后的随机数操作使用独立栈。 */
+	public static void enterSearchContext(){
+		ArrayDeque<java.util.Random> stack = new ArrayDeque<>();
+		stack.push(new java.util.Random());
+		searchGenerators.set(stack);
 	}
 
-	public static synchronized void pushGenerator(){
-		generators.push( new java.util.Random() );
+	/** 退出查种上下文：恢复使用游戏主上下文栈。 */
+	public static void exitSearchContext(){
+		searchGenerators.remove();
 	}
 
-    public static synchronized void pushGenerator(long seed) {
-        generators.push(new java.util.Random(scrambleSeed(seed)));
+	private static ArrayDeque<java.util.Random> searchStack(){
+		return searchGenerators.get();
+	}
+
+	public static void resetGenerators(){
+		ArrayDeque<java.util.Random> s = searchStack();
+		if (s != null){
+			s.clear();
+			s.push(new java.util.Random());
+			return;
+		}
+		synchronized (Random.class){
+			mainGenerators.clear();
+			mainGenerators.push(new java.util.Random());
+		}
+	}
+
+	public static void pushGenerator(){
+		ArrayDeque<java.util.Random> s = searchStack();
+		if (s != null){
+			s.push( new java.util.Random() );
+			return;
+		}
+		synchronized (Random.class){
+			mainGenerators.push( new java.util.Random() );
+		}
+	}
+
+    public static void pushGenerator(long seed) {
+		ArrayDeque<java.util.Random> s = searchStack();
+		if (s != null){
+			s.push(new java.util.Random(scrambleSeed(seed)));
+			return;
+		}
+		synchronized (Random.class){
+			mainGenerators.push(new java.util.Random(scrambleSeed(seed)));
+		}
     }
 
-    private static synchronized long scrambleSeed(long seed) {
+    private static long scrambleSeed(long seed) {
         seed ^= seed >>> 32;
         seed *= -4710160504952957587L;
         seed ^= seed >>> 29;
@@ -64,17 +109,32 @@ public class Random {
     }
 
 
-	public static synchronized void popGenerator(){
-		if (generators.size() == 1){
-			Game.reportException( new RuntimeException("tried to pop the last random number generator!"));
-		} else {
-			generators.pop();
+	public static void popGenerator(){
+		ArrayDeque<java.util.Random> s = searchStack();
+		if (s != null){
+			if (s.size() == 1){
+				Game.reportException( new RuntimeException("tried to pop the last random number generator!"));
+			} else {
+				s.pop();
+			}
+			return;
+		}
+		synchronized (Random.class){
+			if (mainGenerators.size() == 1){
+				Game.reportException( new RuntimeException("tried to pop the last random number generator!"));
+			} else {
+				mainGenerators.pop();
+			}
 		}
 	}
 
 	//returns a uniformly distributed float in the range [0, 1)
-	public static synchronized float Float() {
-		return generators.peek().nextFloat();
+	public static float Float() {
+		ArrayDeque<java.util.Random> s = searchStack();
+		if (s != null) return s.peek().nextFloat();
+		synchronized (Random.class){
+			return mainGenerators.peek().nextFloat();
+		}
 	}
 
 	//returns a uniformly distributed float in the range [0, max)
@@ -86,7 +146,7 @@ public class Random {
 	public static float Float( float min, float max ) {
 		return min + Float(max - min);
 	}
-	
+
 	//returns a triangularly distributed float in the range [min, max)
 	public static float NormalFloat( float min, float max ) {
 		return min + ((Float(max - min) + Float(max - min))/2f);
@@ -135,8 +195,12 @@ public class Random {
 	}
 
 	//returns a uniformly distributed int in the range [0, max)
-	public static synchronized int Int( int max ) {
-		return max > 0 ? generators.peek().nextInt(max) : 0;
+	public static int Int( int max ) {
+		ArrayDeque<java.util.Random> s = searchStack();
+		if (s != null) return max > 0 ? s.peek().nextInt(max) : 0;
+		synchronized (Random.class){
+			return max > 0 ? mainGenerators.peek().nextInt(max) : 0;
+		}
 	}
 
 	//returns a uniformly distributed int in the range [min, max)
@@ -155,8 +219,12 @@ public class Random {
 	}
 
 	//returns a uniformly distributed long in the range [-2^63, 2^63)
-	public static synchronized long Long() {
-		return generators.peek().nextLong();
+	public static long Long() {
+		ArrayDeque<java.util.Random> s = searchStack();
+		if (s != null) return s.peek().nextLong();
+		synchronized (Random.class){
+			return mainGenerators.peek().nextLong();
+		}
 	}
 
 	//returns a uniformly distributed long in the range [0, max)
@@ -233,7 +301,7 @@ public class Random {
 	public static<T> T element( T[] array ) {
 		return element( array, array.length );
 	}
-	
+
 	public static<T> T element( T[] array, int max ) {
 		return array[Int(max)];
 	}
@@ -246,8 +314,15 @@ public class Random {
 			null;
 	}
 
-	public synchronized static<T> void shuffle( List<?extends T> list){
-		Collections.shuffle(list, generators.peek());
+	public static<T> void shuffle( List<?extends T> list){
+		ArrayDeque<java.util.Random> s = searchStack();
+		if (s != null){
+			Collections.shuffle(list, s.peek());
+			return;
+		}
+		synchronized (Random.class){
+			Collections.shuffle(list, mainGenerators.peek());
+		}
 	}
 	
 	public static<T> void shuffle( T[] array ) {

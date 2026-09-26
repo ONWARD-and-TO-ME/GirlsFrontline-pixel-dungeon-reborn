@@ -60,8 +60,8 @@ public class GnollSWAP extends Gnoll {
                     passable[ch.pos] = ch == this;
                 }
 
-                PathFinder.buildDistanceMap(enemy.pos, passable, 2);
-                if (PathFinder.distance[pos] <= 2) {
+                PathFinder.cur().buildDistanceMap(enemy.pos, passable, 2);
+                if (PathFinder.cur().distance[pos] <= 2) {
                     return true;
                 }
             }
@@ -131,7 +131,7 @@ public class GnollSWAP extends Gnoll {
                 }
             }
 
-            if (fieldOfView[Dungeon.hero.pos] && Dungeon.level.heroFOV[pos]) {
+            if (fieldOfView[Dungeon.cur().hero.pos] && Dungeon.level.heroFOV[pos]) {
                 if (seenNotifyCooldown <= 0) {
                     GLog.p(Messages.get(GnollSWAP.class, "seen_passive"));
                 }

@@ -123,7 +123,7 @@ public class SakuraBlade extends MeleeWeapon {
         @Override
         public void onSelect(Integer target) {
             if (target != null) {
-                final Hero hero = Dungeon.hero;
+                final Hero hero = Dungeon.cur().hero;
                 final SakuraBlade blade = (SakuraBlade)curItem;
                 
                 if (target == hero.pos) {
@@ -145,7 +145,7 @@ public class SakuraBlade extends MeleeWeapon {
                 hero.sprite.showStatus(CharSprite.NEUTRAL, Messages.get(blade, "iaido_text"));
                 
                 // 获取从英雄到目标的方向
-                int[] dirs = {PathFinder.CIRCLE8[PathFinder.direction(hero.pos, target)]};
+                int[] dirs = {PathFinder.cur().CIRCLE8[PathFinder.cur().direction(hero.pos, target)]};
                 
                 // 处理1*3范围内的攻击（英雄面前一条直线上的3个格子）
                 int[] cellsInLine = new int[3];

@@ -94,7 +94,7 @@ public class Wraith extends Mob {
 	}
 	
 	public static void spawnAround( int pos ) {
-		for (int n : PathFinder.NEIGHBOURS4) {
+		for (int n : PathFinder.cur().NEIGHBOURS4) {
 			spawnAt( pos + n );
 		}
 	}
@@ -103,7 +103,7 @@ public class Wraith extends Mob {
 		if ((!Dungeon.level.solid[pos] || Dungeon.level.passable[pos]) && Actor.findChar( pos ) == null) {
 			
 			Wraith w = new Wraith();
-			w.adjustStats( Dungeon.depth );
+			w.adjustStats( Dungeon.cur().depth );
 			w.pos = pos;
 			w.state = w.HUNTING;
 			GameScene.add( w, SPAWN_DELAY );

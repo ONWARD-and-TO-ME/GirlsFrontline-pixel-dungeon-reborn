@@ -147,9 +147,9 @@ public class Artifact extends KindofMisc {
 	@Override
 	public String info() {
         String info =super.info();
-		if (cursed && cursedKnown && !isEquipped( Dungeon.hero )) {
+		if (cursed && cursedKnown && !isEquipped( Dungeon.cur().hero )) {
 			info += "\n\n" + Messages.get(Artifact.class, "curse_known");
-		} else if (!isIdentified() && cursedKnown && !isEquipped( Dungeon.hero)) {
+		} else if (!isIdentified() && cursedKnown && !isEquipped( Dungeon.cur().hero)) {
 			info += "\n\n" + Messages.get(Artifact.class, "not_cursed");
 		}
         info =  lockinfo(info);
@@ -213,7 +213,7 @@ public class Artifact extends KindofMisc {
 		int i = 0;
 		for (Class<?> cl : Generator.Category.ARTIFACT.classes){
 			if (cl == getClass())
-				Generator.Category.ARTIFACT.probs[i] = Generator.Category.ARTIFACT.defaultProbs[i] * mul;
+				Generator.Category.ARTIFACT.probs()[i] = Generator.Category.ARTIFACT.defaultProbs[i] * mul;
 			i++;
 		}
 	}

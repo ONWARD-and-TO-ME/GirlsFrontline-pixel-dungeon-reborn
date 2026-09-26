@@ -79,7 +79,7 @@ public class WornDartTrap extends Trap {
 								public void call() {
 								int dmg = Random.NormalIntRange(4, 8) - finalTarget.drRoll();
 								finalTarget.damage(dmg, trap);
-								if (finalTarget == Dungeon.hero && !finalTarget.isAlive()){
+								if (finalTarget == Dungeon.cur().hero && !finalTarget.isAlive()){
 									Dungeon.fail( trap.getClass()  );
 								}
 								Sample.INSTANCE.play(Assets.Sounds.HIT, 1, 1, Random.Float(0.8f, 1.25f));

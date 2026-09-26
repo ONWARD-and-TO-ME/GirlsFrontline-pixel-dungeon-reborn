@@ -41,7 +41,7 @@ public class WndSelectTalent extends Window {
 
         top = text.bottom() + 2;
 
-        ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>(Dungeon.hero.talents);
+        ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>(Dungeon.cur().hero.talents);
 
         pane = new TalentsPane(TalentButton.Mode.DEBUG_CHOOSE, talents);
         add(pane);

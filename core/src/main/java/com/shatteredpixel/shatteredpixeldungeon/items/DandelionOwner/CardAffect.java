@@ -179,7 +179,7 @@ public class CardAffect {
 
         if (hasCard(RareCard.VHS.M82A1) && ch.buff(S_M82A1.class) == null)
             affect(ch, S_M82A1.class).setActiveTime(8F);
-        for (int i : PathFinder.NEIGHBOURS9)
+        for (int i : PathFinder.cur().NEIGHBOURS9)
             CellEmitter.get(i + ch.pos).burst(HackParticle.FACTORY, 5);
     }
     private static void addThrowing(){
@@ -277,13 +277,13 @@ public class CardAffect {
         if (hasCard(CommonCard.General_Liu.Rex_Zero_1))
             puppet.core.htMul += 0.005F;
         if (hasCard(CommonCard.General_Liu.DEFENDER))
-            Buff.affect(Dungeon.hero, AttackDMG_Add.DEFENDER.class, 5F);
+            Buff.affect(Dungeon.cur().hero, AttackDMG_Add.DEFENDER.class, 5F);
         if (hasCard(CommonCard.General_Liu.MONDRAGON)){
             puppet.core.attackSpeedMul += 0.03F;
             puppet.core.damageMul += 0.03F;
         }
         if (hasCard(CommonCard.General_Liu.TaBuKe))
-            Buff.affect(Dungeon.hero, AttackDelay_Add.TaBuKe.class, 5F);
+            Buff.affect(Dungeon.cur().hero, AttackDelay_Add.TaBuKe.class, 5F);
 
         if (hasCard(RareCard.General_Liu.M26_ASW)){
             addThrowing();

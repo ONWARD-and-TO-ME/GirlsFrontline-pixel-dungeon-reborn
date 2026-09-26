@@ -51,7 +51,7 @@ public class ImpShopkeeper extends Shopkeeper {
     @Override
 	protected boolean act() {
 		if (!seenBefore && Dungeon.level.heroFOV[pos]) {
-			yellGood( Messages.get(this, "greetings", Dungeon.hero.name() ) );
+			yellGood( Messages.get(this, "greetings", Dungeon.cur().hero.name() ) );
 			seenBefore = true;
 		}
 		
@@ -59,13 +59,13 @@ public class ImpShopkeeper extends Shopkeeper {
 	}
     @Override
     public boolean interact(Char c) {
-        if (c != Dungeon.hero) {
+        if (c != Dungeon.cur().hero) {
             return true;
         }
         Game.runOnRenderThread(new Callback() {
             @Override
             public void call() {
-                if (Dungeon.depth==20)
+                if (Dungeon.cur().depth==20)
                     Shopkeeper.sell();
                 else {
                     ImpShopkeeper impShopkeeper = ImpShopkeeper.this;
@@ -92,12 +92,12 @@ public class ImpShopkeeper extends Shopkeeper {
                                     int place;
                                     Char target;
                                     do {
-                                        place = Dungeon.hero.pos + PathFinder.NEIGHBOURS9[Random.Int(9)];
+                                        place = Dungeon.cur().hero.pos + PathFinder.cur().NEIGHBOURS9[Random.Int(9)];
                                         target = Actor.findChar(place);
                                     } while (
                                             target != null && target.properties().contains(Property.IMMOVABLE)
                                     );
-                                    Dungeon.level.drop(item, place).sprite.drop(Dungeon.hero.pos);
+                                    Dungeon.level.drop(item, place).sprite.drop(Dungeon.cur().hero.pos);
                                 }
                             }
                         }

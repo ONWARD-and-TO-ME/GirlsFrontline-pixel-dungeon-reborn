@@ -142,7 +142,7 @@ public class ActionIndicator extends Tag {
 	public synchronized void update() {
 		super.update();
 
-		if (!Dungeon.hero.ready){
+		if (!Dungeon.cur().hero.ready){
 			if (icon != null) icon.alpha(0.5f);
 		} else {
 			if (icon != null) icon.alpha(1f);
@@ -178,7 +178,7 @@ public class ActionIndicator extends Tag {
 
 	@Override
 	protected void onClick() {
-		if (action != null && Dungeon.hero.ready)
+		if (action != null && Dungeon.cur().hero.ready)
 			action.doAction();
 	}
 	@Override

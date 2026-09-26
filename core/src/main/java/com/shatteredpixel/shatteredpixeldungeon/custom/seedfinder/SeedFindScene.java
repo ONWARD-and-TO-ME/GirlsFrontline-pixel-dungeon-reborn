@@ -75,7 +75,6 @@ public class SeedFindScene extends PixelScene {
 
         buildSearchView();
 
-        addCopySeedButton();
         addExitButton();
     }
 
@@ -111,12 +110,10 @@ public class SeedFindScene extends PixelScene {
 
         float cx = (screenW - contentW) / 2f;
 
+        currentSeedText.maxWidth((int) contentW);
         currentSeedText.text("正在查找……");
         currentSeedText.setRect(cx, 12, contentW, 0);
         currentSeedText.visible = true;
-
-        if (btnCopy != null)
-            btnCopy.enable(btnCopy.visible = false);
 
         resultContent.clear();
         resultContent.setSize(contentW, 0);
@@ -127,16 +124,13 @@ public class SeedFindScene extends PixelScene {
         resultScroll.scrollTo(0, 0);
     }
 
-    // 显示查找结果（GitHub 版 CreditsBlock 风格）
+    // 显示查找结果（纯文本回退视图：NONE / 无楼层数据 / 关闭 Tab 窗后）
     private void showSearchResult(String body) {
         if (!searchViewVisible) return;
+        searchDone = true;
         // 查询结束，清掉“正在查找……”状态文本
         currentSeedText.text("");
         currentSeedText.visible = false;
-        currentSeedValue = -1;
-
-        btnCopy.enable(true);
-        btnCopy.visible = true;
 
         resultContent.clear();
         CreditsBlock txt = new CreditsBlock(true, Window.TITLE_COLOR, body);
@@ -146,40 +140,235 @@ public class SeedFindScene extends PixelScene {
         resultContent.setSize(contentW, txt.bottom() + 4);
         resultScroll.scrollTo(0, 0);
     }
-    RedButton btnCopy;
-    private void addCopySeedButton() {
-        btnCopy = new RedButton("") {
-            @Override
-            protected void onClick() {
-                if (SeedFindScene.seedCode != null && !SeedFindScene.seedCode.isEmpty()) {
-                    addToFront(new WndOptions(new Image(new ItemSprite(ItemSpriteSheet.SEED_HOLDER)),
-                            Messages.get(WndSettings.class, "copy_title"),
-                            Messages.get(WndSettings.class, "copy_body"),
-                            Messages.get(WndSettings.class, "copy_yes"),
-                            Messages.get(WndSettings.class, "copy_no")) {
-                        @Override
-                        protected void onSelect(int index) {
-                            if (index == 0) SPDSettings.seedCode(SeedFindScene.seedCode);
-                        }
-                    });
+
+    // ======================== 结果 Tab 弹窗 ========================
+    private static final class ResultTab {
+        final String title;
+        final String body;
+        final boolean overview; // 总览页带复制按钮
+        ResultTab(String title, String body, boolean overview) {
+            this.title = title;
+            this.body = body;
+            this.overview = overview;
+        }
+    }
+
+    // 楼层分组：每 5 层一页；31 层并入 26-30 页；25/1 属于 21-25 页
+    private void buildResultTabs() {
+        resultTabs = new ArrayList<>();
+        // 总览页：各需求物品所在楼层（测试种子模式不生成）
+        if (!isTestSeed) {
+            StringBuilder ov = new StringBuilder();
+            for (Item w : wantedItems) {
+                WantedTarget t = new WantedTarget(w);
+                StringBuilder fl = new StringBuilder();
+                for (SeedFinder.FloorData fd : resultFloors) {
+                    if (floorHas(fd, t)) {
+                        if (fl.length() > 0) fl.append("、");
+                        fl.append(fd.title);
+                    }
                 }
+                ov.append(w.toString()).append("：");
+                if (fl.length() > 0) ov.append(fl).append(" 楼");
+                else ov.append("未找到");
+                ov.append("\n\n");
+            }
+            resultTabs.add(new ResultTab("总览", ov.toString(), true));
+        }
+        StringBuilder[] groupText = new StringBuilder[6];
+        for (SeedFinder.FloorData fd : resultFloors) {
+            int g = Math.min(5, (fd.depth - 1) / 5);
+            if (groupText[g] == null) groupText[g] = new StringBuilder();
+            groupText[g].append(fd.text);
+        }
+        String[] titles = {"1-5", "6-10", "11-15", "16-20", "21-25", "26-30"};
+        for (int g = 0; g < 6; g++)
+            if (groupText[g] != null)
+                resultTabs.add(new ResultTab(titles[g], groupText[g].toString(), false));
+    }
+
+    private static boolean floorHas(SeedFinder.FloorData fd, WantedTarget t) {
+        for (SeedFinder.HeapItem hi : fd.heapItems)
+            if (t.matches(hi.item)) return true;
+        if (fd.ghostRewards != null)
+            for (Item i : fd.ghostRewards)
+                if (t.matches(i)) return true;
+        if (fd.wandmakerRewards != null)
+            for (Item i : fd.wandmakerRewards)
+                if (t.matches(i)) return true;
+        if (fd.impRewards != null)
+            for (Item i : fd.impRewards)
+                if (t.matches(i)) return true;
+        return false;
+    }
+
+    private void showResultSheet(int sheet) {
+        if (curResultWnd != null) {
+            curResultWnd.hide();
+            curResultWnd = null;
+        }
+        resultScroll.visible = false;
+        resultScroll.active = false;
+        currentSeedText.visible = false;
+        curResultWnd = new WndResult(sheet);
+        GirlsFrontlinePixelDungeon.scene().addToFront(curResultWnd);
+        //Window 的全屏 blocker 会拦截其点击，退出按钮须重新提到最上层
+        remove(exitButton);
+        addToFront(exitButton);
+    }
+
+    // 楼层文本页：ScrollPane + 高亮楼层头
+    private ScrollPane textPage(String body, float w, float h) {
+        Component content = new Component();
+        RenderedTextBlock txt = PixelScene.renderTextBlock(body, 6);
+        txt.setHightlighting(true, Window.TITLE_COLOR);
+        txt.maxWidth((int) w - 4);
+        content.add(txt);
+        txt.setPos(1, 1);
+        content.setSize(w, txt.height() + 2);
+        ScrollPane sp = new ScrollPane(content);
+        sp.scrollTo(0, 0);
+        return sp;
+    }
+
+    // 总览页：物品→楼层列表 + 复制按钮
+    // setRect 必须延迟到 layout()：此时页面尚未加入窗口，父链上没有 camera，
+    // 而 ScrollPane.layout 依赖 camera() 做 cameraToScreen，提前 setRect 会 NPE
+    private Component overviewPage(final String body, final float w, final float h) {
+        Component root = new Component() {
+            ScrollPane sp;
+            RedButton copyBtn;
+            {
+                Component scrollContent = new Component();
+                RenderedTextBlock txt = PixelScene.renderTextBlock(body, 6);
+                txt.setHightlighting(true, Window.TITLE_COLOR);
+                txt.maxWidth((int) w - 4);
+                scrollContent.add(txt);
+                txt.setPos(1, 1);
+                scrollContent.setSize(w, txt.height() + 2);
+                sp = new ScrollPane(scrollContent);
+                add(sp);
+
+                copyBtn = new RedButton("复制种子码") {
+                    @Override
+                    protected void onClick() {
+                        confirmCopySeed();
+                    }
+                };
+                copyBtn.icon(Icons.RENAME_ON.get());
+                add(copyBtn);
+            }
+
+            @Override
+            protected void layout() {
+                sp.setRect(0, 0, width, height - 22);
+                sp.scrollTo(0, 0);
+                copyBtn.setRect(1, height - 20, width - 2, 18);
             }
         };
-        btnCopy.icon(Icons.RENAME_ON.get());
-        add(btnCopy);
-        btnCopy.setRect(0, 0, 20, 20);
-        btnCopy.enable(btnCopy.visible = false);
+        return root;
     }
+
+    private void confirmCopySeed() {
+        if (SeedFindScene.seedCode != null && !SeedFindScene.seedCode.isEmpty()) {
+            addToFront(new WndOptions(new Image(new ItemSprite(ItemSpriteSheet.SEED_HOLDER)),
+                    Messages.get(WndSettings.class, "copy_title"),
+                    Messages.get(WndSettings.class, "copy_body"),
+                    Messages.get(WndSettings.class, "copy_yes"),
+                    Messages.get(WndSettings.class, "copy_no")) {
+                @Override
+                protected void onSelect(int index) {
+                    if (index == 0) SPDSettings.seedCode(SeedFindScene.seedCode);
+                }
+            });
+        }
+    }
+
+    private class WndResult extends WndTabbed {
+        WndResult(final int sheet) {
+            super();
+            int winW = PixelScene.landscape() ? WndJournal.WIDTH_L : WndJournal.WIDTH_P;
+            int winH = PixelScene.landscape() ? WndJournal.HEIGHT_L : WndJournal.HEIGHT_P;
+            resize(winW, winH);
+
+            int sheets = (resultTabs.size() + TABS_PER_WINDOW - 1) / TABS_PER_WINDOW;
+            boolean nav = sheets > 1;
+            float pageH = winH - (nav ? 18 : 0);
+
+            int first = sheet * TABS_PER_WINDOW;
+            int last = Math.min(resultTabs.size(), first + TABS_PER_WINDOW);
+            final Component[] pages = new Component[last - first];
+            int n = 0;
+            for (int i = first; i < last; i++, n++) {
+                final ResultTab rt = resultTabs.get(i);
+                final int idx = n;
+                Component page = rt.overview
+                        ? overviewPage(rt.body, winW, pageH)
+                        : textPage(rt.body, winW, pageH);
+                pages[n] = page;
+                add(page);
+                page.setRect(0, 0, winW, pageH);
+                Tab tab = new LabeledTab(rt.title) {
+                    @Override
+                    protected void select(boolean value) {
+                        super.select(value);
+                        pages[idx].active = pages[idx].visible = value;
+                    }
+                };
+                add(tab);
+            }
+            layoutTabs();
+            for (int i = 1; i < pages.length; i++) {
+                pages[i].visible = pages[i].active = false;
+            }
+            select(0);
+
+            // 多弹窗导航：每弹窗最多 5 页
+            if (nav) {
+                float by = winH - 16;
+                if (sheet > 0) {
+                    StyledButton prev = new StyledButton(Chrome.Type.GEM, "◀", 7) {
+                        @Override
+                        protected void onClick() {
+                            showResultSheet(sheet - 1);
+                        }
+                    };
+                    add(prev);
+                    prev.setRect(1, by, 20, 15);
+                }
+                if (sheet < sheets - 1) {
+                    StyledButton next = new StyledButton(Chrome.Type.GEM, "▶", 7) {
+                        @Override
+                        protected void onClick() {
+                            showResultSheet(sheet + 1);
+                        }
+                    };
+                    add(next);
+                    next.setRect(winW - 21, by, 20, 15);
+                }
+                RenderedTextBlock pl = PixelScene.renderTextBlock((sheet + 1) + " / " + sheets, 7);
+                pl.hardlight(0xFFFFFF);
+                add(pl);
+                pl.setPos((winW - pl.width()) / 2f, by + 4);
+            }
+        }
+
+        // 点击窗口外不关闭，统一走 Scene 右上角退出
+        @Override
+        public void onBackPressed() {
+        }
+    }
+    private ExitButton exitButton;
     private void addExitButton() {
-        ExitButton exitBtn = new ExitButton() {
+        exitButton = new ExitButton() {
             @Override
             public void onClick() {
                 stopSearch();
                 GirlsFrontlinePixelDungeon.switchNoFade(SecondTitleScene.class);
             }
         };
-        exitBtn.setPos((float) Camera.main.width - exitBtn.width(), 0);
-        add(exitBtn);
+        exitButton.setPos((float) Camera.main.width - exitButton.width(), 0);
+        addToFront(exitButton);
     }
     // 挑战文本（始终过滤 TEST_MODE，种子查找不允许测试模式）
     private static String challengeText() {
@@ -196,10 +385,20 @@ public class SeedFindScene extends PixelScene {
         if (first) sb.append("无");
         return sb.toString();
     }
-    private volatile long currentSeedValue = -1;
     private volatile boolean stopThread = false;
-    // 后台线程只写这个值，渲染线程每 250ms 聚合刷新一次，避免逐种子 post 事件
-    private long lastShownSeed = -1;
+
+    // ===== 查找状态（后台线程写 / 渲染线程读） =====
+    private SeedFinder activeFinder;
+    private long searchStartMs;
+    private volatile ArrayList<SeedFinder.FloorData> resultFloors;
+    private volatile boolean isTestSeed;
+    private volatile boolean searchDone;
+    private String lastResultBody;
+
+    // ===== 结果 Tab 弹窗 =====
+    private static final int TABS_PER_WINDOW = 5;
+    private ArrayList<ResultTab> resultTabs;
+    private Window curResultWnd;
 
     private static final int BTN_H = 16;
 
@@ -279,6 +478,7 @@ public class SeedFindScene extends PixelScene {
             RenderedTextBlock hint = PixelScene.renderTextBlock(
                     "「设置」选择角色、最深楼层与挑战；「测试种子」以当前角色、最深楼层、挑战列出物品清单。", 6);
             root.add(hint);
+            hint.maxWidth((int) w);
             hint.setRect(2, 55, w, 32);
 
             RedButton settingsBtn = new RedButton("设置（角色 / 最深楼层 / 挑战）", 8) {
@@ -548,23 +748,33 @@ public class SeedFindScene extends PixelScene {
                 sb.append("挑战：").append(challengeText()).append("\n");
                 sb.append("最深楼层：").append(currentFloor).append("\n");
                 sb.append("物品需求（共 ").append(wantedItems.size()).append(" 件）：\n");
-                for (int i = 0; i < wantedItems.size(); i++) {
-                    sb.append(i + 1).append(". ").append(wantedItems.get(i).name()).append("\n");
-                }
-
+                for (int i = 0; i < wantedItems.size(); i++)
+                    sb.append(i + 1).append(". ").append(wantedItems.get(i).toString()).append("\n");
+                
                 RenderedTextBlock summary = PixelScene.renderTextBlock("", 6);
                 summary.text(sb.toString(), (int) w);
                 content.add(summary);
                 summary.setRect(1, 1, w - 2, 0);
 
-                startBtn = new RedButton(wantedItems.isEmpty() ? "开始查找（无物品需求）" : "开始查找") {
+                // 线程数滑条：控制查种 worker 数量
+                OptionSlider threadSlider = new OptionSlider("线程数量", "1", String.valueOf(THREAD_MAX), 1, THREAD_MAX) {
+                    @Override
+                    protected void onChange() {
+                        threadCount = getSelectedValue();
+                    }
+                };
+                threadSlider.setSelectedValue(threadCount);
+                content.add(threadSlider);
+                threadSlider.setRect(1, summary.bottom() + 4, w - 2, 24);
+
+                startBtn = new RedButton("开始查找") {
                     @Override
                     protected void onClick() {
                         startSearch();
                     }
                 };
                 content.add(startBtn);
-                startBtn.setRect(1, summary.bottom() + 4, w - 2, 18);
+                startBtn.setRect(1, threadSlider.bottom() + 4, w - 2, 18);
 
                 content.setSize(w, startBtn.bottom() + 2);
             }
@@ -774,19 +984,6 @@ public class SeedFindScene extends PixelScene {
                     augInfo.setRect(0, pos, WIDTH, augInfo.height());
                     pos = augInfo.bottom() + GAP;
 
-                    OptionSlider idSlider = new OptionSlider(
-                            isEnchant ? "" : "", "1", "8", 0, 7) {
-                        @Override
-                        protected void onChange() {
-                            augId = getSelectedValue();
-                            updateAugText();
-                        }
-                    };
-                    idSlider.setSelectedValue(0);
-                    add(idSlider);
-                    idSlider.setRect(0, pos, WIDTH, SLIDER_H);
-                    pos = idSlider.bottom() + GAP;
-
                     OptionSlider rareSlider = new OptionSlider(
                             isEnchant ? "" : "", "", "", 0, 4) {
                         @Override
@@ -799,6 +996,19 @@ public class SeedFindScene extends PixelScene {
                     add(rareSlider);
                     rareSlider.setRect(0, pos, WIDTH, SLIDER_H);
                     pos = rareSlider.bottom() + GAP;
+
+                    OptionSlider idSlider = new OptionSlider(
+                            isEnchant ? "" : "", "1", "8", 0, 7) {
+                        @Override
+                        protected void onChange() {
+                            augId = getSelectedValue();
+                            updateAugText();
+                        }
+                    };
+                    idSlider.setSelectedValue(0);
+                    add(idSlider);
+                    idSlider.setRect(0, pos, WIDTH, SLIDER_H);
+                    pos = idSlider.bottom() + GAP;
                 }
 
                 RedButton confirmBtn = new RedButton("添加") {
@@ -962,7 +1172,7 @@ public class SeedFindScene extends PixelScene {
                 return true;
         return false;
     }
-    // ======================== update() / seed 显示节流 ========================
+    // ======================== update() / 查找状态节流刷新 ========================
     @Override
     public void update() {
         super.update();
@@ -970,27 +1180,40 @@ public class SeedFindScene extends PixelScene {
         if (text != null && !text.isEmpty()) {
             String result = text;
             text = "";
-            showSearchResult(result);
+            lastResultBody = result;
+            if (resultFloors != null) {
+                // Tab 弹窗结果（搜索模式：总览+楼层分组；测试种子模式：仅楼层分组）
+                buildResultTabs();
+                showResultSheet(0);
+            } else {
+                // 无结构化数据（NONE / 异常信息）→ 纯文本回退视图
+                showSearchResult(result);
+            }
         }
-        // 当前种子显示（节流到 4 次/秒，避免与查找线程争抢 CPU）
+        // 查找状态：各线程当前种子 + 累计耗时（节流到 4 次/秒，避免与查找线程争抢 CPU）
         seedDisplayCooldown += Game.elapsed;
         if (seedDisplayCooldown >= 0.25f) {
             seedDisplayCooldown = 0f;
-            if (currentSeedValue != lastShownSeed) {
-                lastShownSeed = currentSeedValue;
-                if (searchViewVisible && !stopThread && currentSeedValue >= 0) {
-                    currentSeedText.text("正在查找…… 当前遍历种子：" + currentSeedValue);
+            if (searchViewVisible && !stopThread && !searchDone && curResultWnd == null
+                    && activeFinder != null && (text == null || text.isEmpty())) {
+                StringBuilder sb = new StringBuilder("正在查找…… 耗时 ")
+                        .append(String.format("%.1f", (System.currentTimeMillis() - searchStartMs) / 1000.0))
+                        .append(" 秒");
+                for (int i = 0; i < activeFinder.workerCount(); i++) {
+                    long s = activeFinder.workerSeed(i);
+                    if (s >= 0)
+                        sb.append("\n线程 ").append(i + 1).append("：").append(s);
+                    String err = activeFinder.workerError(i);
+                    if (err != null)
+                        sb.append("\n线程 ").append(i + 1).append(" ").append(err);
                 }
+                currentSeedText.text(sb.toString());
             }
         }
     }
     public static SeedFindScene INSTANCE = null;
     volatile boolean needUpdate;
     volatile String text = "";
-    public void updateCurrentSeed(long seed) {
-        currentSeedValue = seed;
-        needUpdate = true;
-    }
 
     @Override
     public void destroy() {
@@ -1000,14 +1223,21 @@ public class SeedFindScene extends PixelScene {
 
     private static WndFinder mainWindow;
     private Thread findSeedThread;
+    // 查种线程数（第五页 Slider 控制，默认 1）
+    public int threadCount = 1;
+    // 线程数上限：不超过可用逻辑处理器数，最少 1
+    private static final int THREAD_MAX = Math.max(1, Runtime.getRuntime().availableProcessors());
 
     // 查找种子：构建目标列表，SeedFinder.run() 自动派发到 findSeed()
     private void startSearch() {
         // 防御：即使 TEST_MODE 曾在 debug 菜单里被写入，种子查找也一律不带它
         SPDSettings.challenges(SPDSettings.challenges() & ~Challenges.TEST_MODE);
         stopThread = false;
-        currentSeedValue = -1;
-        lastShownSeed = -1;
+        searchDone = false;
+        resultFloors = null;
+        isTestSeed = false;
+        lastResultBody = null;
+        resultTabs = null;
 
         final ArrayList<WantedTarget> targets = new ArrayList<>();
         for (Item item : wantedItems)
@@ -1015,7 +1245,35 @@ public class SeedFindScene extends PixelScene {
                 targets.add(new WantedTarget(item));
 
         showSearchView();
-        final SeedFinder finder = new SeedFinder(targets, currentFloor, currentHero);
+        final int threads = Math.max(1, threadCount);
+        final SeedFinder finder = new SeedFinder(targets, currentFloor, currentHero) {
+            // 覆盖 run 以支持多线程：把 findSeed(threadCount) 传入
+            @Override
+            public void run() {
+                Dungeon.resetTest();
+                if (wantedArr.length == 0) {
+                    // 无物品需求：单线程直接生成日志（测试种子模式，结果窗不含总览页）
+                    Dungeon.enterSearchContext();
+                    try {
+                        String str = logSeedItems(DungeonSeed.convertFromText(SeedFindScene.seedCode));
+                        SeedFindScene.INSTANCE.resultFloors = lastFloors;
+                        SeedFindScene.INSTANCE.isTestSeed = true;
+                        SeedFindScene.INSTANCE.text = str;
+                        SeedFindScene.INSTANCE.needUpdate = true;
+                    } finally {
+                        Dungeon.exitSearchContext();
+                    }
+                } else {
+                    String str = findSeed(threads);
+                    SeedFindScene.INSTANCE.resultFloors = lastFloors;
+                    SeedFindScene.INSTANCE.isTestSeed = false;
+                    SeedFindScene.INSTANCE.text = str;
+                    SeedFindScene.INSTANCE.needUpdate = true;
+                }
+            }
+        };
+        activeFinder = finder;
+        searchStartMs = System.currentTimeMillis();
         findSeedThread = new Thread(new Runnable() {
             @Override
             public void run() {

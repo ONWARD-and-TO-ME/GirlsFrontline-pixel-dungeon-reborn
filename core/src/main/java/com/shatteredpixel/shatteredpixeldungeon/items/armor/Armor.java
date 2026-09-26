@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.armor;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
@@ -153,10 +152,10 @@ public class Armor extends EquipableItem {
             return;
         //旧外骨骼无法取下（如被诅咒）时终止本次复合，新外骨骼退回背包
         if (inside != null){
-			if (!inside.doUnequip(hero, true)) {
+			if (!inside.doUnequip(Dungeon.cur().hero, true)) {
 				if (insideArmor != null)
-					if (!insideArmor.collect(hero.belongings.backpack))
-						Dungeon.level.drop(insideArmor, hero.pos);
+					if (!insideArmor.collect(Dungeon.cur().hero.belongings.backpack))
+						Dungeon.level.drop(insideArmor, Dungeon.cur().hero.pos);
 				return;
 			}
         }
@@ -175,8 +174,8 @@ public class Armor extends EquipableItem {
                 GLog.n( Messages.get(Armor.class, "broken") );
             }
         }
-        if (hero != null && hero.belongings.armor() == this)
-            insideArmor.activate(hero);
+        if (Dungeon.cur().hero != null && Dungeon.cur().hero.belongings.armor() == this)
+            insideArmor.activate(Dungeon.cur().hero);
     }
 
     @Override
@@ -200,7 +199,7 @@ public class Armor extends EquipableItem {
                 cursed = curse;
             }
             tier = 10;
-            while (STRReq() > hero.STR())
+            while (STRReq() > Dungeon.cur().hero.STR())
                 tier--;
         }
     }
@@ -306,7 +305,7 @@ public class Armor extends EquipableItem {
     @Override
     public boolean collect(Bag container) {
         if(super.collect(container)){
-            if (Dungeon.hero != null && Dungeon.hero.isAlive() && isIdentified() && glyph != null)
+            if (Dungeon.cur().hero != null && Dungeon.cur().hero.isAlive() && isIdentified() && glyph != null)
                 Catalog.setSeen(glyph.getClass());
             return true;
         } else
@@ -314,7 +313,7 @@ public class Armor extends EquipableItem {
     }
     @Override
     public Item identify(boolean byHero) {
-        if (glyph != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
+        if (glyph != null && byHero && Dungeon.cur().hero != null && Dungeon.cur().hero.isAlive()){
             Catalog.setSeen(glyph.getClass());
         }
         return super.identify(byHero);
@@ -500,8 +499,8 @@ public class Armor extends EquipableItem {
 		if (seal.getGlyph() != null){
 			inscribe(seal.getGlyph());
 		}
-		if (isEquipped(Dungeon.hero)){
-			Buff.affect(Dungeon.hero, BrokenSeal.WarriorShield.class).setArmor(this);
+		if (isEquipped(Dungeon.cur().hero)){
+			Buff.affect(Dungeon.cur().hero, BrokenSeal.WarriorShield.class).setArmor(this);
 		}
 	}
 
@@ -637,9 +636,9 @@ public class Armor extends EquipableItem {
 		}else {
             if (hasGlyph(Swiftness.class, owner)) {
                 boolean enemyNear = false;
-                PathFinder.buildDistanceMap(owner.pos, Dungeon.level.passable, 2);
+                PathFinder.cur().buildDistanceMap(owner.pos, Dungeon.level.passable, 2);
                 for (Char ch : Actor.chars()) {
-                    if (PathFinder.distance[ch.pos] != Integer.MAX_VALUE && owner.alignment != ch.alignment) {
+                    if (PathFinder.cur().distance[ch.pos] != Integer.MAX_VALUE && owner.alignment != ch.alignment) {
                         enemyNear = true;
                         break;
                     }
@@ -680,12 +679,12 @@ public class Armor extends EquipableItem {
 	@Override
 	public int buffedLvl(int lvl) {
         int level = super.buffedLvl(lvl);
-		if (isEquipped( hero )) {
+		if (isEquipped( Dungeon.cur().hero )) {
             // 56-1式天赋：火线补给/饭饱为钢/饱腹护甲（实现见 Type561Talent）
-            level = Type561Talent.armorLevelBonus(hero, level);
+            level = Type561Talent.armorLevelBonus(Dungeon.cur().hero, level);
             //down at 200, 200+300, 200+300+400, ...
             level -= (int) ((Math.sqrt(200*broken + 22500) - 150)/100);
-            level += RingOfKing.updateMultiplier(hero);
+            level += RingOfKing.updateMultiplier(Dungeon.cur().hero);
 		}
 		return level;
 	}
@@ -709,7 +708,7 @@ public class Armor extends EquipableItem {
 
                 //the chance from +4/5, and then +6 can be set to 0% with metamorphed runic transference
                 // 非战士蜕变符文转移的刻印丢失强化等级加成（实现见 WarriorTalent）
-                int lossChanceStart = 4 + WarriorTalent.runicLossChanceBonus(Dungeon.hero);
+                int lossChanceStart = 4 + WarriorTalent.runicLossChanceBonus(Dungeon.cur().hero);
 
                 if (level() >= lossChanceStart && Random.Float(10) < Math.pow(2, level()-4)) {
                     inscribe(null);
@@ -732,8 +731,8 @@ public class Armor extends EquipableItem {
 			damage = glyph.proc( this, attacker, defender, damage );
 		}
 		
-		if (!levelKnown && defender == Dungeon.hero) {
-			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero, this) );
+		if (!levelKnown && defender == Dungeon.cur().hero) {
+			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.cur().hero, this) );
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
 			if (usesLeftToID <= 0) {
@@ -773,14 +772,14 @@ public class Armor extends EquipableItem {
 		if (levelKnown) {
 			info += "\n\n" + Messages.get(Armor.class, "curr_absorb", DRMin(), DRMax(), STRReq(true));
 			
-			if (STRReq(true) > Dungeon.hero.STR()) {
+			if (STRReq(true) > Dungeon.cur().hero.STR()) {
 				info += " " + Messages.get(Armor.class, "too_heavy");
 			}
 		} else {
             int lvl = TextGuessingBuffedLevel();
 			info += "\n\n" + Messages.get(Armor.class, "avg_absorb", DRMin(lvl), DRMax(lvl), STRReq(false));
 
-			if (STRReq(false) > Dungeon.hero.STR()) {
+			if (STRReq(false) > Dungeon.cur().hero.STR()) {
 				info += " " + Messages.get(Armor.class, "probably_too_heavy");
 			}
 		}
@@ -800,7 +799,7 @@ public class Armor extends EquipableItem {
 			info += " " + glyph.desc();
 		}
 		
-		if (cursed && isEquipped( Dungeon.hero )) {
+		if (cursed && isEquipped( Dungeon.cur().hero )) {
 			info += "\n\n" + Messages.get(Armor.class, "cursed_worn");
 		} else if (cursedKnown && cursed) {
 			info += "\n\n" + Messages.get(Armor.class, "cursed");
@@ -874,8 +873,8 @@ public class Armor extends EquipableItem {
         else
             lvl = TextGuessingLevel();
         int req = STRReq(lvl);
-        if (hero != null && isEquipped(hero))
-            req += RingOfKing.updateMultiplier(hero);
+        if (Dungeon.cur().hero != null && isEquipped(Dungeon.cur().hero))
+            req += RingOfKing.updateMultiplier(Dungeon.cur().hero);
         if (masteryPotionBonus){
             req -= 2;
         }
@@ -926,8 +925,8 @@ public class Armor extends EquipableItem {
 		if (seal != null){
 			seal.setGlyph(glyph);
 		}
-        if (glyph != null && isIdentified() && Dungeon.hero != null
-                && Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
+        if (glyph != null && isIdentified() && Dungeon.cur().hero != null
+                && Dungeon.cur().hero.isAlive() && Dungeon.cur().hero.belongings.contains(this)){
             Catalog.setSeen(glyph.getClass());
         }
 		return this;

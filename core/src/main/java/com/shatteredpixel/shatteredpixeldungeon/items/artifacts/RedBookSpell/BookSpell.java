@@ -36,10 +36,10 @@ public class BookSpell implements ActionIndicator.Action {
             if (lvl >= 4) {
                 spells.add(DeadBomb.INSTANCE);
             }
-            if (Dungeon.hero.hasTalentB(Talent.Type56_23V4)) {
+            if (Dungeon.cur().hero.hasTalentB(Talent.Type56_23V4)) {
                 spells.add(GetGrass.INSTANCE);
             }
-            if (Dungeon.hero.buff(ActHPtoGetFood.class)!=null){
+            if (Dungeon.cur().hero.buff(ActHPtoGetFood.class)!=null){
                 spells.add(HPtoFood.INSTANCE);
             }
         }
@@ -68,7 +68,7 @@ public class BookSpell implements ActionIndicator.Action {
             book.charge -= extraUse;
             extraUse = 0;
         }
-        Dungeon.hero.spendAndNext(timeUse);
+        Dungeon.cur().hero.spendAndNext(timeUse);
         Item.updateQuickslot();
         Sample.INSTANCE.play("sounds/read.mp3");
     }
@@ -87,7 +87,7 @@ public class BookSpell implements ActionIndicator.Action {
     }
     @Override
     public void doAction() {
-        Hero hero = Dungeon.hero;
+        Hero hero = Dungeon.cur().hero;
         RedBook book;
         if (hero == null || (book = hero.belongings.getItem(RedBook.class)) == null)
             return;

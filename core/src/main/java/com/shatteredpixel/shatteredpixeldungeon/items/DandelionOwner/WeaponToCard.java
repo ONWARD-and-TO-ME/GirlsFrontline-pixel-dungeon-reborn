@@ -119,10 +119,10 @@ public class WeaponToCard {
                             @Override
                             protected void onSelect( int index ) {
                                 if (index == 0){
-                                    if (item.isEquipped(Dungeon.hero))
-                                        ((EquipableItem) item).detachCursedEquipment(Dungeon.hero);
+                                    if (item.isEquipped(Dungeon.cur().hero))
+                                        ((EquipableItem) item).detachCursedEquipment(Dungeon.cur().hero);
                                     else
-                                        item.detach(Dungeon.hero.belongings.backpack);
+                                        item.detach(Dungeon.cur().hero.belongings.backpack);
                                     if (c instanceof FirstCard)
                                         selector.FirstCards.add((FirstCard) c);
                                     else if (c instanceof CommonCard)

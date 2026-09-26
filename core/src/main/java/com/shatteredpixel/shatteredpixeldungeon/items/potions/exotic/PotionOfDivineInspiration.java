@@ -126,8 +126,8 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 					curUser.spendAndNext(1f);
 
 					boolean unspentTalents = false;
-					for (int i = 1; i <= Dungeon.hero.talents.size(); i++){
-						if (Dungeon.hero.talentPointsAvailable(i) > 0){
+					for (int i = 1; i <= Dungeon.cur().hero.talents.size(); i++){
+						if (Dungeon.cur().hero.talentPointsAvailable(i) > 0){
 							unspentTalents = true;
 							break;
 						}

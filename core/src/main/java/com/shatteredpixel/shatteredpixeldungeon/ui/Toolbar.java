@@ -105,9 +105,9 @@ public class Toolbar extends Component {
 		add(btnWait = new Tool(24, 0, 20, 26) {
 			@Override
 			protected void onClick() {
-				if (Dungeon.hero.ready && !GameScene.cancel()) {
+				if (Dungeon.cur().hero.ready && !GameScene.cancel()) {
 					examining = false;
-					Dungeon.hero.rest(false);
+					Dungeon.cur().hero.rest(false);
 				}
 			}
 			
@@ -122,9 +122,9 @@ public class Toolbar extends Component {
 			}
 
 			protected boolean onLongClick() {
-				if (Dungeon.hero.ready && !GameScene.cancel()) {
+				if (Dungeon.cur().hero.ready && !GameScene.cancel()) {
 					examining = false;
-					Dungeon.hero.rest(true);
+					Dungeon.cur().hero.rest(true);
 				}
 				return true;
 			}
@@ -133,9 +133,9 @@ public class Toolbar extends Component {
 		add(new Button(){
 			@Override
 			protected void onClick() {
-				if (Dungeon.hero.ready && !GameScene.cancel()) {
+				if (Dungeon.cur().hero.ready && !GameScene.cancel()) {
 					examining = false;
-					Dungeon.hero.rest(true);
+					Dungeon.cur().hero.rest(true);
 				}
 			}
 
@@ -149,13 +149,13 @@ public class Toolbar extends Component {
 		add(btnSearch = new Tool(44, 0, 20, 26) {
 			@Override
 			protected void onClick() {
-				if (Dungeon.hero.ready) {
+				if (Dungeon.cur().hero.ready) {
 					if (!examining && !GameScene.cancel()) {
 						GameScene.selectCell(informer);
 						examining = true;
 					} else if (examining) {
 						informer.onSelect(null);
-						Dungeon.hero.search(true);
+						Dungeon.cur().hero.search(true);
 					}
 				}
 			}
@@ -172,7 +172,7 @@ public class Toolbar extends Component {
 			
 			@Override
 			protected boolean onLongClick() {
-				Dungeon.hero.search(true);
+				Dungeon.cur().hero.search(true);
 				return true;
 			}
 		});
@@ -184,12 +184,12 @@ public class Toolbar extends Component {
 
 			@Override
 			protected void onClick() {
-				if (Dungeon.hero.ready || !Dungeon.hero.isAlive()) {
+				if (Dungeon.cur().hero.ready || !Dungeon.cur().hero.isAlive()) {
 					if (SPDSettings.interfaceSize() == 2) {
 						GameScene.toggleInvPane();
 					} else {
 						if (!GameScene.cancel()) {
-							GameScene.show(new WndBag(Dungeon.hero.belongings.backpack));
+							GameScene.show(new WndBag(Dungeon.cur().hero.belongings.backpack));
 						}
 					}
 				}
@@ -406,8 +406,8 @@ public class Toolbar extends Component {
 	public void update() {
 		super.update();
 		
-		if (lastEnabled != (Dungeon.hero.ready && Dungeon.hero.isAlive())) {
-			lastEnabled = (Dungeon.hero.ready && Dungeon.hero.isAlive());
+		if (lastEnabled != (Dungeon.cur().hero.ready && Dungeon.cur().hero.isAlive())) {
+			lastEnabled = (Dungeon.cur().hero.ready && Dungeon.cur().hero.isAlive());
 			
 			for (Gizmo tool : members.toArray(new Gizmo[0])) {
 				if (tool instanceof Tool) {
@@ -416,7 +416,7 @@ public class Toolbar extends Component {
 			}
 		}
 		
-		if (!Dungeon.hero.isAlive()) {
+		if (!Dungeon.cur().hero.isAlive()) {
 			btnInventory.enable(true);
 		}
 	}

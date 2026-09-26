@@ -317,8 +317,8 @@ public class WndBlackMarket extends Window {
 		SPDSettings.batteryAdd(-XMAS_TICKET_PRICE);
 		//入场券放入英雄背包；背包满时掉落在玩家脚下
 		ChristmasTicket ticket = new ChristmasTicket();
-		if (!ticket.doPickUp(Dungeon.hero)) {
-			Dungeon.level.drop(ticket, Dungeon.hero.pos).sprite.drop();
+		if (!ticket.doPickUp(Dungeon.cur().hero)) {
+			Dungeon.level.drop(ticket, Dungeon.cur().hero.pos).sprite.drop();
 		}
 		GLog.i(Messages.get(this, "buy_ticket_done"));
 		return true;

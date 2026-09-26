@@ -90,11 +90,11 @@ public class RedBook extends Artifact{
     }
     public void onUse(int chargeUse){
         charge-=chargeUse;
-        if (Dungeon.hero.buff(Talent.Type56BookTracker.class) == null) {
-            Buff.affect(Dungeon.hero, Talent.Type56BookTracker.class);
+        if (Dungeon.cur().hero.buff(Talent.Type56BookTracker.class) == null) {
+            Buff.affect(Dungeon.cur().hero, Talent.Type56BookTracker.class);
         }
         updateQuickslot();
-        Talent.onArtifactUsed(Dungeon.hero);
+        Talent.onArtifactUsed(Dungeon.cur().hero);
     }
 
     @Override
@@ -157,8 +157,8 @@ public class RedBook extends Artifact{
                 turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(this.target);
                 float chargeGain = 1.0F / turnsToCharge;
 
-                if (!isEquipped(Dungeon.hero)){
-                    chargeGain *= 0.75f*Dungeon.hero.pointsInTalent(Talent.Type56Three_Book)/3f;
+                if (!isEquipped(Dungeon.cur().hero)){
+                    chargeGain *= 0.75f*Dungeon.cur().hero.pointsInTalent(Talent.Type56Three_Book)/3f;
                 }
                 partialCharge += chargeGain;
 

@@ -20,7 +20,6 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -60,12 +59,12 @@ public class RatKing extends NPC {
     {        
         spriteClass = FncSprite.class;
         
-        state =Dungeon.depth==0?PASSIVE: SLEEPING;
+        state =Dungeon.cur().depth==0?PASSIVE: SLEEPING;
     }
 
     @Override
     public Notes.Landmark landmark() {
-        return Dungeon.depth == 5 ? Notes.Landmark.RAT_KING : null;
+        return Dungeon.cur().depth == 5 ? Notes.Landmark.RAT_KING : null;
     }
     // 添加统一的礼物计数器，用于跟踪鼠王是否已经给予过玩家物品
     public static class GiftTracker extends CounterBuff {
@@ -118,11 +117,11 @@ public class RatKing extends NPC {
     @Override
     protected void onAdd() {
         super.onAdd();
-        if (Dungeon.depth == 0){
+        if (Dungeon.cur().depth == 0){
             //0层营地FNC：使用独立占位文本
             yell(Messages.get(this, "zero_spawn"));
         }
-        else if (Dungeon.depth != 5){
+        else if (Dungeon.cur().depth != 5){
             yell(Messages.get(this, "confused"));
         }
     }
@@ -131,10 +130,10 @@ public class RatKing extends NPC {
 
     @Override
     protected boolean act() {
-        if(Dungeon.depth==0){
+        if(Dungeon.cur().depth==0){
             state = PASSIVE;
         }else
-        if(Dungeon.depth!=5){
+        if(Dungeon.cur().depth!=5){
             state = WANDERING;
         }
         return super.act();
@@ -146,11 +145,11 @@ public class RatKing extends NPC {
         sprite.turnTo( pos, c.pos );
 
         // 检查是否已经给予过玩家巧克力
-        ChocoTracker trackerA = hero.buff(ChocoTracker.class);
+        ChocoTracker trackerA = Dungeon.cur().hero.buff(ChocoTracker.class);
         boolean hasGivenChoco = (trackerA != null) ;
 
         // 检查是否已经给予过玩家拐杖糖
-        GiftTracker trackerB = hero.buff(GiftTracker.class);
+        GiftTracker trackerB = Dungeon.cur().hero.buff(GiftTracker.class);
         boolean hasGivenSugar = (trackerB != null) ;
 
         boolean isMidAutumn = Holidays.holiday == Holidays.Holiday.midAutumnFestival;
@@ -158,10 +157,10 @@ public class RatKing extends NPC {
         boolean hasMooncake = hasPlayerMooncake();
 
         // 已经给予过物品，根据提示次数显示不同的消息
-        HintTracker hintTracker = hero.buff(HintTracker.class);
+        HintTracker hintTracker = Dungeon.cur().hero.buff(HintTracker.class);
         float hintCount = (hintTracker != null) ? hintTracker.count() : 0;
 
-        if (c != hero){
+        if (c != Dungeon.cur().hero){
             return super.interact(c);
         }
         if (Dungeon.level instanceof SewerBossLevel && Dungeon.level.locked) {
@@ -175,18 +174,18 @@ public class RatKing extends NPC {
                 Dungeon.level.unseal();
         }
 
-        KingsCrown crown = hero.belongings.getItem(KingsCrown.class);
-        XMasGift gift = hero.belongings.getItem(XMasGift.class);
+        KingsCrown crown = Dungeon.cur().hero.belongings.getItem(KingsCrown.class);
+        XMasGift gift = Dungeon.cur().hero.belongings.getItem(XMasGift.class);
         if (state == SLEEPING) {
             notice();
             yell( Messages.get(this, "not_sleeping") );
             state = WANDERING;
         }
-        else if (Dungeon.depth == 0) {
+        else if (Dungeon.cur().depth == 0) {
             //0层营地FNC：不直接开启新存档，仅指引玩家前往右侧消毒通道
             if (hintCount < 3) {
                 yell(Messages.get(this, "zero_" + hintCount));
-                Buff.count(hero, HintTracker.class, 1);
+                Buff.count(Dungeon.cur().hero, HintTracker.class, 1);
             }
             else {
                 yellNormal(Messages.get(this, "zero_guide"));
@@ -195,7 +194,7 @@ public class RatKing extends NPC {
             showXmasEntry();
         }
         else if (crown != null){
-            if (hero.belongings.armor() == null) {
+            if (Dungeon.cur().hero.belongings.armor() == null) {
                 yell(Messages.get(RatKing.class, "crown_clothes"));
             } else {
                 Badges.validateRatmogrify();
@@ -214,11 +213,11 @@ public class RatKing extends NPC {
                             protected void onSelect(int index) {
                                 if (index == 0) {
                                     SetLast(1);
-                                    crown.upgradeArmor(hero, hero.belongings.armor(), new Ratmogrify());
+                                    crown.upgradeArmor(Dungeon.cur().hero, Dungeon.cur().hero.belongings.armor(), new Ratmogrify());
                                     ((FncSprite) sprite).resetAnims();
                                     yellGood(Messages.get(RatKing.class, "crown_thankyou"));
                                 } else if (index == 1) {
-                                    GameScene.show(new WndInfoArmorAbility(hero.heroClass, new Ratmogrify()));
+                                    GameScene.show(new WndInfoArmorAbility(Dungeon.cur().hero.heroClass, new Ratmogrify()));
                                 } else {
                                     yell(Messages.get(RatKing.class, "crown_fine"));
                                 }
@@ -233,7 +232,7 @@ public class RatKing extends NPC {
             gift.GiftCost();
             if(!hasGivenChoco){
                 yellGood(Messages.get(this, "both") );
-                hero.spendAndNext( -1 );
+                Dungeon.cur().hero.spendAndNext( -1 );
                 GetChock();
             }
             else {
@@ -242,8 +241,8 @@ public class RatKing extends NPC {
             GetSugar();
             ((FncSprite) sprite).resetAnims();
             Badges.validateXMASGift();
-            if(hero.buff(HintTracker.class)!=null)
-                hero.buff(HintTracker.class).detach();
+            if(Dungeon.cur().hero.buff(HintTracker.class)!=null)
+                Dungeon.cur().hero.buff(HintTracker.class).detach();
             //重置点击次数以获取特色文案
         }
         else if (!hasGivenChoco) {
@@ -253,8 +252,8 @@ public class RatKing extends NPC {
                 // 中秋节期间，且玩家没有月饼，显示中秋节对话
                 yellGood(Messages.get(this, "mid_autumn_greeting"));
             }
-            if(hero.buff(HintTracker.class)!=null)
-                hero.buff(HintTracker.class).detach();
+            if(Dungeon.cur().hero.buff(HintTracker.class)!=null)
+                Dungeon.cur().hero.buff(HintTracker.class).detach();
             //重置点击次数以获取特色文案
         }
         else if (hintCount < 3) {
@@ -280,9 +279,9 @@ public class RatKing extends NPC {
                 }
             }
                 // 增加提示计数器
-                Buff.count(hero, HintTracker.class, 1);
+                Buff.count(Dungeon.cur().hero, HintTracker.class, 1);
         }
-        else if (hero.armorAbility instanceof Ratmogrify) {
+        else if (Dungeon.cur().hero.armorAbility instanceof Ratmogrify) {
             yellGood( Messages.get(this, "crown_after") );
         }
         else if (hasGivenSugar) {
@@ -297,7 +296,7 @@ public class RatKing extends NPC {
     }
 
     private void SetLast(int i) {
-        Buff.count(hero,LastTracker.class,i);
+        Buff.count(Dungeon.cur().hero,LastTracker.class,i);
     }
 
     //0层营地FNC：圣诞节彩蛋开关窗口
@@ -362,7 +361,7 @@ public class RatKing extends NPC {
             showXmasEggWindow();
             return;
         }
-        if (hero.belongings.getItem(ChristmasTicket.class) != null) {
+        if (Dungeon.cur().hero.belongings.getItem(ChristmasTicket.class) != null) {
             Game.runOnRenderThread(new Callback() {
                 @Override
                 public void call() {
@@ -392,10 +391,10 @@ public class RatKing extends NPC {
     //消耗圣诞入场券，永久解锁圣诞节彩蛋功能，随后直接弹出开关窗口供玩家开启
     private void unlockXmasWithTicket() {
         if (SPDSettings.xmasUnlocked()) return;
-        ChristmasTicket ticket = hero.belongings.getItem(ChristmasTicket.class);
+        ChristmasTicket ticket = Dungeon.cur().hero.belongings.getItem(ChristmasTicket.class);
         if (ticket == null) return;
 
-        ticket.detach(hero.belongings.backpack);
+        ticket.detach(Dungeon.cur().hero.belongings.backpack);
         SPDSettings.xmasUnlocked(true);
 
         //立即刷新FNC的节日皮肤
@@ -416,29 +415,29 @@ public class RatKing extends NPC {
     private void GetChock(){
         Choco t1 = new Choco(); // Choco在中秋节期间会自动显示为月饼
         t1.identify();
-        if (t1.doPickUp(hero)) {
-            Messages.get(hero, "you_now_have", t1.name());
+        if (t1.doPickUp(Dungeon.cur().hero)) {
+            Messages.get(Dungeon.cur().hero, "you_now_have", t1.name());
         } else {
-            Dungeon.level.drop(t1, hero.pos).sprite.drop();
+            Dungeon.level.drop(t1, Dungeon.cur().hero.pos).sprite.drop();
         }
         // 标记为已给予物品
-        Buff.count(hero, ChocoTracker.class, 1);
+        Buff.count(Dungeon.cur().hero, ChocoTracker.class, 1);
     }
     private void GetSugar(){
         XMasSugar t1 = new XMasSugar(); // 拐杖糖
         t1.identify();
-        if (t1.doPickUp(hero)) {
-            Messages.get(hero, "you_now_have", t1.name());
+        if (t1.doPickUp(Dungeon.cur().hero)) {
+            Messages.get(Dungeon.cur().hero, "you_now_have", t1.name());
         } else {
-            Dungeon.level.drop(t1, hero.pos).sprite.drop();
+            Dungeon.level.drop(t1, Dungeon.cur().hero.pos).sprite.drop();
         }
         // 标记为已给予物品
-        Buff.count(hero, GiftTracker.class, 1);
+        Buff.count(Dungeon.cur().hero, GiftTracker.class, 1);
     }
     
     // 检查玩家是否持有巧克力
     private boolean hasPlayerMooncake() {
-        return hero.belongings.getItem(Choco.class) != null;
+        return Dungeon.cur().hero.belongings.getItem(Choco.class) != null;
     }
     
     @Override

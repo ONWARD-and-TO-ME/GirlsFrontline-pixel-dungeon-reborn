@@ -103,7 +103,7 @@ public class Warlock extends Mob implements Callback {
 		
 		if (hit( this, enemy, true )) {
 			//TODO would be nice for this to work on ghost/statues too
-			if (enemy == Dungeon.hero && Random.Int( 2 ) == 0) {
+			if (enemy == Dungeon.cur().hero && Random.Int( 2 ) == 0) {
 				Buff.prolong( enemy, Degrade.class, Degrade.DURATION );
 				Sample.INSTANCE.play( Assets.Sounds.DEBUFF );
 			}
@@ -111,7 +111,7 @@ public class Warlock extends Mob implements Callback {
 			int dmg = Random.NormalIntRange( 12, 18 );
 			enemy.damage( dmg, new DarkBolt(), this );
 			
-			if (enemy == Dungeon.hero && !enemy.isAlive()) {
+			if (enemy == Dungeon.cur().hero && !enemy.isAlive()) {
 				Dungeon.fail( getClass() );
 				GLog.n( Messages.get(this, "bolt_kill") );
 			}
@@ -134,9 +134,9 @@ public class Warlock extends Mob implements Callback {
 	public Item createLoot(){
 
 		// 1/6 chance for healing, scaling to 0 over 8 drops
-		if (Random.Int(3) == 0 && Random.Int(8) >= Dungeon.LimitedDrops.WARLOCK_HP.count ){
+		if (Random.Int(3) == 0 && Random.Int(8) >= Dungeon.LimitedDrops.WARLOCK_HP.count() ){
             //修复术士/四区狙娘掉落血瓶应为8而实际为7的bug，理由如下：当掉落7个的时候计数为7，而Random（7）的范围是0-7，所以破碎出现了只能掉落7个的bug
-			Dungeon.LimitedDrops.WARLOCK_HP.count++;
+			Dungeon.LimitedDrops.WARLOCK_HP.used();
 			return new PotionOfHealing();
 		} else {
 			Item i = Generator.random(Generator.Category.POTION);
@@ -150,7 +150,7 @@ public class Warlock extends Mob implements Callback {
 			if (healingTried > 0){
 				for (int j = 0; j < Generator.Category.POTION.classes.length; j++){
 					if (Generator.Category.POTION.classes[j] == PotionOfHealing.class){
-						Generator.Category.POTION.probs[j] += healingTried;
+						Generator.Category.POTION.probs()[j] += healingTried;
 					}
 				}
 			}

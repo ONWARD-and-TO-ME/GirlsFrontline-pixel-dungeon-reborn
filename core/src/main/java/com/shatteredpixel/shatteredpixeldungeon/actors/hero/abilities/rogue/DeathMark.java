@@ -104,22 +104,22 @@ public class DeathMark extends ArmorAbility {
 			return;
 		}
 
-		int reaperPoints = RogueTalent.fearTheReaperPoints(Dungeon.hero);
+		int reaperPoints = RogueTalent.fearTheReaperPoints(Dungeon.cur().hero);
 		if (reaperPoints > 0) {
 			if (reaperPoints >= 2) {
-				Buff.prolong(ch, Terror.class, 5f).object = Dungeon.hero.id();
+				Buff.prolong(ch, Terror.class, 5f).object = Dungeon.cur().hero.id();
 			}
 			Buff.prolong(ch, Cripple.class, 5f);
 
 			if (reaperPoints >= 3) {
 				boolean[] passable = BArray.not(Dungeon.level.solid, null);
-				PathFinder.buildDistanceMap(ch.pos, passable, 3);
+				PathFinder.cur().buildDistanceMap(ch.pos, passable, 3);
 
 				for (Char near : Actor.chars()) {
 					if (near != ch && near.alignment == Char.Alignment.ENEMY
-							&& PathFinder.distance[near.pos] != Integer.MAX_VALUE) {
+							&& PathFinder.cur().distance[near.pos] != Integer.MAX_VALUE) {
 						if (reaperPoints == 4) {
-							Buff.prolong(near, Terror.class, 5f).object = Dungeon.hero.id();
+							Buff.prolong(near, Terror.class, 5f).object = Dungeon.cur().hero.id();
 						}
 						Buff.prolong(near, Cripple.class, 5f);
 					}
@@ -191,9 +191,9 @@ public class DeathMark extends ArmorAbility {
 				Sample.INSTANCE.play(Assets.Sounds.HIT_STAB);
 				Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
 				target.die(this);
-				int shld = RogueTalent.deathlyDurabilityShield(Dungeon.hero, initialHP);
+				int shld = RogueTalent.deathlyDurabilityShield(Dungeon.cur().hero, initialHP);
 				if (shld > 0 && target.alignment != Char.Alignment.ALLY){
-					Buff.affect(Dungeon.hero, Barrier.class).setShield(shld);
+					Buff.affect(Dungeon.cur().hero, Barrier.class).setShield(shld);
 				}
 			}
 		}

@@ -106,7 +106,7 @@ public class Nemeum extends Mob {
                 if (p == b.collisionPos)
                     break;
             }
-            Dungeon.hero.interrupt();
+            Dungeon.cur().hero.interrupt();
             spendAttack( attackDelay()*4f );
             beamCharged = true;
             return true;
@@ -166,7 +166,7 @@ public class Nemeum extends Mob {
                     CellEmitter.center( pos ).burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
                 }
 
-                if (!ch.isAlive() && ch == Dungeon.hero) {
+                if (!ch.isAlive() && ch == Dungeon.cur().hero) {
                     Dungeon.fail( getClass() );
                     GLog.n( Messages.get(this, "deathgaze_kill") );
                 }

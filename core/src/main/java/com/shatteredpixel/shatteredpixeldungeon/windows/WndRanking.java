@@ -121,7 +121,7 @@ public class WndRanking extends WndTabbed {
 		if (thread != null && !thread.isAlive() && busy != null) {
 			remove( busy );
 			busy = null;
-			if (Dungeon.hero != null) {
+			if (Dungeon.cur().hero != null) {
 				createControls();
 			} else {
 				hide();
@@ -180,11 +180,11 @@ public class WndRanking extends WndTabbed {
 		public StatsTab() {
 			super();
 			
-			String heroClass = Dungeon.hero.className();
+			String heroClass = Dungeon.cur().hero.className();
 			
 			IconTitle title = new IconTitle();
-			title.icon( HeroSprite.avatar( Dungeon.hero.heroClass, Dungeon.hero.tier() ) );
-			title.label( Messages.get(this, "title", Dungeon.hero.lvl, heroClass ).toUpperCase( Locale.ENGLISH ) );
+			title.icon( HeroSprite.avatar( Dungeon.cur().hero.heroClass, Dungeon.cur().hero.tier() ) );
+			title.label( Messages.get(this, "title", Dungeon.cur().hero.lvl, heroClass ).toUpperCase( Locale.ENGLISH ) );
 			title.color(Window.TITLE_COLOR);
 			title.setRect( 0, 0, WIDTH, 0 );
 			add( title );
@@ -212,11 +212,11 @@ public class WndRanking extends WndTabbed {
 				protected void onClick() {
 					//removes talents from upper tiers
 					int tiers = 1;
-					if (Dungeon.hero.lvl >= 6) tiers++;
-					if (Dungeon.hero.lvl >= 12 && Dungeon.hero.subClass != HeroSubClass.NONE) tiers++;
-					if (Dungeon.hero.lvl >= 20 && Dungeon.hero.armorAbility != null) tiers++;
-					while (Dungeon.hero.talents.size() > tiers){
-						Dungeon.hero.talents.remove(Dungeon.hero.talents.size()-1);
+					if (Dungeon.cur().hero.lvl >= 6) tiers++;
+					if (Dungeon.cur().hero.lvl >= 12 && Dungeon.cur().hero.subClass != HeroSubClass.NONE) tiers++;
+					if (Dungeon.cur().hero.lvl >= 20 && Dungeon.cur().hero.armorAbility != null) tiers++;
+					while (Dungeon.cur().hero.talents.size() > tiers){
+						Dungeon.cur().hero.talents.remove(Dungeon.cur().hero.talents.size()-1);
 					}
 					Game.scene().addToFront( new Window(){
 						{
@@ -256,14 +256,14 @@ public class WndRanking extends WndTabbed {
 
 			pos += GAP;
 
-			int strBonus = Dungeon.hero.STR() - Dungeon.hero.STR;
-			if (strBonus > 0)       pos = statSlot(this, Messages.get(this, "str"), Dungeon.hero.STR + " + " + strBonus, pos);
-			else if (strBonus < 0)  pos = statSlot(this, Messages.get(this, "str"), Dungeon.hero.STR + " - " + -strBonus, pos );
-			else                    pos = statSlot(this, Messages.get(this, "str"), Integer.toString(Dungeon.hero.STR), pos);
-			pos = statSlot( this, Messages.get(this, "health"), Integer.toString( Dungeon.hero.HT ), pos );
+			int strBonus = Dungeon.cur().hero.STR() - Dungeon.cur().hero.STR;
+			if (strBonus > 0)       pos = statSlot(this, Messages.get(this, "str"), Dungeon.cur().hero.STR + " + " + strBonus, pos);
+			else if (strBonus < 0)  pos = statSlot(this, Messages.get(this, "str"), Dungeon.cur().hero.STR + " - " + -strBonus, pos );
+			else                    pos = statSlot(this, Messages.get(this, "str"), Integer.toString(Dungeon.cur().hero.STR), pos);
+			pos = statSlot( this, Messages.get(this, "health"), Integer.toString( Dungeon.cur().hero.HT ), pos );
 			pos = statSlot( this, Messages.get(this, "duration"), Integer.toString( (int)Statistics.duration ), pos );
             setButton(pos);
-			pos = statSlot( this, Messages.get(this, "seed"), DungeonSeed.convertToCode(Dungeon.seed) ,pos);
+			pos = statSlot( this, Messages.get(this, "seed"), DungeonSeed.convertToCode(Dungeon.cur().seed) ,pos);
 			pos = statSlot( this, Messages.get(this, "depth"), Integer.toString( Statistics.deepestFloor ), pos );
 			pos = statSlot( this, Messages.get(this, "enemies"), Integer.toString( Statistics.enemiesSlain ), pos );
 			pos = statSlot( this, Messages.get(this, "gold"), Integer.toString( Statistics.goldCollected ), pos );
@@ -312,7 +312,7 @@ public class WndRanking extends WndTabbed {
                         protected void onSelect(int index) {
                             super.onSelect(index);
                             if (index == 0) {
-                                SPDSettings.seedCode(DungeonSeed.convertToCode(Dungeon.seed));
+                                SPDSettings.seedCode(DungeonSeed.convertToCode(Dungeon.cur().seed));
                             }
 
                         }
@@ -335,8 +335,8 @@ public class WndRanking extends WndTabbed {
 			//构造期尚未被加入场景，需显式指定camera，否则ScrollPane.layout()中camera()为null
 			camera = WndRanking.this.camera;
 			ArrayList<Item> items = new ArrayList<>();
-			for (Item item : Dungeon.hero.belongings)
-				if (item.isEquipped(Dungeon.hero))
+			for (Item item : Dungeon.cur().hero.belongings)
+				if (item.isEquipped(Dungeon.cur().hero))
 					items.add(item);
 			addEquipment(items);
 

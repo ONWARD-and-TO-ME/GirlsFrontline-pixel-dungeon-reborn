@@ -60,7 +60,7 @@ public class WandOfCorrosion extends Wand {
 		GameScene.add(gas);
 		Sample.INSTANCE.play(Assets.Sounds.GAS);
 
-		for (int i : PathFinder.NEIGHBOURS9) {
+		for (int i : PathFinder.cur().NEIGHBOURS9) {
 			Char ch = Actor.findChar(bolt.collisionPos + i);
 			if (ch != null) {
 				wandProc(ch, chargesPerCast());

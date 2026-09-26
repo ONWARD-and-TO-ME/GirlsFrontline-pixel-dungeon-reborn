@@ -158,7 +158,7 @@ public class Ring extends KindofMisc implements ColorItem {
 				handler.know(this);
 			}
 
-			if (Dungeon.hero.isAlive()) {
+			if (Dungeon.cur().hero.isAlive()) {
 				Catalog.setSeen(getClass());
 			}
 		}
@@ -194,7 +194,7 @@ public class Ring extends KindofMisc implements ColorItem {
                 super.info() :
                 note+Messages.get(this, "unknown_desc");
 		
-		if (cursed && isEquipped( Dungeon.hero )) {
+		if (cursed && isEquipped( Dungeon.cur().hero )) {
 			desc += "\n\n" + Messages.get(Ring.class, "cursed_worn");
 			
 		} else if (cursed && cursedKnown) {
@@ -239,16 +239,16 @@ public class Ring extends KindofMisc implements ColorItem {
     }
 	protected boolean canGuessType(){
         Ring other;
-		if (Dungeon.hero.belongings.ring() == this) {
-            if (Dungeon.hero.belongings.misc() instanceof Ring)
-				other = (Ring) Dungeon.hero.belongings.misc();
+		if (Dungeon.cur().hero.belongings.ring() == this) {
+            if (Dungeon.cur().hero.belongings.misc() instanceof Ring)
+				other = (Ring) Dungeon.cur().hero.belongings.misc();
 			else
 				other = null;
 		}
-		else if (Dungeon.hero.belongings.misc() == this){
-            if (Dungeon.hero.belongings.ring() == null)
+		else if (Dungeon.cur().hero.belongings.misc() == this){
+            if (Dungeon.cur().hero.belongings.ring() == null)
 				return false;
-			other = Dungeon.hero.belongings.ring();
+			other = Dungeon.cur().hero.belongings.ring();
 		}
 		else
 			return false;
@@ -261,14 +261,14 @@ public class Ring extends KindofMisc implements ColorItem {
 		return false;
 	}
 	protected String statsInfo(){
-		if (isIdentified() && isEquipped(Dungeon.hero)){
+		if (isIdentified() && isEquipped(Dungeon.cur().hero)){
 			Ring other = null;
-			if (Dungeon.hero.belongings.ring() == this){
-				if (Dungeon.hero.belongings.misc() instanceof Ring)
-					other = (Ring) Dungeon.hero.belongings.misc();
+			if (Dungeon.cur().hero.belongings.ring() == this){
+				if (Dungeon.cur().hero.belongings.misc() instanceof Ring)
+					other = (Ring) Dungeon.cur().hero.belongings.misc();
 			}
 			else
-				other = Dungeon.hero.belongings.ring();
+				other = Dungeon.cur().hero.belongings.ring();
 			if (other != null && other.getClass() == getClass()){
 				String cause;
 				int lvl;
@@ -286,7 +286,7 @@ public class Ring extends KindofMisc implements ColorItem {
 		return "";
 	}
 	public static <T extends Ring> void guessSignalRing(Hero hero, Class<T> type, boolean guessByTime){
-		if (Dungeon.hero == null)
+		if (Dungeon.cur().hero == null)
 			return;
 		T ring = null;
 		if (hero.belongings.ring() != null && hero.belongings.ring().getClass() == type
@@ -424,15 +424,15 @@ public class Ring extends KindofMisc implements ColorItem {
 	@Override
 	public int buffedLvl(int lvl) {
 		int level = super.buffedLvl(lvl);
-        EnhancedRings buff = Dungeon.hero.buff(EnhancedRings.class);
+        EnhancedRings buff = Dungeon.cur().hero.buff(EnhancedRings.class);
 		if ( buff != null ){
 			Ring other = null;
-			if (Dungeon.hero.belongings.ring() == this) {
-				if (Dungeon.hero.belongings.misc() instanceof Ring)
-					other = (Ring) Dungeon.hero.belongings.misc();
+			if (Dungeon.cur().hero.belongings.ring() == this) {
+				if (Dungeon.cur().hero.belongings.misc() instanceof Ring)
+					other = (Ring) Dungeon.cur().hero.belongings.misc();
 			}
-			else if (Dungeon.hero.belongings.misc() == this)
-				other = Dungeon.hero.belongings.ring();
+			else if (Dungeon.cur().hero.belongings.misc() == this)
+				other = Dungeon.cur().hero.belongings.ring();
 
 			if (other == null || buff.level != 3)
 			    level += buff.level;
@@ -442,7 +442,7 @@ public class Ring extends KindofMisc implements ColorItem {
 				else if (level() < other.level())
 					level += 1;
 				else {
-					if (Dungeon.hero.belongings.misc() == this)
+					if (Dungeon.cur().hero.belongings.misc() == this)
 						level += 3;
 					else
 						level += 1;

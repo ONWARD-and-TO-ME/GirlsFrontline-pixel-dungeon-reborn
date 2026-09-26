@@ -13,7 +13,7 @@ public class NoelShopKeeperSprite extends MobSprite {
     public NoelShopKeeperSprite() {
         super();
 
-        texture( Dungeon.hero.heroClass.spritesheet() );
+        texture( Dungeon.cur().hero.heroClass.spritesheet() );
         updateTexture(  );
         idle();
     }

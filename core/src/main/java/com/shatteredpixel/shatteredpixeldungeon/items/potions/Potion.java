@@ -348,15 +348,15 @@ public class Potion extends Item implements ColorItem {
 			if (!isKnown()) {
 				handler.know(this);
 				updateQuickslot();
-				Potion p = Dungeon.hero.belongings.getItem(getClass());
+				Potion p = Dungeon.cur().hero.belongings.getItem(getClass());
 				if (p != null)  p.setAction();
 				if (ExoticPotion.regToExo.get(getClass()) != null) {
-					p = Dungeon.hero.belongings.getItem(ExoticPotion.regToExo.get(getClass()));
+					p = Dungeon.cur().hero.belongings.getItem(ExoticPotion.regToExo.get(getClass()));
 					if (p != null) p.setAction();
 				}
 			}
 			
-			if (Dungeon.hero.isAlive()) {
+			if (Dungeon.cur().hero.isAlive()) {
 				Catalog.setSeen(getClass());
 			}
 		}
@@ -545,13 +545,13 @@ public class Potion extends Item implements ColorItem {
 			}
 
 			while (result instanceof PotionOfHealing
-					&& Random.Int(10) < Dungeon.LimitedDrops.COOKING_HP.count) {
+					&& Random.Int(10) < Dungeon.LimitedDrops.COOKING_HP.count()) {
 
 				result = (Potion) Generator.randomUsingDefaults(Generator.Category.POTION);
 			}
 			
 			if (result instanceof PotionOfHealing) {
-				Dungeon.LimitedDrops.COOKING_HP.count++;
+				Dungeon.LimitedDrops.COOKING_HP.used();
 			}
 			
 			return result;

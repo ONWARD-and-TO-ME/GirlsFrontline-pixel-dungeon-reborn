@@ -248,8 +248,8 @@ public class Elphelt extends Mob {
                     fireGenoise( genoiseDst );
 
                 spendAttack( attackDelay() );
-                if (genoiseDst == Dungeon.hero.pos)
-                    Dungeon.hero.interrupt();
+                if (genoiseDst == Dungeon.cur().hero.pos)
+                    Dungeon.cur().hero.interrupt();
 
                 return true;
             case 2:
@@ -308,7 +308,7 @@ public class Elphelt extends Mob {
 				beckon( ((Char)src).pos );
 
 			if (src instanceof DamageWand)
-				beckon( Dungeon.hero.pos );
+				beckon( Dungeon.cur().hero.pos );
 		}
 
 		if (buff( Paralysis.class ) != null)
@@ -347,7 +347,7 @@ public class Elphelt extends Mob {
 			BossHealthBar.bleed(true);
 		}
 
-		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+		LockedFloor lock = Dungeon.cur().hero.buff(LockedFloor.class);
 		if (lock != null) lock.addTime(dmg * 2);
 
 		HP -= newDmg;
@@ -364,7 +364,7 @@ public class Elphelt extends Mob {
 		Badges.validateElpheltKilled();
 		GameScene.bossSlain();
 		super.die( cause );
-        Buff.count(Dungeon.hero, Finish.class, 1);
+        Buff.count(Dungeon.cur().hero, Finish.class, 1);
 		Game.runOnRenderThread(()->GameScene.show(new WndDialog(new Elphelt_Plot.End())));
 
 		yell( Messages.get(this, "defeated") );
@@ -397,7 +397,7 @@ public class Elphelt extends Mob {
 		if (terrainAffected)
 			Dungeon.observe();
 
-		for (int n : PathFinder.NEIGHBOURS8) {
+		for (int n : PathFinder.cur().NEIGHBOURS8) {
 			int c = pos + n;
 			if ( c >= 0 )
 				GameScene.add( Blob.seedStrict( c, Math.round(1 + TIME_TO_EXPLODE), GooWarn.class ) );
@@ -417,7 +417,7 @@ public class Elphelt extends Mob {
 
 	public void Blast() {
 		//throws other chars around the center.
-		for (int i  : PathFinder.NEIGHBOURS8){
+		for (int i  : PathFinder.cur().NEIGHBOURS8){
 			Char ch = Actor.findChar(pos + i);
 
 			if (ch != null){
@@ -469,15 +469,15 @@ public class Elphelt extends Mob {
 								Paralysis.prolong(fch, Paralysis.class, 3.0f);
 							}
 							Dungeon.level.occupyCell(fch);
-							if (fch == Dungeon.hero){
+							if (fch == Dungeon.cur().hero){
 								Dungeon.observe();
 							}
 						}
 					}), -1);
 				}
 				ch.next();
-				if (ch == Dungeon.hero)
-					Dungeon.hero.interrupt();
+				if (ch == Dungeon.cur().hero)
+					Dungeon.cur().hero.interrupt();
 			}
 		}
 		curGenoiseStack--;
@@ -505,7 +505,7 @@ public class Elphelt extends Mob {
 		((ElpheltSprite)sprite).charge(dstRush);
 
 		if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[dstRush]) {
-			Dungeon.hero.interrupt();
+			Dungeon.cur().hero.interrupt();
 		}
 
 		next();
@@ -576,7 +576,7 @@ public class Elphelt extends Mob {
 							Paralysis.prolong(ch, Paralysis.class, 2f);
 
 						Dungeon.level.occupyCell(ch);
-						if (ch == Dungeon.hero)
+						if (ch == Dungeon.cur().hero)
 							Dungeon.observe();
 					}
 				}), 0f );
@@ -808,7 +808,7 @@ public class Elphelt extends Mob {
 				CellEmitter.center( target ).burst( BlastParticle.FACTORY, 30 );
 
 			boolean terrainAffected = false;
-			for (int n : PathFinder.NEIGHBOURS9) {
+			for (int n : PathFinder.cur().NEIGHBOURS9) {
 				int c = target + n;
 				if (c >= 0 && c < Dungeon.level.length()) {
 					if (Dungeon.level.heroFOV[c])
@@ -842,7 +842,7 @@ public class Elphelt extends Mob {
 							ch.damage( dmg , src, INSTANCE);
 						}
 
-						if (ch == Dungeon.hero && !ch.isAlive()) {
+						if (ch == Dungeon.cur().hero && !ch.isAlive()) {
 							Dungeon.fail( Elphelt.class );
 							GLog.n( Messages.get( Elphelt.class, "genoise_kill") );
 						}

@@ -117,20 +117,20 @@ public class WndDEL extends Window {
                 hide();
                 if (!isMissionItem(btnItem1.item))
                     return;
-                if (mission != 2 && btnItem1.item.isEquipped(Dungeon.hero)){
+                if (mission != 2 && btnItem1.item.isEquipped(Dungeon.cur().hero)){
                     boolean kept = btnItem1.item.keptThoughLostInvent;
                     btnItem1.item.keptThoughLostInvent = true;
-                    ((EquipableItem) btnItem1.item).doUnequip(Dungeon.hero, false);
+                    ((EquipableItem) btnItem1.item).doUnequip(Dungeon.cur().hero, false);
                     btnItem1.item.keptThoughLostInvent = kept;
                 }
                 else
-                    btnItem1.item = btnItem1.item.detach(Dungeon.hero.belongings.backpack);
-                DEL.Mission mission1 = Buff.affect(Dungeon.hero, DEL.Mission.class);
+                    btnItem1.item = btnItem1.item.detach(Dungeon.cur().hero.belongings.backpack);
+                DEL.Mission mission1 = Buff.affect(Dungeon.cur().hero, DEL.Mission.class);
                 if (mission == 0){
                     btnItem1.item.cursed = false;
                     btnItem1.item.cursedKnown = true;
                     if (btnItem2.item != null) {
-                        btnItem2.item.detach(Dungeon.hero.belongings.backpack);
+                        btnItem2.item.detach(Dungeon.cur().hero.belongings.backpack);
                         Catalog.countUse(btnItem2.item.getClass());
                         del.WorkLoadUsed(1);
                         Dungeon.gold -= 200;
@@ -150,24 +150,24 @@ public class WndDEL extends Window {
                 }
                 else if (mission == 2) {
                     int equip;
-                    if (btnItem1.item == Dungeon.hero.belongings.weapon)
+                    if (btnItem1.item == Dungeon.cur().hero.belongings.weapon)
                         equip = 0;
-                    else if (btnItem1.item == Dungeon.hero.belongings.armor)
+                    else if (btnItem1.item == Dungeon.cur().hero.belongings.armor)
                         equip = 1;
-                    else if (btnItem1.item == Dungeon.hero.belongings.artifact)
+                    else if (btnItem1.item == Dungeon.cur().hero.belongings.artifact)
                         equip = 2;
-                    else if (btnItem1.item == Dungeon.hero.belongings.misc)
+                    else if (btnItem1.item == Dungeon.cur().hero.belongings.misc)
                         equip = 3;
-                    else if (btnItem1.item == Dungeon.hero.belongings.ring)
+                    else if (btnItem1.item == Dungeon.cur().hero.belongings.ring)
                         equip = 4;
                     else
                         return;
                     del.WorkLoadUsed(DEL.getMissionWorkLoad(mission));
                     Dungeon.gold -= DEL.getMissionGold(mission);
-                    Buff.affect(Dungeon.hero, DEL.RemovingCurse.class, DEL.getMissionTimes(mission)).Remember(equip, Dungeon.hero.pos);
+                    Buff.affect(Dungeon.cur().hero, DEL.RemovingCurse.class, DEL.getMissionTimes(mission)).Remember(equip, Dungeon.cur().hero.pos);
                 }
                 else if (mission == 3) {
-                    btnItem2.item = btnItem2.item.detach(Dungeon.hero.belongings.backpack, btnItem2.item.quantity(), 0);
+                    btnItem2.item = btnItem2.item.detach(Dungeon.cur().hero.belongings.backpack, btnItem2.item.quantity(), 0);
                     int left = btnItem2.item.quantity();
                     Catalog.countUses(btnItem2.item.getClass(), left);
                     int time = left/signalCost();
@@ -189,7 +189,7 @@ public class WndDEL extends Window {
                     del.WorkLoadUsed(DEL.getMissionWorkLoad(mission)*time);
                 }
                 else if (mission == 4){
-                    btnItem1.item.detach(Dungeon.hero.belongings.backpack, 15);
+                    btnItem1.item.detach(Dungeon.cur().hero.belongings.backpack, 15);
                     Catalog.countUses(btnItem1.item.getClass(), 15);
                     Dungeon.gold -= DEL.getMissionGold(mission);
                     del.WorkLoadUsed(DEL.getMissionWorkLoad(mission));
@@ -215,13 +215,13 @@ public class WndDEL extends Window {
 	}
 	private boolean isMissionItem(Item item){
         if (mission == 0)
-            return !item.isEquipped(Dungeon.hero) && (!item.isIdentified() || item.cursedKnown && item.cursed) && !(item instanceof CorpseDust);
+            return !item.isEquipped(Dungeon.cur().hero) && (!item.isIdentified() || item.cursedKnown && item.cursed) && !(item instanceof CorpseDust);
         if (mission == 1)
             return item.isUpgradable() && item.levelKnown && item.level()>0 && item.overLoad == Item.OverLoad.NONE &&
-                    ( item.isEquipped(Dungeon.hero) && ((EquipableItem) item).unEquipable(Dungeon.hero) ||
-                            !item.isEquipped(Dungeon.hero) && !(item instanceof BrokenSeal) );
+                    ( item.isEquipped(Dungeon.cur().hero) && ((EquipableItem) item).unEquipable(Dungeon.cur().hero) ||
+                            !item.isEquipped(Dungeon.cur().hero) && !(item instanceof BrokenSeal) );
         if (mission == 2)
-            return item.isEquipped(Dungeon.hero) && item.cursed;
+            return item.isEquipped(Dungeon.cur().hero) && item.cursed;
         if (mission == 3)
             return item instanceof MissileWeapon && !(item instanceof Dart);
         if (mission == 4)

@@ -132,7 +132,7 @@ public class ZeroLevel extends Level {
         // 避免点击不同地块时需要寻路到对应地块旁边的问题
         @Override
         public boolean canInteract(Char ch) {
-            if (Dungeon.hero != ch) return false;
+            if (Dungeon.cur().hero != ch) return false;
             for (int p : COMPUTER_POSITIONS) {
                 if (Dungeon.level.adjacent(p, ch.pos)) {
                     return true;
@@ -153,7 +153,7 @@ public class ZeroLevel extends Level {
         @Override
         public boolean canInteract(Char ch) {
             //相邻格子均可触发，与电脑一致
-            return Dungeon.hero == ch && Dungeon.level.adjacent(pos, ch.pos);
+            return Dungeon.cur().hero == ch && Dungeon.level.adjacent(pos, ch.pos);
         }
 
         @Override
@@ -168,7 +168,7 @@ public class ZeroLevel extends Level {
         @Override
         public boolean canInteract(Char ch) {
             //相邻格子均可触发
-            return Dungeon.hero == ch && Dungeon.level.adjacent(pos, ch.pos);
+            return Dungeon.cur().hero == ch && Dungeon.level.adjacent(pos, ch.pos);
         }
 
         @Override
@@ -188,7 +188,7 @@ public class ZeroLevel extends Level {
         @Override
         public boolean canInteract(Char ch) {
             //可以从任何相邻位置触发
-            return Dungeon.hero == ch && Dungeon.level.adjacent(pos, ch.pos);
+            return Dungeon.cur().hero == ch && Dungeon.level.adjacent(pos, ch.pos);
         }
 
         public class WndAchievementButton extends Window {

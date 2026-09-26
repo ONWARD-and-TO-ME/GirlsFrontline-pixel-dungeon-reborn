@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeons;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
@@ -69,7 +70,7 @@ public class Blacksmith extends NPC {
 	
 	@Override
 	protected boolean act() {
-		if (Dungeon.level.heroFOV[pos] && !Quest.reforged){
+		if (Dungeon.level.heroFOV[pos] && !Quest.cur().reforged){
 			Notes.add( Notes.Landmark.TROLL );
 		}
 		return super.act();
@@ -80,73 +81,73 @@ public class Blacksmith extends NPC {
 		
 		sprite.turnTo( pos, c.pos );
 
-		if (c != Dungeon.hero){
+		if (c != Dungeon.cur().hero){
 			return true;
 		}
 		
-		if (!Quest.given) {
+		if (!Quest.cur().given) {
 			Game.runOnRenderThread(() -> GameScene.show(new WndDialog(
-				(Quest.alternative?new Ppsh_Plot_L1():new Ppsh_Plot_L2()),
+				(Quest.cur().alternative?new Ppsh_Plot_L1():new Ppsh_Plot_L2()),
 				()->{
-					Quest.given = true;
-					Quest.completed = false;
+					Quest.cur().given = true;
+					Quest.cur().completed = false;
 					Notes.add( Notes.Landmark.TROLL );
 
 					Pickaxe pick = new Pickaxe();
-					if (pick.doPickUp( Dungeon.hero )) {
-						GLog.i( Messages.get(Dungeon.hero, "you_now_have", pick.name() ));
+					if (pick.doPickUp( Dungeon.cur().hero )) {
+						GLog.i( Messages.get(Dungeon.cur().hero, "you_now_have", pick.name() ));
 					} else {
-						Dungeon.level.drop( pick, Dungeon.hero.pos ).sprite.drop();
+						Dungeon.level.drop( pick, Dungeon.cur().hero.pos ).sprite.drop();
 					}
 				}
 			)));
-		} else if (!Quest.completed) {
-			if (Quest.alternative) {
+		} else if (!Quest.cur().completed) {
+			if (Quest.cur().alternative) {
 				
-				Pickaxe pick = Dungeon.hero.belongings.getItem( Pickaxe.class );
+				Pickaxe pick = Dungeon.cur().hero.belongings.getItem( Pickaxe.class );
 				if (pick == null) {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc())));
 				} else if (!pick.bloodStained) {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.Kill())));
 				} else {
-					if (pick.isEquipped( Dungeon.hero ))
-						pick.detachCursedEquipment( Dungeon.hero );
-					pick.detach( Dungeon.hero.belongings.backpack );
+					if (pick.isEquipped( Dungeon.cur().hero ))
+						pick.detachCursedEquipment( Dungeon.cur().hero );
+					pick.detach( Dungeon.cur().hero.belongings.backpack );
 					CardSelector.INSTANCE().coolDown(1000);
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.L1())));
 
-					Quest.completed = true;
-					Quest.reforged = false;
+					Quest.cur().completed = true;
+					Quest.cur().given = false;
 				}
 				
 			} else {
 				
-				Pickaxe pick = Dungeon.hero.belongings.getItem( Pickaxe.class );
-				DarkGold gold = Dungeon.hero.belongings.getItem( DarkGold.class );
+				Pickaxe pick = Dungeon.cur().hero.belongings.getItem( Pickaxe.class );
+				DarkGold gold = Dungeon.cur().hero.belongings.getItem( DarkGold.class );
 				if (pick == null) {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc())));
 				} else if (gold == null || gold.quantity() < 15) {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.Gold())));
 				} else {
-					if (pick.isEquipped( Dungeon.hero )) {
-						pick.doUnequip( Dungeon.hero, false );
+					if (pick.isEquipped( Dungeon.cur().hero )) {
+						pick.doUnequip( Dungeon.cur().hero, false );
 					}
-					pick.detach( Dungeon.hero.belongings.backpack );
-					gold.detachAll( Dungeon.hero.belongings.backpack );
+					pick.detach( Dungeon.cur().hero.belongings.backpack );
+					gold.detachAll( Dungeon.cur().hero.belongings.backpack );
 					CardSelector.INSTANCE().coolDown(1000);
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.L1())));
 					
-					Quest.completed = true;
-					Quest.reforged = false;
+					Quest.cur().completed = true;
+					Quest.cur().given = false;
 				}
 				
 			}
-		} else if (!Quest.reforged) {
+		} else if (!Quest.cur().reforged) {
 			
 			Game.runOnRenderThread(new Callback() {
 				@Override
 				public void call() {
-					GameScene.show( new WndBlacksmith( Blacksmith.this, Dungeon.hero ) );
+					GameScene.show( new WndBlacksmith( Blacksmith.this, Dungeon.cur().hero ) );
 				}
 			});
 			
@@ -243,18 +244,18 @@ public class Blacksmith extends NPC {
 		}
 
 		Sample.INSTANCE.play( Assets.Sounds.EVOKE );
-		ScrollOfUpgrade.upgrade( Dungeon.hero );
-		Item.evoke( Dungeon.hero );
+		ScrollOfUpgrade.upgrade( Dungeon.cur().hero );
+		Item.evoke( Dungeon.cur().hero );
 
-		if (second.isEquipped( Dungeon.hero )) {
-			((EquipableItem)second).doUnequip( Dungeon.hero, false );
+		if (second.isEquipped( Dungeon.cur().hero )) {
+			((EquipableItem)second).doUnequip( Dungeon.cur().hero, false );
 		}
-		second.detach( Dungeon.hero.belongings.backpack );
+		second.detach( Dungeon.cur().hero.belongings.backpack );
 
 		if (second instanceof Armor){
 			BrokenSeal seal = ((Armor) second).checkSeal();
 			if (seal != null){
-				Dungeon.level.drop( seal, Dungeon.hero.pos );
+				Dungeon.level.drop( seal, Dungeon.cur().hero.pos );
 			}
 		}
 
@@ -267,18 +268,18 @@ public class Blacksmith extends NPC {
 			first.upgrade();
 		}
 		Catalog.countUse(first.getClass());
-		Dungeon.hero.spendAndNext( 2f );
+		Dungeon.cur().hero.spendAndNext( 2f );
 		Badges.validateItemLevelAquired( first );
 		Item.updateQuickslot();
 		
-		Quest.reforged = true;
+		Quest.cur().reforged = true;
 
 		Notes.remove( Notes.Landmark.TROLL );
 	}
 
 	@Override
 	public Notes.Landmark landmark() {
-		return (!Quest.completed || !Quest.reforged) ? Notes.Landmark.TROLL : null;
+		return (!Quest.cur().completed || !Quest.cur().reforged) ? Notes.Landmark.TROLL : null;
 	}
 	@Override
 	public int defenseSkill( Char enemy ) {
@@ -300,14 +301,21 @@ public class Blacksmith extends NPC {
 
 	public static class Quest {
 		
-		public static boolean spawned;
+		public static Quest cur() {
+			return Dungeons.cur().blacksmithQuest;
+		}
+		//仅用于存档读写（始终发生在主线程），避免误序列化 worker 状态
+		public static Quest main() {
+			return Dungeons.main().blacksmithQuest;
+		}
+		public boolean spawned;
 		
-		private static boolean alternative;
-		public static boolean given;
-		public static boolean completed;
-		private static boolean reforged;
+		private boolean alternative;
+		public boolean given;
+		public boolean completed;
+		private boolean reforged;
 		
-		public static void reset() {
+		public void reset() {
 			spawned		= false;
 			given		= false;
 			completed	= false;
@@ -322,7 +330,7 @@ public class Blacksmith extends NPC {
 		private static final String COMPLETED	= "completed";
 		private static final String REFORGED	= "reforged";
 		
-		public static void storeInBundle( Bundle bundle ) {
+		public void storeInBundle( Bundle bundle ) {
 			
 			Bundle node = new Bundle();
 			
@@ -338,7 +346,7 @@ public class Blacksmith extends NPC {
 			bundle.put( NODE, node );
 		}
 		
-		public static void restoreFromBundle( Bundle bundle ) {
+		public void restoreFromBundle( Bundle bundle ) {
 
 			Bundle node = bundle.getBundle( NODE );
 			
@@ -352,8 +360,8 @@ public class Blacksmith extends NPC {
 			}
 		}
 		
-		public static ArrayList<Room> spawn( ArrayList<Room> rooms ) {
-			if (!spawned && Dungeon.depth > 11 && Random.Int( 15 - Dungeon.depth ) == 0) {
+		public ArrayList<Room> spawn( ArrayList<Room> rooms ) {
+			if (!spawned && Dungeon.cur().depth > 11 && Random.Int( 15 - Dungeon.cur().depth ) == 0) {
 				
 				rooms.add(new BlacksmithRoom());
 				spawned = true;

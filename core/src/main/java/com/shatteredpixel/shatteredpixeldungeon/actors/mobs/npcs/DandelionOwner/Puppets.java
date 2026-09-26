@@ -45,8 +45,8 @@ public class Puppets {
                 if (m instanceof Puppet)
                     Buff.affect(m, AttackDMG_Add.C93.class, 5F);
             }
-            Buff.affect(Dungeon.hero, AttackDMG_Add.C93.class, 5F);
-            Buff.affect(Dungeon.hero, HS2000_Shield.class).incShield(5);
+            Buff.affect(Dungeon.cur().hero, AttackDMG_Add.C93.class, 5F);
+            Buff.affect(Dungeon.cur().hero, HS2000_Shield.class).incShield(5);
         }
     }
     public static class Savage_99 extends ElitePuppet {

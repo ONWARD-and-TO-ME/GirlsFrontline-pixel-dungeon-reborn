@@ -216,7 +216,7 @@ public class M320 extends Item {
 			CellEmitter.center(cell).burst(BlastParticle.FACTORY, 30);
 		}
 		boolean terrainAffected = false;
-		for (int n : PathFinder.NEIGHBOURS9) {
+		for (int n : PathFinder.cur().NEIGHBOURS9) {
 			int c = cell + n;
 			if (c >= 0 && c < Dungeon.level.length()) {
 				if (Dungeon.level.heroFOV[c]) {
@@ -235,7 +235,7 @@ public class M320 extends Item {
 		}
 
 		// 范围内每个敌人单独计算伤害
-		for (int n : PathFinder.NEIGHBOURS9) {
+		for (int n : PathFinder.cur().NEIGHBOURS9) {
 			int c = cell + n;
 			if (c < 0 || c >= Dungeon.level.length()) continue;
 
@@ -312,7 +312,7 @@ public class M320 extends Item {
 	@Override
 	public String info() {
 		String info = super.info();
-		Hero hero = Dungeon.hero;
+		Hero hero = Dungeon.cur().hero;
 		if (hero != null) {
 			info += "\n\n" + Messages.get(this, "stats", 25 + growthLevel(hero) * 15, cooldownTurns(hero));
 			if (hero.buff(Cooldown.class) != null) {

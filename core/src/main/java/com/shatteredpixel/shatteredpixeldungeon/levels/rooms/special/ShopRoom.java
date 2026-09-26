@@ -184,7 +184,7 @@ public class ShopRoom extends SpecialRoom {
 		MeleeWeapon w;
         Armor a;
         MissileWeapon m;
-		switch (Dungeon.depth) {
+		switch (Dungeon.cur().depth) {
 		case 6: default:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[1]);
 			m = (MissileWeapon) Generator.random(Generator.misTiers[1]).quantity(2);
@@ -220,7 +220,7 @@ public class ShopRoom extends SpecialRoom {
             itemsToSpawn.add(new Torch());
             break;
 		}
-		if (Dungeon.depth == 25){
+		if (Dungeon.cur().depth == 25){
 			w.identify(false);
 			m.identify(false);
 			a.identify(false);
@@ -228,7 +228,7 @@ public class ShopRoom extends SpecialRoom {
 		w.enchant(null);
 		w.cursed = false;
 		w.level(0);
-        if (Dungeon.depth == 25) {
+        if (Dungeon.cur().depth == 25) {
             int A = Random.Int(100);
             if (A < 5) {
                 w.upgrade(2);
@@ -243,7 +243,7 @@ public class ShopRoom extends SpecialRoom {
         a.inscribe(null);
         a.cursed = false;
         a.level(0);
-        if (Dungeon.depth == 25) {
+        if (Dungeon.cur().depth == 25) {
             int B = Random.Int(100);
             if (B < 5) {
                 a.upgrade(2);
@@ -256,7 +256,7 @@ public class ShopRoom extends SpecialRoom {
         itemsToSpawn.add(a);
 
         m.level(0);
-        if (Dungeon.depth==25){
+        if (Dungeon.cur().depth==25){
             int C = Random.Int(100);
             int lvl = 0;
             if (C < 5) {
@@ -275,13 +275,13 @@ public class ShopRoom extends SpecialRoom {
 
 		itemsToSpawn.add( new Alchemize().quantity(Random.IntRange(2, 3)));
 
-		itemsToSpawn.add(ChooseBag(Dungeon.hero.belongings));
+		itemsToSpawn.add(ChooseBag(Dungeon.cur().hero.belongings));
 
 
 		itemsToSpawn.add( new PotionOfHealing() );
 		itemsToSpawn.add( Generator.randomUsingDefaults( Generator.Category.POTION ) );
 		itemsToSpawn.add( Generator.randomUsingDefaults( Generator.Category.POTION ) );
-        if (Dungeon.depth == 25) {
+        if (Dungeon.cur().depth == 25) {
             if (Random.Int(2) == 0) {
                 if (Random.Int(2) == 0) {
                     itemsToSpawn.add(new PotionOfExperience());
@@ -299,17 +299,17 @@ public class ShopRoom extends SpecialRoom {
 					Generator.randomUsingDefaults( Generator.Category.POTION ) :
 					Generator.randomUsingDefaults( Generator.Category.SCROLL ) );
 
-		if (Dungeon.hero.pointsInTalent(Talent.BARGAIN_SKILLS) == 2){
+		if (Dungeon.cur().hero.pointsInTalent(Talent.BARGAIN_SKILLS) == 2){
 			itemsToSpawn.add(new SaltyZongzi());
 			itemsToSpawn.add(new SaltyZongzi());
 			itemsToSpawn.add(new SaltyZongzi());
 		}
 		else {
-			if (Dungeon.hero.pointsInTalent(Talent.BARGAIN_SKILLS) == 2){
+			if (Dungeon.cur().hero.pointsInTalent(Talent.BARGAIN_SKILLS) == 2){
 				itemsToSpawn.add(new SugarZongzi());
 				itemsToSpawn.add(new SugarZongzi());
 			}
-			if (Dungeon.hero.hasTalentB(Talent.Type56One_FOOD) || Dungeon.hero.hasTalentB(Talent.BETTER_FOOD)) {
+			if (Dungeon.cur().hero.hasTalentB(Talent.Type56One_FOOD) || Dungeon.cur().hero.hasTalentB(Talent.BETTER_FOOD)) {
 				switch (Random.Int(3)) {
 					case 0:
 						itemsToSpawn.add(new Maccol());
@@ -360,12 +360,12 @@ public class ShopRoom extends SpecialRoom {
 		itemsToSpawn.add( new Ankh() );
 		itemsToSpawn.add( new StoneOfAugmentation() );
 
-		TimekeepersHourglass hourglass = Dungeon.hero.belongings.getItem(TimekeepersHourglass.class);
+		TimekeepersHourglass hourglass = Dungeon.cur().hero.belongings.getItem(TimekeepersHourglass.class);
 		if (hourglass != null && hourglass.isIdentified() && !hourglass.cursed){
 			int bags = 0;
 			//creates the given float percent of the remaining bags to be dropped.
 			//this way players who get the hourglass late can still max it, usually.
-			switch (Dungeon.depth) {
+			switch (Dungeon.cur().depth) {
 				case 6:
 					bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.20f ); break;
 				case 11:
@@ -388,14 +388,14 @@ public class ShopRoom extends SpecialRoom {
 		switch (Random.Int(10)){
 			case 0:
 				rare = Generator.random( Generator.Category.WAND );
-                if (!(Dungeon.depth == 25)) {
+                if (!(Dungeon.cur().depth == 25)) {
                     rare.level(0);
                 }
                 rare.identify(false);
 				break;
 			case 1:
 				rare = Generator.random(Generator.Category.RING);
-                if (!(Dungeon.depth == 25)) {
+                if (!(Dungeon.cur().depth == 25)) {
                     rare.level(0);
                 }
 				break;

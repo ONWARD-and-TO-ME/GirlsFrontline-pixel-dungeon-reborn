@@ -138,8 +138,8 @@ public class RedBookOld extends Artifact{
             }
 
             updateQuickslot();
-            Dungeon.hero.spendAndNext(1f);
-            Talent.onArtifactUsed(Dungeon.hero);
+            Dungeon.cur().hero.spendAndNext(1f);
+            Talent.onArtifactUsed(Dungeon.cur().hero);
         }
 
         @Override

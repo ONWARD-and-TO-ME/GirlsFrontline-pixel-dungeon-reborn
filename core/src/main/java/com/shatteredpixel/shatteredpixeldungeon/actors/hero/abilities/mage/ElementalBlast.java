@@ -219,7 +219,7 @@ public class ElementalBlast extends ArmorAbility {
 
 							//*** Wand of Prismatic Light ***
 							} else if (finalWandCls == WandOfPrismaticLight.class){
-								for (int n : PathFinder.NEIGHBOURS9) {
+								for (int n : PathFinder.cur().NEIGHBOURS9) {
 									int c = cell+n;
 
 									if (Dungeon.level.discoverable[c]) {
@@ -416,7 +416,7 @@ public class ElementalBlast extends ArmorAbility {
 	public String desc() {
 		String desc = Messages.get(this, "desc");
 		if (Game.scene() instanceof GameScene){
-			MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+			MagesStaff staff = Dungeon.cur().hero.belongings.getItem(MagesStaff.class);
 			if (staff != null && staff.wandClass() != null){
 				desc += "\n\n" + Messages.get(staff.wandClass(), "eleblast_desc");
 			} else {

@@ -14,8 +14,8 @@ public class SaltyZongzi extends Food {
 
 	@Override
 	protected float eatingTime(){
-		if(Dungeon.hero.hasTalent(Talent.Type56Two_FOOD)
-                || Dungeon.hero.hasTalent(Talent.Type56_21V2))
+		if(Dungeon.cur().hero.hasTalent(Talent.Type56Two_FOOD)
+                || Dungeon.cur().hero.hasTalent(Talent.Type56_21V2))
 			return 0;
 		else
 			return super.eatingTime();

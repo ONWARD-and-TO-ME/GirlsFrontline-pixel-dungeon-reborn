@@ -167,7 +167,7 @@ public class Vector_Fire_Aura extends Buff implements ActionIndicator.Action {
         @Override
         public void onSelect(Integer target) {
             if (target != null) {
-                int[] path = PathFinder.NEIGHBOURS8;
+                int[] path = PathFinder.cur().NEIGHBOURS8;
                 for (int i = 0; i < path.length; i++){
                     int j = path[i];
                     int cell = Vector_Fire_Aura.this.target.pos + j;

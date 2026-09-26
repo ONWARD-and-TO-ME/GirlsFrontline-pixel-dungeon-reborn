@@ -104,12 +104,12 @@ public class Erosion extends Buff {
 
 	/** 每回合侵蚀伤害：层数*楼层*0.5 */
 	public int erodedDamage() {
-		return Math.max(1, Math.round(stacks * Dungeon.depth * 0.5f));
+		return Math.max(1, Math.round(stacks * Dungeon.cur().depth * 0.5f));
 	}
 
 	/** 死亡自爆伤害：12+楼层*1.5 */
 	public static int explosionDamage() {
-		return Math.round(12 + Dungeon.depth * 1.5f);
+		return Math.round(12 + Dungeon.cur().depth * 1.5f);
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class Erosion extends Buff {
 		//爆炸特效
 		if (Dungeon.level.heroFOV[ch.pos]) {
 			CellEmitter.center(ch.pos).burst(BlastParticle.FACTORY, 20);
-			for (int n : PathFinder.NEIGHBOURS9) {
+			for (int n : PathFinder.cur().NEIGHBOURS9) {
 				int c = ch.pos + n;
 				if (c >= 0 && c < Dungeon.level.length() && Dungeon.level.heroFOV[c]) {
 					CellEmitter.get(c).burst(SmokeParticle.FACTORY, 4);
@@ -164,9 +164,9 @@ public class Erosion extends Buff {
 		}
 
 		//对3*3范围内的单位造成伤害（每个敌人单独计算）
-		int inheritedPoints = Dungeon.hero != null ? Dungeon.hero.pointsInTalent(Talent.HK416_EROSION_INHERIT) : 0;
+		int inheritedPoints = Dungeon.cur().hero != null ? Dungeon.cur().hero.pointsInTalent(Talent.HK416_EROSION_INHERIT) : 0;
 
-		for (int n : PathFinder.NEIGHBOURS9) {
+		for (int n : PathFinder.cur().NEIGHBOURS9) {
 			int c = ch.pos + n;
 			if (c < 0 || c >= Dungeon.level.length()) continue;
 			Char hit = Actor.findChar(c);
@@ -204,8 +204,8 @@ public class Erosion extends Buff {
 	/** T3-5A：被附加侵蚀的敌人命中降低 10%/20%/30%（由 Char.attackSkill 调用） */
 	public static float attackSkillFactor(Char ch) {
 		Erosion erosion = ch.buff(Erosion.class);
-		if (erosion == null || Dungeon.hero == null) return 1f;
-		int pts = Dungeon.hero.pointsInTalent(Talent.HK416_EROSION_WEAKEN);
+		if (erosion == null || Dungeon.cur().hero == null) return 1f;
+		int pts = Dungeon.cur().hero.pointsInTalent(Talent.HK416_EROSION_WEAKEN);
 		if (pts <= 0) return 1f;
 		return 1f - 0.1f * pts;
 	}

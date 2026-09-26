@@ -108,20 +108,20 @@ public class TimekeepersHourglass extends Artifact {
 									Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
 									activeBuff = new timeStasis();
-									Talent.onArtifactUsed(Dungeon.hero);
-									activeBuff.attachTo(Dungeon.hero);
+									Talent.onArtifactUsed(Dungeon.cur().hero);
+									activeBuff.attachTo(Dungeon.cur().hero);
 								} else if (index == 1) {
 									GLog.i( Messages.get(TimekeepersHourglass.class, "onfreeze") );
 									GameScene.flash(0x80FFFFFF);
 									Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
 									activeBuff = new timeFreeze();
-									activeBuff.attachTo(Dungeon.hero);
+									activeBuff.attachTo(Dungeon.cur().hero);
                                     if (hero.hasTalent(Talent.ENHANCED_RINGS_V2) && hero.buff(EnhancedRings.CoolDown.class) == null)
                                         ((timeFreeze)activeBuff).reduceCharge(0f);
                                     else
                                         ((timeFreeze)activeBuff).processTime(0f);
-									Talent.onArtifactUsed(Dungeon.hero);
+									Talent.onArtifactUsed(Dungeon.cur().hero);
 								}
 							}
 						}
@@ -181,7 +181,7 @@ public class TimekeepersHourglass extends Artifact {
 	public String desc() {
 		String desc = super.desc();
 
-		if (isEquipped( Dungeon.hero )){
+		if (isEquipped( Dungeon.cur().hero )){
 			if (!cursed) {
 				if (level() < levelCap )
 					desc += "\n\n" + Messages.get(this, "desc_hint");
@@ -286,7 +286,7 @@ public class TimekeepersHourglass extends Artifact {
 
 				updateQuickslot();
 
-				if (Dungeon.hero != null) {
+				if (Dungeon.cur().hero != null) {
 					Dungeon.observe();
 				}
 

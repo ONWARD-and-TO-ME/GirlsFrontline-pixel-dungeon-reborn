@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.custom.testmode;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -203,7 +202,7 @@ public class WandOfReflectDisintegration extends WandOfDisintegration {
         int lvl = level;
         for (Char ch : chars) {
             wandProc(ch, chargesPerCast());
-            KindOfWeapon w =  hero.belongings.weapon;
+            KindOfWeapon w =  Dungeon.cur().hero.belongings.weapon;
             if (ch.alignment!= Char.Alignment.ALLY && w instanceof Cannon && ((Cannon) w).mustDie) {
                 ch.MustDie( w );
             }else {
@@ -314,7 +313,7 @@ public class WandOfReflectDisintegration extends WandOfDisintegration {
 
     public String info(){
         String info = super.info();
-        KindOfWeapon w =  hero.belongings.weapon;
+        KindOfWeapon w =  Dungeon.cur().hero.belongings.weapon;
         if (w instanceof Cannon && ((Cannon) w).mustDie){
             info += "\n\n已开启秒杀模式。";
         }

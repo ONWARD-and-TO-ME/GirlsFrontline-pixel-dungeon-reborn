@@ -57,7 +57,7 @@ public class DisarmingTrap extends Trap{
 				dropped.type = heap.type;
 				dropped.sprite.view( dropped );
 				dropped.seen = true;
-				for (int i : PathFinder.NEIGHBOURS9) Dungeon.level.visited[cell+i] = true;
+				for (int i : PathFinder.cur().NEIGHBOURS9) Dungeon.level.visited[cell+i] = true;
 				GameScene.updateFog();
 
 				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
@@ -71,8 +71,8 @@ public class DisarmingTrap extends Trap{
 			CellEmitter.get(pos).burst(Speck.factory(Speck.LIGHT), 4);
 		}
 
-		if (Dungeon.hero.pos == pos && !Dungeon.hero.flying){
-			Hero hero = Dungeon.hero;
+		if (Dungeon.cur().hero.pos == pos && !Dungeon.cur().hero.flying){
+			Hero hero = Dungeon.cur().hero;
 			KindOfWeapon weapon = hero.belongings.weapon;
 
 			if (weapon != null && !weapon.cursed) {
@@ -83,15 +83,15 @@ public class DisarmingTrap extends Trap{
 					cell = Dungeon.level.randomRespawnCell( null );
 					if (tries-- < 0 && cell != -1) break;
 
-					PathFinder.buildDistanceMap(pos, Dungeon.level.passable);
-				} while (cell == -1 || PathFinder.distance[cell] < 10 || PathFinder.distance[cell] > 20);
+					PathFinder.cur().buildDistanceMap(pos, Dungeon.level.passable);
+				} while (cell == -1 || PathFinder.cur().distance[cell] < 10 || PathFinder.cur().distance[cell] > 20);
 
 				hero.belongings.weapon = null;
 				Dungeon.quickslot.clearItem(weapon);
 				weapon.updateQuickslot();
 
 				Dungeon.level.drop(weapon, cell).seen = true;
-				for (int i : PathFinder.NEIGHBOURS9)
+				for (int i : PathFinder.cur().NEIGHBOURS9)
 					Dungeon.level.mapped[cell+i] = true;
 				GameScene.updateFog(cell, 1);
 

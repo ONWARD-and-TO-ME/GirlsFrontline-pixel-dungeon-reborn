@@ -46,9 +46,9 @@ public class ArcaneBomb extends Bomb {
 	protected void onThrow(int cell) {
 		super.onThrow(cell);
 		if (fuse != null){
-			PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 2 );
-			for (int i = 0; i < PathFinder.distance.length; i++) {
-				if (PathFinder.distance[i] < Integer.MAX_VALUE)
+			PathFinder.cur().buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 2 );
+			for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+				if (PathFinder.cur().distance[i] < Integer.MAX_VALUE)
 					GameScene.add(Blob.seed(i, 3, GooWarn.class));
 			}
 		}
@@ -65,9 +65,9 @@ public class ArcaneBomb extends Bomb {
 		
 		ArrayList<Char> affected = new ArrayList<>();
 		
-		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 2 );
-		for (int i = 0; i < PathFinder.distance.length; i++) {
-			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+		PathFinder.cur().buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 2 );
+		for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+			if (PathFinder.cur().distance[i] < Integer.MAX_VALUE) {
 				if (Dungeon.level.heroFOV[i]) {
 					CellEmitter.get(i).burst(ElmoParticle.FACTORY, 10);
 				}
@@ -83,7 +83,7 @@ public class ArcaneBomb extends Bomb {
 			int damage = Math.round(Random.NormalIntRange( Dungeon.curDepth()+5, 10 + Dungeon.curDepth() * 2 ));
 			float multiplier = 1f - (.16667f*Dungeon.level.distance(cell, ch.pos));
 			ch.damage(Math.round(damage*multiplier), this);
-			if (ch == Dungeon.hero && !ch.isAlive()){
+			if (ch == Dungeon.cur().hero && !ch.isAlive()){
 				Dungeon.fail(Bomb.class);
 			}
 		}

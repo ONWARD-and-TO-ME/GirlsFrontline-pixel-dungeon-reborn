@@ -271,25 +271,25 @@ public final class Type561Talent {
 
 	/** 战地侦察（T2）：进入新楼层时的视野逻辑 */
 	public static void onLevelEnter(){
-		if (Dungeon.hero!=null && Dungeon.level!=null){
-			if(Dungeon.hero.hasTalent(Talent.Type56Two_Sight)) {
-				TalentSecondSight Sec = Dungeon.hero.buff(TalentSecondSight.class);
+		if (Dungeon.cur().hero!=null && Dungeon.level!=null){
+			if(Dungeon.cur().hero.hasTalent(Talent.Type56Two_Sight)) {
+				TalentSecondSight Sec = Dungeon.cur().hero.buff(TalentSecondSight.class);
 				if (Sec==null){
-					Buff.affect( Dungeon.hero, TalentSecondSight.class).Set(0, 0);
-					Sec = Dungeon.hero.buff(TalentSecondSight.class);
+					Buff.affect( Dungeon.cur().hero, TalentSecondSight.class).Set(0, 0);
+					Sec = Dungeon.cur().hero.buff(TalentSecondSight.class);
 					GLog.p(Messages.get(Type561Talent.class, "resight"));
 				}
 				if (Dungeon.level.FirstSight){
 					Dungeon.level.FirstSight = false;
-					Buff.affect(Dungeon.hero, MindVision.class, 3);
-					if (Dungeon.hero.pointsInTalent(Talent.Type56Two_Sight) == 2) {
+					Buff.affect(Dungeon.cur().hero, MindVision.class, 3);
+					if (Dungeon.cur().hero.pointsInTalent(Talent.Type56Two_Sight) == 2) {
 						Sec.Set(Dungeon.levelId, 25);
 					}
 				}
-				if (Dungeon.hero.pointsInTalent(Talent.Type56Two_Sight) == 2
+				if (Dungeon.cur().hero.pointsInTalent(Talent.Type56Two_Sight) == 2
 						&& Sec.EndCD(Dungeon.levelId) && Dungeon.level.SecondSight) {
 					Dungeon.level.SecondSight = false;
-					Buff.affect(Dungeon.hero, MindVision.class, 3);
+					Buff.affect(Dungeon.cur().hero, MindVision.class, 3);
 				}
 			}
 		}

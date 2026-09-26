@@ -88,9 +88,9 @@ public class CardSelector extends Item {
             return 4500;
     }
     public static CardSelector INSTANCE(){
-        if (Dungeon.hero == null)
+        if (Dungeon.cur().hero == null)
             return new CardSelector();
-        CardSelector selector = Dungeon.hero.belongings.getItem(CardSelector.class);
+        CardSelector selector = Dungeon.cur().hero.belongings.getItem(CardSelector.class);
         if (selector == null)
             selector = new CardSelector();
         return selector;

@@ -85,8 +85,8 @@ public class Yog extends Mob {
 		BurningFist fist2 = new BurningFist();
 		
 		do {
-			fist1.pos = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
-			fist2.pos = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
+			fist1.pos = pos + PathFinder.cur().NEIGHBOURS8[Random.Int( 8 )];
+			fist2.pos = pos + PathFinder.cur().NEIGHBOURS8[Random.Int( 8 )];
 		} while (!Dungeon.level.passable[fist1.pos] || !Dungeon.level.passable[fist2.pos] || fist1.pos == fist2.pos);
 		
 		GameScene.add( fist1 );
@@ -118,7 +118,7 @@ public class Yog extends Mob {
 		
 		super.damage( dmg, src );
 
-		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+		LockedFloor lock = Dungeon.cur().hero.buff(LockedFloor.class);
 		if (lock != null) lock.addTime(dmg*0.5f);
 
 	}
@@ -128,8 +128,8 @@ public class Yog extends Mob {
 
 		ArrayList<Integer> spawnPoints = new ArrayList<>();
 		
-		for (int i=0; i < PathFinder.NEIGHBOURS8.length; i++) {
-			int p = pos + PathFinder.NEIGHBOURS8[i];
+		for (int i=0; i < PathFinder.cur().NEIGHBOURS8.length; i++) {
+			int p = pos + PathFinder.cur().NEIGHBOURS8[i];
 			if (Actor.findChar( p ) == null && (Dungeon.level.passable[p] || Dungeon.level.avoid[p])) {
 				spawnPoints.add( p );
 			}
@@ -167,7 +167,7 @@ public class Yog extends Mob {
 		}
 		
 		GameScene.bossSlain();
-		Dungeon.level.drop( new SkeletonKey( Dungeon.depth ), pos ).sprite.drop();
+		Dungeon.level.drop( new SkeletonKey( Dungeon.cur().depth ), pos ).sprite.drop();
 		super.die( cause );
 		
 		yell( Messages.get(this, "defeated") );
@@ -259,7 +259,7 @@ public class Yog extends Mob {
 		@Override
 		public void damage(int dmg, Object src) {
 			super.damage(dmg, src);
-			LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+			LockedFloor lock = Dungeon.cur().hero.buff(LockedFloor.class);
 			if (lock != null) lock.addTime(dmg*0.5f);
 		}
 		
@@ -324,7 +324,7 @@ public class Yog extends Mob {
 					enemy.sprite.bloodBurstA( sprite.center(), dmg );
 					enemy.sprite.flash();
 					
-					if (!enemy.isAlive() && enemy == Dungeon.hero) {
+					if (!enemy.isAlive() && enemy == Dungeon.cur().hero) {
 						Dungeon.fail( getClass() );
 						GLog.n( Messages.get(Char.class, "kill", name()) );
 					}
@@ -343,8 +343,8 @@ public class Yog extends Mob {
 		@Override
 		public boolean act() {
 			
-			for (int i=0; i < PathFinder.NEIGHBOURS9.length; i++) {
-				GameScene.add( Blob.seed( pos + PathFinder.NEIGHBOURS9[i], 2, Fire.class ) );
+			for (int i=0; i < PathFinder.cur().NEIGHBOURS9.length; i++) {
+				GameScene.add( Blob.seed( pos + PathFinder.cur().NEIGHBOURS9[i], 2, Fire.class ) );
 			}
 			
 			return super.act();
@@ -353,7 +353,7 @@ public class Yog extends Mob {
 		@Override
 		public void damage(int dmg, Object src) {
 			super.damage(dmg, src);
-			LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+			LockedFloor lock = Dungeon.cur().hero.buff(LockedFloor.class);
 			if (lock != null) lock.addTime(dmg*0.5f);
 		}
 		

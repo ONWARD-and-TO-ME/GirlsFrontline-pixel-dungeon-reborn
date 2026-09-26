@@ -69,14 +69,14 @@ public class WandOfBlastWave extends DamageWand {
 		BlastWave.blast(bolt.collisionPos);
 
 		//presses all tiles in the AOE first, with the exception of tengu dart traps
-		for (int i : PathFinder.NEIGHBOURS9){
+		for (int i : PathFinder.cur().NEIGHBOURS9){
 			if (!(Dungeon.level.traps.get(bolt.collisionPos+i) instanceof TenguDartTrap)) {
 				Dungeon.level.pressCell(bolt.collisionPos + i);
 			}
 		}
 
 		//throws other chars around the center.
-		for (int i  : PathFinder.NEIGHBOURS8){
+		for (int i  : PathFinder.cur().NEIGHBOURS8){
 			Char ch = Actor.findChar(bolt.collisionPos + i);
 
 			if (ch != null){
@@ -188,7 +188,7 @@ public class WandOfBlastWave extends DamageWand {
 					Door.leave(oldPos);
 				}
 				Dungeon.level.occupyCell(ch);
-				if (ch == Dungeon.hero){
+				if (ch == Dungeon.cur().hero){
 					//FIXME currently no logic here if the throw effect kills the hero
 					Dungeon.observe();
 				}
@@ -254,7 +254,7 @@ public class WandOfBlastWave extends DamageWand {
 		}
 
 		public static void blast(int pos) {
-			Group parent = Dungeon.hero.sprite.parent;
+			Group parent = Dungeon.cur().hero.sprite.parent;
 			BlastWave b = (BlastWave) parent.recycle(BlastWave.class);
 			parent.bringToFront(b);
 			b.reset(pos);

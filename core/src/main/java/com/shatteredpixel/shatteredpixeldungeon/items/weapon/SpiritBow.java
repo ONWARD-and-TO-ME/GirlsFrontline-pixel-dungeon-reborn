@@ -140,16 +140,16 @@ public class SpiritBow extends Weapon {
 	public String info() {
 		String info = super.info();
 
-		Ring.guessSignalRing(Dungeon.hero, RingOfSharpshooting.class, false);
+		Ring.guessSignalRing(Dungeon.cur().hero, RingOfSharpshooting.class, false);
 		info += "\n\n" + Messages.get( SpiritBow.class, "stats",
 				Math.round(augment.damageFactor(min())),
 				Math.round(augment.damageFactor(max())),
 				STRReq());
 		
-		if (STRReq() > Dungeon.hero.STR()) {
+		if (STRReq() > Dungeon.cur().hero.STR()) {
 			info += " " + Messages.get(Weapon.class, "too_heavy");
-		} else if (Dungeon.hero.STR() > STRReq()){
-			info += " " + Messages.get(Weapon.class, "excess_str", Dungeon.hero.STR() - STRReq());
+		} else if (Dungeon.cur().hero.STR() > STRReq()){
+			info += " " + Messages.get(Weapon.class, "excess_str", Dungeon.cur().hero.STR() - STRReq());
 		}
 		
 		switch (augment) {
@@ -167,7 +167,7 @@ public class SpiritBow extends Weapon {
 			info += " " + Messages.get(enchantment, "desc");
 		}
 		
-		if (cursed && isEquipped( Dungeon.hero )) {
+		if (cursed && isEquipped( Dungeon.cur().hero )) {
 			info += "\n\n" + Messages.get(Weapon.class, "cursed_worn");
 		} else if (cursedKnown && cursed) {
 			info += "\n\n" + Messages.get(Weapon.class, "cursed");
@@ -187,17 +187,17 @@ public class SpiritBow extends Weapon {
 	
 	@Override
 	public int min(int lvl) {
-		int dmg = 1 + Dungeon.hero.lvl/5
-				+ RingOfSharpshooting.levelDamageBonus(Dungeon.hero)
-				+ (curseInfusionBonus ? 1 + Dungeon.hero.lvl/30 : 0);
+		int dmg = 1 + Dungeon.cur().hero.lvl/5
+				+ RingOfSharpshooting.levelDamageBonus(Dungeon.cur().hero)
+				+ (curseInfusionBonus ? 1 + Dungeon.cur().hero.lvl/30 : 0);
 		return Math.max(0, dmg);
 	}
 	
 	@Override
 	public int max(int lvl) {
-		int dmg = 6 + (int)(Dungeon.hero.lvl/2.5f)
-				+ 2*RingOfSharpshooting.levelDamageBonus(Dungeon.hero)
-				+ (curseInfusionBonus ? 2 + Dungeon.hero.lvl/15 : 0);
+		int dmg = 6 + (int)(Dungeon.cur().hero.lvl/2.5f)
+				+ 2*RingOfSharpshooting.levelDamageBonus(Dungeon.cur().hero)
+				+ (curseInfusionBonus ? 2 + Dungeon.cur().hero.lvl/15 : 0);
 		return Math.max(0, dmg);
 	}
 
@@ -270,7 +270,7 @@ public class SpiritBow extends Weapon {
 
 	@Override
 	public int level() {
-		int level = Dungeon.hero == null ? 0 : Dungeon.hero.lvl/5;
+		int level = Dungeon.cur().hero == null ? 0 : Dungeon.cur().hero.lvl/5;
 		if (curseInfusionBonus) level += 1 + level/6;
 		return level;
 	}
@@ -300,7 +300,7 @@ public class SpiritBow extends Weapon {
 
 		@Override
 		public Emitter emitter() {
-			if (Dungeon.hero.buff(NaturesPower.naturesPowerTracker.class) != null && !sniperSpecial){
+			if (Dungeon.cur().hero.buff(NaturesPower.naturesPowerTracker.class) != null && !sniperSpecial){
 				Emitter e = new Emitter();
 				e.pos(5, 5);
 				e.fillTarget = false;
@@ -425,7 +425,7 @@ public class SpiritBow extends Weapon {
 					int shotPos = throwPos(user, dst);
 					if (Actor.findChar(shotPos) == null) {
 						RevealedArea a = Buff.affect(user, RevealedArea.class, HuntressTalent.seerShotMaxDuration(user));
-						a.depth = Dungeon.depth;
+						a.depth = Dungeon.cur().depth;
 						a.pos = shotPos;
 						Buff.affect(user, Talent.SeerShotCooldown.class, 20f);
 					}

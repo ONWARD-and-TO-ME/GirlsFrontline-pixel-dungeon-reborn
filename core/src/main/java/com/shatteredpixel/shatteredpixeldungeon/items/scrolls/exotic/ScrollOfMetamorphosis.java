@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -67,7 +66,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 	public void doRead() {
 		if (!isKnown()) {
 			identify();
-            curItem = detach( hero.belongings.backpack );
+            curItem = detach( Dungeon.cur().hero.belongings.backpack );
 			identifiedByUse = true;
 		} else {
 			identifiedByUse = false;
@@ -133,11 +132,11 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			top = text.bottom() + 2;
 
 			ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
-			Talent.initClassTalents(hero.heroClass, talents, hero.metamorphedTalents, hero.addTalents);
+			Talent.initClassTalents(Dungeon.cur().hero.heroClass, talents, Dungeon.cur().hero.metamorphedTalents, Dungeon.cur().hero.addTalents);
 
 			for (LinkedHashMap<Talent, Integer> tier : talents){
 				for (Talent talent : tier.keySet()){
-					tier.put(talent, hero.pointsInTalent(talent));
+					tier.put(talent, Dungeon.cur().hero.pointsInTalent(talent));
 				}
 			}
 
@@ -234,7 +233,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			Talent newTalent;
             for (HeroClass cls : HeroClass.values())
 				if ((newTalent = newTalent(cls, replacing, tier, options.keySet())) != null)
-					options.put(newTalent, hero.pointsInTalent(replacing));
+					options.put(newTalent, Dungeon.cur().hero.pointsInTalent(replacing));
 
 			replaceOptions = options;
 			setup(replacing, tier, options);
@@ -269,7 +268,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			for (Talent talent : clsTalentsAtTier.toArray(new Talent[0])) {
 				//在池子中移除准备蜕变的天赋，以免污染池子降低概率
 				//在池子中移除已有的天赋，以免出现重复天赋
-				if (talent == replacing || hero.hasTalentB(talent))
+				if (talent == replacing || Dungeon.cur().hero.hasTalentB(talent))
 					clsTalentsAtTier.remove(talent);
 				else {
 					//移除无法使用且未做蜕变适应的天赋
@@ -296,7 +295,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 				hide();
 				if (ScrollOfMetamorphosis.curItem instanceof ScrollOfMetamorphosis)
 					if (!curItem.collect())
-						Dungeon.level.drop(curItem, hero.pos);
+						Dungeon.level.drop(curItem, Dungeon.cur().hero.pos);
 				return;
 			}
 

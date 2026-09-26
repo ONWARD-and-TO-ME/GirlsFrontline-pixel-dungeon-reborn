@@ -69,9 +69,9 @@ public class CrystalVaultRoom extends SpecialRoom {
 		int i1Pos, i2Pos;
 		int doorPos = level.pointToCell(entrance());
 		do {
-			int neighbourIdx = Random.Int(PathFinder.CIRCLE8.length);
-			i1Pos = c + PathFinder.CIRCLE8[neighbourIdx];
-			i2Pos = c + PathFinder.CIRCLE8[(neighbourIdx+4)%8];
+			int neighbourIdx = Random.Int(PathFinder.cur().CIRCLE8.length);
+			i1Pos = c + PathFinder.cur().CIRCLE8[neighbourIdx];
+			i2Pos = c + PathFinder.cur().CIRCLE8[(neighbourIdx+4)%8];
 		} while (level.adjacent(i1Pos, doorPos) || level.adjacent(i2Pos, doorPos));
 
 		level.drop( i1, i1Pos ).type = Heap.Type.CRYSTAL_CHEST;
@@ -83,10 +83,10 @@ public class CrystalVaultRoom extends SpecialRoom {
 		Painter.set(level, i1Pos, Terrain.PEDESTAL);
 		Painter.set(level, i2Pos, Terrain.PEDESTAL);
 
-		level.addItemToSpawn( new CrystalKey( Dungeon.depth ) );
+		level.addItemToSpawn( new CrystalKey( Dungeon.cur().depth ) );
 		
 		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.depth ) );
+		level.addItemToSpawn( new IronKey( Dungeon.cur().depth ) );
 	}
 	
 	private Item prize() {

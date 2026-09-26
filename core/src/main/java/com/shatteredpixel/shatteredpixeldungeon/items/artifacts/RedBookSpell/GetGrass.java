@@ -26,8 +26,8 @@ public class GetGrass extends TargetSpell{
     }
     protected void onSelectA(Integer cell){
         boolean near = false;
-        for (int i: PathFinder.NEIGHBOURS9){
-            int c = Dungeon.hero.pos+i;
+        for (int i: PathFinder.cur().NEIGHBOURS9){
+            int c = Dungeon.cur().hero.pos+i;
             if (c==cell){
                 near = true;
                 break;
@@ -40,7 +40,7 @@ public class GetGrass extends TargetSpell{
         }
         if (Dungeon.level.map[cell] == Terrain.HIGH_GRASS){
             set(cell, Terrain.GRASS);
-            if (Random.Int(3)>Dungeon.hero.pointsInTalentA(Talent.Type56_23V4)) {
+            if (Random.Int(3)>Dungeon.cur().hero.pointsInTalentA(Talent.Type56_23V4)) {
                 GLog.n("收割失败");
                 GameScene.updateMap(cell);
                 Dungeon.observe();
@@ -48,8 +48,8 @@ public class GetGrass extends TargetSpell{
                 return;
             }
             Grass grass = new Grass();
-            if(grass.doPickUp(Dungeon.hero, cell)){
-                Dungeon.hero.spendAndNext(-timeUse);
+            if(grass.doPickUp(Dungeon.cur().hero, cell)){
+                Dungeon.cur().hero.spendAndNext(-timeUse);
                 //成功捡起则对冲时间
             }else {
                 Dungeon.level.drop(grass, cell).sprite.drop(cell);
@@ -58,17 +58,17 @@ public class GetGrass extends TargetSpell{
         }else {
             GLog.n("收割失败");
             Stop=true;
-            Sudden = Dungeon.hero.buff(LockedFloor.class)!=null && Dungeon.level.map[cell]==Terrain.BARRICADE;
+            Sudden = Dungeon.cur().hero.buff(LockedFloor.class)!=null && Dungeon.level.map[cell]==Terrain.BARRICADE;
             return;
         }
         GameScene.updateMap(cell);
         Dungeon.observe();
     }
     protected void onSelectB(Integer cell){
-        for (int i: PathFinder.NEIGHBOURS9){
-            int c = Dungeon.hero.pos+i;
+        for (int i: PathFinder.cur().NEIGHBOURS9){
+            int c = Dungeon.cur().hero.pos+i;
             if (c==cell){
-                if (Dungeon.hero.buff(LockedFloor.class)!=null){
+                if (Dungeon.cur().hero.buff(LockedFloor.class)!=null){
                     if (Dungeon.level.map[cell]==Terrain.BARRICADE){
                         set(cell, Terrain.EMPTY);
                         Stop =true;

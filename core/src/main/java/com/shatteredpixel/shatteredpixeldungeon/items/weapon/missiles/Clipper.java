@@ -89,8 +89,8 @@ public class Clipper extends MissileWeapon {
 
     protected void onSelectA(Integer cell){
         boolean near = false;
-        for (int i: PathFinder.NEIGHBOURS9){
-            int c = Dungeon.hero.pos+i;
+        for (int i: PathFinder.cur().NEIGHBOURS9){
+            int c = Dungeon.cur().hero.pos+i;
             if (c==cell){
                 near = true;
                 break;
@@ -102,7 +102,7 @@ public class Clipper extends MissileWeapon {
         }
         if (Dungeon.level.map[cell] == Terrain.HIGH_GRASS){
             set(cell, Terrain.GRASS);
-            if (Random.Int(3)>Dungeon.hero.pointsInTalentA(Talent.Type56_23V4)) {
+            if (Random.Int(3)>Dungeon.cur().hero.pointsInTalentA(Talent.Type56_23V4)) {
                 GLog.n("收割失败");
                 GameScene.updateMap(cell);
                 Dungeon.observe();
@@ -111,15 +111,15 @@ public class Clipper extends MissileWeapon {
             durability -= 20F;
             if (durability <= 0){
                 durability += MAX_DURABILITY;
-                detach(Dungeon.hero.belongings.backpack);
+                detach(Dungeon.cur().hero.belongings.backpack);
                 GLog.n("损坏了……");
             }
-            float p = Dungeon.hero.pointsInTalentA(Talent.Type56_23V4)*3/4F;
+            float p = Dungeon.cur().hero.pointsInTalentA(Talent.Type56_23V4)*3/4F;
             do {
                 Grass grass = new Grass();
-                Dungeon.hero.spend(-1);
-                if(!grass.doPickUp(Dungeon.hero, cell)){
-                    Dungeon.hero.spendAndNext(1);
+                Dungeon.cur().hero.spend(-1);
+                if(!grass.doPickUp(Dungeon.cur().hero, cell)){
+                    Dungeon.cur().hero.spendAndNext(1);
                     Dungeon.level.drop(grass, cell).sprite.drop(cell);
                 }
                 p--;

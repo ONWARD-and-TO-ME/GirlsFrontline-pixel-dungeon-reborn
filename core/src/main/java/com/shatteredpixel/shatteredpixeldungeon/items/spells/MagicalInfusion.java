@@ -66,7 +66,7 @@ public class MagicalInfusion extends InventorySpell {
 		Catalog.countUse(curItem.getClass());
 		Catalog.countUse(item.getClass());
 		GLog.p( Messages.get(this, "infuse", item.name()) );
-		Talent.onScrollUsed( Dungeon.hero, 2F );
+		Talent.onScrollUsed( Dungeon.cur().hero, 2F );
 		Badges.validateItemLevelAquired(item);
 
 		Statistics.upgradesUsed++;

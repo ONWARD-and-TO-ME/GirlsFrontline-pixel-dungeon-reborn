@@ -92,7 +92,7 @@ public class DM201 extends DM200 {
 		spendAttack(TICK);
 
 		GameScene.add(Blob.seed(enemy.pos, 15, CorrosiveGas.class).setStrength(8));
-		for (int i : PathFinder.NEIGHBOURS8){
+		for (int i : PathFinder.cur().NEIGHBOURS8){
 			if (!Dungeon.level.solid[enemy.pos+i]) {
 				GameScene.add(Blob.seed(enemy.pos + i, 5, CorrosiveGas.class).setStrength(8));
 			}
@@ -117,7 +117,7 @@ public class DM201 extends DM200 {
 		if (!doDrop()) return;
 		int ofs;
 		do {
-			ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
+			ofs = PathFinder.cur().NEIGHBOURS8[Random.Int(8)];
 		} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
 		Dungeon.level.drop( new MetalShard(), pos + ofs ).sprite.drop( pos );
 	}

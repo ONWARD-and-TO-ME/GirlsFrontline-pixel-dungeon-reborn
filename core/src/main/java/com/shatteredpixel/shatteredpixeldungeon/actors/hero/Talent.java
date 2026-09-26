@@ -258,7 +258,7 @@ public enum Talent {
 	public static class RejuvenatingStepsCooldown extends FlavourBuff{
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0f, 0.35f, 0.15f); }
-		public float iconFadePercent() { return Math.max(0, visualcooldown() / (15 - 5*Dungeon.hero.pointsInTalent(REJUVENATING_STEPS))); }
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / (15 - 5*Dungeon.cur().hero.pointsInTalent(REJUVENATING_STEPS))); }
 	}
 	public static class RejuvenatingStepsFurrow extends CounterBuff{{revivePersists = true;}}
 	public static class SeerShotCooldown extends FlavourBuff{
@@ -384,7 +384,7 @@ public enum Talent {
 			if (Ratmogrify.useRatroicEnergy){
 				return 127;
 			}
-			HeroClass cls = Dungeon.hero != null ? Dungeon.hero.heroClass : GamesInProgress.selectedClass;
+			HeroClass cls = Dungeon.cur().hero != null ? Dungeon.cur().hero.heroClass : GamesInProgress.selectedClass;
 			switch (cls){
 				case WARRIOR: default:
 					return 26;

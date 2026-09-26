@@ -71,7 +71,7 @@ public class MagicalSleep extends Buff {
 			if (target instanceof  Hero) {
                 ((Hero) target).resting = true;
 
-                if (Dungeon.hero.buff(ActHPtoGetFood.LockReg.class)!=null){
+                if (Dungeon.cur().hero.buff(ActHPtoGetFood.LockReg.class)!=null){
                     step = 10;
                 }
             }

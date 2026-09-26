@@ -39,19 +39,19 @@ public class ThrowingSkill extends SkillItem {
     public static boolean Throwing_INSTANCE( int target ) {
         //无法使用hero.spend(-hero.cooldown());
         //因为cast中已经spendAndNext了
-        Dungeon.hero.spend(-TIME_TO_THROW);
-        new ThrowingBomb().cast(Dungeon.hero, target);
+        Dungeon.cur().hero.spend(-TIME_TO_THROW);
+        new ThrowingBomb().cast(Dungeon.cur().hero, target);
         if (hasCard(CommonCard.Vector.Beretta_38)) {
-            Dungeon.hero.spend(-TIME_TO_THROW);
-            new FireBomb(4).cast(Dungeon.hero, target);
+            Dungeon.cur().hero.spend(-TIME_TO_THROW);
+            new FireBomb(4).cast(Dungeon.cur().hero, target);
         }
         if (hasCard(CommonCard.Vector.Uzi)) {
-            Dungeon.hero.spend(-TIME_TO_THROW);
-            new FireBomb(4).cast(Dungeon.hero, target);
+            Dungeon.cur().hero.spend(-TIME_TO_THROW);
+            new FireBomb(4).cast(Dungeon.cur().hero, target);
         }
         if (hasCard(RareCard.Vector.PP_19)) {
-            Dungeon.hero.spend(-TIME_TO_THROW);
-            new FireBomb(8).cast(Dungeon.hero, target);
+            Dungeon.cur().hero.spend(-TIME_TO_THROW);
+            new FireBomb(8).cast(Dungeon.cur().hero, target);
         }
         CardAffect.onThrowing();
         updateQuickslot();
@@ -80,7 +80,7 @@ public class ThrowingSkill extends SkillItem {
                 if (!Throwing_INSTANCE(target))
                     return;
                 coolDownLeft = 50;
-                Dungeon.hero.spendAndNext( 1F );
+                Dungeon.cur().hero.spendAndNext( 1F );
                 updateQuickslot();
             }
         }
@@ -95,7 +95,7 @@ public class ThrowingSkill extends SkillItem {
             if (target != null) {
                 if (!Snipe_INSTANCE(target))
                     return;
-                Dungeon.hero.spendAndNext( 1F );
+                Dungeon.cur().hero.spendAndNext( 1F );
                 coolDownLeft = 50;
             }
         }
@@ -120,8 +120,8 @@ public class ThrowingSkill extends SkillItem {
         }
         protected static int[] throwingPos(){
             return hasCard(CommonCard.UNIVERSAL.FAMAS) ?
-                    PathFinder.NEIGHBOURS25 :
-                    PathFinder.NEIGHBOURS9;
+                    PathFinder.cur().NEIGHBOURS25 :
+                    PathFinder.cur().NEIGHBOURS9;
         }
         @Override
         public int throwPos( Hero user, int dst){
@@ -200,7 +200,7 @@ public class ThrowingSkill extends SkillItem {
                 }
             }
             if (crit && hasCard(CommonCard.WA2000.SV_98))
-                Buff.affect(Dungeon.hero, AttackDMG_Add.SV_98.class, 5F);
+                Buff.affect(Dungeon.cur().hero, AttackDMG_Add.SV_98.class, 5F);
 
             if (hasCard(RareCard.UNIVERSAL.M1887)) {
                 size = -1;

@@ -75,7 +75,7 @@ public abstract class Wand extends Item {
 	public int curCharges = maxCharges;
     public int minCharges(){
         // 法师（G11）充能升级+2充能下限（实现见 MageTalent）
-        return MageTalent.wandMinCharges(Dungeon.hero);
+        return MageTalent.wandMinCharges(Dungeon.cur().hero);
     }
 	public float partialCharge = 0f;
     public int chargeRem = 0;
@@ -199,10 +199,10 @@ public abstract class Wand extends Item {
 	//TODO Consider externalizing char awareness buff
 	protected static void wandProc(Char target, int wandLevel, int chargesUsed){
 		// 法师（G11）秘法视野：命中目标赋予心灵感知（实现见 MageTalent）
-		MageTalent.onWandZapped(Dungeon.hero, target);
+		MageTalent.onWandZapped(Dungeon.cur().hero, target);
 
-		if (target != Dungeon.hero &&
-				Dungeon.hero.subClass == HeroSubClass.WARLOCK &&
+		if (target != Dungeon.cur().hero &&
+				Dungeon.cur().hero.subClass == HeroSubClass.WARLOCK &&
 				//standard 1 - 0.92^x chance, plus 7%. Starts at 15%
 				Random.Float() > (Math.pow(0.92f, (wandLevel*chargesUsed)+1) - 0.07f)){
 			SoulMark.prolong(target, SoulMark.class, SoulMark.DURATION + wandLevel);
@@ -264,7 +264,7 @@ public abstract class Wand extends Item {
 			desc += "\n\n" + Messages.get(Wand.class, "not_cursed");
 		}
 
-		if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
+		if (Dungeon.cur().hero.subClass == HeroSubClass.BATTLEMAGE){
 			desc += "\n\n" + Messages.get(this, "bmage_desc");
 		}
         if(Dungeon.WandLock||lockcharge)
@@ -383,7 +383,7 @@ public abstract class Wand extends Item {
         //consumes 30% of current charges, rounded up, with a min of 1 and a max of 3.
         int cast = (int) GameMath.gate(1, (int)Math.ceil((curCharges-minCharges())*0.3f), 3);
 		// 法师（G11）充能升级未满+2时，多耗充能可辅助鉴定（实现见 MageTalent）
-		if (MageTalent.wandOverchargeIdentify(Dungeon.hero)){
+		if (MageTalent.wandOverchargeIdentify(Dungeon.cur().hero)){
 			if (cast == 2)
 				guessLevel(2, "规模为消耗2点充能，当前要求至少4点充能上限，即+2。");
 			else if (cast == 3)
@@ -413,10 +413,10 @@ public abstract class Wand extends Item {
 
 	protected void wandUsed() {
 		if (!isIdentified()) {
-			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero, this) );
+			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.cur().hero, this) );
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
-			if (usesLeftToID <= 0 || MageTalent.instantIdentifyWand(Dungeon.hero)) {
+			if (usesLeftToID <= 0 || MageTalent.instantIdentifyWand(Dungeon.cur().hero)) {
 				identify();
 				GLog.p( Messages.get(Wand.class,"identify",toString()) );
 				Badges.validateItemLevelAquired( this );
@@ -440,13 +440,13 @@ public abstract class Wand extends Item {
 		}
 
         // 法师（G11）蓄能打击：法杖施法后挂追踪（实现见 MageTalent）
-        MageTalent.onWandZappedEmpoweredStrike(Dungeon.hero, this, this.charger != null && this.charger.target == Dungeon.hero);
+        MageTalent.onWandZappedEmpoweredStrike(Dungeon.cur().hero, this, this.charger != null && this.charger.target == Dungeon.cur().hero);
         
 		//if the wand is owned by the hero, but not in their inventory, it must be in the staff
 
         // 法师（G11）备用法障：空充能施法获得护盾（实现见 MageTalent）
         if (MageTalent.backupBarrierTriggers(curUser, this, curCharges, charger != null && charger.target == curUser)){
-            Buff.affect(Dungeon.hero, Barrier.class).setShield(MageTalent.backupBarrierShield(curUser));
+            Buff.affect(Dungeon.cur().hero, Barrier.class).setShield(MageTalent.backupBarrierShield(curUser));
         }
 
 		Invisibility.dispel();

@@ -93,7 +93,7 @@ public class Bleeding extends Buff {
 							target.sprite.blood(), Math.min( 10 * dmg / target.HT, 10 ) );
 				}
 				
-				if (target == Dungeon.hero && !target.isAlive()) {
+				if (target == Dungeon.cur().hero && !target.isAlive()) {
 					Dungeon.fail( getClass() );
 					GLog.n( Messages.get(this, "ondeath") );
 				}

@@ -80,7 +80,7 @@ public class QuickSlotButton extends Button {
 		slot = new ItemSlot() {
 			@Override
 			protected void onClick() {
-				if (!Dungeon.hero.isAlive() || !Dungeon.hero.ready){
+				if (!Dungeon.cur().hero.isAlive() || !Dungeon.cur().hero.ready){
 					return;
 				}
 				if (targeting) {
@@ -94,9 +94,9 @@ public class QuickSlotButton extends Button {
 					}
 				} else {
 					Item item = select(slotNum);
-					if (Dungeon.hero.belongings.contains(item) && !GameScene.cancel()) {
+					if (Dungeon.cur().hero.belongings.contains(item) && !GameScene.cancel()) {
 						GameScene.centerNextWndOnInvPane();
-						item.execute(Dungeon.hero);
+						item.execute(Dungeon.cur().hero);
 						if (item.usesTargeting) {
 							useTargeting();
 						}
@@ -198,14 +198,14 @@ public class QuickSlotButton extends Button {
 	
 	@Override
 	protected void onClick() {
-		if (Dungeon.hero.ready && !GameScene.cancel()) {
+		if (Dungeon.cur().hero.ready && !GameScene.cancel()) {
 			GameScene.selectItem(itemSelector);
 		}
 	}
 	
 	@Override
 	protected boolean onLongClick() {
-		if (Dungeon.hero.ready && !GameScene.cancel()) {
+		if (Dungeon.cur().hero.ready && !GameScene.cancel()) {
 			GameScene.selectItem(itemSelector);
 		}
 		return true;
@@ -252,7 +252,7 @@ public class QuickSlotButton extends Button {
 	private void enableSlot() {
 		//TODO check if item persists!
 		slot.enable(Dungeon.quickslot.isNonePlaceholder( slotNum )
-				&& (Dungeon.hero.buff(LostInventory.class) == null || Dungeon.quickslot.getItem(slotNum).keptThoughLostInvent));
+				&& (Dungeon.cur().hero.buff(LostInventory.class) == null || Dungeon.quickslot.getItem(slotNum).keptThoughLostInvent));
 	}
 
 	public void slotMargins( int left, int top, int right, int bottom){
@@ -300,15 +300,15 @@ public class QuickSlotButton extends Button {
 	public static int autoAim(Char target, Item item){
 
 		//first try to directly target
-		if (item.targetingPos(Dungeon.hero, target.pos) == target.pos) {
+		if (item.targetingPos(Dungeon.cur().hero, target.pos) == target.pos) {
 			return target.pos;
 		}
 
 		//Otherwise pick nearby tiles to try and 'angle' the shot, auto-aim basically.
-		PathFinder.buildDistanceMap( target.pos, BArray.not( new boolean[Dungeon.level.length()], null ), 2 );
-		for (int i = 0; i < PathFinder.distance.length; i++) {
-			if (PathFinder.distance[i] < Integer.MAX_VALUE
-					&& item.targetingPos(Dungeon.hero, i) == target.pos)
+		PathFinder.cur().buildDistanceMap( target.pos, BArray.not( new boolean[Dungeon.level.length()], null ), 2 );
+		for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+			if (PathFinder.cur().distance[i] < Integer.MAX_VALUE
+					&& item.targetingPos(Dungeon.cur().hero, i) == target.pos)
 				return i;
 		}
 

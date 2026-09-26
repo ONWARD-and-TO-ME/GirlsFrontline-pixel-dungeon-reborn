@@ -178,7 +178,7 @@ public abstract class Geminis extends NPC {
 				int s = 0;
 				if (missile.buff( Barrier.class ) != null)
 					s = missile.buff( Barrier.class ).shielding();
-				Buff.affect(Dungeon.hero, Gemini.Contract.class).add(shield.HP , missile.HP + Random.Int(s) / 2);
+				Buff.affect(Dungeon.cur().hero, Gemini.Contract.class).add(shield.HP , missile.HP + Random.Int(s) / 2);
                 Geminis.this.destroy();
                 sprite.die();
                 twin.destroy();

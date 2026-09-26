@@ -63,7 +63,7 @@ public class Shopkeeper extends NPC {
         return Notes.Landmark.SHOP;
     }
     private static Class<? extends ShopkeeperSprite> ShopKeeperSprite(){
-        if ((Dungeon.depth-1)/5< Statistics.deepestFloor/5&&Dungeon.depth!=16)
+        if ((Dungeon.cur().depth-1)/5< Statistics.deepestFloor/5&&Dungeon.cur().depth!=16)
             return ShopkeeperSprite.MirrorShopkeeper.class;
         return ShopkeeperSprite.class;
     }
@@ -86,7 +86,7 @@ public class Shopkeeper extends NPC {
         if (this.turnsSinceHarmed >= 0) {
             ++this.turnsSinceHarmed;
         }
-        this.sprite.turnTo(this.pos, Dungeon.hero.pos);
+        this.sprite.turnTo(this.pos, Dungeon.cur().hero.pos);
         this.spend(1.0F);
         return super.act();
     }
@@ -167,12 +167,12 @@ public class Shopkeeper extends NPC {
 
 		float rate = 1F;
 
-		if(Dungeon.hero.hasTalent(Talent.Type56Two_FOOD) && item instanceof Food)
-			rate -= 0.2F * Dungeon.hero.pointsInTalent(Talent.Type56Two_FOOD);
-        if(Dungeon.hero.hasTalent(Talent.BARGAIN_SKILLS) && item instanceof Food)
-            rate -= 0.2F * Dungeon.hero.pointsInTalent(Talent.BARGAIN_SKILLS);
+		if(Dungeon.cur().hero.hasTalent(Talent.Type56Two_FOOD) && item instanceof Food)
+			rate -= 0.2F * Dungeon.cur().hero.pointsInTalent(Talent.Type56Two_FOOD);
+        if(Dungeon.cur().hero.hasTalent(Talent.BARGAIN_SKILLS) && item instanceof Food)
+            rate -= 0.2F * Dungeon.cur().hero.pointsInTalent(Talent.BARGAIN_SKILLS);
 
-        int mul = Dungeon.depth/5 + 1;
+        int mul = Dungeon.cur().depth/5 + 1;
         //乘数等效于下一个boss层的楼层数
 
         return Math.max( item.value() * 2, (int)(item.value() * rate * (mul * 5) ));
@@ -188,7 +188,7 @@ public class Shopkeeper extends NPC {
 		//磁轨加速弹已贴附的武器无法出售（配件无法摘下，防止配件随武器被卖掉）
 		if (item instanceof Weapon && ((Weapon) item).beamFocused)          return false;
 		if (item instanceof Armor && ((Armor) item).checkSeal() != null)    return false;
-		if (item.isEquipped(Dungeon.hero) && item.cursed)                   return false;
+		if (item.isEquipped(Dungeon.cur().hero) && item.cursed)                   return false;
 		return true;
 	}
 
@@ -214,7 +214,7 @@ public class Shopkeeper extends NPC {
 
 	@Override
 	public boolean interact(Char c) {
-		if (c != Dungeon.hero) {
+		if (c != Dungeon.cur().hero) {
 			return true;
 		}
 		Game.runOnRenderThread(new Callback() {

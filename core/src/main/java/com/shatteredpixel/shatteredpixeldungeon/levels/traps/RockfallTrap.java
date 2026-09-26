@@ -75,9 +75,9 @@ public class RockfallTrap extends Trap {
 			
 		//if we don't have a room, then just do 5x5
 		} else {
-			PathFinder.buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 2 );
-			for (int i = 0; i < PathFinder.distance.length; i++) {
-				if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+			PathFinder.cur().buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 2 );
+			for (int i = 0; i < PathFinder.cur().distance.length; i++) {
+				if (PathFinder.cur().distance[i] < Integer.MAX_VALUE) {
 					rockCells.add(i);
 				}
 			}
@@ -101,7 +101,7 @@ public class RockfallTrap extends Trap {
 
 				if (ch.isActive()) {
 					Buff.prolong(ch, Paralysis.class, Paralysis.DURATION);
-				} else if (!ch.isAlive() && ch == Dungeon.hero){
+				} else if (!ch.isAlive() && ch == Dungeon.cur().hero){
 					Dungeon.fail( getClass() );
 					GLog.n( Messages.get(this, "ondeath") );
 				}

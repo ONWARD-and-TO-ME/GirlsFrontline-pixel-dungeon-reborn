@@ -39,7 +39,7 @@ public class PotionOfStormClouds extends ExoticPotion {
 	
 	@Override
 	public void shatter(int cell) {
-		Talent.onPotionUsed(Dungeon.hero, 1F, cell);
+		Talent.onPotionUsed(Dungeon.cur().hero, 1F, cell);
 		
 		if (Dungeon.level.heroFOV[cell]) {
 			identify();
@@ -50,7 +50,7 @@ public class PotionOfStormClouds extends ExoticPotion {
 		}
 
 		int centerVolume = 120;
-		for (int i : PathFinder.NEIGHBOURS8){
+		for (int i : PathFinder.cur().NEIGHBOURS8){
 			if (!Dungeon.level.solid[cell+i]){
 				GameScene.add( Blob.seed( cell+i, 120, StormCloud.class ) );
 			} else {

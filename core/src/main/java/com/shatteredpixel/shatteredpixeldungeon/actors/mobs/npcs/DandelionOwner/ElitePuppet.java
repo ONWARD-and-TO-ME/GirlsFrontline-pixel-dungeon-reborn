@@ -26,7 +26,7 @@ public abstract class ElitePuppet extends Puppet{
     @Override
     public void dropCore(){
         Dungeon.level.drop(core.broken(), Dungeon.level.randomDestination( this )).seen = true;
-        for (int i : PathFinder.NEIGHBOURS9)
+        for (int i : PathFinder.cur().NEIGHBOURS9)
             Dungeon.level.mapped[pos + i] = true;
         GameScene.updateFog(pos, 1);
     }

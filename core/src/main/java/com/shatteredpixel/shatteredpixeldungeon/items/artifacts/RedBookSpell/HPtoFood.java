@@ -29,8 +29,8 @@ public class HPtoFood extends BookSpell{
         HPtoGetFood();
     }
     public static void HPtoGetFood(){
-        int dmg = Math.max(15, Math.round(Dungeon.hero.HT * 0.2f));
-        Hunger hunger = Dungeon.hero.buff(Hunger.class);
+        int dmg = Math.max(15, Math.round(Dungeon.cur().hero.HT * 0.2f));
+        Hunger hunger = Dungeon.cur().hero.buff(Hunger.class);
         float food = hunger == null
                 ? 120F
                 : Math.min(120F, hunger.hunger());
@@ -48,15 +48,15 @@ public class HPtoFood extends BookSpell{
                     @Override
                     protected void onSelect(int index) {
                         if (index == 0) {
-                            Dungeon.hero.HP -= dmg;
-                            if (Dungeon.hero.HP <= 0){
-                                Dungeon.hero.die(this);
+                            Dungeon.cur().hero.HP -= dmg;
+                            if (Dungeon.cur().hero.HP <= 0){
+                                Dungeon.cur().hero.die(this);
                                 Dungeon.fail(RedBook.class);
                             }
                             else {
                                 if (hunger != null){
                                     hunger.satisfy(food);
-                                    Buff.affect(Dungeon.hero, ActHPtoGetFood.LockReg.class, food);
+                                    Buff.affect(Dungeon.cur().hero, ActHPtoGetFood.LockReg.class, food);
                                 }
                             }
                         }

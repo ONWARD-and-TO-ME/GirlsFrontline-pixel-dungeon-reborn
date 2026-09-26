@@ -20,8 +20,8 @@
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.items.scrolls;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -46,7 +46,7 @@ public abstract class InventoryScroll extends Scroll {
 		
 		if (!isKnown()) {
 			identify();
-            curItem = detach( hero.belongings.backpack );
+            curItem = detach( Dungeon.cur().hero.belongings.backpack );
 			identifiedByUse = true;
 		} else {
 			identifiedByUse = false;
@@ -120,7 +120,7 @@ public abstract class InventoryScroll extends Scroll {
 				((InventoryScroll)curItem).onItemSelected( item );
 				((InventoryScroll)curItem).readAnimation();
                 if(!identifiedByUse)
-                    curItem = detach(hero.belongings.backpack );
+                    curItem = detach(Dungeon.cur().hero.belongings.backpack );
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				
 			} else if (identifiedByUse && !((Scroll)curItem).anonymous) {

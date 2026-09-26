@@ -167,8 +167,8 @@ public class Bee extends Mob {
 				if (!enemies.isEmpty()){
 					return Random.element(enemies);
 				} else {
-					if (alignment != Alignment.ALLY && Dungeon.level.distance(Dungeon.hero.pos, potPos) <= 3){
-						return Dungeon.hero;
+					if (alignment != Alignment.ALLY && Dungeon.level.distance(Dungeon.cur().hero.pos, potPos) <= 3){
+						return Dungeon.cur().hero;
 					} else {
 						return null;
 					}
@@ -185,7 +185,7 @@ public class Bee extends Mob {
 	@Override
 	protected boolean getCloser(int target) {
 		if (alignment == Alignment.ALLY && enemy == null && buffs(AllyBuff.class).isEmpty()){
-			target = Dungeon.hero.pos;
+			target = Dungeon.cur().hero.pos;
 		} else if (enemy != null && Actor.findById(potHolder) == enemy) {
 			target = enemy.pos;
 		} else if (potPos != -1 && (state == WANDERING || Dungeon.level.distance(target, potPos) > 3))

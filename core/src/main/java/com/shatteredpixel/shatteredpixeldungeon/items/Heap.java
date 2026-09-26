@@ -134,7 +134,7 @@ public class Heap implements Bundlable {
 		}
 
 		type = Type.HEAP;
-		RingOfWealth.Wealth wealth = Dungeon.hero.buff(RingOfWealth.Wealth.class);
+		RingOfWealth.Wealth wealth = Dungeon.cur().hero.buff(RingOfWealth.Wealth.class);
         if (wealth != null) {
             ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(hero, 1, wealth.ring());
             if (!bonus.isEmpty()) {

@@ -90,7 +90,7 @@ public class Piranha extends Mob {
 
 	@Override
 	public boolean surprisedBy(Char enemy, boolean attacking) {
-		if (enemy == Dungeon.hero && (!attacking || ((Hero)enemy).canSurpriseAttack())){
+		if (enemy == Dungeon.cur().hero && (!attacking || ((Hero)enemy).canSurpriseAttack())){
 			if (fieldOfView == null || fieldOfView.length != Dungeon.level.length()){
 				fieldOfView = new boolean[Dungeon.level.length()];
 				Dungeon.level.updateFieldOfView( this, fieldOfView );
@@ -159,8 +159,8 @@ public class Piranha extends Mob {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (enemyInFOV) {
-				PathFinder.buildDistanceMap(enemy.pos, Dungeon.level.water, viewDistance);
-				enemyInFOV = PathFinder.distance[pos] != Integer.MAX_VALUE;
+				PathFinder.cur().buildDistanceMap(enemy.pos, Dungeon.level.water, viewDistance);
+				enemyInFOV = PathFinder.cur().distance[pos] != Integer.MAX_VALUE;
 			}
 			
 			return super.act(enemyInFOV, justAlerted);
@@ -171,8 +171,8 @@ public class Piranha extends Mob {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (enemyInFOV) {
-				PathFinder.buildDistanceMap(enemy.pos, Dungeon.level.water, viewDistance);
-				enemyInFOV = PathFinder.distance[pos] != Integer.MAX_VALUE;
+				PathFinder.cur().buildDistanceMap(enemy.pos, Dungeon.level.water, viewDistance);
+				enemyInFOV = PathFinder.cur().distance[pos] != Integer.MAX_VALUE;
 			}
 			
 			return super.act(enemyInFOV, justAlerted);
@@ -184,8 +184,8 @@ public class Piranha extends Mob {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (enemyInFOV) {
-				PathFinder.buildDistanceMap(enemy.pos, Dungeon.level.water, viewDistance);
-				enemyInFOV = PathFinder.distance[pos] != Integer.MAX_VALUE;
+				PathFinder.cur().buildDistanceMap(enemy.pos, Dungeon.level.water, viewDistance);
+				enemyInFOV = PathFinder.cur().distance[pos] != Integer.MAX_VALUE;
 			}
 			
 			return super.act(enemyInFOV, justAlerted);

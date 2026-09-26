@@ -79,7 +79,7 @@ public class FetidRat extends Rat {
 	public void die( Object cause ) {
 		super.die( cause );
 
-		Ghost.Quest.process();
+		Ghost.Quest.cur().process();
 	}
 	
 	{

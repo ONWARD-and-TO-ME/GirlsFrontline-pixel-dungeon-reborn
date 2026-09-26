@@ -64,7 +64,7 @@ public class WndDataTransfer extends Window {
 		add(info);
 		pos = (int) info.bottom() + 2 * MARGIN;
 
-		if (Dungeon.hero != null) {
+		if (Dungeon.cur().hero != null) {
 			//冒险途中禁止转移，防止写入过程中存档状态混乱
 			RenderedTextBlock warn = PixelScene.renderTextBlock(Messages.get(this, "in_game"), 6);
 			warn.maxWidth(WIDTH - 2 * MARGIN);

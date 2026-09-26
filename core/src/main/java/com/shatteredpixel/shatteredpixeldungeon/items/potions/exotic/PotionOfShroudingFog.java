@@ -39,7 +39,7 @@ public class PotionOfShroudingFog extends ExoticPotion {
 	
 	@Override
 	public void shatter( int cell ) {
-		Talent.onPotionUsed(Dungeon.hero, 1F, cell);
+		Talent.onPotionUsed(Dungeon.cur().hero, 1F, cell);
 		
 		if (Dungeon.level.heroFOV[cell]) {
 			identify();
@@ -50,7 +50,7 @@ public class PotionOfShroudingFog extends ExoticPotion {
 		}
 
 		int centerVolume = 180;
-		for (int i : PathFinder.NEIGHBOURS8){
+		for (int i : PathFinder.cur().NEIGHBOURS8){
 			if (!Dungeon.level.solid[cell+i]){
 				GameScene.add( Blob.seed( cell+i, 180, SmokeScreen.class ) );
 			} else {

@@ -83,11 +83,11 @@ public class WndWandmaker extends Window {
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
 
-		RewardButton btnWand1 = new RewardButton( Wandmaker.Quest.wand1 );
+		RewardButton btnWand1 = new RewardButton( Wandmaker.Quest.cur().wand1 );
 		btnWand1.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.top() + message.height() + BTN_GAP, BTN_SIZE, BTN_SIZE );
 		add( btnWand1 );
 
-		RewardButton btnWand2 = new RewardButton( Wandmaker.Quest.wand2 );
+		RewardButton btnWand2 = new RewardButton( Wandmaker.Quest.cur().wand2 );
 		btnWand2.setRect( btnWand1.right() + BTN_GAP, btnWand1.top(), BTN_SIZE, BTN_SIZE );
 		add(btnWand2);
 
@@ -102,26 +102,26 @@ public class WndWandmaker extends Window {
 
 		hide();
 
-		questItem.detach( Dungeon.hero.belongings.backpack );
+		questItem.detach( Dungeon.cur().hero.belongings.backpack );
 
 		reward.identify(false);
-		if (reward.doPickUp( Dungeon.hero )) {
-			GLog.i( Messages.get(Dungeon.hero, "you_now_have", reward.name()) );
+		if (reward.doPickUp( Dungeon.cur().hero )) {
+			GLog.i( Messages.get(Dungeon.cur().hero, "you_now_have", reward.name()) );
 		} else {
 			Dungeon.level.drop( reward, wandmaker.pos ).sprite.drop();
 		}
 
-		if(Dungeon.hero.heroClass == HeroClass.HK416){
-			wandmaker.yell( Messages.get(this, "farewell_hk416", Dungeon.hero.name()) );
+		if(Dungeon.cur().hero.heroClass == HeroClass.HK416){
+			wandmaker.yell( Messages.get(this, "farewell_hk416", Dungeon.cur().hero.name()) );
 		} else {
-			wandmaker.yell( Messages.get(this, "farewell", Dungeon.hero.name()) );
+			wandmaker.yell( Messages.get(this, "farewell", Dungeon.cur().hero.name()) );
 		}
 
 		wandmaker.destroy();
 
 		wandmaker.sprite.die();
 
-		Wandmaker.Quest.complete();
+		Wandmaker.Quest.cur().complete();
 	}
 
 	public class RewardButton extends Component {
@@ -145,7 +145,7 @@ public class WndWandmaker extends Window {
 				}
 				@Override
 				protected void onClick() {
-					if (Dungeon.hero.belongings.contains(questItem)) {
+					if (Dungeon.cur().hero.belongings.contains(questItem)) {
 						GameScene.show(new RewardWindow(item));
 					} else {
 						hide();

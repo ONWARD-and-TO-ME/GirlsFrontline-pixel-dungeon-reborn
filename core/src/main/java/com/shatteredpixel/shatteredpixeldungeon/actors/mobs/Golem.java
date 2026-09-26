@@ -81,17 +81,17 @@ public class Golem extends Mob {
 	public float lootChance() {
 		//each drop makes future drops 1/2 as likely
 		// so loot chance looks like: 1/8, 1/16, 1/32, 1/64, etc.
-		return super.lootChance() * (float)Math.pow(1/2f, Dungeon.LimitedDrops.GOLEM_EQUIP.count);
+		return super.lootChance() * (float)Math.pow(1/2f, Dungeon.LimitedDrops.GOLEM_EQUIP.count());
 	}
 
 	@Override
 	public void rollToDropLoot() {
-		Imp.Quest.process( this );
+		Imp.Quest.cur().process( this );
 		super.rollToDropLoot();
 	}
 
 	public Item createLoot() {
-		Dungeon.LimitedDrops.GOLEM_EQUIP.count++;
+		Dungeon.LimitedDrops.GOLEM_EQUIP.used();
 		//uses probability tables for demon halls
 		if (loot == Generator.Category.WEAPON){
 			return Generator.randomWeapon(5);
@@ -152,7 +152,7 @@ public class Golem extends Mob {
 		spendAll(TICK);
 
 		int bestPos = enemy.pos;
-		for (int i : PathFinder.NEIGHBOURS8){
+		for (int i : PathFinder.cur().NEIGHBOURS8){
 			if (Dungeon.level.passable[pos + i]
 				&& Actor.findChar(pos+i) == null
 				&& Dungeon.level.trueDistance(pos+i, enemy.pos) > Dungeon.level.trueDistance(bestPos, enemy.pos)){
@@ -177,9 +177,9 @@ public class Golem extends Mob {
 
 	private boolean canTele(int target){
 		if (enemyTeleCooldown > 0) return false;
-		PathFinder.buildDistanceMap(target, BArray.not(Dungeon.level.solid, null), Dungeon.level.distance(pos, target)+1);
+		PathFinder.cur().buildDistanceMap(target, BArray.not(Dungeon.level.solid, null), Dungeon.level.distance(pos, target)+1);
 		//zaps can go around blocking terrain, but not through it
-		if (PathFinder.distance[pos] == Integer.MAX_VALUE){
+		if (PathFinder.cur().distance[pos] == Integer.MAX_VALUE){
 			return false;
 		}
 		return true;

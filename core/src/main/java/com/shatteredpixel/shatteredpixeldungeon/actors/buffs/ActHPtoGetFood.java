@@ -43,8 +43,8 @@ public class ActHPtoGetFood extends Buff implements ActionIndicator.Action {
 
     // 检查是否可以使用技能
     public boolean canUse() {
-        if (Dungeon.hero!=null&&Dungeon.hero.isAlive()&&Dungeon.hero.subClass==HeroSubClass.GUN_MASTER){
-            Artifact.ArtifactBuff buff =Dungeon.hero.buff(RedBook.BookRecharge.class);
+        if (Dungeon.cur().hero!=null&&Dungeon.cur().hero.isAlive()&&Dungeon.cur().hero.subClass==HeroSubClass.GUN_MASTER){
+            Artifact.ArtifactBuff buff =Dungeon.cur().hero.buff(RedBook.BookRecharge.class);
             return buff==null|| buff.isCursed();
         }else {
             return false;
@@ -73,13 +73,13 @@ public class ActHPtoGetFood extends Buff implements ActionIndicator.Action {
     }
 
     public void spendA(float time){
-        TimekeepersHourglass.timeFreeze freeze = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+        TimekeepersHourglass.timeFreeze freeze = Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
         if (freeze != null) {
             freeze.processTime(time);
             return;
         }
 
-        Swiftthistle.TimeBubble bubble = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+        Swiftthistle.TimeBubble bubble = Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
         if (bubble != null){
             bubble.processTime(time);
             return;

@@ -87,7 +87,7 @@ public class DEL extends NPC {
 	protected boolean act() {
 		if (!seenBefore && Dungeon.level.heroFOV[pos]){
             seenBefore = true;
-            if (Dungeon.depth == 0){
+            if (Dungeon.cur().depth == 0){
                 RatKing.HintTracker count = Buff.affect(this, RatKing.HintTracker.class);
                 count.countDown(count.count());
                 if (GamesInProgress.firstEmpty() != -1)
@@ -109,18 +109,18 @@ public class DEL extends NPC {
                     }
                 }
             }
-            Mission mission = Buff.affect(Dungeon.hero, Mission.class);
+            Mission mission = Buff.affect(Dungeon.cur().hero, Mission.class);
             if (mission.noMission()) {
                 if (WorkLoad > 0)
-                    yellGood(Messages.get(this, "greetings", Dungeon.hero.name()));
+                    yellGood(Messages.get(this, "greetings", Dungeon.cur().hero.name()));
                 else
-                    yellGood(Messages.get(this, "greetingsB", Dungeon.hero.name()));
+                    yellGood(Messages.get(this, "greetingsB", Dungeon.cur().hero.name()));
             }
             else if (mission.finish()) {
-                yellGood( Messages.get(this, "finish", Dungeon.hero.name()) );
+                yellGood( Messages.get(this, "finish", Dungeon.cur().hero.name()) );
             }
             else
-                yellNormal( Messages.get(this, "working", Dungeon.hero.name() ) );
+                yellNormal( Messages.get(this, "working", Dungeon.cur().hero.name() ) );
 
             //根据任务状态切换表情：完成→成功，进行中→疑惑，无任务→等待
             if (sprite instanceof DELSprite) {
@@ -141,11 +141,11 @@ public class DEL extends NPC {
 		
 		sprite.turnTo( pos, c.pos );
 
-		if (c != Dungeon.hero){
+		if (c != Dungeon.cur().hero){
 			return true;
 		}
 
-        if (Dungeon.depth == 0){
+        if (Dungeon.cur().depth == 0){
             RatKing.HintTracker count = Buff.affect(this, RatKing.HintTracker.class);
             if (count.count() >= 3){
                 if (GamesInProgress.firstEmpty() == -1)
@@ -182,7 +182,7 @@ public class DEL extends NPC {
     private void selectMission(){
 
         String[] options;
-        if (Dungeon.hero.hasTalent(Talent.Type56_23V4) && Dungeon.hero.heroClass != HeroClass.TYPE561)
+        if (Dungeon.cur().hero.hasTalent(Talent.Type56_23V4) && Dungeon.cur().hero.heroClass != HeroClass.TYPE561)
             options = new String[5];
         else
             options = new String[4];
@@ -191,14 +191,14 @@ public class DEL extends NPC {
         }
 
         boolean[] enable = new boolean[5];
-        for (Item i : Dungeon.hero.belongings){
-            if (!i.isEquipped(Dungeon.hero) && (!i.isIdentified() || i.cursedKnown && i.cursed) && !(i instanceof CorpseDust) && WorkLoad >= 1)
+        for (Item i : Dungeon.cur().hero.belongings){
+            if (!i.isEquipped(Dungeon.cur().hero) && (!i.isIdentified() || i.cursedKnown && i.cursed) && !(i instanceof CorpseDust) && WorkLoad >= 1)
                 enable[0] = true;
             if (i.isUpgradable() && i.level() > 0 && i.levelKnown  && i.overLoad == Item.OverLoad.NONE &&
-                    ( i.isEquipped(Dungeon.hero) && ((EquipableItem) i).unEquipable(Dungeon.hero) ||
-                            !i.isEquipped(Dungeon.hero) && !(i instanceof BrokenSeal) ) && WorkLoad >= getMissionWorkLoad(1))
+                    ( i.isEquipped(Dungeon.cur().hero) && ((EquipableItem) i).unEquipable(Dungeon.cur().hero) ||
+                            !i.isEquipped(Dungeon.cur().hero) && !(i instanceof BrokenSeal) ) && WorkLoad >= getMissionWorkLoad(1))
                 enable[1] = true;
-            if (i.isEquipped(Dungeon.hero) && i.cursed && WorkLoad >= getMissionWorkLoad(2))
+            if (i.isEquipped(Dungeon.cur().hero) && i.cursed && WorkLoad >= getMissionWorkLoad(2))
                 enable[2] = true;
             if (i instanceof MissileWeapon && WorkLoad >= getMissionWorkLoad(3))
                 enable[3] = true;
@@ -239,7 +239,7 @@ public class DEL extends NPC {
         }
     }
     public static int getMissionGold(int mission){
-        int curBossDepth = (int) Math.ceil(Dungeon.depth / 5F) * 5;
+        int curBossDepth = (int) Math.ceil(Dungeon.cur().depth / 5F) * 5;
         int nextBossDepth = curBossDepth + 5;
         switch (mission){
             case 0: default: return  new ScrollOfRemoveCurse().value() * (nextBossDepth - 1);
@@ -305,7 +305,7 @@ public class DEL extends NPC {
             if (drops == null)
                 drops = new ArrayList<>();
             if (finish()) {
-                new DEL().yellGood( Messages.get(DEL.class, "finish", Dungeon.hero.name() ) );
+                new DEL().yellGood( Messages.get(DEL.class, "finish", Dungeon.cur().hero.name() ) );
             }
             if (items.isEmpty() && drops.isEmpty()) {
                 spend(TICK);
@@ -428,11 +428,11 @@ public class DEL extends NPC {
             else {
                 EquipableItem item;
                 switch (equip){
-                    case 0: default:item = Dungeon.hero.belongings.weapon;break;
-                    case 1:item = Dungeon.hero.belongings.armor;break;
-                    case 2:item = Dungeon.hero.belongings.artifact;break;
-                    case 3:item = Dungeon.hero.belongings.misc;break;
-                    case 4:item = Dungeon.hero.belongings.ring;break;
+                    case 0: default:item = Dungeon.cur().hero.belongings.weapon;break;
+                    case 1:item = Dungeon.cur().hero.belongings.armor;break;
+                    case 2:item = Dungeon.cur().hero.belongings.artifact;break;
+                    case 3:item = Dungeon.cur().hero.belongings.misc;break;
+                    case 4:item = Dungeon.cur().hero.belongings.ring;break;
                 }
                 item.setUnEquipable();
                 item.doDrop((Hero) target);

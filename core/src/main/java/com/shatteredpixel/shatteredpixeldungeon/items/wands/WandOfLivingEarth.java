@@ -116,7 +116,7 @@ public class WandOfLivingEarth extends DamageWand {
 				int closest = -1;
 				boolean[] passable = Dungeon.level.passable;
 
-				for (int n : PathFinder.NEIGHBOURS9) {
+				for (int n : PathFinder.cur().NEIGHBOURS9) {
 					int c = bolt.collisionPos + n;
 					if (passable[c] && Actor.findChar( c ) == null
 						&& (closest == -1 || (Dungeon.level.trueDistance(c, curUser.pos) < (Dungeon.level.trueDistance(closest, curUser.pos))))) {
@@ -199,7 +199,7 @@ public class WandOfLivingEarth extends DamageWand {
         int armor = Math.round((float)damage * 0.33F * procChanceMultiplier(attacker));
         if (guardian != null) {
             guardian.sprite.centerEmitter().burst(EarthParticle.ATTRACT, 8 + this.buffedLvl() / 2);
-            guardian.setInfo(Dungeon.hero, this.buffedLvl(), armor);
+            guardian.setInfo(Dungeon.cur().hero, this.buffedLvl(), armor);
         } else {
             attacker.sprite.centerEmitter().burst(EarthParticle.ATTRACT, 8 + this.buffedLvl() / 2);
             ((RockArmor)Buff.affect(attacker, RockArmor.class)).addArmor(this.buffedLvl(), armor);
@@ -382,8 +382,8 @@ public class WandOfLivingEarth extends DamageWand {
 			@Override
 			public boolean act(boolean enemyInFOV, boolean justAlerted) {
 				if (!enemyInFOV){
-					Buff.affect(Dungeon.hero, RockArmor.class).addArmor(wandLevel, HP);
-					Dungeon.hero.sprite.centerEmitter().burst(MagicMissile.EarthParticle.ATTRACT, 8 + wandLevel/2);
+					Buff.affect(Dungeon.cur().hero, RockArmor.class).addArmor(wandLevel, HP);
+					Dungeon.cur().hero.sprite.centerEmitter().burst(MagicMissile.EarthParticle.ATTRACT, 8 + wandLevel/2);
 					destroy();
 					sprite.die();
 					return true;

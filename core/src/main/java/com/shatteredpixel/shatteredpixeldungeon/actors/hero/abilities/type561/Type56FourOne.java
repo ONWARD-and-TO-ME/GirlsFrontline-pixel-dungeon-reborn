@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.type561;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -123,16 +122,16 @@ public class Type56FourOne extends ArmorAbility {
         //消耗回合
 	}
     private int damageRoll() {
-        KindOfWeapon type562 = hero.belongings.getItem(Gun562.class);
-        KindOfWeapon wep = hero.belongings.weapon();
+        KindOfWeapon type562 = Dungeon.cur().hero.belongings.getItem(Gun562.class);
+        KindOfWeapon wep = Dungeon.cur().hero.belongings.weapon();
         int dmg;
         if(type562!=null){
-            dmg = type562.damageRoll( hero );
+            dmg = type562.damageRoll( Dungeon.cur().hero );
         }
         else if (wep != null) {
-            dmg = wep.damageRoll( hero);
+            dmg = wep.damageRoll( Dungeon.cur().hero);
         } else {
-            dmg = RingOfForce.damageRoll(hero);
+            dmg = RingOfForce.damageRoll(Dungeon.cur().hero);
         }
         if (dmg < 0) dmg = 0;
 
@@ -140,40 +139,40 @@ public class Type56FourOne extends ArmorAbility {
     }
     private void tpTarget(int cell){
 
-        PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.not(Dungeon.level.solid, null), 1+ hero.pointsInTalent(Talent.Type56FourOneOne));
+        PathFinder.cur().buildDistanceMap(Dungeon.cur().hero.pos, BArray.not(Dungeon.level.solid, null), 1+ Dungeon.cur().hero.pointsInTalent(Talent.Type56FourOneOne));
         int dest = -1;
-        for (int i : PathFinder.NEIGHBOURS8){
+        for (int i : PathFinder.cur().NEIGHBOURS8){
             //cannot blink into a cell that's occupied or impassable, only over them
             if (Actor.findChar(cell+i) != null)     continue;
             if (!Dungeon.level.passable[cell+i])    continue;
 
-            if (dest == -1 || PathFinder.distance[dest] > PathFinder.distance[cell+i]){
+            if (dest == -1 || PathFinder.cur().distance[dest] > PathFinder.cur().distance[cell+i]){
                 dest = cell+i;
                 //if two cells have the same pathfinder distance, prioritize the one with the closest true distance to the hero
-            } else if (PathFinder.distance[dest] == PathFinder.distance[cell+i]){
-                if (Dungeon.level.trueDistance(Dungeon.hero.pos, dest) > Dungeon.level.trueDistance(Dungeon.hero.pos, cell+i)){
+            } else if (PathFinder.cur().distance[dest] == PathFinder.cur().distance[cell+i]){
+                if (Dungeon.level.trueDistance(Dungeon.cur().hero.pos, dest) > Dungeon.level.trueDistance(Dungeon.cur().hero.pos, cell+i)){
                     dest = cell+i;
                 }
             }
 
         }
 
-        if (dest == -1 || PathFinder.distance[dest] == Integer.MAX_VALUE || Dungeon.hero.rooted){
+        if (dest == -1 || PathFinder.cur().distance[dest] == Integer.MAX_VALUE || Dungeon.cur().hero.rooted){
             GLog.w(Messages.get(this, "out_of_reach"));
             cantreach = true;
             return;
         }
 
-        Dungeon.hero.pos = dest;
-        Dungeon.level.occupyCell(Dungeon.hero);
+        Dungeon.cur().hero.pos = dest;
+        Dungeon.level.occupyCell(Dungeon.cur().hero);
         //prevents the hero from being interrupted by seeing new enemies
         Dungeon.observe();
         GameScene.updateFog();
-        Dungeon.hero.checkVisibleMobs();
+        Dungeon.cur().hero.checkVisibleMobs();
 
-        Dungeon.hero.sprite.place( Dungeon.hero.pos );
-        Dungeon.hero.sprite.turnTo( Dungeon.hero.pos, cell);
-        CellEmitter.get( Dungeon.hero.pos ).burst( Speck.factory( Speck.WOOL ), 6 );
+        Dungeon.cur().hero.sprite.place( Dungeon.cur().hero.pos );
+        Dungeon.cur().hero.sprite.turnTo( Dungeon.cur().hero.pos, cell);
+        CellEmitter.get( Dungeon.cur().hero.pos ).burst( Speck.factory( Speck.WOOL ), 6 );
         Sample.INSTANCE.play( Assets.Sounds.PUFF );
 
     }
