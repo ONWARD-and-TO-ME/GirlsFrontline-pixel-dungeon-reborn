@@ -213,8 +213,9 @@ public class SeedFindScene extends PixelScene {
         curResultWnd = new WndResult(sheet);
         GirlsFrontlinePixelDungeon.scene().addToFront(curResultWnd);
         //Window 的全屏 blocker 会拦截其点击，退出按钮须重新提到最上层
-        remove(exitButton);
-        addToFront(exitButton);
+        exitButton.killAndErase();
+        exitButton.destroy();
+        addExitButton();
     }
 
     // 楼层文本页：ScrollPane + 高亮楼层头
@@ -1135,6 +1136,7 @@ public class SeedFindScene extends PixelScene {
             ((ColorItem) item).anonymize();
         else
             item.identify();
+        item.levelKnown = true;
         return item;
     }
     private static Image image(Class<? extends Item> cls) {
