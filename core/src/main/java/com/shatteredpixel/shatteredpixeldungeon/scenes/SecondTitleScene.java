@@ -101,6 +101,7 @@ public class SecondTitleScene extends PixelScene {
         StyledButton SeedFinder = new StyledButton(GREY_BUTTON, "种子查询器") {
             @Override
             protected void onClick() {
+                com.shatteredpixel.shatteredpixeldungeon.windows.WndComputer.launchedFromGame = false;
                 GirlsFrontlinePixelDungeon.switchNoFade(SeedFindScene.class);
             }
         };
@@ -212,13 +213,12 @@ public class SecondTitleScene extends PixelScene {
             GamesInProgress.selectedClass = null;
             GirlsFrontlinePixelDungeon.scene().addToFront(new WndZeroLevelHeroSelect());
         }else{
-            try{
-				InterlevelScene.restore();
-			}
-            catch(IOException e){
-				GirlsFrontlinePixelDungeon.reportException(e);
-			}
-            Game.switchScene(GameScene.class);
+            //必须经 InterlevelScene 工作线程读档后再切场：
+            //若在渲染线程（ESC“返回地表”/0层电脑返回）直接 InterlevelScene.restore()，
+            //静态 Dungeon.level 会立刻换成0层，而旧 GameScene 在本帧还要再 update 一次
+            //（场景切换下一帧才执行），大厅等旧楼层视觉会按0层数组越界（如 Stream 崩溃）
+            InterlevelScene.mode = InterlevelScene.Mode.CONTINUE;
+            GirlsFrontlinePixelDungeon.switchNoFade(InterlevelScene.class);
         }
     }
 	//公开：0层电脑窗口（windows.WndComputer）也会打开节日蛋糕窗口

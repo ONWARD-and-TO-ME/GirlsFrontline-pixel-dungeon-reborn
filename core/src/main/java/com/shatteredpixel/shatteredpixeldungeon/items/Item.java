@@ -505,7 +505,8 @@ public class Item implements Bundlable {
 	protected int buffedLvl(int lvl){
         if (overLoad == OverLoad.RECOVER && overLoadLeft != 0)
             lvl -= (int)(Math.sqrt(8 * Math.ceil(overLoadLeft / 100F) + 1) - 1)/2;
-		if (Dungeon.cur().hero.buff( Degrade.class ) != null)
+        //切层读档的过渡帧 hero 可能为 null（UI 仍会刷新一帧），此时无 Degrade buff 可查
+        if (Dungeon.cur().hero != null && Dungeon.cur().hero.buff( Degrade.class ) != null)
 			return Degrade.reduceLevel(lvl);
         return lvl;
 	}

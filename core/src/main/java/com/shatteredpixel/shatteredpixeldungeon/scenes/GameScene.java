@@ -819,14 +819,16 @@ public class GameScene extends PixelScene {
 	public synchronized void update() {
 		lastOffset = null;
 
+		//切层过渡时（如返回地表读档）hero 可能在本帧被置空、场景下一帧才切换，
+		//此检查必须先于一切 UI 刷新，否则快捷栏/背包刷新会经 buffedLvl() 访问空 hero
+		if (Dungeon.cur().hero == null || scene == null) {
+			return;
+		}
+
 		if (updateItemDisplays){
 			updateItemDisplays = false;
 			QuickSlotButton.refresh();
 			InventoryPane.refresh();
-		}
-
-		if (Dungeon.cur().hero == null || scene == null) {
-			return;
 		}
 
 		super.update();

@@ -364,12 +364,26 @@ public class SeedFindScene extends PixelScene {
         exitButton = new ExitButton() {
             @Override
             public void onClick() {
-                stopSearch();
-                GirlsFrontlinePixelDungeon.switchNoFade(SecondTitleScene.class);
+                exitScene();
             }
         };
         exitButton.setPos((float) Camera.main.width - exitButton.width(), 0);
         addToFront(exitButton);
+    }
+
+    // 退出查种器：从0层电脑进入则读档返回0层，否则返回第二标题页
+    private void exitScene() {
+        stopSearch();
+        if (com.shatteredpixel.shatteredpixeldungeon.windows.WndComputer.launchedFromGame) {
+            com.shatteredpixel.shatteredpixeldungeon.windows.WndComputer.backFromComputerApp();
+        } else {
+            GirlsFrontlinePixelDungeon.switchNoFade(SecondTitleScene.class);
+        }
+    }
+
+    @Override
+    protected void onBackPressed() {
+        exitScene();
     }
     // 挑战文本（始终过滤 TEST_MODE，种子查找不允许测试模式）
     private static String challengeText() {

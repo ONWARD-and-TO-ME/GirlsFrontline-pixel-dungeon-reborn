@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
@@ -38,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Game;
 
 import java.io.IOException;
+import com.watabou.utils.DeviceCompat;
 
 public class WndGame extends Window {
 
@@ -105,6 +107,26 @@ public class WndGame extends Window {
 				}
 			} );
 			curBtn.icon(Icons.get(Icons.DISPLAY));
+		}
+
+		// 返回地表（0层前进营地）：正常地牢存档中、0层已解锁（好结局徽章，debug 始终可用）
+		if(0!=GamesInProgress.curSlot && !heroDied
+				&& (Badges.isUnlocked(Badges.Badge.HAPPY_END) || DeviceCompat.isDebug())){
+			addButton(curBtn = new RedButton( "返回地表" ) {
+				@Override
+				protected void onClick() {
+					hide();
+					try{
+						//先保存当前地牢进度，再切到0号槽读档回0层
+						Dungeon.saveAll();
+					}catch(IOException e){
+						GirlsFrontlinePixelDungeon.reportException(e);
+					}
+					//复用第二标题页入口：有0层存档则读档进入，否则弹出角色选择
+					SecondTitleScene.enterMainGame();
+				}
+			} );
+			curBtn.icon(Icons.get(Icons.DEPTH));
 		}
 
 		// 原地重建0层（重选角色） 和 主菜单（0层）

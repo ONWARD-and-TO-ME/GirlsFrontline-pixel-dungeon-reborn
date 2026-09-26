@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.update.UpdateChecker;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Color;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndComputer;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.badlogic.gdx.Net;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -322,11 +323,30 @@ public class AboutSceneV2 extends PixelScene {
 		list.setRect(0, 0, w, h);
 		list.scrollTo(0, 0);
 
-		ExitButton btnExit = new ExitButton();
+		ExitButton btnExit = new ExitButton() {
+			@Override
+			protected void onClick() {
+				exitScene();
+			}
+		};
 		btnExit.setPos(Camera.main.width - btnExit.width(), 0);
 		add(btnExit);
 
 		fadeIn();
+	}
+
+	// 退出关于界面：从0层电脑进入则读档返回0层，否则返回标题页
+	private void exitScene() {
+		if (WndComputer.launchedFromGame) {
+			WndComputer.backFromComputerApp();
+		} else {
+			Game.switchScene(TitleScene.class);
+		}
+	}
+
+	@Override
+	protected void onBackPressed() {
+		exitScene();
 	}
 
 	/** 添加一个居中的富文本块（支持 _文字_ 高亮语法），返回新的 y 坐标 */

@@ -138,6 +138,7 @@ public class TitleScene extends PixelScene {
 		StyledButton btnAbout = new StyledButton(GREY_BUTTON,"关于"){
 			@Override
 			protected void onClick() {
+				com.shatteredpixel.shatteredpixeldungeon.windows.WndComputer.launchedFromGame = false;
 				GirlsFrontlinePixelDungeon.switchNoFade( AboutSceneV2.class );
 			}
 		};

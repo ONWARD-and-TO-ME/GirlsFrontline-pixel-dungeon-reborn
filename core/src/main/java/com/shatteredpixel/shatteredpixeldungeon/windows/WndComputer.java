@@ -43,6 +43,15 @@ import com.watabou.utils.DeviceCompat;
  */
 public class WndComputer extends WndComputerGrid {
 
+	/** 种子查询器/关于界面是否从0层电脑打开：为 true 时返回需读档回0层，而非回标题页 */
+	public static boolean launchedFromGame = false;
+
+	/** 从0层电脑打开的界面退出时调用：读档返回0层（GameScene） */
+	public static void backFromComputerApp() {
+		launchedFromGame = false;
+		SecondTitleScene.enterMainGame();
+	}
+
 	public WndComputer() {
 		super(3, 2);
 	}
@@ -65,6 +74,7 @@ public class WndComputer extends WndComputerGrid {
 			@Override
 			protected void onLeftClick() {
 				saveAll();
+				launchedFromGame = true;
 				GirlsFrontlinePixelDungeon.switchNoFade(SeedFindScene.class);
 			}
 		});
@@ -107,6 +117,7 @@ public class WndComputer extends WndComputerGrid {
 			@Override
 			protected void onLeftClick() {
 				saveAll();
+				launchedFromGame = true;
 				GirlsFrontlinePixelDungeon.switchNoFade(AboutSceneV2.class);
 			}
 		});

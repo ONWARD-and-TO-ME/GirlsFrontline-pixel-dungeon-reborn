@@ -329,11 +329,30 @@ public class AboutScene extends PixelScene {
 		list.setRect( 0, 0, w, h );
 		list.scrollTo(0, 0);
 
-		ExitButton btnExit = new ExitButton();
+		ExitButton btnExit = new ExitButton() {
+			@Override
+			protected void onClick() {
+				exitScene();
+			}
+		};
 		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
 		add( btnExit );
 
 		fadeIn();
+	}
+
+	// 退出旧版致谢：从0层电脑链路进入则读档返回0层，否则返回标题页
+	private void exitScene() {
+		if (com.shatteredpixel.shatteredpixeldungeon.windows.WndComputer.launchedFromGame) {
+			com.shatteredpixel.shatteredpixeldungeon.windows.WndComputer.backFromComputerApp();
+		} else {
+			Game.switchScene(TitleScene.class);
+		}
+	}
+
+	@Override
+	protected void onBackPressed() {
+		exitScene();
 	}
 
 	private void addLine( float y, Group content ){

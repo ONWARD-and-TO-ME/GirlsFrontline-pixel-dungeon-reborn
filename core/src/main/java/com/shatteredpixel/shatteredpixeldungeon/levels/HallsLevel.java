@@ -210,7 +210,9 @@ public class HallsLevel extends RegularLevel {
 		@Override
 		public void update() {
 
-			if (!Dungeon.level.water[pos]){
+			//切层过渡的极端时序下，旧关卡视觉可能比 Dungeon.level 多存活一帧，
+			//此时数组尺寸已不属于原关卡，直接自我销毁，避免越界
+			if (pos >= Dungeon.level.water.length || !Dungeon.level.water[pos]){
 				killAndErase();
 				return;
 			}
