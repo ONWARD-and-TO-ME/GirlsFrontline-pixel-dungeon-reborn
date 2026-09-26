@@ -307,7 +307,7 @@ public class SeedFinder implements Runnable {
         //worker 的 initHero 读取静态 selectedClass：必须与场景所选职业一致，
         //否则天才/盗贼天赋、初始容器（LimitedDrops）都会按错误的英雄生成
         GamesInProgress.selectedClass = heroClass;
-        Dungeons.cur().init(DungeonSeed.convertToCode(seed), Dungeon.challenges);
+        Dungeons.cur().init(DungeonSeed.convertToCode(seed));
         boolean[] itemsFound = new boolean[wantedArr.length];
         int foundCount = 0;
         int n = wantedArr.length;
@@ -436,7 +436,7 @@ public class SeedFinder implements Runnable {
         SeedFindScene.seedCode = seedCode;
         Dungeon.cur().hero = null;
         GamesInProgress.selectedClass = heroClass;
-        Dungeons.cur().init(seedCode, Dungeon.challenges);
+        Dungeons.cur().init(seedCode);
         HashSet<Class<? extends Item>> blacklist = new HashSet<>(Arrays.asList(Dewdrop.class, IronKey.class, GoldenKey.class, CrystalKey.class, EnergyCrystal.class, CorpseDust.class, Embers.class, CeremonialCandle.class, Pickaxe.class));
 
         // Phase 1: 遍历所有楼层，收集物品（不 identify），任务奖励在出现层一次性收取并 complete

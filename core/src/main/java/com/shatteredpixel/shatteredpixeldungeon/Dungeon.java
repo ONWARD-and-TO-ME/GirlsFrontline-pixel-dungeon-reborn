@@ -302,35 +302,16 @@ public class Dungeon {
 					&& !isChallenged(Challenges.CHAMPION_ENEMIES))
 				challenges += Challenges.CHAMPION_ENEMIES;
 		}
-		cur().mobsToChampion = -1;
-
-		if (seedCode == null || seedCode.isEmpty()){
-			cur().seed = DungeonSeed.randomSeed();
-			customSeedText = "";
-		} else{
-            customSeedText = seedCode;
-			cur().seed = DungeonSeed.convertFromText(customSeedText);
-		}
-
 		Game.Seed = cur().seed;
 		Game.Challenges = challenges;
 		Game.GameMode = GameMode;
-		Actor.clear();
 		Actor.resetNextID();
 
-		Random.pushGenerator( cur().seed );
+		// 简易 init 已在上面统一了种子解析/三 init/任务重置/hero 生成
+		cur().init(seedCode);
+		customSeedText = (seedCode == null) ? "" : seedCode;
+		Game.Seed = cur().seed;
 
-			Scroll.initLabels();
-			Potion.initColors();
-			Ring.initGems();
-            resetTest();
-
-			SpecialRoom.initForRun();
-			SecretRoom.initForRun();
-            Generator.fullReset();
-
-		Random.resetGenerators();
-		
 		// 添加农历节日检测
 		Gregorian.LunarCheckDate();
 		
@@ -339,32 +320,18 @@ public class Dungeon {
 
 		quickslot.reset();
 		QuickSlotButton.reset();
-		
-		cur().depth = 0;
-        cur().CreateId = 0;
+
 		gold = 0;
 		energy = 0;
 		droppedItems = new SparseArray<>();
 		portedItems = new SparseArray<>();
 
-		LimitedDrops.reset();
 		Card.CardPoint.reset();
-		
-		chapters = new HashSet<>();
-		
-		Ghost.Quest.cur().reset();
-		Wandmaker.Quest.cur().reset();
-		Blacksmith.Quest.cur().reset();
-		Imp.Quest.cur().reset();
 
-		cur().hero = new Hero();
-		cur().hero.live();
+		chapters = new HashSet<>();
+
 		Badges.reset();
-		
-		Random.pushGenerator( cur().seed );
-		GamesInProgress.selectedClass.initHero( cur().hero );
-		Random.resetGenerators();
-		resetGenerator();
+
         Buff.affect(cur().hero, Hunger.class).satisfy(1000);
 	}
 

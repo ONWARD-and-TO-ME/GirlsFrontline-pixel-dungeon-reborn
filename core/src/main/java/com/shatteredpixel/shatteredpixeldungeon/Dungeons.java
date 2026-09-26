@@ -123,11 +123,9 @@ public class Dungeons {
         }
     }
 
-    // === 复制自 Dungeon.init(String, int)，但操作本实例字段 ===
-    // 注意：内部仍引用 Dungeon 的静态方法（如 isGameMode、isChallenged），
-    // 因为那些方法只读 challenges/GameMode，而 challenges/GameMode 已在本实例中。
-    // 真正需要隔离的是 Random、Actor、Generator、Quest、Statistics、Notes 等。
-    public void init(String seedCode, int paramChallenges) {
+    //简易 init：不含 challenges/GameMode 修饰（IDENTIFY 强制挑战、圣诞节彩蛋）
+    //与 Dungeon.init 的静态包装（版本/农历/存档清理）——那些由调用方负责
+    public void init(String seedCode) {
         mobsToChampion = -1;
 
         if (seedCode == null || seedCode.isEmpty()){
@@ -136,6 +134,8 @@ public class Dungeons {
             seed = DungeonSeed.convertFromText(seedCode);
         }
 
+        Actor.clear();
+
         Random.pushGenerator( seed );
 
         //与 Dungeon.init 严格同序：initLabels/initColors/initGems 会消耗种子生成器的随机流，
@@ -143,6 +143,8 @@ public class Dungeons {
         Scroll.initLabels();
         Potion.initColors();
         Ring.initGems();
+
+        Dungeon.resetTest();
 
         SpecialRoom.initForRun();
         SecretRoom.initForRun();
