@@ -71,9 +71,9 @@ public class Aegis extends Mob {
     public int attackProc( Char enemy, int damage ) {
         damage = super.attackProc( enemy, damage );
 
-        if (enemy == Dungeon.cur().hero) {
+        if (enemy == Dungeon.hero()) {
 
-            Hero hero = Dungeon.cur().hero;
+            Hero hero = Dungeon.hero();
             KindOfWeapon weapon = hero.belongings.weapon;
 
             if (weapon != null  && !weapon.cursed) {

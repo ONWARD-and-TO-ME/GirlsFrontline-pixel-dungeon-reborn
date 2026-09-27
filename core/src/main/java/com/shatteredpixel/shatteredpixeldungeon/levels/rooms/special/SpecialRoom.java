@@ -207,7 +207,7 @@ public abstract class SpecialRoom extends Room {
             if (SeedFinder.SeedFinding)
                 secret = false;
             else {
-                AlchemistsToolkit toolkit = Dungeon.cur().hero.belongings.getItem(AlchemistsToolkit.class);
+                AlchemistsToolkit toolkit = Dungeon.hero().belongings.getItem(AlchemistsToolkit.class);
                 secret = toolkit != null && toolkit.Secret;
             }
             if (secret && random != 0) {

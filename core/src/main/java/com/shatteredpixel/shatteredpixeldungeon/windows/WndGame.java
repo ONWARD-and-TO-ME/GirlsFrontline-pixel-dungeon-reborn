@@ -77,7 +77,7 @@ public class WndGame extends Window {
 		}
 
 		// hero is dead
-		boolean heroDied=(Dungeon.cur().hero == null || !Dungeon.cur().hero.isAlive());
+		boolean heroDied=(Dungeon.hero() == null || !Dungeon.hero().isAlive());
 		
 		//rankings scene
 		if (heroDied && Dungeon.cur().depth != 0) {
@@ -137,7 +137,7 @@ public class WndGame extends Window {
 				protected void onClick() {
 					hide();
 					//默认预选当前角色，方便玩家直接确认
-					GamesInProgress.selectedClass = Dungeon.cur().hero.heroClass;
+					GamesInProgress.selectedClass = Dungeon.hero().heroClass;
 					GameScene.show( new WndZeroLevelHeroSelect(true) );
 				}
 			};

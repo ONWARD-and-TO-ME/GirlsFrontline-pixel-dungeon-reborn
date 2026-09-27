@@ -107,7 +107,7 @@ public class WndEnergizeItem extends WndInfoItem {
 	}
 
 	public static void doEnergize(Item item,boolean onlyOne){
-		Hero hero = Dungeon.cur().hero;
+		Hero hero = Dungeon.hero();
 
 		if (item.isEquipped(hero) && !((EquipableItem)item).doUnequip(hero,false)){
 			return;

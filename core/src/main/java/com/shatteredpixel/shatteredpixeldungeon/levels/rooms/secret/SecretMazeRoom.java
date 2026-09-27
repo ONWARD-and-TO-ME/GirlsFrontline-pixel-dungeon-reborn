@@ -80,14 +80,14 @@ public class SecretMazeRoom extends SecretRoom {
 		Point entrance = entrance();
 		int entrancePos = (entrance.x - left) + width()*(entrance.y - top);
 		
-		PathFinder.cur().buildDistanceMap( entrancePos, passable );
+		PathFinder.buildDistanceMap( entrancePos, passable );
 		
 		int bestDist = 0;
 		Point bestDistP = new Point();
-		for (int i = 0; i < PathFinder.cur().distance.length; i++){
-			if (PathFinder.cur().distance[i] != Integer.MAX_VALUE
-					&& PathFinder.cur().distance[i] > bestDist){
-				bestDist = PathFinder.cur().distance[i];
+		for (int i = 0; i < PathFinder.distance().length; i++){
+			if (PathFinder.distance()[i] != Integer.MAX_VALUE
+					&& PathFinder.distance()[i] > bestDist){
+				bestDist = PathFinder.distance()[i];
 				bestDistP.x = (i % width()) + left;
 				bestDistP.y = (i / width()) + top;
 			}

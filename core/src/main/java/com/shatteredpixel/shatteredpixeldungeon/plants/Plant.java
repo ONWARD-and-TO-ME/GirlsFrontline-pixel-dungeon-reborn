@@ -70,7 +70,7 @@ public abstract class Plant implements Bundlable {
 		}
 
 		// 女猎（隼）自然援助：视野内植物触发时获得树肤（实现见 HuntressTalent）
-		HuntressTalent.naturesAidOnPlant(Dungeon.cur().hero, pos);
+		HuntressTalent.naturesAidOnPlant(Dungeon.hero(), pos);
 
 		wither();
 		activate( ch );
@@ -131,7 +131,7 @@ public abstract class Plant implements Bundlable {
 
 	public String desc() {
 		String desc = Messages.get(this, "desc");
-		if (Dungeon.cur().hero.subClass == HeroSubClass.WARDEN){
+		if (Dungeon.hero().subClass == HeroSubClass.WARDEN){
 			desc += "\n\n" + Messages.get(this, "warden_desc");
 		}
 		return desc;
@@ -169,8 +169,8 @@ public abstract class Plant implements Bundlable {
 			} else {
 				Catalog.countUse(getClass());
 				Dungeon.level.plant( this, cell );
-				if (Dungeon.cur().hero.subClass == HeroSubClass.WARDEN) {
-					for (int i : PathFinder.cur().NEIGHBOURS8) {
+				if (Dungeon.hero().subClass == HeroSubClass.WARDEN) {
+					for (int i : PathFinder.NEIGHBOURS8()) {
 						int c = Dungeon.level.map[cell + i];
 						if ( c == Terrain.EMPTY || c == Terrain.EMPTY_DECO
 								|| c == Terrain.EMBERS || c == Terrain.GRASS){
@@ -231,7 +231,7 @@ public abstract class Plant implements Bundlable {
 		@Override
 		public String desc() {
 			String desc = Messages.get(plantClass, "desc");
-			if (Dungeon.cur().hero.subClass == HeroSubClass.WARDEN){
+			if (Dungeon.hero().subClass == HeroSubClass.WARDEN){
 				desc += "\n\n" + Messages.get(plantClass, "warden_desc");
 			}
 			return desc;

@@ -61,11 +61,11 @@ public abstract class PatchRoom extends StandardRoom {
 					}
 				}
 				
-				PathFinder.cur().buildDistanceMap(startPoint, BArray.not(patch, null));
+				PathFinder.buildDistanceMap(startPoint, BArray.not(patch, null));
 				
 				valid = true;
 				for (int i = 0; i < patch.length; i++){
-					if (!patch[i] && PathFinder.cur().distance[i] == Integer.MAX_VALUE){
+					if (!patch[i] && PathFinder.distance()[i] == Integer.MAX_VALUE){
 						valid = false;
 						break;
 					}

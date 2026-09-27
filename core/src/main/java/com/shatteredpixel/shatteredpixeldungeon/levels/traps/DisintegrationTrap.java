@@ -73,7 +73,7 @@ public class DisintegrationTrap extends Trap {
 				GirlsFrontlinePixelDungeon.scene().add(new Beam.DeathRay(DungeonTilemap.tileCenterToWorld(pos), target.sprite.center()));
 			}
 			target.damage( Random.NormalIntRange(30, 50) + Dungeon.curDepth(), this );
-			if (target == Dungeon.cur().hero){
+			if (target == Dungeon.hero()){
 				Hero hero = (Hero)target;
 				if (!hero.isAlive()){
 					Dungeon.fail( getClass() );

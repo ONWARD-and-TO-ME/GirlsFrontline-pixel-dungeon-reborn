@@ -139,8 +139,8 @@ public class WndZeroLevelHeroSelect extends Window {
 		if (GamesInProgress.selectedClass == null){
 			GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		}
-		// 确保 Dungeon.cur().hero 非 null，避免更新日志等界面访问 hero 时 NPE
-		if (Dungeon.cur().hero == null){
+		// 确保 Dungeon.hero() 非 null，避免更新日志等界面访问 hero 时 NPE
+		if (Dungeon.hero() == null){
 			Hero placeholder = new Hero(GamesInProgress.selectedClass);
 			//new Hero(...) 不会初始化天赋表（talents 为空 ArrayList），
 			//不补全的话一旦此 Hero 被保存，storeTalentsInBundle 会按下标越界

@@ -200,7 +200,7 @@ public abstract class Scroll extends Item implements ColorItem {
 			Catalog.countUse(getClass());
 		}
         Invisibility.dispel(true);
-        Talent.onScrollUsed(Dungeon.cur().hero, mulOnTalentUsed);
+        Talent.onScrollUsed(Dungeon.hero(), mulOnTalentUsed);
 		curUser.spend( TIME_TO_READ );
 		curUser.busy();
 		((HeroSprite)curUser.sprite).read();
@@ -218,7 +218,7 @@ public abstract class Scroll extends Item implements ColorItem {
 				updateQuickslot();
 			}
 
-			if (Dungeon.cur().hero.isAlive()) {
+			if (Dungeon.hero().isAlive()) {
 				Catalog.setSeen(getClass());
 			}
 		}

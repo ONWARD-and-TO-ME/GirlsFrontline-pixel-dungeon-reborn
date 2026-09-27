@@ -348,15 +348,15 @@ public class Potion extends Item implements ColorItem {
 			if (!isKnown()) {
 				handler.know(this);
 				updateQuickslot();
-				Potion p = Dungeon.cur().hero.belongings.getItem(getClass());
+				Potion p = Dungeon.hero().belongings.getItem(getClass());
 				if (p != null)  p.setAction();
 				if (ExoticPotion.regToExo.get(getClass()) != null) {
-					p = Dungeon.cur().hero.belongings.getItem(ExoticPotion.regToExo.get(getClass()));
+					p = Dungeon.hero().belongings.getItem(ExoticPotion.regToExo.get(getClass()));
 					if (p != null) p.setAction();
 				}
 			}
 			
-			if (Dungeon.cur().hero.isAlive()) {
+			if (Dungeon.hero().isAlive()) {
 				Catalog.setSeen(getClass());
 			}
 		}

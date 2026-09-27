@@ -206,18 +206,18 @@ public class CavesFissureRoom extends StandardRoom {
 			//ensures that there is always a path to any non-chasm tile
 			//TODO some copypasta from PatchRoom here, maybe standardize this as a static function in Room?
 			pathable = true;
-			boolean[] passable = new boolean[PathFinder.cur().distance.length];
+			boolean[] passable = new boolean[PathFinder.distance().length];
 
 			for (Point p : shrink().getPoints()){
 				int i = xyToRoomCoords(p.x, p.y);
 				passable[i] = level.map[level.pointToCell(p)] != Terrain.CHASM;
 			}
 
-			PathFinder.cur().buildDistanceMap(doorPoint, passable);
+			PathFinder.buildDistanceMap(doorPoint, passable);
 
 			for (Point p : shrink().getPoints()){
 				int i = xyToRoomCoords(p.x, p.y);
-				if (passable[i] && PathFinder.cur().distance[i] == Integer.MAX_VALUE){
+				if (passable[i] && PathFinder.distance()[i] == Integer.MAX_VALUE){
 					pathable = false;
 					break;
 				}

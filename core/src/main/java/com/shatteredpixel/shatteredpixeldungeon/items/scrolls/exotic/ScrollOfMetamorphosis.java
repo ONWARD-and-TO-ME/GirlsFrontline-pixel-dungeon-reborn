@@ -66,7 +66,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 	public void doRead() {
 		if (!isKnown()) {
 			identify();
-            curItem = detach( Dungeon.cur().hero.belongings.backpack );
+            curItem = detach( Dungeon.hero().belongings.backpack );
 			identifiedByUse = true;
 		} else {
 			identifiedByUse = false;
@@ -132,11 +132,11 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			top = text.bottom() + 2;
 
 			ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
-			Talent.initClassTalents(Dungeon.cur().hero.heroClass, talents, Dungeon.cur().hero.metamorphedTalents, Dungeon.cur().hero.addTalents);
+			Talent.initClassTalents(Dungeon.hero().heroClass, talents, Dungeon.hero().metamorphedTalents, Dungeon.hero().addTalents);
 
 			for (LinkedHashMap<Talent, Integer> tier : talents){
 				for (Talent talent : tier.keySet()){
-					tier.put(talent, Dungeon.cur().hero.pointsInTalent(talent));
+					tier.put(talent, Dungeon.hero().pointsInTalent(talent));
 				}
 			}
 
@@ -233,7 +233,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			Talent newTalent;
             for (HeroClass cls : HeroClass.values())
 				if ((newTalent = newTalent(cls, replacing, tier, options.keySet())) != null)
-					options.put(newTalent, Dungeon.cur().hero.pointsInTalent(replacing));
+					options.put(newTalent, Dungeon.hero().pointsInTalent(replacing));
 
 			replaceOptions = options;
 			setup(replacing, tier, options);
@@ -268,7 +268,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			for (Talent talent : clsTalentsAtTier.toArray(new Talent[0])) {
 				//在池子中移除准备蜕变的天赋，以免污染池子降低概率
 				//在池子中移除已有的天赋，以免出现重复天赋
-				if (talent == replacing || Dungeon.cur().hero.hasTalentB(talent))
+				if (talent == replacing || Dungeon.hero().hasTalentB(talent))
 					clsTalentsAtTier.remove(talent);
 				else {
 					//移除无法使用且未做蜕变适应的天赋
@@ -295,7 +295,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 				hide();
 				if (ScrollOfMetamorphosis.curItem instanceof ScrollOfMetamorphosis)
 					if (!curItem.collect())
-						Dungeon.level.drop(curItem, Dungeon.cur().hero.pos);
+						Dungeon.level.drop(curItem, Dungeon.hero().pos);
 				return;
 			}
 

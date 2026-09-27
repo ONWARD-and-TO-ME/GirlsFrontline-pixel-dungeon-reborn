@@ -112,13 +112,13 @@ public abstract class Shaman extends Mob {
 			
 			if (Random.Int( 2 ) == 0) {
 				debuff( enemy );
-				if (enemy == Dungeon.cur().hero) Sample.INSTANCE.play( Assets.Sounds.DEBUFF );
+				if (enemy == Dungeon.hero()) Sample.INSTANCE.play( Assets.Sounds.DEBUFF );
 			}
 			
 			int dmg = Random.NormalIntRange( 3, 9);
 			enemy.damage( dmg, new EarthenBolt(), this );
 			
-			if (!enemy.isAlive() && enemy == Dungeon.cur().hero) {
+			if (!enemy.isAlive() && enemy == Dungeon.hero()) {
 				Dungeon.fail( getClass() );
 				GLog.n( Messages.get(this, "bolt_kill") );
 			}

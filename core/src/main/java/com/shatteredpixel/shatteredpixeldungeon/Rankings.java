@@ -66,7 +66,7 @@ public enum Rankings {
 			return;
 		}
 		Notes.addNoteToBag();
-		for (Item i :Dungeon.cur().hero.belongings){
+		for (Item i :Dungeon.hero().belongings){
 			if (i.buffedLvl() != i.level()) {
 				i.BuffLevelPoint = i.buffedLvl() - i.level();
 			}
@@ -94,9 +94,9 @@ public enum Rankings {
 		
 		rec.cause     = cause;
 		rec.win       = win;
-		rec.heroClass = Dungeon.cur().hero.heroClass;
-		rec.armorTier = Dungeon.cur().hero.tier();
-		rec.herolevel = Dungeon.cur().hero.lvl;
+		rec.heroClass = Dungeon.hero().heroClass;
+		rec.armorTier = Dungeon.hero().tier();
+		rec.herolevel = Dungeon.hero().lvl;
 		rec.seed      = Dungeon.cur().seed;
 		// 检查是否使用了自定义种子
 		rec.customSeed = !Dungeon.customSeedText.isEmpty();
@@ -150,7 +150,7 @@ public enum Rankings {
 	}
 
 	private int score( boolean win ) {
-		return (Statistics.goldCollected + Dungeon.cur().hero.lvl * (win ? 31 : Statistics.deepestFloor ) * 100) * (win ? 2 : 1);
+		return (Statistics.goldCollected + Dungeon.hero().lvl * (win ? 31 : Statistics.deepestFloor ) * 100) * (win ? 2 : 1);
 	}
 
 	public static final String HERO = "hero";
@@ -163,17 +163,17 @@ public enum Rankings {
 	public void saveGameData(Record rec){
 		rec.gameData = new Bundle();
 
-		Belongings belongings = Dungeon.cur().hero.belongings;
+		Belongings belongings = Dungeon.hero().belongings;
 
 		//save the hero and belongings
 		ArrayList<Item> allItems = new ArrayList<>(belongings.backpack.items);
 
 		//remove all buffs (ones tied to equipment will be re-applied)
-		for(Buff b : Dungeon.cur().hero.buffs())
+		for(Buff b : Dungeon.hero().buffs())
 			if (!(b instanceof ItemBuff))
-				Dungeon.cur().hero.remove(b);
+				Dungeon.hero().remove(b);
 
-		rec.gameData.put( HERO, Dungeon.cur().hero );
+		rec.gameData.put( HERO, Dungeon.hero() );
 
 		//save stats
 		Bundle stats = new Bundle();

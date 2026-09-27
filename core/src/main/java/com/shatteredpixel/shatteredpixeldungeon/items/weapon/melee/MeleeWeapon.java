@@ -90,15 +90,15 @@ public class MeleeWeapon extends Weapon {
 
 		if (levelKnown) {
 			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_known", tier, augment.damageFactor(min()), augment.damageFactor(max()), STRReq());
-			if (STRReq() > Dungeon.cur().hero.STR()) {
+			if (STRReq() > Dungeon.hero().STR()) {
 				info += " " + Messages.get(Weapon.class, "too_heavy");
-			} else if (Dungeon.cur().hero.STR() > STRReq()){
-				info += " " + Messages.get(Weapon.class, "excess_str", Dungeon.cur().hero.STR() - STRReq());
+			} else if (Dungeon.hero().STR() > STRReq()){
+				info += " " + Messages.get(Weapon.class, "excess_str", Dungeon.hero().STR() - STRReq());
 			}
 		} else {
 			int lvl = TextGuessingBuffedLevel();
 			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(lvl), max(lvl), STRReq(false));
-			if (STRReq(false) > Dungeon.cur().hero.STR()) {
+			if (STRReq(false) > Dungeon.hero().STR()) {
 				info += " " + Messages.get(MeleeWeapon.class, "probably_too_heavy");
 			}
 		}
@@ -121,7 +121,7 @@ public class MeleeWeapon extends Weapon {
 			info += " " + Messages.get(enchantment, "desc");
 		}
 
-		if (cursed && isEquipped( Dungeon.cur().hero )) {
+		if (cursed && isEquipped( Dungeon.hero() )) {
 			info += "\n\n" + Messages.get(Weapon.class, "cursed_worn");
 		} else if (cursedKnown && cursed) {
 			info += "\n\n" + Messages.get(Weapon.class, "cursed");
@@ -137,8 +137,8 @@ public class MeleeWeapon extends Weapon {
 	public String statsInfo(){
         if(DEF>0||DEFUPGRADE>0){
             int REM =0;
-            if(Dungeon.cur().hero.STR() < this.STRReq()){
-                REM -= 2*(this.STRReq() - Dungeon.cur().hero.STR());
+            if(Dungeon.hero().STR() < this.STRReq()){
+                REM -= 2*(this.STRReq() - Dungeon.hero().STR());
             }
             String defInfo;
             if (isIdentified()){

@@ -370,7 +370,7 @@ public class Cypros extends MeleeWeapon {
         int DEF = 5;
         int DEF_UPGRADE = 2;
         int baseDEF=DEF+DEF_UPGRADE*buffedLvl();
-        int REM=-2*Math.max(0,STRReq()-Dungeon.cur().hero.STR);
+        int REM=-2*Math.max(0,STRReq()-Dungeon.hero().STR);
         int DEF_GAIN=Math.max(0,baseDEF+REM);
         return Messages.get(Cypros.class,"DEF",DEF_GAIN);
     }

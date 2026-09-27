@@ -102,19 +102,19 @@ public class WndWandmaker extends Window {
 
 		hide();
 
-		questItem.detach( Dungeon.cur().hero.belongings.backpack );
+		questItem.detach( Dungeon.hero().belongings.backpack );
 
 		reward.identify(false);
-		if (reward.doPickUp( Dungeon.cur().hero )) {
-			GLog.i( Messages.get(Dungeon.cur().hero, "you_now_have", reward.name()) );
+		if (reward.doPickUp( Dungeon.hero() )) {
+			GLog.i( Messages.get(Dungeon.hero(), "you_now_have", reward.name()) );
 		} else {
 			Dungeon.level.drop( reward, wandmaker.pos ).sprite.drop();
 		}
 
-		if(Dungeon.cur().hero.heroClass == HeroClass.HK416){
-			wandmaker.yell( Messages.get(this, "farewell_hk416", Dungeon.cur().hero.name()) );
+		if(Dungeon.hero().heroClass == HeroClass.HK416){
+			wandmaker.yell( Messages.get(this, "farewell_hk416", Dungeon.hero().name()) );
 		} else {
-			wandmaker.yell( Messages.get(this, "farewell", Dungeon.cur().hero.name()) );
+			wandmaker.yell( Messages.get(this, "farewell", Dungeon.hero().name()) );
 		}
 
 		wandmaker.destroy();
@@ -145,7 +145,7 @@ public class WndWandmaker extends Window {
 				}
 				@Override
 				protected void onClick() {
-					if (Dungeon.cur().hero.belongings.contains(questItem)) {
+					if (Dungeon.hero().belongings.contains(questItem)) {
 						GameScene.show(new RewardWindow(item));
 					} else {
 						hide();

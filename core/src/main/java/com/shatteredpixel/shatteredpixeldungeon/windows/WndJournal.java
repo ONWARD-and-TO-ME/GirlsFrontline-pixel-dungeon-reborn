@@ -122,7 +122,7 @@ public class WndJournal extends WndTabbed {
 			INSTANCE.hide();
 		}
 
-		if (Dungeon.cur().hero == null)
+		if (Dungeon.hero() == null)
 			Dungeon.cur().hero = new Hero();
 		
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;

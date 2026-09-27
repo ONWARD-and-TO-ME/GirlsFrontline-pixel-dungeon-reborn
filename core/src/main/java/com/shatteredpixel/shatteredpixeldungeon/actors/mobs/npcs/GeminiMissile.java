@@ -91,7 +91,7 @@ public class GeminiMissile extends Geminis {
 
     @Override
     public int attackProc( Char enemy, int damage ) {
-        for (int i : PathFinder.cur().NEIGHBOURS8){
+        for (int i : PathFinder.NEIGHBOURS8()){
             int cell = enemy.pos+i;
             Char ch = Actor.findChar(cell);
             if (ch == null)

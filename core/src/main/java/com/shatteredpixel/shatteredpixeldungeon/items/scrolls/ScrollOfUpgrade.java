@@ -71,7 +71,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 
 		if (!isKnown()) {
 			identify();
-			curItem = detach( Dungeon.cur().hero.belongings.backpack );
+			curItem = detach( Dungeon.hero().belongings.backpack );
 			identifiedByUse = true;
 		} else {
 			identifiedByUse = false;
@@ -130,7 +130,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 					scroll.onItemSelected( item );
 					scroll.readAnimation();
 					if (!identifiedByUse)
-						curItem = detach( Dungeon.cur().hero.belongings.backpack );
+						curItem = detach( Dungeon.hero().belongings.backpack );
 					Sample.INSTANCE.play( Assets.Sounds.READ );
 				}
 
@@ -190,9 +190,9 @@ public class ScrollOfUpgrade extends InventoryScroll {
             w.UpgradeUSED++;
 
 			if (w.cursedKnown && hadCursedEnchant && !w.hasCurseEnchant()){
-				removeCurse( Dungeon.cur().hero );
+				removeCurse( Dungeon.hero() );
 			} else if (w.cursedKnown && wasCursed && !w.cursed){
-				weakenCurse( Dungeon.cur().hero );
+				weakenCurse( Dungeon.hero() );
 			}
 			if (hadGoodEnchant && !w.hasGoodEnchant()){
 				GLog.w( Messages.get(Weapon.class, "incompatible") );
@@ -208,9 +208,9 @@ public class ScrollOfUpgrade extends InventoryScroll {
             a.UpgradeUSED++;
 
 			if (a.cursedKnown && hadCursedGlyph && !a.hasCurseGlyph()){
-				removeCurse( Dungeon.cur().hero );
+				removeCurse( Dungeon.hero() );
 			} else if (a.cursedKnown && wasCursed && !a.cursed){
-				weakenCurse( Dungeon.cur().hero );
+				weakenCurse( Dungeon.hero() );
 			}
 			if (hadGoodGlyph && !a.hasGoodGlyph()){
 				GLog.w( Messages.get(Armor.class, "incompatible") );
@@ -223,7 +223,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
             item.UpgradeUSED++;
 
 			if (item.cursedKnown && wasCursed && !item.cursed){
-				removeCurse( Dungeon.cur().hero );
+				removeCurse( Dungeon.hero() );
 			}
 
 		} else {

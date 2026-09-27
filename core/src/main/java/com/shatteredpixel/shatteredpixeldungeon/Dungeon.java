@@ -117,6 +117,12 @@ public class Dungeon {
 		return Dungeons.cur();
 	}
 
+	//当前上下文英雄的静态简写：生成链与非生成链代码统一走此入口，
+	//由 Dungeons.cur() 自动在主上下文/查种 worker 上下文间路由
+	public static Hero hero() {
+		return cur().hero;
+	}
+
 	//一键进入查种上下文：本线程此后 Dungeons/Random/PathFinder 全部走独立实例，
 	//与游戏主线程及其它查种 worker 完全隔离。每个 worker 启动时调用一次。
 	public static void enterSearchContext() {
@@ -239,7 +245,7 @@ public class Dungeon {
 
     public static ArrayList<Class> HolidayFood = new ArrayList<>(Arrays.asList(Pasty.class, XMasSugar.class)) ;
     public static void resetGenerator(){
-        boolean hasZongziTalent = Dungeon.cur().hero.hasTalentB(Talent.Type56One_FOOD) || Dungeon.cur().hero.hasTalentB(Talent.BETTER_FOOD);
+        boolean hasZongziTalent = Dungeon.hero().hasTalentB(Talent.Type56One_FOOD) || Dungeon.hero().hasTalentB(Talent.BETTER_FOOD);
         for (int j = 0; j < Generator.Category.FOOD.classes.length; j++) {
             if (Generator.Category.FOOD.classes[j] == Food.class )
 				Generator.Category.FOOD.probs()[j] = hasZongziTalent ? 2 : 4;
@@ -281,6 +287,7 @@ public class Dungeon {
 	}
 
     public static void init(String seedCode,int paramChallenges) {
+        resetTest();
 		guessType.clear();
 		version = Game.versionCode;
 		challenges = paramChallenges;
@@ -529,7 +536,7 @@ public class Dungeon {
 		for(Mob m : level.mobs){
 			if (m.pos == cur().hero.pos){
 				//displace mob
-				for(int i : PathFinder.cur().NEIGHBOURS8){
+				for(int i : PathFinder.NEIGHBOURS8()){
 					if (Actor.findChar(m.pos+i) == null && level.passable[m.pos + i]){
 						m.pos += i;
 						break;
@@ -933,18 +940,18 @@ public class Dungeon {
 
 	//default to recomputing based on max hero vision, in case vision just shrank/grew
 	public static void observe(){
-		int dist = Math.max(Dungeon.cur().hero.viewDistance, 8);
+		int dist = Math.max(Dungeon.hero().viewDistance, 8);
 		// 女猎（隼）远视视野距离乘数（实现见 HuntressTalent）
-		dist *= HuntressTalent.farsightMultiplier(Dungeon.cur().hero);
+		dist *= HuntressTalent.farsightMultiplier(Dungeon.hero());
 		// HK416天赋：2.5x ACOG镜视野加成
-		dist += HK416Talent.acogVisionBonus(Dungeon.cur().hero);
+		dist += HK416Talent.acogVisionBonus(Dungeon.hero());
 		// 节日蛋糕buff：击杀boss前视野+1格
-		FestivalCakeBuff cake = Dungeon.cur().hero.buff(FestivalCakeBuff.class);
+		FestivalCakeBuff cake = Dungeon.hero().buff(FestivalCakeBuff.class);
 		if (cake != null && cake.isVisionActive()){
 			dist += FestivalCakeBuff.VISION_BONUS;
 		}
 
-		if (Dungeon.cur().hero.buff(MagicalSight.class) != null){
+		if (Dungeon.hero().buff(MagicalSight.class) != null){
 			dist = Math.max( dist, MagicalSight.DISTANCE );
 		}
 
@@ -1088,7 +1095,7 @@ public class Dungeon {
 			}
 		}
 
-		return PathFinder.cur().find( ch.pos, to, passable );
+		return PathFinder.find( ch.pos, to, passable );
 
 	}
 	
@@ -1121,7 +1128,7 @@ public class Dungeon {
 			}
 		}
 		
-		return PathFinder.cur().getStep( ch.pos, to, passable );
+		return PathFinder.getStep( ch.pos, to, passable );
 
 	}
 	
@@ -1143,10 +1150,10 @@ public class Dungeon {
 		passable[ch.pos] = true;
 
 		//only consider chars impassable if our retreat path runs into them
-		int step = PathFinder.cur().getStepBack( ch.pos, from, passable );
+		int step = PathFinder.getStepBack( ch.pos, from, passable );
 		while (step != -1 && Actor.findChar(step) != null){
 			passable[step] = false;
-			step = PathFinder.cur().getStepBack( ch.pos, from, passable );
+			step = PathFinder.getStepBack( ch.pos, from, passable );
 		}
 		return step;
 		

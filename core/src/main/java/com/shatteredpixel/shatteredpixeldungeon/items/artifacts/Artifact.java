@@ -147,9 +147,9 @@ public class Artifact extends KindofMisc {
 	@Override
 	public String info() {
         String info =super.info();
-		if (cursed && cursedKnown && !isEquipped( Dungeon.cur().hero )) {
+		if (cursed && cursedKnown && !isEquipped( Dungeon.hero() )) {
 			info += "\n\n" + Messages.get(Artifact.class, "curse_known");
-		} else if (!isIdentified() && cursedKnown && !isEquipped( Dungeon.cur().hero)) {
+		} else if (!isIdentified() && cursedKnown && !isEquipped( Dungeon.hero())) {
 			info += "\n\n" + Messages.get(Artifact.class, "not_cursed");
 		}
         info =  lockinfo(info);

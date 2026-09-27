@@ -73,7 +73,7 @@ public class NoelShopRoom extends ShopRoom {
 
     public static boolean openShop(){
         if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)||Challenges.activeChallenges()>=2){
-            return Dungeon.cur().hero.buff(Elphelt.Finish.class)!=null|| SeedFinder.SeedFinding;
+            return Dungeon.hero().buff(Elphelt.Finish.class)!=null|| SeedFinder.SeedFinding;
         }else
             return Imp.Quest.cur().isCompleted()||SeedFinder.SeedFinding;
     }

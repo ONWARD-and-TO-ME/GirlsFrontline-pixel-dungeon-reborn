@@ -105,7 +105,7 @@ public class FairyItems extends Item {
     @Override
     public String desc(){
         String desc = super.desc();
-        if (Dungeon.cur().hero != null && inFairyRoom(Dungeon.cur().hero))
+        if (Dungeon.hero() != null && inFairyRoom(Dungeon.hero()))
             desc += "\n\n" + Messages.get(this, "effect");
         return desc;
     }

@@ -96,9 +96,9 @@ public class Wandmaker extends NPC {
 	
 	@Override
 	public boolean interact(Char c) {
-		sprite.turnTo( pos, Dungeon.cur().hero.pos );
+		sprite.turnTo( pos, Dungeon.hero().pos );
 
-		if (c != Dungeon.cur().hero){
+		if (c != Dungeon.hero()){
 			return true;
 		}
 
@@ -108,13 +108,13 @@ public class Wandmaker extends NPC {
 			switch (Quest.cur().type) {
 				case 1:
 				default:
-					item = Dungeon.cur().hero.belongings.getItem(CorpseDust.class);
+					item = Dungeon.hero().belongings.getItem(CorpseDust.class);
 					break;
 				case 2:
-					item = Dungeon.cur().hero.belongings.getItem(Embers.class);
+					item = Dungeon.hero().belongings.getItem(Embers.class);
 					break;
 				case 3:
-					item = Dungeon.cur().hero.belongings.getItem(Rotberry.Seed.class);
+					item = Dungeon.hero().belongings.getItem(Rotberry.Seed.class);
 					break;
 			}
 

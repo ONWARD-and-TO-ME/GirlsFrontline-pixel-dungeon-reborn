@@ -21,7 +21,7 @@ public class VirtualActor extends Visual {
     private static void addDelayerVisual(float delay, Callback callback){
         VirtualActor d = new VirtualActor();
         d.reset(delay, callback);
-        Dungeon.cur().hero.sprite.parent.add(d);
+        Dungeon.hero().sprite.parent.add(d);
     }
 
     public void reset(float delay, Callback callback){

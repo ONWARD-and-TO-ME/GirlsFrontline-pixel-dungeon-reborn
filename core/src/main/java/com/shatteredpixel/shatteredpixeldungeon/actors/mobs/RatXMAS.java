@@ -25,7 +25,7 @@ public class RatXMAS extends Rat{
 
     @Override
     protected boolean act() {
-        if (Dungeon.cur().hero.armorAbility instanceof Ratmogrify){
+        if (Dungeon.hero().armorAbility instanceof Ratmogrify){
             alignment = Alignment.ALLY;
             if (state == PASSIVE) state = WANDERING;
         }else if(alignment != Alignment.ALLY){

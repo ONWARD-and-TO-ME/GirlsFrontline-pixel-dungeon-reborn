@@ -126,7 +126,7 @@ public class Jupiter extends Mob {
                 if (p == b.collisionPos)
                     break;
             }
-            Dungeon.cur().hero.interrupt();
+            Dungeon.hero().interrupt();
             spendAttack( attackDelay()*6f );
             beamCharged = true;
             return true;
@@ -186,7 +186,7 @@ public class Jupiter extends Mob {
                     CellEmitter.center( pos ).burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
                 }
 
-                if (!ch.isAlive() && ch == Dungeon.cur().hero) {
+                if (!ch.isAlive() && ch == Dungeon.hero()) {
                     Dungeon.fail( getClass() );
                     GLog.n( Messages.get(this, "deathgaze_kill") );
                 }

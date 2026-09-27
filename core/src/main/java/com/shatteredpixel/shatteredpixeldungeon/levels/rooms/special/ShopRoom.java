@@ -275,7 +275,7 @@ public class ShopRoom extends SpecialRoom {
 
 		itemsToSpawn.add( new Alchemize().quantity(Random.IntRange(2, 3)));
 
-		itemsToSpawn.add(ChooseBag(Dungeon.cur().hero.belongings));
+		itemsToSpawn.add(ChooseBag(Dungeon.hero().belongings));
 
 
 		itemsToSpawn.add( new PotionOfHealing() );
@@ -299,17 +299,17 @@ public class ShopRoom extends SpecialRoom {
 					Generator.randomUsingDefaults( Generator.Category.POTION ) :
 					Generator.randomUsingDefaults( Generator.Category.SCROLL ) );
 
-		if (Dungeon.cur().hero.pointsInTalent(Talent.BARGAIN_SKILLS) == 2){
+		if (Dungeon.hero().pointsInTalent(Talent.BARGAIN_SKILLS) == 2){
 			itemsToSpawn.add(new SaltyZongzi());
 			itemsToSpawn.add(new SaltyZongzi());
 			itemsToSpawn.add(new SaltyZongzi());
 		}
 		else {
-			if (Dungeon.cur().hero.pointsInTalent(Talent.BARGAIN_SKILLS) == 2){
+			if (Dungeon.hero().pointsInTalent(Talent.BARGAIN_SKILLS) == 2){
 				itemsToSpawn.add(new SugarZongzi());
 				itemsToSpawn.add(new SugarZongzi());
 			}
-			if (Dungeon.cur().hero.hasTalentB(Talent.Type56One_FOOD) || Dungeon.cur().hero.hasTalentB(Talent.BETTER_FOOD)) {
+			if (Dungeon.hero().hasTalentB(Talent.Type56One_FOOD) || Dungeon.hero().hasTalentB(Talent.BETTER_FOOD)) {
 				switch (Random.Int(3)) {
 					case 0:
 						itemsToSpawn.add(new Maccol());
@@ -360,7 +360,7 @@ public class ShopRoom extends SpecialRoom {
 		itemsToSpawn.add( new Ankh() );
 		itemsToSpawn.add( new StoneOfAugmentation() );
 
-		TimekeepersHourglass hourglass = Dungeon.cur().hero.belongings.getItem(TimekeepersHourglass.class);
+		TimekeepersHourglass hourglass = Dungeon.hero().belongings.getItem(TimekeepersHourglass.class);
 		if (hourglass != null && hourglass.isIdentified() && !hourglass.cursed){
 			int bags = 0;
 			//creates the given float percent of the remaining bags to be dropped.

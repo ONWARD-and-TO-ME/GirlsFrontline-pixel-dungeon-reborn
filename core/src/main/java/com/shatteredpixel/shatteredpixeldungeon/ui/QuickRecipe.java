@@ -122,7 +122,7 @@ public class QuickRecipe extends Component {
 				}
 			};
 			
-			ArrayList<Item> similar = Dungeon.cur().hero.belongings.getAllSimilar(in);
+			ArrayList<Item> similar = Dungeon.hero().belongings.getAllSimilar(in);
 			int quantity = 0;
 			for (Item sim : similar) {
 				//if we are looking for a specific item, it must be IDed
@@ -256,7 +256,7 @@ public class QuickRecipe extends Component {
 				}
 			}
 			
-			((AlchemyScene)GirlsFrontlinePixelDungeon.scene()).populate(ingredients, Dungeon.cur().hero.belongings);
+			((AlchemyScene)GirlsFrontlinePixelDungeon.scene()).populate(ingredients, Dungeon.hero().belongings);
 		}
 		
 		public void hardlightText(int color ){
@@ -269,7 +269,7 @@ public class QuickRecipe extends Component {
 	public static int BREW = 8;
 	public static int SPELL = 9;
 	public static ArrayList<QuickRecipe> getRecipes( int pageIdx ){
-		if (Dungeon.cur().hero == null)
+		if (Dungeon.hero() == null)
 			Dungeon.cur().hero = new Hero();
 		ArrayList<QuickRecipe> result = new ArrayList<>();
 		switch (pageIdx){

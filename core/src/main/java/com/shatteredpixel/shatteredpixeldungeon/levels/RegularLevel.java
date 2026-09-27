@@ -401,7 +401,7 @@ public abstract class RegularLevel extends Level {
 			drop( item, cell ).setHauntedIfCursed().type = Heap.Type.REMAINS;
 		}
 
-		DriedRose rose = Dungeon.cur().hero.belongings.getItem( DriedRose.class );
+		DriedRose rose = Dungeon.hero().belongings.getItem( DriedRose.class );
 		if (rose != null && rose.isIdentified() && !rose.cursed){
 			//aim to drop 1 petal every 2 floors
 			int petalsNeeded = (int) Math.ceil((float)((Dungeon.cur().depth / 2) - rose.droppedPetals) / 3);
@@ -422,7 +422,7 @@ public abstract class RegularLevel extends Level {
 		}
 
         CounterBuff dropped;
-        dropped = Dungeon.cur().hero.buff(Talent.CachedRationsDropped.class);
+        dropped = Dungeon.hero().buff(Talent.CachedRationsDropped.class);
 		//cached rations try to drop in a special room on floors 2/3/4/6/7/8, to a max of 4/6
 		if (dropped!=null){
 			if (dropped.count() > 0){
@@ -449,7 +449,7 @@ public abstract class RegularLevel extends Level {
 				}
 			}
 		}
-        dropped = Dungeon.cur().hero.buff(Talent.ZongziDropped.class);
+        dropped = Dungeon.hero().buff(Talent.ZongziDropped.class);
         if (dropped!=null){
             if (dropped.count() > 0){
                 int cell;

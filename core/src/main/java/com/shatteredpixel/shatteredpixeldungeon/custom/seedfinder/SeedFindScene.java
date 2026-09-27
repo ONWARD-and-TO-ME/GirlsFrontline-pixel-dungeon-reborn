@@ -238,6 +238,7 @@ public class SeedFindScene extends PixelScene {
     private Component overviewPage(final String body, final float w, final float h) {
         Component root = new Component() {
             ScrollPane sp;
+            RenderedTextBlock seedLabel;
             RedButton copyBtn;
             {
                 Component scrollContent = new Component();
@@ -249,6 +250,11 @@ public class SeedFindScene extends PixelScene {
                 scrollContent.setSize(w, txt.height() + 2);
                 sp = new ScrollPane(scrollContent);
                 add(sp);
+
+                seedLabel = PixelScene.renderTextBlock("种子码：" + SeedFindScene.seedCode, 8);
+                seedLabel.hardlight(Window.TITLE_COLOR);
+                seedLabel.maxWidth((int) w - 2);
+                add(seedLabel);
 
                 copyBtn = new RedButton("复制种子码") {
                     @Override
@@ -262,8 +268,9 @@ public class SeedFindScene extends PixelScene {
 
             @Override
             protected void layout() {
-                sp.setRect(0, 0, width, height - 22);
+                sp.setRect(0, 0, width, height - 33);
                 sp.scrollTo(0, 0);
+                seedLabel.setPos(1, height - 31);
                 copyBtn.setRect(1, height - 20, width - 2, 18);
             }
         };
@@ -523,7 +530,7 @@ public class SeedFindScene extends PixelScene {
                                 public void onSelect(boolean check, String text) {
                                     if(check) {
                                         seedCode = DungeonSeed.formatText(text);
-                                        startSearch();
+                                        startTestSeed();
                                     }
                                 }
                             }
@@ -776,6 +783,7 @@ public class SeedFindScene extends PixelScene {
                     @Override
                     protected void onChange() {
                         threadCount = getSelectedValue();
+                        SPDSettings.seedFinderThreads(threadCount);
                     }
                 };
                 threadSlider.setSelectedValue(threadCount);
@@ -1239,15 +1247,63 @@ public class SeedFindScene extends PixelScene {
 
     private static WndFinder mainWindow;
     private Thread findSeedThread;
-    // 查种线程数（第五页 Slider 控制，默认 1）
-    public int threadCount = 1;
     // 线程数上限：不超过可用逻辑处理器数，最少 1
     private static final int THREAD_MAX = Math.max(1, Runtime.getRuntime().availableProcessors());
+    // 查种线程数（第五页 Slider 控制，跨启动保留，夹紧到 [1, THREAD_MAX]）
+    public int threadCount = Math.max(1, Math.min(THREAD_MAX, SPDSettings.seedFinderThreads()));
 
-    // 查找种子：构建目标列表，SeedFinder.run() 自动派发到 findSeed()
+    // 查找种子：按已添加物品 + 线程数扫描（物品列表为空时没有查找意义）
     private void startSearch() {
         // 防御：即使 TEST_MODE 曾在 debug 菜单里被写入，种子查找也一律不带它
         SPDSettings.challenges(SPDSettings.challenges() & ~Challenges.TEST_MODE);
+
+        final ArrayList<WantedTarget> targets = new ArrayList<>();
+        for (Item item : wantedItems)
+            for (int i = 0; i < item.quantity(); i++)
+                targets.add(new WantedTarget(item));
+
+        final int threads = Math.max(1, Math.min(THREAD_MAX, threadCount));
+        final SeedFinder finder = new SeedFinder(targets, currentFloor, currentHero) {
+            @Override
+            public void run() {
+                Dungeon.resetTest();
+                String str = findSeed(threads);
+                SeedFindScene.INSTANCE.resultFloors = lastFloors;
+                SeedFindScene.INSTANCE.isTestSeed = false;
+                SeedFindScene.INSTANCE.text = str;
+                SeedFindScene.INSTANCE.needUpdate = true;
+            }
+        };
+        launchFinder(finder);
+    }
+
+    // 测试种子：与 startSearch 完全独立，无视已添加物品，
+    // 始终单线程进入查种上下文，直接生成输入种子码的物品清单
+    private void startTestSeed() {
+        // 防御：测试种子同样不带 TEST_MODE
+        SPDSettings.challenges(SPDSettings.challenges() & ~Challenges.TEST_MODE);
+
+        final SeedFinder finder = new SeedFinder(new ArrayList<WantedTarget>(), currentFloor, currentHero) {
+            @Override
+            public void run() {
+                Dungeon.resetTest();
+                Dungeon.enterSearchContext();
+                try {
+                    String str = logSeedItems(DungeonSeed.convertFromText(SeedFindScene.seedCode));
+                    SeedFindScene.INSTANCE.resultFloors = lastFloors;
+                    SeedFindScene.INSTANCE.isTestSeed = true;
+                    SeedFindScene.INSTANCE.text = str;
+                    SeedFindScene.INSTANCE.needUpdate = true;
+                } finally {
+                    Dungeon.exitSearchContext();
+                }
+            }
+        };
+        launchFinder(finder);
+    }
+
+    // 查找/测试共用的线程启动与状态重置
+    private void launchFinder(final SeedFinder finder) {
         stopThread = false;
         searchDone = false;
         resultFloors = null;
@@ -1255,39 +1311,7 @@ public class SeedFindScene extends PixelScene {
         lastResultBody = null;
         resultTabs = null;
 
-        final ArrayList<WantedTarget> targets = new ArrayList<>();
-        for (Item item : wantedItems)
-            for (int i = 0; i < item.quantity(); i++)
-                targets.add(new WantedTarget(item));
-
         showSearchView();
-        final int threads = Math.max(1, threadCount);
-        final SeedFinder finder = new SeedFinder(targets, currentFloor, currentHero) {
-            // 覆盖 run 以支持多线程：把 findSeed(threadCount) 传入
-            @Override
-            public void run() {
-                Dungeon.resetTest();
-                if (wantedArr.length == 0) {
-                    // 无物品需求：单线程直接生成日志（测试种子模式，结果窗不含总览页）
-                    Dungeon.enterSearchContext();
-                    try {
-                        String str = logSeedItems(DungeonSeed.convertFromText(SeedFindScene.seedCode));
-                        SeedFindScene.INSTANCE.resultFloors = lastFloors;
-                        SeedFindScene.INSTANCE.isTestSeed = true;
-                        SeedFindScene.INSTANCE.text = str;
-                        SeedFindScene.INSTANCE.needUpdate = true;
-                    } finally {
-                        Dungeon.exitSearchContext();
-                    }
-                } else {
-                    String str = findSeed(threads);
-                    SeedFindScene.INSTANCE.resultFloors = lastFloors;
-                    SeedFindScene.INSTANCE.isTestSeed = false;
-                    SeedFindScene.INSTANCE.text = str;
-                    SeedFindScene.INSTANCE.needUpdate = true;
-                }
-            }
-        };
         activeFinder = finder;
         searchStartMs = System.currentTimeMillis();
         findSeedThread = new Thread(new Runnable() {

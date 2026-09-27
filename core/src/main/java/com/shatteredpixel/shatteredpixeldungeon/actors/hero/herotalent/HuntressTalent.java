@@ -97,7 +97,7 @@ public final class HuntressTalent {
 			return;
 		}
 		ArrayList<Integer> grassCells = new ArrayList<>();
-		for (int i : PathFinder.cur().NEIGHBOURS8){
+		for (int i : PathFinder.NEIGHBOURS8()){
 			grassCells.add(pos+i);
 		}
 		Random.shuffle(grassCells);

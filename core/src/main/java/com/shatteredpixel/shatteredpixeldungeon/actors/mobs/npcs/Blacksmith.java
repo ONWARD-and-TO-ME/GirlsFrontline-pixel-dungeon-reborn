@@ -81,7 +81,7 @@ public class Blacksmith extends NPC {
 		
 		sprite.turnTo( pos, c.pos );
 
-		if (c != Dungeon.cur().hero){
+		if (c != Dungeon.hero()){
 			return true;
 		}
 		
@@ -94,25 +94,25 @@ public class Blacksmith extends NPC {
 					Notes.add( Notes.Landmark.TROLL );
 
 					Pickaxe pick = new Pickaxe();
-					if (pick.doPickUp( Dungeon.cur().hero )) {
-						GLog.i( Messages.get(Dungeon.cur().hero, "you_now_have", pick.name() ));
+					if (pick.doPickUp( Dungeon.hero() )) {
+						GLog.i( Messages.get(Dungeon.hero(), "you_now_have", pick.name() ));
 					} else {
-						Dungeon.level.drop( pick, Dungeon.cur().hero.pos ).sprite.drop();
+						Dungeon.level.drop( pick, Dungeon.hero().pos ).sprite.drop();
 					}
 				}
 			)));
 		} else if (!Quest.cur().completed) {
 			if (Quest.cur().alternative) {
 				
-				Pickaxe pick = Dungeon.cur().hero.belongings.getItem( Pickaxe.class );
+				Pickaxe pick = Dungeon.hero().belongings.getItem( Pickaxe.class );
 				if (pick == null) {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc())));
 				} else if (!pick.bloodStained) {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.Kill())));
 				} else {
-					if (pick.isEquipped( Dungeon.cur().hero ))
-						pick.detachCursedEquipment( Dungeon.cur().hero );
-					pick.detach( Dungeon.cur().hero.belongings.backpack );
+					if (pick.isEquipped( Dungeon.hero() ))
+						pick.detachCursedEquipment( Dungeon.hero() );
+					pick.detach( Dungeon.hero().belongings.backpack );
 					CardSelector.INSTANCE().coolDown(1000);
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.L1())));
 
@@ -122,18 +122,18 @@ public class Blacksmith extends NPC {
 				
 			} else {
 				
-				Pickaxe pick = Dungeon.cur().hero.belongings.getItem( Pickaxe.class );
-				DarkGold gold = Dungeon.cur().hero.belongings.getItem( DarkGold.class );
+				Pickaxe pick = Dungeon.hero().belongings.getItem( Pickaxe.class );
+				DarkGold gold = Dungeon.hero().belongings.getItem( DarkGold.class );
 				if (pick == null) {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc())));
 				} else if (gold == null || gold.quantity() < 15) {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.Gold())));
 				} else {
-					if (pick.isEquipped( Dungeon.cur().hero )) {
-						pick.doUnequip( Dungeon.cur().hero, false );
+					if (pick.isEquipped( Dungeon.hero() )) {
+						pick.doUnequip( Dungeon.hero(), false );
 					}
-					pick.detach( Dungeon.cur().hero.belongings.backpack );
-					gold.detachAll( Dungeon.cur().hero.belongings.backpack );
+					pick.detach( Dungeon.hero().belongings.backpack );
+					gold.detachAll( Dungeon.hero().belongings.backpack );
 					CardSelector.INSTANCE().coolDown(1000);
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.L1())));
 					
@@ -147,7 +147,7 @@ public class Blacksmith extends NPC {
 			Game.runOnRenderThread(new Callback() {
 				@Override
 				public void call() {
-					GameScene.show( new WndBlacksmith( Blacksmith.this, Dungeon.cur().hero ) );
+					GameScene.show( new WndBlacksmith( Blacksmith.this, Dungeon.hero() ) );
 				}
 			});
 			
@@ -244,18 +244,18 @@ public class Blacksmith extends NPC {
 		}
 
 		Sample.INSTANCE.play( Assets.Sounds.EVOKE );
-		ScrollOfUpgrade.upgrade( Dungeon.cur().hero );
-		Item.evoke( Dungeon.cur().hero );
+		ScrollOfUpgrade.upgrade( Dungeon.hero() );
+		Item.evoke( Dungeon.hero() );
 
-		if (second.isEquipped( Dungeon.cur().hero )) {
-			((EquipableItem)second).doUnequip( Dungeon.cur().hero, false );
+		if (second.isEquipped( Dungeon.hero() )) {
+			((EquipableItem)second).doUnequip( Dungeon.hero(), false );
 		}
-		second.detach( Dungeon.cur().hero.belongings.backpack );
+		second.detach( Dungeon.hero().belongings.backpack );
 
 		if (second instanceof Armor){
 			BrokenSeal seal = ((Armor) second).checkSeal();
 			if (seal != null){
-				Dungeon.level.drop( seal, Dungeon.cur().hero.pos );
+				Dungeon.level.drop( seal, Dungeon.hero().pos );
 			}
 		}
 
@@ -268,7 +268,7 @@ public class Blacksmith extends NPC {
 			first.upgrade();
 		}
 		Catalog.countUse(first.getClass());
-		Dungeon.cur().hero.spendAndNext( 2f );
+		Dungeon.hero().spendAndNext( 2f );
 		Badges.validateItemLevelAquired( first );
 		Item.updateQuickslot();
 		

@@ -94,7 +94,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	@Override
 	public String actionName() {
-		SpiritBow bow = Dungeon.cur().hero.belongings.getItem(SpiritBow.class);
+		SpiritBow bow = Dungeon.hero().belongings.getItem(SpiritBow.class);
 
 		if (bow == null) return null;
 
@@ -116,7 +116,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	@Override
 	public void doAction() {
 		
-		Hero hero = Dungeon.cur().hero;
+		Hero hero = Dungeon.hero();
 		if (hero == null) return;
 		
 		SpiritBow bow = hero.belongings.getItem(SpiritBow.class);
@@ -132,7 +132,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if (cell == -1) return;
 		
 		bow.sniperSpecial = true;
-		bow.sniperSpecialBonusDamage = HuntressTalent.sharedUpgradesSpecialDamage(Dungeon.cur().hero, level);
+		bow.sniperSpecialBonusDamage = HuntressTalent.sharedUpgradesSpecialDamage(Dungeon.hero(), level);
 		
 		arrow.cast(hero, cell);
 		detach();

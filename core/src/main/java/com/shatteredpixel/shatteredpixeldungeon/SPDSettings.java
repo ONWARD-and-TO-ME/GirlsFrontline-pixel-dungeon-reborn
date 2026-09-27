@@ -546,4 +546,14 @@ public class SPDSettings extends GameSettings {
 		return getBoolean( KEY_WINDOW_MAXIMIZED, false );
 	}
 
+	public static final String KEY_SEEDFINDER_THREADS = "seedfinder_threads";
+
+	public static int seedFinderThreads() {
+		return getInt( KEY_SEEDFINDER_THREADS, 1 );
+	}
+
+	public static void seedFinderThreads( int value ) {
+		put( KEY_SEEDFINDER_THREADS, value );
+	}
+
 }

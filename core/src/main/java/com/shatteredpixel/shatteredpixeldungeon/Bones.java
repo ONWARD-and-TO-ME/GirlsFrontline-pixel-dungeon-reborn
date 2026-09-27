@@ -56,7 +56,7 @@ public class Bones {
 			return;
 		}
 
-		item = pickItem(Dungeon.cur().hero);
+		item = pickItem(Dungeon.hero());
 
 		Bundle bundle = new Bundle();
 		bundle.put( LEVEL, depth );

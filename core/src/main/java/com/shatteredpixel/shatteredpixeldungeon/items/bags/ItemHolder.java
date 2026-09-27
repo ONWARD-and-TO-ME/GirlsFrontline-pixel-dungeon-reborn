@@ -53,12 +53,12 @@ public class ItemHolder extends Bag {
     }
 
     public void GradItem( Item item ){
-        for (Bag bag : Dungeon.cur().hero.belongings.getBags()){
+        for (Bag bag : Dungeon.hero().belongings.getBags()){
             if (bag.items.contains(item)){
                 item = item.detachAll(bag);
                 item.canHold = true;
                 if (!item.collect(this))
-                    item.doDrop(Dungeon.cur().hero);
+                    item.doDrop(Dungeon.hero());
             }
         }
     }
@@ -104,7 +104,7 @@ public class ItemHolder extends Bag {
                 if (item.canHold){
                     item.canHold = false;
                     if (!item.detachAll(ItemHolder.this).collect())
-                        item.doDrop(Dungeon.cur().hero);
+                        item.doDrop(Dungeon.hero());
                 }
                 else
                     GradItem(item);

@@ -394,7 +394,7 @@ public abstract class RegularPainter extends Painter {
 			}
 			
 			int count = 1;
-			for (int n : PathFinder.cur().NEIGHBOURS8) {
+			for (int n : PathFinder.NEIGHBOURS8()) {
 				if (grass[i + n]) {
 					count++;
 				}
@@ -435,8 +435,8 @@ public abstract class RegularPainter extends Painter {
 		}
 
 		for (int i : validCells){
-			if ((l.passable[i+PathFinder.cur().CIRCLE4[0]] || l.passable[i+PathFinder.cur().CIRCLE4[2]])
-					&& (l.passable[i+PathFinder.cur().CIRCLE4[1]] || l.passable[i+PathFinder.cur().CIRCLE4[3]])){
+			if ((l.passable[i+PathFinder.CIRCLE4()[0]] || l.passable[i+PathFinder.CIRCLE4()[2]])
+					&& (l.passable[i+PathFinder.CIRCLE4()[1]] || l.passable[i+PathFinder.CIRCLE4()[3]])){
 				validNonHallways.add(i);
 			}
 		}

@@ -90,7 +90,7 @@ public class Ghost extends NPC {
 	@Override
 	protected boolean act() {
 		if (Quest.cur().processed()) {
-			target = Dungeon.cur().hero.pos;
+			target = Dungeon.hero().pos;
 		}
 		if (Dungeon.level.heroFOV[pos] && !Quest.cur().completed()){
 			Notes.add( Notes.Landmark.GHOST );
@@ -132,7 +132,7 @@ public class Ghost extends NPC {
 		
 		Sample.INSTANCE.play( Assets.Sounds.GHOST );
 
-		if (c != Dungeon.cur().hero){
+		if (c != Dungeon.hero()){
 			return super.interact(c);
 		}
 		

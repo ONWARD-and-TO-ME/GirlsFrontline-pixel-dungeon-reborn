@@ -69,7 +69,7 @@ public class Chasm implements Hero.Doom {
 							@Override
 							protected void onSelect( int index ) {
 								if (index == 0) {
-									if (Dungeon.cur().hero.pos == heroPos) {
+									if (Dungeon.hero().pos == heroPos) {
 										jumpConfirmed = true;
 										hero.resume();
 									}
@@ -87,13 +87,13 @@ public class Chasm implements Hero.Doom {
 				
 		Sample.INSTANCE.play(Assets.Sounds.FALLING);
 
-		TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
+		TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero().buff(TimekeepersHourglass.timeFreeze.class);
 		if (timeFreeze != null) timeFreeze.disarmPressedTraps();
-		Swiftthistle.TimeBubble timeBubble = Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
+		Swiftthistle.TimeBubble timeBubble = Dungeon.hero().buff(Swiftthistle.TimeBubble.class);
 		if (timeBubble != null) timeBubble.disarmPressedTraps();
 		
-		if (Dungeon.cur().hero.isAlive()) {
-			Dungeon.cur().hero.interrupt();
+		if (Dungeon.hero().isAlive()) {
+			Dungeon.hero().interrupt();
 			InterlevelScene.mode = InterlevelScene.Mode.FALL;
 			if (Dungeon.level instanceof RegularLevel &&
 					((RegularLevel)Dungeon.level).room( pos ) instanceof WeakFloorRoom) {
@@ -110,7 +110,7 @@ public class Chasm implements Hero.Doom {
 			}
 			Game.switchScene( InterlevelScene.class );
 		} else {
-			Dungeon.cur().hero.sprite.visible = false;
+			Dungeon.hero().sprite.visible = false;
 		}
 	}
 
@@ -124,7 +124,7 @@ public class Chasm implements Hero.Doom {
 
 	public static void heroLand() {
 		
-		Hero hero = Dungeon.cur().hero;
+		Hero hero = Dungeon.hero();
 		
 		FeatherFall.FeatherBuff b = hero.buff(FeatherFall.FeatherBuff.class);
 		

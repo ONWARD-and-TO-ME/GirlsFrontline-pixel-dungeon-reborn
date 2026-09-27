@@ -144,8 +144,6 @@ public class Dungeons {
         Potion.initColors();
         Ring.initGems();
 
-        Dungeon.resetTest();
-
         SpecialRoom.initForRun();
         SecretRoom.initForRun();
         Generator.fullReset();

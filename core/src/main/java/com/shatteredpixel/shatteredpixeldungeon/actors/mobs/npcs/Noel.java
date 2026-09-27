@@ -59,7 +59,7 @@ public class Noel extends NPC {
 	public boolean interact(Char c) {
 		sprite.turnTo(pos,c.pos);
 
-		if (c!=Dungeon.cur().hero){
+		if (c!=Dungeon.hero()){
 			return super.interact(c);
 		}
 		

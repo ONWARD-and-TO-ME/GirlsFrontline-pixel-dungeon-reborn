@@ -224,7 +224,7 @@ public class debugBook extends TestItem {
     }
 
     private void setEXP(){
-        Game.runOnRenderThread(()-> GameScene.show(new WndSlider(Messages.get(debugBook.class, "exp_title"), 2, Dungeon.cur().hero.lvl){
+        Game.runOnRenderThread(()-> GameScene.show(new WndSlider(Messages.get(debugBook.class, "exp_title"), 2, Dungeon.hero().lvl){
             @Override
             public void hide(){
                 super.hide();
@@ -235,20 +235,20 @@ public class debugBook extends TestItem {
         }));
     }
     private void updateEXP(){
-        if(workingNum-Dungeon.cur().hero.lvl!=0){
-            new PotionOfExperience().apply(Dungeon.cur().hero);
-            Dungeon.cur().hero.lvl = workingNum;
-            Dungeon.cur().hero.attackSkill = 10 + workingNum - 1;
-            Dungeon.cur().hero.defenseSkill = 5 + workingNum - 1;
+        if(workingNum-Dungeon.hero().lvl!=0){
+            new PotionOfExperience().apply(Dungeon.hero());
+            Dungeon.hero().lvl = workingNum;
+            Dungeon.hero().attackSkill = 10 + workingNum - 1;
+            Dungeon.hero().defenseSkill = 5 + workingNum - 1;
             Sample.INSTANCE.play( Assets.Sounds.READ );
-            Dungeon.cur().hero.updateHT( true );
+            Dungeon.hero().updateHT( true );
         }else {
             defaultAction = AC_SetMode;
             updateQuickslot();
         }
     }
     private void setSTR(){
-        Game.runOnRenderThread(()-> GameScene.show(new WndSlider(Messages.get(debugBook.class, "str_title"), 4, Dungeon.cur().hero.STR){
+        Game.runOnRenderThread(()-> GameScene.show(new WndSlider(Messages.get(debugBook.class, "str_title"), 4, Dungeon.hero().STR){
             @Override
             public void hide(){
                 super.hide();
@@ -259,8 +259,8 @@ public class debugBook extends TestItem {
         }));
     }
     private void updateSTR(){
-        new PotionOfStrength().apply(Dungeon.cur().hero);
-        Dungeon.cur().hero.STR = workingNum;
+        new PotionOfStrength().apply(Dungeon.hero());
+        Dungeon.hero().STR = workingNum;
         Sample.INSTANCE.play( Assets.Sounds.READ );
         defaultAction = AC_SetMode;
         updateQuickslot();
@@ -576,7 +576,7 @@ public class debugBook extends TestItem {
         Ghost.Quest.cur().processed = true;
         Wandmaker.Quest.cur().complete();
         Wandmaker.Quest.cur().spawned = true;
-        Buff.count(Dungeon.cur().hero, Elphelt.Finish.class,1);
+        Buff.count(Dungeon.hero(), Elphelt.Finish.class,1);
         Blacksmith.Quest.cur().completed = true;
         Blacksmith.Quest.cur().spawned = true;
         Imp.Quest.cur().complete();
@@ -598,14 +598,14 @@ public class debugBook extends TestItem {
         }));
     }
     private void WealthKill(){
-        RingOfWealth.Wealth wealth = Dungeon.cur().hero.buff(RingOfWealth.Wealth.class);
+        RingOfWealth.Wealth wealth = Dungeon.hero().buff(RingOfWealth.Wealth.class);
         if (wealth != null) {
             GLog.p(Messages.format("已增加 %d 点击杀数", workingNum));
-            ArrayList<Item> items = RingOfWealth.tryForBonusDrop(Dungeon.cur().hero, workingNum, wealth.ring());
+            ArrayList<Item> items = RingOfWealth.tryForBonusDrop(Dungeon.hero(), workingNum, wealth.ring());
             if (!items.isEmpty())
-                RingOfWealth.showFlareForBonusDrop(Dungeon.cur().hero.sprite, wealth.ring(), "");
+                RingOfWealth.showFlareForBonusDrop(Dungeon.hero().sprite, wealth.ring(), "");
             for (Item item : items) {
-                Dungeon.level.drop(item, Dungeon.cur().hero.pos);
+                Dungeon.level.drop(item, Dungeon.hero().pos);
             }
         }
         else {

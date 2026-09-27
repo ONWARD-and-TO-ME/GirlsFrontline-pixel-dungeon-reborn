@@ -49,7 +49,7 @@ public class MagicalPorter extends InventorySpell {
 
 	@Override
 	protected boolean usableOnItem(Item item) {
-		return !item.isEquipped(Dungeon.cur().hero);
+		return !item.isEquipped(Dungeon.hero());
 	}
 
 	@Override

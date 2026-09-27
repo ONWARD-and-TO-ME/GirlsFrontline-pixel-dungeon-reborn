@@ -34,7 +34,7 @@ public class PuppetSprite extends MobSprite {
 	public PuppetSprite() {
 		super();
 		
-		texture( Dungeon.cur().hero.heroClass.spritesheet() );
+		texture( Dungeon.hero().heroClass.spritesheet() );
 		updateArmor( 0 );
 		idle();
 	}

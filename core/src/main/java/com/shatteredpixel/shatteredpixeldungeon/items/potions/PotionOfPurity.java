@@ -52,7 +52,7 @@ public class PotionOfPurity extends Potion {
 	@Override
 	public void shatter( int cell ) {
 		
-		PathFinder.cur().buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), DISTANCE );
+		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), DISTANCE );
 		
 		ArrayList<Blob> blobs = new ArrayList<>();
 		for (Class c : affectedBlobs){
@@ -63,7 +63,7 @@ public class PotionOfPurity extends Potion {
 		}
 		
 		for (int i=0; i < Dungeon.level.length(); i++) {
-			if (PathFinder.cur().distance[i] < Integer.MAX_VALUE) {
+			if (PathFinder.distance()[i] < Integer.MAX_VALUE) {
 				
 				for (Blob blob : blobs) {
 					blob.clear(i);

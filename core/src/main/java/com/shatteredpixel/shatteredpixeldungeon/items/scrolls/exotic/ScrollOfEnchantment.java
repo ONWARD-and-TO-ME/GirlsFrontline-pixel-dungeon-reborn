@@ -66,7 +66,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 	public void doRead() {
         if (!isKnown()) {
             identify();
-            curItem = detach( Dungeon.cur().hero.belongings.backpack );
+            curItem = detach( Dungeon.hero().belongings.backpack );
             identifiedByUse = true;
         } else {
             identifiedByUse = false;

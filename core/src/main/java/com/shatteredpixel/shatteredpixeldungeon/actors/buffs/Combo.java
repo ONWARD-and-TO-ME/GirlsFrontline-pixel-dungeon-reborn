@@ -247,7 +247,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			Invisibility.dispel();
 			Buff.affect(target, ParryTracker.class, Actor.TICK);
 			((Hero)target).spendAndNext(Actor.TICK);
-			Dungeon.cur().hero.busy();
+			Dungeon.hero().busy();
 		} else {
 			moveBeingUsed = move;
 			GameScene.selectCell(listener);
@@ -346,10 +346,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					break;
 				case CRUSH:
 					WandOfBlastWave.BlastWave.blast(enemy.pos);
-					PathFinder.cur().buildDistanceMap(target.pos, BArray.not(Dungeon.level.solid, null), 3);
+					PathFinder.buildDistanceMap(target.pos, BArray.not(Dungeon.level.solid, null), 3);
 					for (Char ch : Actor.chars()) {
 						if (ch != enemy && ch.alignment == Char.Alignment.ENEMY
-								&& PathFinder.cur().distance[ch.pos] < Integer.MAX_VALUE) {
+								&& PathFinder.distance()[ch.pos] < Integer.MAX_VALUE) {
 							int aoeHit = Math.round(target.damageRoll() * 0.25f * count);
 							aoeHit /= 2;
 							aoeHit -= ch.drRoll();
@@ -444,7 +444,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 						if (!Dungeon.level.passable[leapPos]){
 							GLog.w(Messages.get(Combo.class, "bad_target"));
 						} else {
-							Dungeon.cur().hero.busy();
+							Dungeon.hero().busy();
 							target.sprite.jump(target.pos, leapPos, new Callback() {
 								@Override
 								public void call() {
@@ -467,7 +467,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 				}
 
 			} else {
-				Dungeon.cur().hero.busy();
+				Dungeon.hero().busy();
 				target.sprite.attack(cell, new Callback() {
 					@Override
 					public void call() {

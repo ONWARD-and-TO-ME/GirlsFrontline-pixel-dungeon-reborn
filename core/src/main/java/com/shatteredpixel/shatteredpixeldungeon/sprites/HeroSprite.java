@@ -53,9 +53,9 @@ public class HeroSprite extends CharSprite {
 	public HeroSprite() {
 		super();
 
-		link( Dungeon.cur().hero );
+		link( Dungeon.hero() );
 		
-		texture( Dungeon.cur().hero.heroClass.spritesheet() );
+		texture( Dungeon.hero().heroClass.spritesheet() );
 		updateArmor();
 
 		if (ch.isAlive())

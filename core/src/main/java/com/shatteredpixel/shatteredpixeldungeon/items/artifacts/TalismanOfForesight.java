@@ -107,7 +107,7 @@ public class TalismanOfForesight extends Artifact {
 	public String desc() {
 		String desc = super.desc();
 
-		if ( isEquipped( Dungeon.cur().hero ) ){
+		if ( isEquipped( Dungeon.hero() ) ){
 			if (!cursed) {
 				desc += "\n\n" + Messages.get(this, "desc_worn");
 
@@ -214,10 +214,10 @@ public class TalismanOfForesight extends Artifact {
 					charge++;
 					partialCharge--;
 				}
-				Talent.onArtifactUsed(Dungeon.cur().hero);
+				Talent.onArtifactUsed(Dungeon.hero());
 				updateQuickslot();
 				Dungeon.observe();
-				Dungeon.cur().hero.checkVisibleMobs();
+				Dungeon.hero().checkVisibleMobs();
 				GameScene.updateFog();
 
 				curUser.sprite.zap(target);

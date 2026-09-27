@@ -120,8 +120,8 @@ public class Mg5 extends Mob {
         enemy.sprite.place(pullPos);
         Dungeon.level.occupyCell(enemy);
         Cripple.prolong(enemy, Cripple.class, 4f);
-        if (enemy == Dungeon.cur().hero) {
-            Dungeon.cur().hero.interrupt();
+        if (enemy == Dungeon.hero()) {
+            Dungeon.hero().interrupt();
             Dungeon.observe();
             GameScene.updateFog();
         }

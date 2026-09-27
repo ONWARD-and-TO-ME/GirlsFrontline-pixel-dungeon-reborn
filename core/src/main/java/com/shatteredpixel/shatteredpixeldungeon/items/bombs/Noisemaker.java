@@ -42,7 +42,7 @@ public class Noisemaker extends Bomb {
 
 	public void setTrigger(int cell){
 
-		Buff.affect(Dungeon.cur().hero, Trigger.class).set(cell);
+		Buff.affect(Dungeon.hero(), Trigger.class).set(cell);
 
 		CellEmitter.center( cell ).start( Speck.factory( Speck.SCREAM ), 0.3f, 3 );
 		Sample.INSTANCE.play( Assets.Sounds.ALERT );

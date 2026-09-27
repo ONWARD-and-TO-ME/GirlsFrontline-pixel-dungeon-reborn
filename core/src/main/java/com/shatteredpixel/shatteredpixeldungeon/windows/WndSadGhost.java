@@ -113,8 +113,8 @@ public class WndSadGhost extends Window {
 		}
 
 		reward.identify(false);
-		if (reward.doPickUp( Dungeon.cur().hero )) {
-			GLog.i( Messages.get(Dungeon.cur().hero, "you_now_have", reward.name()) );
+		if (reward.doPickUp( Dungeon.hero() )) {
+			GLog.i( Messages.get(Dungeon.hero(), "you_now_have", reward.name()) );
 		} else {
 			Dungeon.level.drop( reward, ghost.pos ).sprite.drop();
 		}

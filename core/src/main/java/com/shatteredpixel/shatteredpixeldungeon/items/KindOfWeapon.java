@@ -211,12 +211,12 @@ abstract public class KindOfWeapon extends EquipableItem {
 
 	public int damageRoll( Char owner ) {
         int dmg = Random.NormalIntRange( min(), max() );
-        if (owner instanceof Hero && Dungeon.cur().hero.enemy instanceof Mob) {
-			Mob enemy = (Mob) Dungeon.cur().hero.enemy;
-            if (enemy.surprisedBy(Dungeon.cur().hero)) {
-                if (Dungeon.cur().hero.hasTalent(Talent.Type56Two_Damage)) {
+        if (owner instanceof Hero && Dungeon.hero().enemy instanceof Mob) {
+			Mob enemy = (Mob) Dungeon.hero().enemy;
+            if (enemy.surprisedBy(Dungeon.hero())) {
+                if (Dungeon.hero().hasTalent(Talent.Type56Two_Damage)) {
                     int diff = max() - min();
-                    dmg = Random.NormalIntRange(min() + Math.round(0.2f * Dungeon.cur().hero.pointsInTalent(Talent.Type56Two_Damage) * diff), max());
+                    dmg = Random.NormalIntRange(min() + Math.round(0.2f * Dungeon.hero().pointsInTalent(Talent.Type56Two_Damage) * diff), max());
                 }
             }
         }
@@ -263,9 +263,9 @@ abstract public class KindOfWeapon extends EquipableItem {
 				if (ch != owner) passable[ch.pos] = false;
 			}
 
-			PathFinder.cur().buildDistanceMap(target, passable, reachFactor(owner));
+			PathFinder.buildDistanceMap(target, passable, reachFactor(owner));
 
-			return PathFinder.cur().distance[owner.pos] <= reachFactor(owner);
+			return PathFinder.distance()[owner.pos] <= reachFactor(owner);
 		}
 	}
 

@@ -148,7 +148,7 @@ public class WndHero extends WndTabbed {
 			}
 			clear();
 			
-			Hero hero = Dungeon.cur().hero;
+			Hero hero = Dungeon.hero();
 
 			IconTitle title = new IconTitle();
 			title.icon( HeroSprite.avatar(hero.heroClass, hero.tier()) );
@@ -203,11 +203,11 @@ public class WndHero extends WndTabbed {
 			statSlot( Messages.get(this, "seed"), seedText);
 
 			// 添加饱食度显示
-			Hunger hunger = Dungeon.cur().hero.buff(Hunger.class);
+			Hunger hunger = Dungeon.hero().buff(Hunger.class);
 			if (hunger != null) {
                 String buffFood = "";
-                if (Dungeon.cur().hero.buff(ActHPtoGetFood.LockReg.class)!=null){
-                    buffFood = String.format("(%d)", (int)Dungeon.cur().hero.buff(ActHPtoGetFood.LockReg.class).visualcooldown());
+                if (Dungeon.hero().buff(ActHPtoGetFood.LockReg.class)!=null){
+                    buffFood = String.format("(%d)", (int)Dungeon.hero().buff(ActHPtoGetFood.LockReg.class).visualcooldown());
                 }
 			    statSlot( Messages.get(this, "hunger"),
                         String.format("%.0f%s/%.0f", hunger.full(),buffFood, Hunger.STARVING-Hunger.minLevel) );
@@ -332,7 +332,7 @@ public class WndHero extends WndTabbed {
 		
 		private void setupList() {
 			Component content = buffList.content();
-			for (Buff buff : Dungeon.cur().hero.buffs()) {
+			for (Buff buff : Dungeon.hero().buffs()) {
 				if (buff.icon() != BuffIndicator.NONE) {
 					BuffSlot slot = new BuffSlot(buff);
 					slot.setRect(0, pos, WIDTH, slot.icon.height());

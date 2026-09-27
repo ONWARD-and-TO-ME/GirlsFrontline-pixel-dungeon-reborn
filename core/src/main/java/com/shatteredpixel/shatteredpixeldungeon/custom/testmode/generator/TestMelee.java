@@ -157,13 +157,13 @@ public class TestMelee extends TestItem {
             if(wpn instanceof MagesStaff){
                 wpn=new MagesStaff(new WandOfMagicMissile());
                 wpn.identify();
-                GameScene.pickUp(wpn,Dungeon.cur().hero.pos);
+                GameScene.pickUp(wpn,Dungeon.hero().pos);
                 Sample.INSTANCE.play(Assets.Sounds.ITEM);
             }
             if(wpn.collect()) {
-                GameScene.pickUp( wpn, Dungeon.cur().hero.pos );
+                GameScene.pickUp( wpn, Dungeon.hero().pos );
                 Sample.INSTANCE.play( Assets.Sounds.ITEM );
-                GLog.i(Messages.get(Dungeon.cur().hero, "you_now_have", wpn.name()));
+                GLog.i(Messages.get(Dungeon.hero(), "you_now_have", wpn.name()));
             } else {
                 wpn.doDrop(curUser);
             }

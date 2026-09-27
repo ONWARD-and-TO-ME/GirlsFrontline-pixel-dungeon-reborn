@@ -44,8 +44,8 @@ public class FncSprite extends MobSprite {
         //once a year the rat king feels a bit festive!
         XMAS = Dungeon.isXMAS();
         int id = 0;
-        if(Dungeon.cur().hero != null){
-            RatKing.LastTracker trackerA = Dungeon.cur().hero.buff(RatKing.LastTracker.class);
+        if(Dungeon.hero() != null){
+            RatKing.LastTracker trackerA = Dungeon.hero().buff(RatKing.LastTracker.class);
             boolean Last = (trackerA != null) ;
 
             if(Last){

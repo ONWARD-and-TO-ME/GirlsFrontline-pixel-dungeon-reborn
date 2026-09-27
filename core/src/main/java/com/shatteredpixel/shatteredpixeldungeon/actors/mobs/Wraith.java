@@ -94,7 +94,7 @@ public class Wraith extends Mob {
 	}
 	
 	public static void spawnAround( int pos ) {
-		for (int n : PathFinder.cur().NEIGHBOURS4) {
+		for (int n : PathFinder.NEIGHBOURS4()) {
 			spawnAt( pos + n );
 		}
 	}

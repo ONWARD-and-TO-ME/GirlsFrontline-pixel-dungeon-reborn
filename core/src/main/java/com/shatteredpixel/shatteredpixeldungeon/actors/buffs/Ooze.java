@@ -97,7 +97,7 @@ public class Ooze extends Buff {
 				target.damage(1, this); //0.5 dmg per turn in sewers
 			}
 
-			if (!target.isAlive() && target == Dungeon.cur().hero) {
+			if (!target.isAlive() && target == Dungeon.hero()) {
 				Dungeon.fail( getClass() );
 				GLog.n( Messages.get(this, "ondeath") );
 			}

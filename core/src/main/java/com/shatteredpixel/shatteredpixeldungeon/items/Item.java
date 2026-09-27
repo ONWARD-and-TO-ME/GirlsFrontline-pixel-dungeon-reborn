@@ -265,8 +265,8 @@ public class Item implements Bundlable {
 				doThrow(hero);
 		}
 		else if (action.equals( AC_SKILL ) && coolDownLeft > 0) {
-            if (Dungeon.cur().hero.buff(CooldownTracker.class) == null)
-                Buff.affect(Dungeon.cur().hero, CooldownTracker.class);
+            if (Dungeon.hero().buff(CooldownTracker.class) == null)
+                Buff.affect(Dungeon.hero(), CooldownTracker.class);
         }
 		else if (action.equals( AC_CHOOSE ))
             GameScene.show(new WndUseItem(null, this) );
@@ -357,9 +357,9 @@ public class Item implements Bundlable {
 				if (isSimilar( item )) {
 					item.merge( this );
 					item.updateQuickslot();
-					if (Dungeon.cur().hero != null && Dungeon.cur().hero.isAlive()) {
+					if (Dungeon.hero() != null && Dungeon.hero().isAlive()) {
 						Badges.validateItemLevelAquired( this );
-						Talent.onItemCollected(Dungeon.cur().hero, item);
+						Talent.onItemCollected(Dungeon.hero(), item);
 						if (isIdentified()) Catalog.setSeen(getClass());
 					}
                     if (container.owner != null) {
@@ -370,9 +370,9 @@ public class Item implements Bundlable {
 			}
 		}
 
-		if (Dungeon.cur().hero != null && Dungeon.cur().hero.isAlive()) {
+		if (Dungeon.hero() != null && Dungeon.hero().isAlive()) {
 			Badges.validateItemLevelAquired( this );
-			Talent.onItemCollected( Dungeon.cur().hero, this );
+			Talent.onItemCollected( Dungeon.hero(), this );
 			if (isIdentified()) Catalog.setSeen(getClass());
 		}
 
@@ -388,7 +388,7 @@ public class Item implements Bundlable {
 	}
 
 	public boolean collect() {
-		return collect( Dungeon.cur().hero.belongings.backpack );
+		return collect( Dungeon.hero().belongings.backpack );
 	}
 	
 	//returns a new item if the split was sucessful and there are now 2 items, otherwise null
@@ -417,7 +417,7 @@ public class Item implements Bundlable {
         return detach(container, 1);
 	}
     public final Item detach( Bag container, int quantity, int ignore){
-        Item item = Dungeon.cur().hero.belongings.getItem(getClass());
+        Item item = Dungeon.hero().belongings.getItem(getClass());
         if (item == null)
             return null;
         return item.detach(container, quantity);
@@ -506,7 +506,7 @@ public class Item implements Bundlable {
         if (overLoad == OverLoad.RECOVER && overLoadLeft != 0)
             lvl -= (int)(Math.sqrt(8 * Math.ceil(overLoadLeft / 100F) + 1) - 1)/2;
         //切层读档的过渡帧 hero 可能为 null（UI 仍会刷新一帧），此时无 Degrade buff 可查
-        if (Dungeon.cur().hero != null && Dungeon.cur().hero.buff( Degrade.class ) != null)
+        if (Dungeon.hero() != null && Dungeon.hero().buff( Degrade.class ) != null)
 			return Degrade.reduceLevel(lvl);
         return lvl;
 	}
@@ -532,7 +532,7 @@ public class Item implements Bundlable {
 		noted = item.noted;
 		updateTime = item.updateTime;
 		level(item.level);
-		Tracker( Dungeon.cur().hero );
+		Tracker( Dungeon.hero() );
 		return this;
 	}
 	public Item upgrade() {
@@ -630,10 +630,10 @@ public class Item implements Bundlable {
 
 	public Item identify( boolean byHero ) {
 
-		if (byHero && Dungeon.cur().hero != null && Dungeon.cur().hero.isAlive()){
+		if (byHero && Dungeon.hero() != null && Dungeon.hero().isAlive()){
 			Catalog.setSeen(getClass());
 			if (!isIdentified())
-                Talent.onItemIdentified(Dungeon.cur().hero, this);
+                Talent.onItemIdentified(Dungeon.hero(), this);
 		}
 
 		levelKnown = true;
@@ -796,7 +796,7 @@ public class Item implements Bundlable {
 		cursed	= bundle.getBoolean( CURSED );
 
 		//only want to populate slot on first load.
-		if (Dungeon.cur().hero == null) {
+		if (Dungeon.hero() == null) {
 			if (bundle.contains(QUICKSLOT)) {
 				Dungeon.quickslot.setSlot(bundle.getInt(QUICKSLOT), this);
 			}
@@ -1057,7 +1057,7 @@ public class Item implements Bundlable {
 					}
 				}
             } else if (overLoad == OverLoad.RECOVER){
-                if (isEquipped(Dungeon.cur().hero))
+                if (isEquipped(Dungeon.hero()))
                     overLoadLeft--;
             } else if (overLoad == OverLoad.OVER_LOAD) {
 				overLoadLeft = 100*level();

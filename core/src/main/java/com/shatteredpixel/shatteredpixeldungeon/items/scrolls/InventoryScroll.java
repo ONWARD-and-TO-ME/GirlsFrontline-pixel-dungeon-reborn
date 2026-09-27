@@ -46,7 +46,7 @@ public abstract class InventoryScroll extends Scroll {
 		
 		if (!isKnown()) {
 			identify();
-            curItem = detach( Dungeon.cur().hero.belongings.backpack );
+            curItem = detach( Dungeon.hero().belongings.backpack );
 			identifiedByUse = true;
 		} else {
 			identifiedByUse = false;
@@ -120,7 +120,7 @@ public abstract class InventoryScroll extends Scroll {
 				((InventoryScroll)curItem).onItemSelected( item );
 				((InventoryScroll)curItem).readAnimation();
                 if(!identifiedByUse)
-                    curItem = detach(Dungeon.cur().hero.belongings.backpack );
+                    curItem = detach(Dungeon.hero().belongings.backpack );
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				
 			} else if (identifiedByUse && !((Scroll)curItem).anonymous) {

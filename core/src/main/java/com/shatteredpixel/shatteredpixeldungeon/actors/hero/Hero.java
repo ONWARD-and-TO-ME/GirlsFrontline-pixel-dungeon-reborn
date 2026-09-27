@@ -467,14 +467,14 @@ public class Hero extends Char {
     }
 
     public boolean hasTalentA( Talent talent ){
-        if (TierOfTalent.Tier(talent) >= 3 && Dungeon.cur().hero.subClass == HeroSubClass.NONE)
+        if (TierOfTalent.Tier(talent) >= 3 && Dungeon.hero().subClass == HeroSubClass.NONE)
             return false;
 
-        if (TierOfTalent.Tier(talent) >= 4 && Dungeon.cur().hero.armorAbility == null)
+        if (TierOfTalent.Tier(talent) >= 4 && Dungeon.hero().armorAbility == null)
             return false;
 
         int need = Talent.tierLevelThresholds[TierOfTalent.Tier(talent)] - 1;
-        return Dungeon.cur().hero.lvl >= need && pointsInTalentA(talent) >= 0;
+        return Dungeon.hero().lvl >= need && pointsInTalentA(talent) >= 0;
     }
     public boolean hasTalentB( Talent talent){
         return pointsInTalentA(talent) >= 0;
@@ -524,7 +524,7 @@ public class Hero extends Char {
 		if (tier == 4)
 			return point;
 
-        int lvl = Dungeon.cur().hero.pointsInTalent(Talent.HIGH_EDUCATION);
+        int lvl = Dungeon.hero().pointsInTalent(Talent.HIGH_EDUCATION);
 		point += lvl / 3
 				+ (lvl % 3 >= tier ? 1 : 0);
         return point;
@@ -619,7 +619,7 @@ public class Hero extends Char {
 			case 3: accuracy *= 2f; break;
 		}
 
-        BasicBuffs.Accuracy acc = Dungeon.cur().hero.buff(BasicBuffs.Accuracy.class);
+        BasicBuffs.Accuracy acc = Dungeon.hero().buff(BasicBuffs.Accuracy.class);
         if (acc != null)
             accuracy *= acc.percent();
 
@@ -669,7 +669,7 @@ public class Hero extends Char {
 		
 		float evasion = defenseSkill;
 
-        BasicBuffs.Evasion eva = Dungeon.cur().hero.buff(BasicBuffs.Evasion.class);
+        BasicBuffs.Evasion eva = Dungeon.hero().buff(BasicBuffs.Evasion.class);
         if (eva != null)
             evasion *= eva.percent();
 
@@ -734,8 +734,8 @@ public class Hero extends Char {
 		} else {
 			dmg = RingOfForce.damageRoll(this);
 		}
-        if (Dungeon.cur().hero.subClass == HeroSubClass.GUN_MASTER) {
-            Hunger hunger = Dungeon.cur().hero.buff(Hunger.class);
+        if (Dungeon.hero().subClass == HeroSubClass.GUN_MASTER) {
+            Hunger hunger = Dungeon.hero().buff(Hunger.class);
             if (hunger != null) {
                 if (!hunger.isStarving()) {
                     dmg = Math.round(dmg * dmgMul());
@@ -748,13 +748,13 @@ public class Hero extends Char {
 	}
 	private float dmgMul(){
         float mul = 1 ;
-        Hunger hunger = Dungeon.cur().hero.buff(Hunger.class);
+        Hunger hunger = Dungeon.hero().buff(Hunger.class);
         if (hunger==null)
             return 1;
 		float full = hunger.full();
 		mul += 0.00045F * full;
-        if (Dungeon.cur().hero.hasTalent(Talent.GUN_1V2)) {
-            mul += 0.00015f * Dungeon.cur().hero.pointsInTalent(Talent.GUN_1V2) * full;
+        if (Dungeon.hero().hasTalent(Talent.GUN_1V2)) {
+            mul += 0.00015f * Dungeon.hero().pointsInTalent(Talent.GUN_1V2) * full;
             mul = Math.min(1.35f, mul);
         }
         return mul;
@@ -774,9 +774,9 @@ public class Hero extends Char {
 
 		if (belongings.armor() != null && belongings.armor().hasGlyph(Swiftness.class, this)) {
 			boolean enemyNear = false;
-			PathFinder.cur().buildDistanceMap(pos, Dungeon.level.passable, 2);
+			PathFinder.buildDistanceMap(pos, Dungeon.level.passable, 2);
 			for (Char ch : Actor.chars()) {
-				if (PathFinder.cur().distance[ch.pos] != Integer.MAX_VALUE && alignment != ch.alignment) {
+				if (PathFinder.distance()[ch.pos] != Integer.MAX_VALUE && alignment != ch.alignment) {
 					enemyNear = true;
 					break;
 				}
@@ -850,7 +850,7 @@ public class Hero extends Char {
 			return false;
 		}
 
-		KindOfWeapon wep = Dungeon.cur().hero.belongings.weapon();
+		KindOfWeapon wep = Dungeon.hero().belongings.weapon();
 		//can always attack adjacent enemies
 		if (Dungeon.level.adjacent(pos, enemy.pos)) {
 			if (!(wep instanceof Weapon) || ((Weapon) wep).reach(this) > 0)
@@ -1489,8 +1489,8 @@ public class Hero extends Char {
 	public int attackProc( final Char enemy, int damage ) {
 		final int baseDMG = damage;
 		damage = super.attackProc( enemy, damage );
-        if (Dungeon.cur().hero.buff(LloydsBeacon.beaconRecharge.class)!=null
-                && Dungeon.cur().hero.buff(LloydsBeacon.beaconRecharge.class).isCursed()){
+        if (Dungeon.hero().buff(LloydsBeacon.beaconRecharge.class)!=null
+                && Dungeon.hero().buff(LloydsBeacon.beaconRecharge.class).isCursed()){
             //装备诅咒鸽子时攻击视为拥有转移
             LloydsBeacon.proc(enemy);
         }
@@ -1527,7 +1527,7 @@ public class Hero extends Char {
 			break;
 		default:
 		}
-        BasicBuffs.Increase increase = Dungeon.cur().hero.buff(BasicBuffs.Increase.class);
+        BasicBuffs.Increase increase = Dungeon.hero().buff(BasicBuffs.Increase.class);
         if (increase != null)
             damage *= increase.percent();
 
@@ -1537,15 +1537,15 @@ public class Hero extends Char {
 	
 	@Override
 	public int defenseProc( Char enemy, int damage ) {
-        BasicBuffs.Reduce reduce = Dungeon.cur().hero.buff(BasicBuffs.Reduce.class);
+        BasicBuffs.Reduce reduce = Dungeon.hero().buff(BasicBuffs.Reduce.class);
 		if (reduce != null)
             damage *= reduce.percent();
 
 		if (damage > 0 && subClass == HeroSubClass.BERSERKER)
 			Buff.affect(this, Berserk.class).damage(damage);
 
-        if (Dungeon.cur().hero.buff(LloydsBeacon.beaconRecharge.class)!=null
-                && Dungeon.cur().hero.buff(LloydsBeacon.beaconRecharge.class).isCursed())
+        if (Dungeon.hero().buff(LloydsBeacon.beaconRecharge.class)!=null
+                && Dungeon.hero().buff(LloydsBeacon.beaconRecharge.class).isCursed())
             LloydsBeacon.proc(this);
 
         if (belongings.armor() != null)
@@ -2214,12 +2214,12 @@ public class Hero extends Char {
 		Dungeon.observe();
 		GameScene.updateFog();
 
-		Dungeon.cur().hero.belongings.identify();
+		Dungeon.hero().belongings.identify();
 
-		int pos = Dungeon.cur().hero.pos;
+		int pos = Dungeon.hero().pos;
 
 		ArrayList<Integer> passable = new ArrayList<>();
-		for (Integer ofs : PathFinder.cur().NEIGHBOURS8) {
+		for (Integer ofs : PathFinder.NEIGHBOURS8()) {
 			int cell = pos + ofs;
 			if ((Dungeon.level.passable[cell] || Dungeon.level.avoid[cell]) && Dungeon.level.heaps.get( cell ) == null) {
 				passable.add( cell );
@@ -2227,7 +2227,7 @@ public class Hero extends Char {
 		}
 		Collections.shuffle( passable );
 
-		ArrayList<Item> items = new ArrayList<>(Dungeon.cur().hero.belongings.backpack.items);
+		ArrayList<Item> items = new ArrayList<>(Dungeon.hero().belongings.backpack.items);
 		for (Integer cell : passable) {
 			if (items.isEmpty()) {
 				break;

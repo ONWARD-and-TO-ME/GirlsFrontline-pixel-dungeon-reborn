@@ -49,9 +49,9 @@ public class ScrollOfPassage extends ExoticScroll {
 			
 		}
 
-		TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.cur().hero.buff(TimekeepersHourglass.timeFreeze.class);
+		TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero().buff(TimekeepersHourglass.timeFreeze.class);
 		if (timeFreeze != null) timeFreeze.disarmPressedTraps();
-		Swiftthistle.TimeBubble timeBubble = Dungeon.cur().hero.buff(Swiftthistle.TimeBubble.class);
+		Swiftthistle.TimeBubble timeBubble = Dungeon.hero().buff(Swiftthistle.TimeBubble.class);
 		if (timeBubble != null) timeBubble.disarmPressedTraps();
 
 		InterlevelScene.mode = InterlevelScene.Mode.RETURN;

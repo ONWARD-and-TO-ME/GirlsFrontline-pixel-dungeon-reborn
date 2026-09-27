@@ -62,7 +62,7 @@ public class Imp extends NPC {
 		
 		if (!Quest.cur().given && Dungeon.level.heroFOV[pos]) {
 			if (!seenBefore) {
-				yell( Messages.get(this, "hey", Dungeon.cur().hero.name() ) );
+				yell( Messages.get(this, "hey", Dungeon.hero().name() ) );
 			}
 			Notes.add( Notes.Landmark.IMP );
 			seenBefore = true;
@@ -94,15 +94,15 @@ public class Imp extends NPC {
 	@Override
 	public boolean interact(Char c) {
 		
-		sprite.turnTo( pos, Dungeon.cur().hero.pos );
+		sprite.turnTo( pos, Dungeon.hero().pos );
 
-		if (c != Dungeon.cur().hero){
+		if (c != Dungeon.hero()){
 			return true;
 		}
 
 		if (Quest.cur().given) {
 			
-			DwarfToken tokens = Dungeon.cur().hero.belongings.getItem( DwarfToken.class );
+			DwarfToken tokens = Dungeon.hero().belongings.getItem( DwarfToken.class );
 			if (tokens != null && (tokens.quantity() >= 5 || (!Quest.cur().alternative && tokens.quantity() >= 4))) {
 				Game.runOnRenderThread(new Callback() {
 					@Override
@@ -125,7 +125,7 @@ public class Imp extends NPC {
 	
 	public void flee() {
 		
-		yell( Messages.get(this, "cya", Dungeon.cur().hero.name()) );
+		yell( Messages.get(this, "cya", Dungeon.hero().name()) );
 		
 		destroy();
 		sprite.die();
@@ -204,8 +204,8 @@ public class Imp extends NPC {
 						level.traps.get( npc.pos) != null ||
 						level.findMob( npc.pos ) != null ||
 						//The imp doesn't move, so he cannot obstruct a passageway
-						!(level.passable[npc.pos + PathFinder.cur().CIRCLE4[0]] && level.passable[npc.pos + PathFinder.cur().CIRCLE4[2]]) ||
-						!(level.passable[npc.pos + PathFinder.cur().CIRCLE4[1]] && level.passable[npc.pos + PathFinder.cur().CIRCLE4[3]]));
+						!(level.passable[npc.pos + PathFinder.CIRCLE4()[0]] && level.passable[npc.pos + PathFinder.CIRCLE4()[2]]) ||
+						!(level.passable[npc.pos + PathFinder.CIRCLE4()[1]] && level.passable[npc.pos + PathFinder.CIRCLE4()[3]]));
 				level.mobs.add( npc );
 				
 				spawned = true;
