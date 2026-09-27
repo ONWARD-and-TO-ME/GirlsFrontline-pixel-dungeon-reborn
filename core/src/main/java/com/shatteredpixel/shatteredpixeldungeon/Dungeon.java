@@ -314,6 +314,11 @@ public class Dungeon {
 		Game.GameMode = GameMode;
 		Actor.resetNextID();
 
+		// 快捷栏必须在 hero 生成前清空：initHero 内部会 setSlot 写入初始物品
+		// （各职业的石弹/法杖/斗篷等），若清空发生在其后会把刚写入的槽位全部抹掉
+		quickslot.reset();
+		QuickSlotButton.reset();
+
 		// 简易 init 已在上面统一了种子解析/三 init/任务重置/hero 生成
 		cur().init(seedCode);
 		customSeedText = (seedCode == null) ? "" : seedCode;
@@ -324,9 +329,6 @@ public class Dungeon {
 		
 		Statistics.reset();
 		Notes.reset();
-
-		quickslot.reset();
-		QuickSlotButton.reset();
 
 		gold = 0;
 		energy = 0;
