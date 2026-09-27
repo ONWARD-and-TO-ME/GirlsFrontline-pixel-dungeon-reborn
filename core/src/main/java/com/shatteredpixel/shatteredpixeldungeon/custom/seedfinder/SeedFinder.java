@@ -3,7 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.custom.seedfinder;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeons;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalMimic;
@@ -64,6 +63,7 @@ public class SeedFinder implements Runnable {
             else
                 str = findSeed();
             SeedFindScene.INSTANCE.text = str;
+            SeedFindScene.INSTANCE.needUpdate = true;
         } finally {
             Dungeon.exitSearchContext();
         }
@@ -120,7 +120,6 @@ public class SeedFinder implements Runnable {
         matchIndex = buildMatchIndex(wantedArr);
         floor = fl;
         heroClass = cl;
-        need = Math.max(1, wantedArr.length - SPDSettings.seedFinderMissing());
         for (WantedTarget w : wanted) {
             if (Wand.class.isAssignableFrom(w.cls) && w.minLevel >= 3)
                 wand = w;
@@ -303,7 +302,6 @@ public class SeedFinder implements Runnable {
     // 多线程查种的命中种子（CAS，-1 表示未命中）
     private static final AtomicLong foundSeed = new AtomicLong(-1);
 
-    private final int need;
     protected boolean testSeed(long seed) {
         Dungeon.cur().hero = null;
         //worker 的 initHero 读取静态 selectedClass：必须与场景所选职业一致，
@@ -312,7 +310,7 @@ public class SeedFinder implements Runnable {
         Dungeons.cur().init(DungeonSeed.convertToCode(seed));
         boolean[] itemsFound = new boolean[wantedArr.length];
         int foundCount = 0;
-        int n = need;
+        int n = wantedArr.length;
         boolean ghostSeen = false, impSeen = false, wandmakerSeen = false;
 
         int depth = 1;
@@ -646,7 +644,7 @@ public class SeedFinder implements Runnable {
     }
 
     // 单层数据载体：Phase 1 收集、Phase 2 identify、Phase 3 展示
-    protected static final class FloorData {
+    static final class FloorData {
         final int depth;
         final String title;   // 楼层显示名：普通层 "25"、子层 "25/1"
         String text;          // Phase 3 生成的本层完整文本（含楼层头）

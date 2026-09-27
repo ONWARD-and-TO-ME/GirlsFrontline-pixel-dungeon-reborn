@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
 import com.watabou.noosa.BitmapText;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
@@ -40,6 +41,9 @@ public class BossHealthBar extends Component {
 	private Image rawShielding;
 	private Image shieldedHP;
 	private Image hp;
+	// 动画残血条
+	private Image hpLost;
+	private Image shieldedHPLost;
 	private BitmapText hpText;
 
 	private Button bossInfo;
@@ -54,6 +58,9 @@ public class BossHealthBar extends Component {
 
 	private static BossHealthBar instance;
 	private static boolean bleeding;
+
+	// 残血消退动画速度，越大越快
+	private static final float ANIM_SPEED = 1.5f;
 
 	public BossHealthBar() {
 		super();
@@ -75,6 +82,15 @@ public class BossHealthBar extends Component {
 
 		width = bar.width;
 		height = bar.height;
+
+		// 残血条（底层血条，在实血下方），染成半透明黑色作为受击残影
+		hpLost = new Image(asset, 15, 19, 47, 4);
+		hpLost.tint(0x000000, 0.5f);
+		add(hpLost);
+
+		shieldedHPLost = new Image(asset, 15, 25, 47, 4);
+		shieldedHPLost.tint(0x000000, 0.5f);
+		add(shieldedHPLost);
 
 		rawShielding = new Image(asset, 15, 25, 47, 4);
 		rawShielding.alpha(0.5f);
@@ -131,8 +147,8 @@ public class BossHealthBar extends Component {
 		bar.x = x;
 		bar.y = y;
 
-		hp.x = shieldedHP.x = rawShielding.x = bar.x+15;
-		hp.y = shieldedHP.y = rawShielding.y = bar.y+3;
+		hp.x = shieldedHP.x = rawShielding.x = hpLost.x = shieldedHPLost.x = bar.x+15;
+		hp.y = shieldedHP.y = rawShielding.y = hpLost.y = shieldedHPLost.y = bar.y+3;
 
 		hpText.scale.set(PixelScene.align(0.5f));
 		hpText.x = hp.x + 1;
@@ -157,6 +173,9 @@ public class BossHealthBar extends Component {
 			if (!boss.isAlive() || !Dungeon.level.mobs.contains(boss)){
 				boss = null;
 				visible = active = false;
+				// 重置残影，避免下一个 Boss 出场时残影横扫
+				hpLost.scale.x = 1f;
+				shieldedHPLost.scale.x = 1f;
 				if (buffs != null) {
 					BuffIndicator.setBossInstance(null);
 					remove(buffs);
@@ -169,9 +188,25 @@ public class BossHealthBar extends Component {
 				int shield = boss.shielding();
 				int max = boss.HT;
 
-				hp.scale.x = Math.max( 0, (health-shield)/(float)max);
-				shieldedHP.scale.x = health/(float)max;
+				// 实血条立即更新
+				float hpScale = Math.max( 0, (health-shield)/(float)max);
+				float shieldedScale = health/(float)max;
+				hp.scale.x = hpScale;
+				shieldedHP.scale.x = shieldedScale;
 				rawShielding.scale.x = shield/(float)max;
+
+				// 残血条平滑追赶（仅扣血衰减有动画，回血直接同步）
+				if (hpLost.scale.x > hpScale) {
+					hpLost.scale.x -= (hpLost.scale.x - hpScale) * ANIM_SPEED * Game.elapsed;
+				} else {
+					hpLost.scale.x = hpScale;
+				}
+
+				if (shieldedHPLost.scale.x > shieldedScale) {
+					shieldedHPLost.scale.x -= (shieldedHPLost.scale.x - shieldedScale) * ANIM_SPEED * Game.elapsed;
+				} else {
+					shieldedHPLost.scale.x = shieldedScale;
+				}
 
 				if (bleeding != blood.on){
 					if (bleeding)   skull.tint( 0xcc0000, 0.6f );
@@ -197,6 +232,11 @@ public class BossHealthBar extends Component {
 		bleed(false);
 		if (instance != null) {
 			instance.visible = instance.active = true;
+			// 新 Boss 满血出场，残影同步为满血避免播放消退动画
+			if (instance.hpLost != null) {
+				instance.hpLost.scale.x = 1f;
+				instance.shieldedHPLost.scale.x = 1f;
+			}
 			if (boss != null){
 				if (instance.buffs != null){
 					instance.remove(instance.buffs);
