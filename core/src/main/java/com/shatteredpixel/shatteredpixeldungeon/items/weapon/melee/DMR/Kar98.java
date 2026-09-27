@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DMR;
 
+import static com.shatteredpixel.shatteredpixeldungeon.Chrome.Type.TAG;
+
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class Kar98 extends DesignatedMarksmanRifle {
@@ -31,6 +33,7 @@ public class Kar98 extends DesignatedMarksmanRifle {
 		tier = 3;
 		DLY = 0.8f; //1.25x speed
         dmgBaseMul = 3;
+		tag = Tag.RF;
 	}
 
 }

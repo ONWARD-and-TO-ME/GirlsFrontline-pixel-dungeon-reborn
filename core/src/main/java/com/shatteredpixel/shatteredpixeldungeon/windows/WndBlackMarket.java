@@ -81,11 +81,11 @@ public class WndBlackMarket extends Window {
 	//武器类第一格：P90 永久解锁商品（解锁后才会进入正常局内武器生成池）
 	private static final int P90_UNLOCK_PRICE = 10;
 
-	//武器类第二格：圣诞入场券商品（购买后放入背包，交给营地FNC永久解锁圣诞节彩蛋功能）
+	//活动类第一格：圣诞入场券商品（购买后放入背包，交给营地FNC永久解锁圣诞节彩蛋功能）
 	private static final int XMAS_TICKET_PRICE = 10;
 
-	//武器类第三格：超级小爱 DLC 解锁券（购买后立即解锁女猎手“超级小爱”转职按钮）
-	private static final int SUPER_AI_DLC_PRICE = 800;
+	//扩展内容第一格：超级小爱 DLC 解锁券（购买后立即解锁女猎手“超级小爱”转职按钮）
+	private static final int SUPER_AI_DLC_PRICE = 25;
 
 	private static final int SEP_COLOR      = 0xFF000000; //分隔条
 	private static final int ICON_FRAME     = 0x33FFFFFF; //卡片图标底框
@@ -213,7 +213,11 @@ public class WndBlackMarket extends Window {
 		buildPage(currentPage);
 	}
 
-	//构建某一分类页的卡片；武器类（第1页）第一格为 P90 永久解锁商品，其余暂为占位卡片
+	//构建某一分类页的卡片：
+	//  第1页（武器类）：P90 永久解锁商品
+	//  第2页（活动类）：圣诞入场券
+	//  第3页（扩展内容）：超级小爱 DLC 解锁券
+	//  其余格子暂为占位卡片
 	private void buildPage(int page) {
 		Component content = pane.content();
 		//必须先销毁上一页卡片再 clear：否则解绑后的按钮热区仍挂在全局指针信号上，
@@ -236,15 +240,15 @@ public class WndBlackMarket extends Window {
 						SPDSettings::p90Unlocked, this::buyP90, this::onUnlockPurchased);
 				cards[i] = unlock;
 				cardH[i] = Math.max(CARD_H_MIN, unlock.measureHeight(cardW));
-			} else if (page == 0 && i == 1) {
-				//武器类第二格：圣诞入场券卡，购买后放入背包，交给营地FNC永久解锁圣诞节彩蛋
+			} else if (page == 1 && i == 0) {
+				//活动类第一格：圣诞入场券卡，购买后放入背包，交给营地FNC永久解锁圣诞节彩蛋
 				UnlockCard ticket = new UnlockCard(new ChristmasTicket(), XMAS_TICKET_PRICE,
 						SPDSettings::xmasUnlocked, this::buyTicket, this::onUnlockPurchased,
 						"ticket_desc", "ticket_done", "buy_ticket_msg");
 				cards[i] = ticket;
 				cardH[i] = Math.max(CARD_H_MIN, ticket.measureHeight(cardW));
-			} else if (page == 0 && i == 2) {
-				//武器类第三格：超级小爱 DLC 解锁券，购买后立即解锁女猎手“超级小爱”转职按钮
+			} else if (page == 2 && i == 0) {
+				//扩展内容第一格：超级小爱 DLC 解锁券，购买后立即解锁女猎手“超级小爱”转职按钮
 				UnlockCard dlc = new UnlockCard(new SuperAiDLC(), SUPER_AI_DLC_PRICE,
 						SPDSettings::superAiUnlocked, this::buySuperAiDLC, this::onUnlockPurchased,
 						"superai_desc", "superai_done", "buy_superai_msg");
@@ -426,9 +430,9 @@ public class WndBlackMarket extends Window {
 	}
 
 	/**
-	 * 永久解锁商品卡（武器类：P90、圣诞入场券）：
+	 * 永久解锁商品卡（P90、圣诞入场券、超级小爱 DLC 等）：
 	 * 未解锁时底部为橙色价格条（电池+价格），点击弹出二次确认，确认后执行购买回调；
-	 * 已解锁时底部变为绿色“已解锁”条，不再可购买。解锁状态跨存档保存在 SPDSettings。
+	 * 已解锁时底部变为绿色"已解锁"条，不再可购买。解锁状态跨存档保存在 SPDSettings。
 	 */
 
 	//无参布尔回调（不使用 java.util.function 以兼容 minSdk 19）

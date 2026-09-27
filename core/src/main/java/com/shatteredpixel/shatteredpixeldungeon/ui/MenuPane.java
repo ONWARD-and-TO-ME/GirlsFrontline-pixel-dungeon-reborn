@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Holidays;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndFestival;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGame;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
@@ -75,6 +76,7 @@ public class MenuPane extends Component {
 	//局内系统时钟：显示日期与设备时间，位于菜单功能按钮下方，右对齐
 	private GradientBitmapText dateText;
 	private BitmapText clockText;
+	private Button dateButton;    //覆盖日期文字的透明点击区，0层且为节日时点击弹出节日介绍
 	private float clockAcc = 0f;
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd", Locale.getDefault() );
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat( "HH:mm", Locale.getDefault() );
@@ -220,6 +222,18 @@ public class MenuPane extends Component {
 		dateText.text( DATE_FORMAT.format( new Date() ) );
 		add( dateText );
 
+		//覆盖在日期文字上的透明按钮：仅地表（0层）且当前为节日/特殊日时点击生效
+		dateButton = new Button() {
+			@Override
+			protected void onClick() {
+				if (Dungeon.curDepth() == 0
+						&& (Holidays.holiday != Holidays.Holiday.NONE || SPDSettings.isSpecialDay())) {
+					GameScene.show(new WndFestival());
+				}
+			}
+		};
+		add( dateButton );
+
 		clockText = new BitmapText( PixelScene.pixelFont);
 		clockText.hardlight( 0xCACFC2 );
 		clockText.text( TIME_FORMAT.format( new Date() ) );
@@ -284,6 +298,8 @@ public class MenuPane extends Component {
 		float dateY = y + bg.height + 3 + DangerIndicator.HEIGHT + 2;
 		dateText.x = rightEdge - dateText.width();
 		dateText.y = dateY;
+		//透明按钮覆盖整个日期文字区域，保证点击命中
+		dateButton.setRect(dateText.x, dateText.y, dateText.width(), dateText.height());
 		clockText.x = rightEdge - clockText.width();
 		clockText.y = dateY + dateText.height() + 1;
 		PixelScene.align(dateText);
