@@ -61,6 +61,15 @@ public class ScrollingGridPane extends ScrollPane {
 
     @Override
     public synchronized void clear() {
+        //content.clear() 只会把子节点从成员表里摘除并置 parent=null，并不会注销子节点内部的
+        //PointerArea 监听。配合 Gizmo.camera() 的缓存与 isActive() 在 parent==null 时返回自身
+        //active，被摘除的 GridItem 仍能被点中，形成残留的幽灵点击区域（切分类/关窗口后依旧响应）。
+        //因此必须在摘除前显式 destroy，真正移除监听并解除状态。
+        for (Component item : items) {
+            if (item != null) {
+                item.destroy();
+            }
+        }
         content.clear();
         items.clear();
         separators.clear();
