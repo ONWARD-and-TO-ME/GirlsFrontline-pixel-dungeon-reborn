@@ -117,7 +117,6 @@ public class Blacksmith extends NPC {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.L1())));
 
 					Quest.cur().completed = true;
-					Quest.cur().given = false;
 				}
 				
 			} else {
@@ -138,7 +137,6 @@ public class Blacksmith extends NPC {
 					Game.runOnRenderThread(() -> GameScene.show(new WndDialog(new Ppsh_Plot_Misc.L1())));
 					
 					Quest.cur().completed = true;
-					Quest.cur().given = false;
 				}
 				
 			}

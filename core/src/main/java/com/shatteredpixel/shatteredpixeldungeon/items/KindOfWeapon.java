@@ -59,7 +59,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero.belongings.weapon() == this || ownerBuff instanceof EquipmentBuff && ownerBuff.target == hero;
+		return hero.belongings.weapon() == this && hero.belongings.weapon == this || ownerBuff instanceof EquipmentBuff && ownerBuff.target == hero;
 	}
 
 	@Override
