@@ -53,7 +53,7 @@ import java.util.ArrayList;
 public class SeedFindScene extends PixelScene {
     public static String seedCode = "";
     private static final ArrayList<Item> wantedItems = new ArrayList<>();
-    public HeroClass currentHero = HeroClass.NONE;
+    public static HeroClass currentHero = HeroClass.NONE;
     public static int currentFloor = Constants.MAX_DEPTH;
     public void create() {
         super.create();
@@ -67,9 +67,10 @@ public class SeedFindScene extends PixelScene {
 
         INSTANCE = this;
 
+        HeroClass heroClass = GamesInProgress.selectedClass;
         GamesInProgress.selectedClass = currentHero;
         Dungeon.init("");
-        GamesInProgress.selectedClass = null;
+        GamesInProgress.selectedClass = heroClass;
         
         addToFront(mainWindow = new WndFinder());
 
@@ -168,7 +169,7 @@ public class SeedFindScene extends PixelScene {
                         fl.append(fd.title);
                     }
                 }
-                ov.append(w.toString()).append("：");
+                ov.append(w).append("：");
                 if (fl.length() > 0) ov.append(fl).append(" 楼");
                 else ov.append("未找到");
                 ov.append("\n\n");
@@ -219,7 +220,7 @@ public class SeedFindScene extends PixelScene {
     }
 
     // 楼层文本页：ScrollPane + 高亮楼层头
-    private ScrollPane textPage(String body, float w, float h) {
+    private ScrollPane textPage(String body, float w) {
         Component content = new Component();
         RenderedTextBlock txt = PixelScene.renderTextBlock(body, 6);
         txt.setHightlighting(true, Window.TITLE_COLOR);
@@ -235,11 +236,11 @@ public class SeedFindScene extends PixelScene {
     // 总览页：物品→楼层列表 + 复制按钮
     // setRect 必须延迟到 layout()：此时页面尚未加入窗口，父链上没有 camera，
     // 而 ScrollPane.layout 依赖 camera() 做 cameraToScreen，提前 setRect 会 NPE
-    private Component overviewPage(final String body, final float w, final float h) {
-        Component root = new Component() {
-            ScrollPane sp;
-            RenderedTextBlock seedLabel;
-            RedButton copyBtn;
+    private Component overviewPage(final String body, final float w) {
+        return new Component() {
+            final ScrollPane sp;
+            final RenderedTextBlock seedLabel;
+            final RedButton copyBtn;
             {
                 Component scrollContent = new Component();
                 RenderedTextBlock txt = PixelScene.renderTextBlock(body, 6);
@@ -274,7 +275,6 @@ public class SeedFindScene extends PixelScene {
                 copyBtn.setRect(1, height - 20, width - 2, 18);
             }
         };
-        return root;
     }
 
     private void confirmCopySeed() {
@@ -311,8 +311,8 @@ public class SeedFindScene extends PixelScene {
                 final ResultTab rt = resultTabs.get(i);
                 final int idx = n;
                 Component page = rt.overview
-                        ? overviewPage(rt.body, winW, pageH)
-                        : textPage(rt.body, winW, pageH);
+                        ? overviewPage(rt.body, winW)
+                        : textPage(rt.body, winW);
                 pages[n] = page;
                 add(page);
                 page.setRect(0, 0, winW, pageH);
@@ -415,7 +415,6 @@ public class SeedFindScene extends PixelScene {
     private volatile ArrayList<SeedFinder.FloorData> resultFloors;
     private volatile boolean isTestSeed;
     private volatile boolean searchDone;
-    private String lastResultBody;
 
     // ===== 结果 Tab 弹窗 =====
     private static final int TABS_PER_WINDOW = 5;
@@ -777,18 +776,31 @@ public class SeedFindScene extends PixelScene {
                 summary.text(sb.toString(), (int) w);
                 content.add(summary);
                 summary.setRect(1, 1, w - 2, 0);
+                float pos = summary.bottom() + 4;
 
                 // 线程数滑条：控制查种 worker 数量
-                OptionSlider threadSlider = new OptionSlider("线程数量", "1", String.valueOf(THREAD_MAX), 1, THREAD_MAX) {
+                OptionSlider threadSlider = new OptionSlider("线程数量", "1", "8", 1, 8) {
                     @Override
                     protected void onChange() {
-                        threadCount = getSelectedValue();
-                        SPDSettings.seedFinderThreads(threadCount);
+                        SPDSettings.seedFinderThreads(getSelectedValue());
                     }
                 };
-                threadSlider.setSelectedValue(threadCount);
+                threadSlider.setSelectedValue(SPDSettings.seedFinderThreads());
                 content.add(threadSlider);
-                threadSlider.setRect(1, summary.bottom() + 4, w - 2, 24);
+                threadSlider.setRect(1, pos, w - 2, 24);
+                pos = threadSlider.bottom() + 4;
+
+                // 允许缺少数滑条：0 表示必须集齐全部物品，N 表示可少找 N 件
+                OptionSlider missingSlider = new OptionSlider("允许缺少物品数", "0", "4", 0, 4) {
+                    @Override
+                    protected void onChange() {
+                        SPDSettings.seedFinderMissing(getSelectedValue());
+                    }
+                };
+                missingSlider.setSelectedValue(SPDSettings.seedFinderMissing());
+                content.add(missingSlider);
+                missingSlider.setRect(1, pos, w - 2, 24);
+                pos = missingSlider.bottom() + 4;
 
                 startBtn = new RedButton("开始查找") {
                     @Override
@@ -797,9 +809,10 @@ public class SeedFindScene extends PixelScene {
                     }
                 };
                 content.add(startBtn);
-                startBtn.setRect(1, threadSlider.bottom() + 4, w - 2, 18);
+                startBtn.setRect(1, pos, w - 2, 18);
+                pos = startBtn.bottom() + 4;
 
-                content.setSize(w, startBtn.bottom() + 2);
+                content.setSize(w, pos);
             }
         }
         @Override
@@ -823,7 +836,7 @@ public class SeedFindScene extends PixelScene {
                     public void onClick() {
                         if (GamesInProgress.selectedClass == null) return;
                         super.onClick();
-                        SeedFindScene.INSTANCE.currentHero = GamesInProgress.selectedClass;
+                        SeedFindScene.currentHero = GamesInProgress.selectedClass;
                         currentFloor = tempFloor;
                         Dungeon.init("");
                         mainWindow.refreshPage1Info();
@@ -957,12 +970,16 @@ public class SeedFindScene extends PixelScene {
             if (Artifact.class.isAssignableFrom(cls)) {
                 if (tinted) {
                     for (Item item : wantedItems.toArray(new Item[0]))
-                        if (cls.isInstance(item))
+                        if (cls.isInstance(item)) {
                             wantedItems.remove(item);
+                            break;
+                        }
+                    tinted = false;
                 }
-                else
+                else {
                     wantedItems.add(newInstance(cls));
-                tinted = !tinted;
+                    tinted = true;
+                }
             }
             else
                 GirlsFrontlinePixelDungeon.scene().addToFront(new ItemConfigWindow(cls));
@@ -1008,7 +1025,7 @@ public class SeedFindScene extends PixelScene {
                     pos = augInfo.bottom() + GAP;
 
                     OptionSlider rareSlider = new OptionSlider(
-                            isEnchant ? "" : "", "", "", 0, 4) {
+                            "", "", "", 0, 4) {
                         @Override
                         protected void onChange() {
                             augRare = getSelectedValue();
@@ -1021,7 +1038,7 @@ public class SeedFindScene extends PixelScene {
                     pos = rareSlider.bottom() + GAP;
 
                     OptionSlider idSlider = new OptionSlider(
-                            isEnchant ? "" : "", "1", "8", 0, 7) {
+                            "", "1", "8", 0, 7) {
                         @Override
                         protected void onChange() {
                             augId = getSelectedValue();
@@ -1179,12 +1196,12 @@ public class SeedFindScene extends PixelScene {
     private static int getMaxLevelForClass(Class<?> cls) {
         if (Wand.class.isAssignableFrom(cls)) {
             // 已选 +3 任务配件，其余配件最多 +2（一局仅一根任务杖）
-            return hasQuestLevel(Wand.class)
+            return hasQuestLevel(Wand.class) || currentFloor < 7
                     ? 2 : 3;
         }
         if (Ring.class.isAssignableFrom(cls)) {
             // 已选 +3（小恶魔任务奖励 +3/+4 的下限）瞄准镜，其余只能 +2
-            return hasQuestLevel(Ring.class)
+            return hasQuestLevel(Ring.class) || currentFloor < 17
                     ? 2 : 4;
         }
         return (Weapon.class.isAssignableFrom(cls) || Armor.class.isAssignableFrom(cls))
@@ -1204,7 +1221,6 @@ public class SeedFindScene extends PixelScene {
         if (text != null && !text.isEmpty()) {
             String result = text;
             text = "";
-            lastResultBody = result;
             if (resultFloors != null) {
                 // Tab 弹窗结果（搜索模式：总览+楼层分组；测试种子模式：仅楼层分组）
                 buildResultTabs();
@@ -1236,7 +1252,6 @@ public class SeedFindScene extends PixelScene {
         }
     }
     public static SeedFindScene INSTANCE = null;
-    volatile boolean needUpdate;
     volatile String text = "";
 
     @Override
@@ -1247,12 +1262,6 @@ public class SeedFindScene extends PixelScene {
 
     private static WndFinder mainWindow;
     private Thread findSeedThread;
-    // 线程数上限：不超过可用逻辑处理器数，最少 1
-    private static final int THREAD_MAX = Math.max(1, Runtime.getRuntime().availableProcessors());
-    // 查种线程数（第五页 Slider 控制，跨启动保留，夹紧到 [1, THREAD_MAX]）
-    public int threadCount = Math.max(1, Math.min(THREAD_MAX, SPDSettings.seedFinderThreads()));
-
-    // 查找种子：按已添加物品 + 线程数扫描（物品列表为空时没有查找意义）
     private void startSearch() {
         // 防御：即使 TEST_MODE 曾在 debug 菜单里被写入，种子查找也一律不带它
         SPDSettings.challenges(SPDSettings.challenges() & ~Challenges.TEST_MODE);
@@ -1262,7 +1271,7 @@ public class SeedFindScene extends PixelScene {
             for (int i = 0; i < item.quantity(); i++)
                 targets.add(new WantedTarget(item));
 
-        final int threads = Math.max(1, Math.min(THREAD_MAX, threadCount));
+        final int threads = SPDSettings.seedFinderThreads();
         final SeedFinder finder = new SeedFinder(targets, currentFloor, currentHero) {
             @Override
             public void run() {
@@ -1271,7 +1280,6 @@ public class SeedFindScene extends PixelScene {
                 SeedFindScene.INSTANCE.resultFloors = lastFloors;
                 SeedFindScene.INSTANCE.isTestSeed = false;
                 SeedFindScene.INSTANCE.text = str;
-                SeedFindScene.INSTANCE.needUpdate = true;
             }
         };
         launchFinder(finder);
@@ -1283,7 +1291,7 @@ public class SeedFindScene extends PixelScene {
         // 防御：测试种子同样不带 TEST_MODE
         SPDSettings.challenges(SPDSettings.challenges() & ~Challenges.TEST_MODE);
 
-        final SeedFinder finder = new SeedFinder(new ArrayList<WantedTarget>(), currentFloor, currentHero) {
+        final SeedFinder finder = new SeedFinder(new ArrayList<>(), currentFloor, currentHero) {
             @Override
             public void run() {
                 Dungeon.resetTest();
@@ -1293,7 +1301,6 @@ public class SeedFindScene extends PixelScene {
                     SeedFindScene.INSTANCE.resultFloors = lastFloors;
                     SeedFindScene.INSTANCE.isTestSeed = true;
                     SeedFindScene.INSTANCE.text = str;
-                    SeedFindScene.INSTANCE.needUpdate = true;
                 } finally {
                     Dungeon.exitSearchContext();
                 }
@@ -1308,7 +1315,6 @@ public class SeedFindScene extends PixelScene {
         searchDone = false;
         resultFloors = null;
         isTestSeed = false;
-        lastResultBody = null;
         resultTabs = null;
 
         showSearchView();
@@ -1324,7 +1330,6 @@ public class SeedFindScene extends PixelScene {
                     e.printStackTrace();
                     if (!stopThread) {
                         text = "查找失败：" + e.getMessage();
-                        needUpdate = true;
                     }
                 }
             }
