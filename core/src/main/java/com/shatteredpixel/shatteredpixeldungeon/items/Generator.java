@@ -531,7 +531,7 @@ public class Generator {
 					SugarZongzi.class,
 					WholeCake.class
             };
-            FOOD.defaultProbs = new float[]{ 4, HolidayDiff(Pasty.class), HolidayDiff(XMasSugar.class), -1, -1, 0, -1, -1, 0, 0, -1, 0, -1, 0, 0, -1};
+            FOOD.defaultProbs = new float[]{ 4, HolidayDiff(Pasty.class), HolidayDiff(XMasSugar.class), -1, -1, -1, -1, -1, 0, -1, -1, 0, -1, 0, -1, -1};
 			FOOD.probs = FOOD.defaultProbs.clone();
 			
 			RING.classes = new Class<?>[]{

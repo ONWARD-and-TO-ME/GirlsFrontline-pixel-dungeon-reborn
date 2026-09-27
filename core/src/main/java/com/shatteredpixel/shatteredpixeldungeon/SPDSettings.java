@@ -556,4 +556,15 @@ public class SPDSettings extends GameSettings {
 		put( KEY_SEEDFINDER_THREADS, value );
 	}
 
+	//查种器允许缺少的物品数量（0-4，跨启动保留）
+	public static final String KEY_SEEDFINDER_MISSING = "seedfinder_missing";
+
+	public static int seedFinderMissing() {
+		return getInt( KEY_SEEDFINDER_MISSING, 0 );
+	}
+
+	public static void seedFinderMissing( int value ) {
+		put( KEY_SEEDFINDER_MISSING, value );
+	}
+
 }

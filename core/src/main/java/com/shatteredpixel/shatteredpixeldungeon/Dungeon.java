@@ -32,9 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FestivalCakeBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TalentSecondSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HK416Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HuntressTalent;
@@ -91,7 +89,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Gregorian;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
@@ -200,7 +197,7 @@ public class Dungeon {
         }
 
 		public static void reset(){
-			java.util.Arrays.fill(cur().limitedDrops, 0);
+			Arrays.fill(cur().limitedDrops, 0);
 		}
 
 		public static void store( Bundle bundle ){
