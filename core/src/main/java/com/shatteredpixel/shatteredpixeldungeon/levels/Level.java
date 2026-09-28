@@ -304,8 +304,10 @@ public abstract class Level implements Bundlable {
 		creating = false;
 
 		for (Integer pos : triggeredPlant.keySet())
-			for (Plant plant : triggeredPlant.get(pos))
+			for (Plant plant : triggeredPlant.get(pos)){
+				Plant.level = this;
 				plant.activate(pos);
+			}
 		triggeredPlant.clear();
 	}
 	
