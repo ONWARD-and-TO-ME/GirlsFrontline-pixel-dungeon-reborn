@@ -42,28 +42,36 @@ public class Gregorian {
         checkQingming(gregorianMonth, gregorianDay);
 
         //农历传统节日，与公历节日重叠时优先（如中秋遇上国庆）
-        checkTraditionalFestivals(lunarDate);
+        Calendar nextDay = (Calendar) calendar.clone();
+        nextDay.add( Calendar.DAY_OF_MONTH, 1 );
+        Lunar nextLunarDate = Solar.fromDate( nextDay.getTime() ).getLunar();
+        checkTraditionalFestivals(lunarDate, nextLunarDate);
     }
 
     /**
      * 检查主要农历传统节日
+     * 单日节日统一按“前一天、当天、后一天”三天窗口判定；春节含除夕（腊月最后一天）及正月初一至初七
+     * 除夕不写死为腊月三十：部分年份腊月为小月仅29天，故按“次日为正月初一”由农历库动态判定
      * 注：lunar-java 中闰月返回负数月份，传统节日不按闰月计算
      */
-    private static void checkTraditionalFestivals(Lunar lunar) {
+    private static void checkTraditionalFestivals(Lunar lunar, Lunar nextLunar) {
         int month = lunar.getMonth();
         int day = lunar.getDay();
 
         if (month == 1 && day >= 1 && day <= 7) {
             Holidays.holiday = Holidays.Holiday.SPRING_FESTIVAL;
-        } else if (month == 1 && day == 15) {
+        } else if (month == 12 && nextLunar.getMonth() == 1 && nextLunar.getDay() == 1) {
+            //除夕：正月初一的前一天（腊月廿九或三十）
+            Holidays.holiday = Holidays.Holiday.SPRING_FESTIVAL;
+        } else if (month == 1 && day >= 14 && day <= 16) {
             Holidays.holiday = Holidays.Holiday.LANTERN_FESTIVAL;
-        } else if (month == 5 && day == 5) {
+        } else if (month == 5 && day >= 4 && day <= 6) {
             Holidays.holiday = Holidays.Holiday.DRAGON_BOAT;
-        } else if (month == 7 && day == 7) {
+        } else if (month == 7 && day >= 6 && day <= 8) {
             Holidays.holiday = Holidays.Holiday.QIXI;
-        } else if (month == 8 && day >= 15 && day < 22) {
+        } else if (month == 8 && day >= 14 && day <= 16) {
             Holidays.holiday = Holidays.Holiday.midAutumnFestival;
-        } else if (month == 9 && day == 9) {
+        } else if (month == 9 && day >= 8 && day <= 10) {
             Holidays.holiday = Holidays.Holiday.DOUBLE_NINTH;
         }
     }

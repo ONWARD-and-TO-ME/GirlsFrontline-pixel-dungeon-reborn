@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStartGame;
+import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
@@ -45,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public enum Rankings {
 	
@@ -102,6 +105,7 @@ public enum Rankings {
 		rec.customSeed = !Dungeon.customSeedText.isEmpty();
 		rec.depth     = Dungeon.curDepth();
 		rec.version	  = Dungeon.version;
+		rec.gameVersion = currentGameVersion();
 		rec.score     = score( win );
 		rec.isLock    = false;
         //默认不锁定
@@ -151,6 +155,12 @@ public enum Rankings {
 
 	private int score( boolean win ) {
 		return (Statistics.goldCollected + Dungeon.hero().lvl * (win ? 31 : Statistics.deepestFloor ) * 100) * (win ? 2 : 1);
+	}
+
+	//排行榜记录用的游戏版本号：从 Game.version 中提取数字版本并加 v 前缀，忽略 -debug/-alpha 等后缀
+	private static String currentGameVersion() {
+		Matcher m = Pattern.compile( "\\d+\\.\\d+\\.\\d+" ).matcher( Game.version );
+		return m.find() ? "v" + m.group() : "";
 	}
 
 	public static final String HERO = "hero";
@@ -305,6 +315,7 @@ public enum Rankings {
 		private static final String ID      	= "gameID";
         private static final String isLOCK      = "gameLOCK";
 		private static final String VERSION		= "version";
+		private static final String GAME_VERSION = "game_version";
 
 		public Class cause;
 		public boolean win;
@@ -321,6 +332,15 @@ public enum Rankings {
 		public int score;
         public boolean isLock;
 		public int version;
+		public String gameVersion; // 计入排行榜时的游戏版本号（如 v0.6.0）
+
+		/**
+		 * 排行榜展示用版本号：
+		 * 未记录版本号的旧记录（0.5.x 时期）统一显示 v0.5.x
+		 */
+		public String gameVersionDisplay() {
+			return (gameVersion == null || gameVersion.isEmpty()) ? "v0.5.x" : gameVersion;
+		}
 
 		public String desc(){
 			if (cause == null) {
@@ -360,6 +380,7 @@ public enum Rankings {
 			customSeed = bundle.contains(CUSTOM_SEED) && bundle.getBoolean(CUSTOM_SEED);
 			depth = bundle.getInt( DEPTH );
 			herolevel = bundle.getInt( LEVEL );
+			gameVersion = bundle.contains( GAME_VERSION ) ? bundle.getString( GAME_VERSION ) : null;
 
 		}
 		
@@ -378,6 +399,7 @@ public enum Rankings {
 			bundle.put( CUSTOM_SEED, customSeed );
 			bundle.put( DEPTH, depth );
 			bundle.put( VERSION, version );
+			if (gameVersion != null) bundle.put( GAME_VERSION, gameVersion );
 			
 			if (gameData != null) bundle.put( DATA, gameData );
 			bundle.put( ID, gameID );

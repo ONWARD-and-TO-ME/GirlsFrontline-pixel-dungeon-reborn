@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.utils.Gregorian;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Holidays;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndFestival;
@@ -316,6 +317,10 @@ public class MenuPane extends Component {
 			clockAcc -= 1f;
 			String d = DATE_FORMAT.format( new Date() );
 			String t = TIME_FORMAT.format( new Date() );
+			//节日状态仅在开局/读档时计算，跨天后需重算，否则已结束的节日颜色会残留
+			if (!d.equals( dateText.text() )) {
+				Gregorian.LunarCheckDate();
+			}
 			//节日/蛋糕日可能随日期变化，每秒刷新日期文本颜色
 			applyDateColor( dateText );
 			if (!d.equals( dateText.text() ) || !t.equals( clockText.text() )) {

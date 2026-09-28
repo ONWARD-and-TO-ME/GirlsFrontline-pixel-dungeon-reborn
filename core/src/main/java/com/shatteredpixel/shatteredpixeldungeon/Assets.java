@@ -27,7 +27,7 @@ public class Assets {
 	public static final String TOW 			= "tow.png";
 
 	//need Organize 需要整理
-	public static final String EMOTION 		= "emotion.png";
+	public static final String EMOTION 		= "sprites/char/emotion.png";
 	public static final String PYRO			= "sprites/girlpd/pyro.png";
 	public static final String P7			= "sprites/zeroNPC/p7.png";
 	public static final String SVESPID		= "sprites/SANGVIS_FERRI/shieldvespid.png";
@@ -127,7 +127,7 @@ public class Assets {
 		public static final String LOCKED   = "interfaces/locked_badge.png";
 
 		public static final String CHROME   = "interfaces/chrome.png";
-		public static final String ICONS    = "interfaces/icons.png";
+		public static final String ICONS    = "interfaces/icons_1.png";
 		public static final String STATUS   = "interfaces/status_pane.png";
 		public static final String STATUS_1 = "interfaces/status_pane1.png";
 		public static final String STATUS_2 = "interfaces/status_pane2.png";

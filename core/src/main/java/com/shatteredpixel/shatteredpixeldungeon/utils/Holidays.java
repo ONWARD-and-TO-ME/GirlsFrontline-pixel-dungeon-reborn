@@ -11,7 +11,7 @@ public class Holidays {
         HWEEN,              // 2nd week of october though first day of november
         midAutumnFestival,  // 八月十五中秋节
         XMAS,               // 3rd week of december through first week of january
-        SPRING_FESTIVAL,    // 正月初一至初七 春节
+        SPRING_FESTIVAL,    // 除夕及正月初一至初七 春节
         LANTERN_FESTIVAL,   // 正月十五 元宵节
         QINGMING,           // 公历4月4日~6日 清明节
         DRAGON_BOAT,        // 五月初五 端午节
