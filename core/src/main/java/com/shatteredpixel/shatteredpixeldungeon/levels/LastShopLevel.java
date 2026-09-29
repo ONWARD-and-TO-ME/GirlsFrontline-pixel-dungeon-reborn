@@ -86,7 +86,7 @@ public class LastShopLevel extends Level {
         super.restoreFromBundle( bundle );
         open = bundle.getBoolean( OPEN_SHOP );
         if (!open&&NoelShopRoom.openShop()){
-            Keeper.PlaceShop(this, center,TradeItem);
+            Keeper.PlaceShopRandom(this, center,TradeItem);
             open = true;
         }
     }

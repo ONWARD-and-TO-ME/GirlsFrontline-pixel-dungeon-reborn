@@ -16,6 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -80,6 +81,12 @@ public class NoelShopRoom extends ShopRoom {
     public void PlaceShop(Level level, int center, ArrayList<Integer> list){
         placeShopkeeper(level, center);
         placeItems( level, center, list );
+    }
+    public void PlaceShopRandom(Level level, int center, ArrayList<Integer> list){
+        Random.pushGenerator( Dungeon.seedForLevel(level.levelId) );
+        placeShopkeeper(level, center);
+        placeItems( level, center, list );
+        Random.popGenerator();
     }
     protected void placeShopkeeper(Level level, int center) {
         Shopkeeper shopkeeper;

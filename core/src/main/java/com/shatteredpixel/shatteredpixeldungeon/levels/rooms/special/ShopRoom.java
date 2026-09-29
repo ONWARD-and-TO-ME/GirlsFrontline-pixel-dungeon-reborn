@@ -227,32 +227,22 @@ public class ShopRoom extends SpecialRoom {
 		}
 		w.enchant(null);
 		w.cursed = false;
-		w.level(0);
-        if (Dungeon.cur().depth == 25) {
-            int A = Random.Int(100);
-            if (A < 5) {
-                w.upgrade(2);
-            } else if (A < 25) {
-                w.upgrade();
-            }
-            if (Random.Int(10) < 7)
-                w.upgrade();
-        }
+        if (Dungeon.cur().depth == 25 && Random.Int(3) == 0) {
+			if (Random.Int(3) == 0)
+				w.upgrade();
+		}
+		else
+			w.level(0);
 		itemsToSpawn.add(w);
 
         a.inscribe(null);
         a.cursed = false;
-        a.level(0);
         if (Dungeon.cur().depth == 25) {
-            int B = Random.Int(100);
-            if (B < 5) {
-                a.upgrade(2);
-            } else if (B < 25) {
-                a.upgrade();
-            }
-            if (Random.Int(10) < 7)
-                a.upgrade();
-        }
+			if (Random.Int(3) == 0)
+				a.upgrade();
+		}
+		else
+			a.level(0);
         itemsToSpawn.add(a);
 
         m.level(0);

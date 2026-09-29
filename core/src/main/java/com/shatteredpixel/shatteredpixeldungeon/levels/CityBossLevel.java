@@ -358,10 +358,12 @@ public class CityBossLevel extends Level {
 	}
 
 	public void spawnShop(){
+		Random.pushGenerator( Dungeon.seedCurLevel(this) );
 		while (impShop.itemCount() >= 7*(impShop.height()-2)){
 			impShop.bottom++;
 		}
 		impShop.spawnShop(this);
+		Random.popGenerator();
 	}
 
 	@Override
