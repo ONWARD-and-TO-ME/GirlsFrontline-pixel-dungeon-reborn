@@ -132,7 +132,7 @@ public class Item implements Bundlable {
     public float overLoadLeft;
     public int updateTime;
 
-	protected String name = Messages.get(this, "name");
+	protected String name;
 	public static boolean ignoreGuess;
 	public boolean canUse( Hero hero ) {
 		return hero.belongings.contains(this);
@@ -168,11 +168,11 @@ public class Item implements Bundlable {
 	}
 
 	public String name() {
-		return name;
+		return name != null ? name : (name = Messages.get(this, "name"));
 	}
 
     public final String trueName() {
-		return name;
+		return name != null ? name : (name = Messages.get(this, "name"));
 	}
 	
 	public static final Comparator<Item> itemComparator = new Comparator<Item>() {
