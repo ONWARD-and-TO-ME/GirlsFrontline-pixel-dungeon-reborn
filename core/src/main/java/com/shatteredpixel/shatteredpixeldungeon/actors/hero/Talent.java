@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 public enum Talent {
 
@@ -916,11 +917,21 @@ public enum Talent {
 		}
 		bundle.put("replacements", replacementsBundle);
         Bundle addTalentBundle = new Bundle();
-        for (Talent t : hero.addTalents.keySet()){
-            addTalentBundle.put(t.name(), hero.addTalents.get(t));
-        }
-        bundle.put("addTalents", addTalentBundle);
+		Set<Talent> talents = hero.addTalents.keySet();
+		int i = 0;
+        for (Talent talent : talents) {
+            addTalentBundle.put(NEW_ADD_TALENT + i++, talent.name());
+			addTalentBundle.put(talent.name(), hero.addTalents.get(talent));
+		}
+		addTalentBundle.put(NEW_ADD_TALENT_NUM, talents.size());
+        bundle.put(NEW_ADD_TALENT_ALL, addTalentBundle);
 	}
+	private static final String OLD_ADD_TALENT = "addTalents";
+	private static final String NEW_ADD_TALENT = "add_Talents_";
+	private static final String NEW_ADD_TALENT_NUM = "add_Talents_NUM";
+	private static final String NEW_ADD_TALENT_ALL = "add_Talents_ALL";
+
+	//TODO: addTalents 重命名
 
     private static final HashSet<String> removed = new HashSet<>();
     static{
@@ -949,9 +960,28 @@ public enum Talent {
                 }
             }
 		}
-        if (bundle.contains("addTalents")){
-            Bundle addTalentsBundle = bundle.getBundle("addTalents");
-            hero.addTalents = new LinkedHashMap<>();
+		if (bundle.contains(NEW_ADD_TALENT_ALL)) {
+            Bundle addTalentsBundle = bundle.getBundle(NEW_ADD_TALENT_ALL);
+			int talentsNum = addTalentsBundle.getInt(NEW_ADD_TALENT_NUM);
+            hero.addTalents.clear();;
+            for (int i = 0; i < talentsNum; i++){
+                String key = addTalentsBundle.getString(NEW_ADD_TALENT + i);
+				int points = addTalentsBundle.getInt(key);
+				//if A renamed to B, and B renamed to C, then only C should be restored.
+                while (renamed.containsKey(key))
+					key = renamed.get(key);
+                if (!removed.contains(key)){
+                    try {
+                        hero.addTalents.put(Talent.valueOf(key), points);
+                    } catch (Exception e) {
+                        GirlsFrontlinePixelDungeon.reportException(e);
+                    }
+                }
+            }
+		}
+        else if (bundle.contains(OLD_ADD_TALENT)){
+            Bundle addTalentsBundle = bundle.getBundle(OLD_ADD_TALENT);
+            hero.addTalents.clear();;
             for (String key : addTalentsBundle.getKeys()){
                 while (renamed.containsKey(key)) key = renamed.get(key);
                 if (!removed.contains(key)){
