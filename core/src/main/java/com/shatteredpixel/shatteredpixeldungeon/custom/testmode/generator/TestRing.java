@@ -16,6 +16,24 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfMight;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfTenacity;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ChaoticCenser;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.CrackedSpyglass;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ExoticCrystals;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.EyeOfNewt;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.FerretTuft;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MossyClump;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.PetrifiedSeed;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SaltCube;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ThirteenLeafClover;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.VialOfBlood;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.WondrousResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfCorrosion;
@@ -60,6 +78,7 @@ public class TestRing extends TestGenerator {
     private int selected;
     private static final int RING_CAT = 0;
     private static final int WAND_CAT = 1;
+    private static final int TRINKET_CAT = 2;
     private static final String AC_SETTING = "setting";
 
     @Override
@@ -101,6 +120,17 @@ public class TestRing extends TestGenerator {
                     w.doDrop(curUser);
                 }
             }
+        } else if (category == TRINKET_CAT) {
+            Trinket t = Reflection.newInstance(idToTrinket(selected));
+            if (t != null) {
+                t.level(levelToGen);
+                collect = t.identify().collect();
+                if(collect){
+                    GLog.i(Messages.get(this, "collect_success", t.name()));
+                }else{
+                    t.doDrop(curUser);
+                }
+            }
         }
     }
 
@@ -130,6 +160,38 @@ public class TestRing extends TestGenerator {
     private void modifyWand(Wand w) {
         w.level(levelToGen);
         w.cursed = cursed;
+    }
+
+    private Class<? extends Trinket> idToTrinket(int id) {
+        switch (id) {
+            case 0:  return RatSkull.class;
+            case 1:  return ParchmentScrap.class;
+            case 2:  return PetrifiedSeed.class;
+            case 3:  return ExoticCrystals.class;
+            case 4:  return MossyClump.class;
+            case 5:  return DimensionalSundial.class;
+            case 6:  return ThirteenLeafClover.class;
+            case 7:  return TrapMechanism.class;
+            case 8:  return MimicTooth.class;
+            case 9:  return WondrousResin.class;
+            case 10: return EyeOfNewt.class;
+            case 11: return SaltCube.class;
+            case 12: return VialOfBlood.class;
+            case 13: return ShardOfOblivion.class;
+            case 14: return ChaoticCenser.class;
+            case 15: return FerretTuft.class;
+            case 16:
+            default: return CrackedSpyglass.class;
+        }
+    }
+
+    private static ArrayList<Class<? extends Trinket>> trinketList = new ArrayList<>();
+
+    private void buildTrinketList() {
+        if (!trinketList.isEmpty()) return;
+        for (int i = 0; i < 17; ++i) {
+            trinketList.add(idToTrinket(i));
+        }
     }
 
     private Class<? extends Ring> idToRing(int id) {
@@ -213,7 +275,15 @@ public class TestRing extends TestGenerator {
     private int total(int category){
         if (category == RING_CAT) return 11;
         if (category == WAND_CAT) return 13;
+        if (category == TRINKET_CAT) return 17;
         return 0;
+    }
+
+    //每行图标数，超出则换行（饰品有17个，需要多行排布）
+    private static final int PER_ROW = 7;
+
+    private int iconRows(){
+        return (total(category) + PER_ROW - 1) / PER_ROW;
     }
 
     private class SettingsWindow extends Window {
@@ -230,8 +300,9 @@ public class TestRing extends TestGenerator {
         public SettingsWindow() {
             buildRingList();
             buildWandList();
+            buildTrinketList();
 
-            o_category = new OptionSlider(Messages.get(this, "category"), Messages.get(this, "ring"), Messages.get(this, "wand"), 0, 1) {
+            o_category = new OptionSlider(Messages.get(this, "category"), Messages.get(this, "ring"), Messages.get(this, "trinket"), 0, 2) {
                 @Override
                 protected void onChange() {
                     category = getSelectedValue();
@@ -285,7 +356,7 @@ public class TestRing extends TestGenerator {
 
         private void layout() {
             o_category.setRect(0, GAP, WIDTH, 24);
-            t_selected.setPos(0, o_category.bottom() + 3 * GAP + 2 * BTN_SIZE);
+            t_selected.setPos(0, o_category.bottom() + GAP + iconRows() * (BTN_SIZE + GAP));
             o_level.setRect(0, t_selected.bottom() + GAP, WIDTH, 24);
             c_curse.setRect(0, o_level.bottom() + GAP, WIDTH, 18);
             b_create.setRect(0, c_curse.bottom()+GAP, WIDTH, 16);
@@ -300,16 +371,16 @@ public class TestRing extends TestGenerator {
             else if (category == WAND_CAT) {
                 item = wandList.get(selected);
             }
+            else if (category == TRINKET_CAT) {
+                item = trinketList.get(selected);
+            }
             t_selected.text(Messages.get(TestRing.class, "selected", Messages.get(item, "name")));
             layout();
         }
 
         private void createImage() {
-            float left;
             float top = GAP + o_category.bottom();
-            int placed = 0;
-            int length = (category == RING_CAT ? ringList.size() : (category == WAND_CAT ? wandList.size() : 0));
-            int firstRow = (length % 2 == 0 ? length / 2 : (length / 2 + 1));
+            int length = (category == RING_CAT ? ringList.size() : (category == WAND_CAT ? wandList.size() : (category == TRINKET_CAT ? trinketList.size() : 0)));
             for (int i = 0; i < length; ++i) {
                 final int j = i;
                 IconButton btn = new IconButton() {
@@ -325,22 +396,20 @@ public class TestRing extends TestGenerator {
                     im.frame(ItemSpriteSheet.Icons.film.get(Objects.requireNonNull(Reflection.newInstance(ringList.get(i))).icon));
                     im.scale.set(1.6f);
                     btn.icon(im);
-                } else if (category == WAND_CAT) {
+                } else if (category == WAND_CAT || category == TRINKET_CAT) {
+                    Class<? extends Item> cls = category == WAND_CAT ? wandList.get(i) : trinketList.get(i);
                     Image im = new Image(Assets.Sprites.ITEMS);
-                    im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(wandList.get(i))).image));
+                    im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(cls)).image));
                     im.scale.set(0.9f);
                     btn.icon(im);
                 }
 
-                if (i < firstRow) {
-                    left = (WIDTH - BTN_SIZE * firstRow) / 2f;
-                    btn.setRect(left + placed * BTN_SIZE, top, BTN_SIZE, BTN_SIZE);
-                } else {
-                    left = (WIDTH - BTN_SIZE * (length-firstRow)) / 2f;
-                    btn.setRect(left + (placed - firstRow) * BTN_SIZE, top + GAP + BTN_SIZE, BTN_SIZE, BTN_SIZE);
-                }
+                int row = i / PER_ROW;
+                int col = i % PER_ROW;
+                int inThisRow = Math.min(PER_ROW, length - row * PER_ROW);
+                float left = (WIDTH - BTN_SIZE * inThisRow) / 2f;
+                btn.setRect(left + col * BTN_SIZE, top + row * (BTN_SIZE + GAP), BTN_SIZE, BTN_SIZE);
                 add(btn);
-                placed++;
                 iconButtonsList.add(btn);
             }
         }
