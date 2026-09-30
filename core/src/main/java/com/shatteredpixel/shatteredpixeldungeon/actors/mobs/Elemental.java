@@ -386,12 +386,6 @@ public abstract class Elemental extends Mob {
 	}
 	
 	public static Class<? extends Elemental> random(){
-		//鼠头骨饰品：增加元素生物的异化概率（实现见 RatSkull）
-		float altChance = 1/50f * RatSkull.exoticChanceMultiplier();
-		if (Random.Float() < altChance){
-			return ChaosElemental.class;
-		}
-
 		float roll = Random.Float();
 		if (roll < 0.4f){
 			return FireElemental.class;

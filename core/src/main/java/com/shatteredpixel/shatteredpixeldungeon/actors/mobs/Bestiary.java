@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
@@ -399,9 +400,12 @@ public enum Bestiary {
             int j = Random.Int(100);
             if (!swapMob.containsKey(cl))
                 continue;
+            //鼠头骨饰品：增加元素生物的异化概率（实现见 RatSkull）
             int chance = Dungeon.mobRan;
+            float ratSkull = RatSkull.exoticChanceMultiplier();
             if (cl == Golyat.class)
-                chance *= 4;
+                chance *= ratSkull > 1F ? 2 : 4;
+            chance *= ratSkull;
             if (j < chance)
                 rotation.set(i, swapMob.get(cl));
 		}

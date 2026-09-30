@@ -69,6 +69,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
@@ -238,6 +239,10 @@ public abstract class Level implements Bundlable {
 			if (Dungeon.asNeeded()) {
 				addItemToSpawn( new Stylus() );
 				Dungeon.LimitedDrops.ARCANE_STYLI.used();
+			}
+			if ( Dungeon.trinketCataNeeded() ){
+				Dungeon.LimitedDrops.TRINKET_CATA.drop();
+				addItemToSpawn( new TrinketCatalyst());
 			}
 			//one scroll of transmutation is guaranteed to spawn somewhere on chapter 2-4
 			int enchChapter = (int)((Dungeon.cur().seed / 10) % 3) + 1;

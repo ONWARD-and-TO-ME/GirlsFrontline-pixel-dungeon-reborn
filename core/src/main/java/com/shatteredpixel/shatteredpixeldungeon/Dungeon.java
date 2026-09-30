@@ -135,6 +135,10 @@ public class Dungeon {
 		Dungeons.exitSearchContext();
 	}
 
+	public static boolean trinketCataNeeded() {
+		return curDepth() < 5 && !LimitedDrops.TRINKET_CATA.dropped() && Random.Int(4-curDepth()) == 0;
+	}
+
 	//enum of items which have limited spawns, records how many have spawned
 	//could all be their own separate numbers, but this allows iterating, much nicer for bundling/initializing.
 	public static enum LimitedDrops {
@@ -142,6 +146,7 @@ public class Dungeon {
 		STRENGTH_POTIONS,
 		UPGRADE_SCROLLS,
 		ARCANE_STYLI,
+		TRINKET_CATA,
 
         LaboratoryRoom,
         FairyRoom,
