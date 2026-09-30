@@ -105,22 +105,45 @@ public class EmoIcon extends Image {
 	}
 	
 	public static class Lost extends EmoIcon {
-		
+
 		public Lost( CharSprite owner ){
 			super( owner );
-			
+
 			copy( Icons.get( Icons.LOST ) );
-			
+
 			maxSize = 1.25f;
 			timeScale = 1;
-			
+
 			origin.set( 2.5f, height - 2.5f );
 			scale.set( Random.Float( 1, maxSize ) );
-			
+
 			x = owner.x + owner.width - width / 2;
 			y = owner.y - height;
 		}
-		
+
+	}
+
+	//位置显示图标，常驻在角色脚底居中，不播放缩放动画
+	public static class PosShow extends EmoIcon {
+
+		public PosShow( CharSprite owner ) {
+			super( owner );
+
+			copy( Icons.get( Icons.POS_SHOW ) );
+
+			scale.set( 1f );
+
+			x = owner.x + owner.width / 2 - width / 2;
+			y = owner.y + owner.height;
+		}
+
+		@Override
+		public void update() {
+			if (visible) {
+				x = owner.x + owner.width() / 2f - width / 2;
+				y = owner.y + owner.height();
+			}
+		}
 	}
 
 }

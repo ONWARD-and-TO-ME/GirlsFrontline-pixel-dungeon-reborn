@@ -406,6 +406,7 @@ public class WndSettings extends WndTabbed {
 		CheckBox chkFlipToolbar;
 		CheckBox chkQuickSwapper;
 		CheckBox chkFlipTags;
+		CheckBox chkMobPos;
 		ColorBlock sep2;
 		CheckBox chkFont;
 		RedButton btnStatusPaneStyle;
@@ -510,6 +511,16 @@ public class WndSettings extends WndTabbed {
 			};
 			chkFlipTags.checked(SPDSettings.flipTags());
 			add(chkFlipTags);
+
+			chkMobPos = new CheckBox(Messages.get(this, "mob_pos_indicator")){
+				@Override
+				protected void onClick() {
+					super.onClick();
+					SPDSettings.mobPosIndicator(checked());
+				}
+			};
+			chkMobPos.checked(SPDSettings.mobPosIndicator());
+			add(chkMobPos);
 			if (!PixelScene.landscape()){
 				chkQuickSwapper = new CheckBox(Messages.get(WndSettings.UITab.this, "quickslot_swapper")) {
 					@Override
@@ -610,8 +621,10 @@ public class WndSettings extends WndTabbed {
 				chkFlipTags.setRect(0, height + GAP, width, BTN_HEIGHT);
 			}
 
+			chkMobPos.setRect(0, chkFlipTags.bottom() + GAP, width, BTN_HEIGHT);
+
 			sep2.size(width, 1);
-			sep2.y = chkFlipTags.bottom() + 2;
+			sep2.y = chkMobPos.bottom() + 2;
 
 			chkFont.setRect(0, sep2.y + 1 + GAP, width, BTN_HEIGHT);
 

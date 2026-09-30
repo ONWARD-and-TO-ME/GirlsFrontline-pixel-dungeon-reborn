@@ -93,6 +93,7 @@ public enum Icons {
 	ENERGY, 		//能量图标，用于显示能量等
 	COIN_SML, 		//金币图标，用于显示金币等
 	ENERGY_SML, 	//能量图标，用于显示能量等
+	POS_SHOW, 		//位置显示图标，用于显示位置等
 	BACKPACK, 	//背包图标，用于显示物品等
 	SEED_POUCH, 	//种子图标，用于显示种子等
 	SCROLL_HOLDER, 	//书架图标，用于显示书架等
@@ -200,6 +201,7 @@ public enum Icons {
 				break;
 			case CHANGESLOG:
 				icon.frame( icon.texture.uvRectBySize( 128, 0, 10, 11 ) );       //变更日志(小)
+				break;
 
 			case STAIRS:
 				icon.frame( icon.texture.uvRectBySize( 192, 0, 13, 16 ) );       //楼梯/深度
@@ -223,7 +225,7 @@ public enum Icons {
 				icon.frame( icon.texture.uvRectBySize( 80, 16, 15, 12 ) );       //GSH18式头像
 				break;
 			case HK416:
-				icon.frame( icon.texture.uvRectBySize( 96, 16, 15, 16 ) );       //HK416式头像
+				icon.frame( icon.texture.uvRectBySize( 96, 16, 15, 15 ) );       //HK416式头像
 				break;
 			case dandeline:
 				icon.frame( icon.texture.uvRectBySize( 128, 16, 15, 16 ) );       //丹德莱式头像
@@ -325,6 +327,9 @@ public enum Icons {
 				break;
 			case ENERGY_SML:
 				icon.frame( icon.texture.uvRectBySize( 208, 56, 8, 7 ) );       //小能量
+				break;
+			case POS_SHOW:
+				icon.frame( icon.texture.uvRectBySize( 224, 48, 5, 5 ) );       //位置显示
 				break;
 			case BACKPACK:
 				icon.frame( icon.texture.uvRectBySize( 192, 32, 10, 10 ) );     //背包

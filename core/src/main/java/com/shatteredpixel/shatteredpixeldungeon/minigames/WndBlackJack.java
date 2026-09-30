@@ -5,6 +5,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.minigames;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -186,11 +187,11 @@ public class WndBlackJack extends Window {
     private void tie(){}
 
     private class CardFront extends Component {
-        Image icon = new Image("interfaces/card_front.png");
+        Image icon = new Image(Assets.Interfaces.CARD);
         RenderedTextBlock txt;
 
         public CardFront(int i) {
-            this.icon.frame(0, 0, 20, 32);
+			this.icon.frame(20, 0, 20, 32);
             String num;
             if (i == 1) {
                 num = "A";
@@ -220,10 +221,10 @@ public class WndBlackJack extends Window {
     }
 
     private class CardBack extends Component {
-        Image icon = new Image("interfaces/card_back.png");
+        Image icon = new Image(Assets.Interfaces.CARD);
 
-        public CardBack() {
-            this.icon.frame(0, 0, 20, 32);
+		public CardBack() {
+			this.icon.frame(0, 0, 20, 32);
         }
 
         protected void layout() {

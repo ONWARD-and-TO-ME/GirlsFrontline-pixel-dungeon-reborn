@@ -5,6 +5,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.minigames;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NoelShopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.items.Grass;
@@ -220,11 +221,11 @@ public class WndPlayGame extends Window {
     }
 
     private class CardFront extends Component {
-        Image icon = new Image("interfaces/card_front.png");
-        RenderedTextBlock txt;
+		Image icon = new Image(Assets.Interfaces.CARD);
+		RenderedTextBlock txt;
 
-        public CardFront(int i) {
-            this.icon.frame(0, 0, 20, 32);
+		public CardFront(int i) {
+			this.icon.frame(20, 0, 20, 32);
             String num;
             if (i == 1) {
                 num = "A";
@@ -254,10 +255,10 @@ public class WndPlayGame extends Window {
     }
 
     private class CardBack extends Component {
-        Image icon = new Image("interfaces/card_back.png");
+		Image icon = new Image(Assets.Interfaces.CARD);
 
-        public CardBack() {
-            this.icon.frame(0, 0, 20, 32);
+		public CardBack() {
+			this.icon.frame(0, 0, 20, 32);
         }
 
         protected void layout() {

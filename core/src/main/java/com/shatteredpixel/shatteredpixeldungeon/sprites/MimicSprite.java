@@ -81,6 +81,12 @@ public class MimicSprite extends MobSprite {
 	}
 
 	@Override
+	protected boolean showPosIndicator() {
+		//潜伏（伪装成宝箱）状态下不显示位置图标
+		return curAnim != hiding;
+	}
+
+	@Override
 	public void showSleep() {
 		if (curAnim == hiding){
 			return;

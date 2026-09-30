@@ -212,6 +212,8 @@ public class SPDSettings extends GameSettings {
 	public static final String KEY_STATUS_PANE_STYLE = "status_pane_style";
 	//0层前进营地：可交互物块顶部提示文字的总开关（默认显示）
 	public static final String KEY_ZERO_LEVEL_LABELS = "zero_level_labels";
+	//怪物脚底位置显示图标的开关（默认开启）
+	public static final String KEY_MOB_POS_INDICATOR = "mob_pos_indicator";
 
 	//0 = mobile, 1 = mixed (large without inventory in main UI), 2 = large
 	public static void interfaceSize( int value ){
@@ -257,6 +259,15 @@ public class SPDSettings extends GameSettings {
 
 	public static boolean zeroLevelLabels(){
 		return getBoolean( KEY_ZERO_LEVEL_LABELS, true );
+	}
+
+	//怪物脚底位置显示图标（默认开启）
+	public static void mobPosIndicator( boolean value ){
+		put( KEY_MOB_POS_INDICATOR, value );
+	}
+
+	public static boolean mobPosIndicator(){
+		return getBoolean( KEY_MOB_POS_INDICATOR, true );
 	}
 
 	public static void toolbarMode( String value ) {

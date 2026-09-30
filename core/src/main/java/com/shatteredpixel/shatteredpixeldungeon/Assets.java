@@ -43,7 +43,7 @@ public class Assets {
 	public static final String ELPHELT 		= "sprites/boss/elphelt.png";
 	public static final String DRAGUN		= "sprites/dragun.png";
 	public static final String DISLOLI		= "sprites/boss/disloli.png";
-	public static final String GARM			= "sprites/garm.png";
+	public static final String GARM			= "sprites/boss/garm.png";
 	public static final String DREAMER		= "sprites/boss/dreamer.png";
     public static final String AGENT		= "sprites/boss/Agent.png";
 	public static final String ALCHEMIST	= "sprites/boss/Alchemist.png";
@@ -59,9 +59,9 @@ public class Assets {
 	public static final String URO			= "sprites/boss/uro.png";
 	public static final String VESPID		= "sprites/girlpd/vespid.png";
 	public static final String GAGER		= "sprites/boss/gager.png";
-	public static final String ACYCLOPS		= "sprites/girlpd/acyclops.png";
-	public static final String HYDRA		= "sprites/girlpd/hydra.png";
-	public static final String GOLYATPLUS	= "sprites/girlpd/golyatplus.png";
+	public static final String ACYCLOPS		= "sprites/REGULAR_ARMY/acyclops.png";
+	public static final String HYDRA		= "sprites/REGULAR_ARMY/hydra.png";
+	public static final String GOLYATPLUS	= "sprites/SANGVIS_FERRI/golyatplus.png";
 	
 	public static class Effects {
 		public static final String EFFECTS      = "effects/effects.png";
@@ -123,11 +123,12 @@ public class Assets {
 		public static final String ARCS_FG  = "interfaces/arcs2.png";
 
 		public static final String BANNERS  = "interfaces/banners.png";
-		public static final String BADGES   = "interfaces/badges_new.png";
+		public static final String BADGES   = "interfaces/badges.png";
 		public static final String LOCKED   = "interfaces/locked_badge.png";
 
 		public static final String CHROME   = "interfaces/chrome.png";
-		public static final String ICONS    = "interfaces/icons_1.png";
+		public static final String CARD     = "interfaces/card.png";	//卡牌三张合并：背面(0,0) 正面(20,0) 卡槽(40,0)，每张20x32
+		public static final String ICONS    = "interfaces/icons.png";
 		public static final String STATUS   = "interfaces/status_pane.png";
 		public static final String STATUS_1 = "interfaces/status_pane1.png";
 		public static final String STATUS_2 = "interfaces/status_pane2.png";
@@ -296,14 +297,14 @@ public class Assets {
 
 
 	public static class Sprites {
-		public static final String ITEMS        = "sprites/items-export.png";
+		public static final String ITEMS        = "sprites/items.png";
 		public static final String ITEM_ICONS   = "sprites/item_icons.png";
         // 使用environment目录中的Chess.png文件
 
 		public static final String WARRIOR  = "sprites/char/warrior.png";
 		public static final String MAGE     = "sprites/char/mage.png";
 		public static final String ROGUE    = "sprites/char/rogue.png";
-		public static final String HUNTRESS = "sprites/char/sun.png";
+		public static final String HUNTRESS = "sprites/char/falcon.png";
 		public static final String TYPE561  = "sprites/char/type56.png";
 		public static final String GSH18    = "sprites/char/gsh18.png";
 		public static final String HK416    = "sprites/char/hk416.png";
@@ -342,7 +343,7 @@ public class Assets {
 		public static final String WARLOCK    = "sprites/warlock.png";
 		public static final String GOLEM      = "sprites/golem.png";
 		public static final String STATUE     = "sprites/statue.png";
-		public static final String SUCCUBUS   = "sprites/succubus.png";
+		public static final String SUCCUBUS   = "sprites/REGULAR_ARMY/succubus.png";
 		public static final String SCORPIO    = "sprites/scorpio.png";
 		public static final String FISTS      = "sprites/yog_fists.png";
 		public static final String YOG        = "sprites/yog.png";
@@ -364,7 +365,7 @@ public class Assets {
 		public static final String NECRO      = "sprites/necromancer.png";
         public static final String GOLYATFACTORY      = "sprites/SANGVIS_FERRI/golyatfactory.png";
 		public static final String GHOUL      = "sprites/girlpd/undead.png";
-		public static final String RIPPER     = "sprites/ripper.png";
+		public static final String RIPPER     = "sprites/REGULAR_ARMY/ripper.png";
         public static final String GNOLLSWAP = "sprites/SANGVIS_FERRI/GnollSWAP.png";
 		public static final String SPAWNER    = "sprites/spawner.png";
 		public static final String DM100      = "sprites/dm100.png";
@@ -375,18 +376,18 @@ public class Assets {
 		public static final String SPIRIT_HAWK= "sprites/spirit_hawk.png";
 		public static final String RED_SENTRY = "sprites/PARA_DEUS/red_pointer.png";
 
-		public static final String AEGIS    = "sprites/girlpd/aegis.png";
-		public static final String JAEGER    = "sprites/girlpd/jaeger.png";
+		public static final String AEGIS    = "sprites/SANGVIS_FERRI/aegis.png";
+		public static final String JAEGER    = "sprites/SANGVIS_FERRI/jaeger.png";
 
-		public static final String JAEGER_LOCK    = "sprites/girlpd/jager_lock.png";
+		public static final String JAEGER_LOCK    = "sprites/SANGVIS_FERRI/jager_lock.png";
 
 		public static final String SKS  = "sprites/girlpd/sks.png";
         public static final String SKS_ARM  = "sprites/girlpd/sks_arm.png";
-		public static final String MANTI  = "sprites/girlpd/manti.png";
+		public static final String MANTI  = "sprites/SANGVIS_FERRI/manti.png";
 
 		public static final String STRIKER			= "sprites/girlpd/striker.png";
 		public static final String ESTRIKER			= "sprites/girlpd/elitestriker.png";
 
-		public static final String KENTAUROS		= "sprites/girlpd/archer.png";
+		public static final String KENTAUROS		= "sprites/REGULAR_ARMY/archer.png";
 	}
 }

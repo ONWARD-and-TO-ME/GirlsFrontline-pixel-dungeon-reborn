@@ -26,3 +26,6 @@ local.properties
 #intellij project files
 *.iml
 *.idea
+
+# Eclipse/VSCode(Buildship) IDE-local project files 
+.settings/

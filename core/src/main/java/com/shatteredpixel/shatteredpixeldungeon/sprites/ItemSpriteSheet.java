@@ -26,7 +26,7 @@ import com.watabou.noosa.TextureFilm;
 
 public class ItemSpriteSheet {
 
-	private static final int WIDTH = 16;
+	private static final int WIDTH = 32;
 	public static final int SIZE = 16;
 
 	public static TextureFilm film = new TextureFilm( Assets.Sprites.ITEMS, SIZE, SIZE );
@@ -93,6 +93,7 @@ public class ItemSpriteSheet {
 	
 	public static final int TENGU_BOMB      = UNCOLLECTIBLE+11;
 	public static final int TENGU_SHOCKER   = UNCOLLECTIBLE+12;
+	public static final int M79             = UNCOLLECTIBLE+14;
 	static{
 		assignItemRect(GOLD,        15, 13);
 		assignItemRect(ENERGY,      16, 16);
@@ -107,6 +108,7 @@ public class ItemSpriteSheet {
 		
 		assignItemRect(TENGU_BOMB,      10, 10);
 		assignItemRect(TENGU_SHOCKER,   10, 10);
+		assignItemRect(M79,             15, 15);
 	}
 	//骨头行
 	private static final int CONTAINERS     =                               xy(1, 3);   //16 slots
@@ -411,7 +413,6 @@ public class ItemSpriteSheet {
 	public static final int WAND_TRANSFUSION    = WANDS+12;
 
 	//TODO 贴图需要优化
-	public static final int M79                   = WANDS+13;
 	public static final int M84                   = WANDS+14;
 	public static final int WAND_DISINTEGRATION2  = WANDS+15;
 	static {
@@ -457,21 +458,24 @@ public class ItemSpriteSheet {
 	public static final int ARTIFACT_CHALICE2   = ARTIFACTS+14;
 	public static final int ARTIFACT_CHALICE3   = ARTIFACTS+15;
 	public static final int ARTIFACT_SANDALS    = ARTIFACTS+16;
-	public static final int ARTIFACT_SHOES      = ARTIFACTS+17;
-	public static final int ARTIFACT_BOOTS      = ARTIFACTS+18;
-	public static final int ARTIFACT_GREAVES    = ARTIFACTS+19;
-	public static final int ARTIFACT_ROSE1      = ARTIFACTS+20;
-	public static final int ARTIFACT_ROSE2      = ARTIFACTS+21;
-	public static final int ARTIFACT_ROSE3      = ARTIFACTS+22;
-	public static final int ARTIFACT_UNKNOWN    = ARTIFACTS+23;
-	public static final int ARTIFACT_UNKNOWN2   = ARTIFACTS+24;
-	public static final int ARTIFACT_UNKNOWN3   = ARTIFACTS+25;
-	public static final int REDBOOK             = ARTIFACTS+26;
-	public static final int REDBOOK2            = ARTIFACTS+27;
-	public static final int REDBOOK3            = ARTIFACTS+28;
-	public static final int FAIRY_COMMANDER     = ARTIFACTS+29; // 指挥妖精
-	public static final int FAIRY_GEMINI        = ARTIFACTS+30; // 双生妖精
-	public static final int FAIRY_SUCCOR        = ARTIFACTS+31; // 增援妖精
+
+	//因为扩容贴图的宽度所以这里重新开始计算
+	public static final int ARTIFACT2      = xy(1, 17);
+	public static final int ARTIFACT_SHOES      = ARTIFACT2+0;
+	public static final int ARTIFACT_BOOTS      = ARTIFACT2+1;
+	public static final int ARTIFACT_GREAVES    = ARTIFACT2+2;
+	public static final int ARTIFACT_ROSE1      = ARTIFACT2+3;
+	public static final int ARTIFACT_ROSE2      = ARTIFACT2+4;
+	public static final int ARTIFACT_ROSE3      = ARTIFACT2+5;
+	public static final int ARTIFACT_UNKNOWN    = ARTIFACT2+6;
+	public static final int ARTIFACT_UNKNOWN2   = ARTIFACT2+7;
+	public static final int ARTIFACT_UNKNOWN3   = ARTIFACT2+8;
+	public static final int REDBOOK             = ARTIFACT2+9;
+	public static final int REDBOOK2            = ARTIFACT2+10;
+	public static final int REDBOOK3            = ARTIFACT2+11;
+	public static final int FAIRY_COMMANDER     = ARTIFACT2+12; // 指挥妖精
+	public static final int FAIRY_GEMINI        = ARTIFACT2+13; // 双生妖精
+	public static final int FAIRY_SUCCOR        = ARTIFACT2+14; // 增援妖精
 	static{
 		assignItemRect(ARTIFACT_CLOAK,      16,  14);
 		assignItemRect(ARTIFACT_ARMBAND,    16, 13);
@@ -700,13 +704,16 @@ public class ItemSpriteSheet {
 	public static final int BERRY 		  	= FOOD+12;
 	public static final int MACCOL        	= FOOD+13;
 	public static final int CINNAMON_ROLL	= FOOD+14;
-    public static final int XMASGIFT		= FOOD+25;
-    public static final int WHOLECAKE   	= FOOD+26;
-	public static final int SUGARZONGZI   	= FOOD+27;
-	public static final int SALTYZONGZI   	= FOOD+28;
-	public static final int CHOCO         	= FOOD+29;
-	public static final int NUTSMOONCAKE  	= FOOD+30;
-	public static final int SALTYMOONCAKE 	= FOOD+31;
+
+	//圣诞节行
+	public static final int XMASPIE      	= xy(9, 28);
+    public static final int XMASGIFT		= XMASPIE+1;
+    public static final int WHOLECAKE   	= XMASPIE+2;
+	public static final int SUGARZONGZI   	= XMASPIE+3;
+	public static final int SALTYZONGZI   	= XMASPIE+4;
+	public static final int CHOCO         	= XMASPIE+5;
+	public static final int NUTSMOONCAKE  	= XMASPIE+6;
+	public static final int SALTYMOONCAKE 	= XMASPIE+7;
 	static{
 		assignItemRect(MEAT,         15,11);
 		assignItemRect(STEAK,        15,11);

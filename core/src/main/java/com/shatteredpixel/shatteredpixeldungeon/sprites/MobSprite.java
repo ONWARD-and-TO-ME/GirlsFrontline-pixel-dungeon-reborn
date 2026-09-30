@@ -21,7 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.tweeners.AlphaTweener;
@@ -33,11 +35,38 @@ public class MobSprite extends CharSprite {
 
 	private static final float FADE_TIME	= 3f;
 	private static final float FALL_TIME	= 1f;
-	
+
+	//位置显示图标，跟随怪物移动
+	private EmoIcon posIndicator;
+
+	//是否显示位置显示图标，子类可按状态覆盖（如宝箱怪潜伏时不显示）
+	protected boolean showPosIndicator() {
+		return true;
+	}
+
 	@Override
 	public void update() {
 		sleeping = ch != null && ch.isAlive() && ((Mob)ch).state == ((Mob)ch).SLEEPING;
 		super.update();
+
+		if (SPDSettings.mobPosIndicator() && showPosIndicator() && ch != null && ch.isAlive() && parent != null) {
+			if (posIndicator == null || !posIndicator.alive) {
+				posIndicator = new EmoIcon.PosShow(this);
+			}
+			posIndicator.visible = visible;
+		} else if (posIndicator != null) {
+			posIndicator.killAndErase();
+			posIndicator = null;
+		}
+	}
+
+	@Override
+	public void killAndErase() {
+		if (posIndicator != null) {
+			posIndicator.killAndErase();
+			posIndicator = null;
+		}
+		super.killAndErase();
 	}
 	
 	@Override
