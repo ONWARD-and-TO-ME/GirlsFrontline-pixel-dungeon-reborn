@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.Guidebook;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -716,12 +717,20 @@ public class GameScene extends PixelScene {
 			}
 
 			for (Mob mob : Dungeon.level.mobs) {
-				if (!mob.buffs(ChampionEnemy.class).isEmpty()) {
-					GLog.w(Messages.get(ChampionEnemy.class, "warn"));
-				}
+			if (!mob.buffs(ChampionEnemy.class).isEmpty()) {
+				GLog.w(Messages.get(ChampionEnemy.class, "warn"));
 			}
+		}
 
-			InterlevelScene.mode = InterlevelScene.Mode.NONE;
+		//维度日晷饰品：夜间进入楼层时警告玩家刷怪加快（实现见 DimensionalSundial）
+		DimensionalSundial.sundialWarned = true;
+		if (DimensionalSundial.spawnMultiplierAtCurrentTime() > 1){
+			GLog.w(Messages.get(DimensionalSundial.class, "warning"));
+		} else {
+			DimensionalSundial.sundialWarned = false;
+		}
+
+		InterlevelScene.mode = InterlevelScene.Mode.NONE;
 
 			
 		}

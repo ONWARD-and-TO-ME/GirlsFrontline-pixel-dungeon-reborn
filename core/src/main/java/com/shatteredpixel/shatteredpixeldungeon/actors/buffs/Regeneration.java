@@ -25,6 +25,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ChaoticCenser;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SaltCube;
 
 public class Regeneration extends Buff {
 	
@@ -43,6 +45,11 @@ public class Regeneration extends Buff {
 			return true;
 		}
 		if (target.isAlive()) {
+
+			//混乱香炉饰品：持有时周期性地在敌人附近产生气体（实现见 ChaoticCenser）
+			if (ChaoticCenser.averageTurnsUntilGas() != -1){
+				Buff.affect(Dungeon.hero(), ChaoticCenser.CenserGasTracker.class);
+			}
 
 			if (target.HP < regencap() && !((Hero)target).isStarving()) {
 				LockedFloor lock = target.buff(LockedFloor.class);
@@ -71,6 +78,11 @@ public class Regeneration extends Buff {
                     delay *= 1.5f;
                 }
             }
+
+			//盐块饰品：加快自然生命恢复，楼层锁定时不生效（实现见 SaltCube）
+			if (target.buff(LockedFloor.class) == null) {
+				delay /= SaltCube.healthRegenMultiplier();
+			}
 			spend( delay );
 			
 		} else {

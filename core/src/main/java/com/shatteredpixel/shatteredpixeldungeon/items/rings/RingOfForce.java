@@ -62,10 +62,11 @@ public class RingOfForce extends Ring {
 				ring.guessType("以空手伤害判断为武力瞄准镜。");
 			int level = getBuffedBonus(hero, Force.class);
 			float tier = tier(hero.STR());
-			return Random.NormalIntRange(min(level, tier), max(level, tier));
+			//十三叶草饰品：英雄伤害掷骰可被其影响（实现见 Hero.heroDamageIntRange）
+			return Hero.heroDamageIntRange(min(level, tier), max(level, tier));
 		} else {
 			//attack without any ring of force influence
-			return Random.NormalIntRange(1, Math.max(hero.STR()-8, 1));
+			return Hero.heroDamageIntRange(1, Math.max(hero.STR()-8, 1));
 		}
 	}
 

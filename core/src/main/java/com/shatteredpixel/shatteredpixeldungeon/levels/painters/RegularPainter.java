@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.connection.Connecti
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EntranceRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.watabou.utils.Graph;
 import com.watabou.utils.PathFinder;
@@ -459,8 +460,9 @@ public abstract class RegularPainter extends Painter {
 			validCells.remove(trapPos);
 			validNonHallways.remove(trapPos);
 
-			if (i < nTraps) trap.hide();
-			else            trap.reveal();
+			//机关术饰品：概率直接显示隐藏陷阱（实现见 TrapMechanism）
+			if (i < nTraps && Random.Float() >= TrapMechanism.revealHiddenTrapChance()) trap.hide();
+			else                                                                    trap.reveal();
 
 			l.setTrap( trap, trapPos );
 			//some traps will not be hidden

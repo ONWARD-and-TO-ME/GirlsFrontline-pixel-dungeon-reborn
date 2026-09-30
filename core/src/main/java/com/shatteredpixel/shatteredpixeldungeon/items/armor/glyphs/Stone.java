@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.FerretTuft;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.GameMath;
 
@@ -37,6 +38,9 @@ public class Stone extends Armor.Glyph {
 		float evasion = defender.defenseSkill(attacker);
 		float accuracy = attacker.attackSkill(defender);
 		testing = false;
+
+		//雪貂绒饰品：闪避加成同样作用于石肤的伤害减免计算（实现见 FerretTuft）
+		evasion *= FerretTuft.evasionMultiplier();
 		
 		float hitChance;
 		if (evasion >= accuracy){

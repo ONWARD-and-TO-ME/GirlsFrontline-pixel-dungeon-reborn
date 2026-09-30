@@ -116,7 +116,8 @@ public enum Catalog {
 	SPELLS,
 	FAIRY,
 	MISC_CONSUMABLES,
-	WEAPONS;
+		WEAPONS,
+		TRINKETS;
 	
 	private LinkedHashMap<Class<?>, Boolean> seen = new LinkedHashMap<>();
 	//tracks upgrades spent for equipment, uses for consumables
@@ -215,6 +216,9 @@ public enum Catalog {
 
 		ARTIFACTS.addItems(Generator.Category.ARTIFACT.classes);
 
+		TRINKETS.addItems(Generator.Category.TRINKET.classes);
+		TRINKETS.addItems(com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst.class);
+
 		MISC_EQUIPMENT.addItems(BrokenSeal.class, SpiritBow.class, Waterskin.class, VelvetPouch.class,
 				PotionBandolier.class, ScrollHolder.class, MagicalHolster.class, FoodPouch.class,
 				ItemHolder.class, Amulet.class);
@@ -272,6 +276,7 @@ public enum Catalog {
 		equipmentCatalogs.add(RINGS);
 		equipmentCatalogs.add(ARTIFACTS);
 		equipmentCatalogs.add(MISC_EQUIPMENT);
+		equipmentCatalogs.add(TRINKETS);
 	}
 
 	public static final ArrayList<Catalog> consumableCatalogs = new ArrayList<>();

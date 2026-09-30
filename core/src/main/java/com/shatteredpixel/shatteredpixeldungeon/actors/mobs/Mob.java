@@ -62,6 +62,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArm
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ExoticCrystals;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
@@ -783,6 +787,9 @@ public abstract class Mob extends Char {
 
 		lootChance *= RingOfWealth.dropChanceMultiplier( Dungeon.hero() );
 
+		//遗忘碎片饰品：提升未鉴定装备/武器的怪物掉率（实现见 ShardOfOblivion）
+		lootChance *= ShardOfOblivion.lootChanceMultiplier();
+
 		return lootChance;
 	}
 	public boolean doDrop(){
@@ -847,6 +854,16 @@ public abstract class Mob extends Char {
 			item = Generator.random( (Generator.Category)loot );
 
 		} else if (loot instanceof Class<?>) {
+			//奇异水晶饰品：怪物掉落消耗品时概率升级为奇异消耗品（实现见 ExoticCrystals）
+			if (ExoticPotion.regToExo.containsKey(loot)){
+				if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+					return Generator.random(ExoticPotion.regToExo.get(loot));
+				}
+			} else if (ExoticScroll.regToExo.containsKey(loot)){
+				if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+					return Generator.random(ExoticScroll.regToExo.get(loot));
+				}
+			}
 
 			item = Generator.random( (Class<? extends Item>)loot );
 

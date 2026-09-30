@@ -25,7 +25,9 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Healing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.VialOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HuntressTalent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -109,13 +111,23 @@ public class Dewdrop extends Item {
 		int shield = 0;
 		int maxShield = HuntressTalent.shieldingDewMaxShield(hero);
 		if (maxShield > 0){
+			//鲜血药瓶饰品：多滴服用时先精确计算补足生命所需，再转化护盾（实现见 VialOfBlood）
+			if (quantity > 1 && effect < heal && VialOfBlood.delayBurstHealing()){
+				effect = Math.round(effect/VialOfBlood.totalHealMultiplier());
+			}
 			shield = heal - effect;
 			int curShield = 0;
 			if (hero.buff(Barrier.class) != null) curShield = hero.buff(Barrier.class).shielding();
 			shield = Math.min(shield, maxShield-curShield);
 		}
 		if (effect > 0 || shield > 0) {
-			hero.HP += effect;
+			//鲜血药瓶饰品：多滴服用的爆发治疗改为分摊至多回合（实现见 VialOfBlood）
+			if (effect > 0 && quantity > 1 && VialOfBlood.delayBurstHealing()){
+				Healing healing = Buff.affect(hero, Healing.class);
+				healing.setHeal(effect, 0, VialOfBlood.maxHealPerTurn());
+			} else {
+				hero.HP += effect;
+			}
 			if (shield > 0) Buff.affect(hero, Barrier.class).incShield(shield);
 			hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
 			if (effect > 0 && shield > 0){

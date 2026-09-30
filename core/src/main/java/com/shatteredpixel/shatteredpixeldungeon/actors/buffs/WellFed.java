@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SaltCube;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.utils.Bundle;
@@ -46,7 +47,8 @@ public class WellFed extends Buff {
 			target.HP = Math.min(target.HT, target.HP + 1);
 		}
 		
-		spend(TICK);
+		//盐块饰品：减缓该buff的流逝速度，但不减少总治疗量（实现见 SaltCube）
+		spend(TICK / SaltCube.hungerGainMultiplier());
 		return true;
 	}
 	
@@ -84,7 +86,9 @@ public class WellFed extends Buff {
 
 	@Override
 	public String iconTextDisplay() {
-		return Integer.toString(left);
+		//盐块饰品：显示换算后的剩余回合数（实现见 SaltCube）
+		int visualLeft = (int)(left / SaltCube.hungerGainMultiplier());
+		return Integer.toString(visualLeft+1);
 	}
 	
 	@Override
@@ -94,7 +98,8 @@ public class WellFed extends Buff {
 	
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", left + 1);
+		int visualLeft = (int)(left / SaltCube.hungerGainMultiplier());
+		return Messages.get(this, "desc", visualLeft + 1);
 	}
 	
 	private static final String LEFT = "left";

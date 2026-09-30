@@ -46,6 +46,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesi
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.WondrousResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -412,7 +414,8 @@ public abstract class Wand extends Item {
 	}
 
 	protected void wandUsed() {
-		if (!isIdentified()) {
+		//遗忘碎片饰品：携带时禁用法杖被动鉴定，并记录法杖使用（实现见 ShardOfOblivion）
+		if (!isIdentified() && !ShardOfOblivion.passiveIDDisabled()) {
 			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero(), this) );
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
@@ -421,6 +424,9 @@ public abstract class Wand extends Item {
 				GLog.p( Messages.get(Wand.class,"identify",toString()) );
 				Badges.validateItemLevelAquired( this );
 			}
+		}
+		if (ShardOfOblivion.passiveIDDisabled()){
+			Buff.prolong(curUser, ShardOfOblivion.WandUseTracker.class, ShardOfOblivion.WandUseTracker.DURATION);
 		}
 		curCharges -= cursed ? 1 : chargesPerCast();
 
@@ -643,13 +649,27 @@ public abstract class Wand extends Item {
 									}
 								});
 					} else {
-						curWand.fx(shot, new Callback() {
-							public void call() {
-								curWand.onZap(shot);
+					curWand.fx(shot, new Callback() {
+						public void call() {
+							curWand.onZap(shot);
+							//奇妙树脂饰品：概率在法杖效果后追加正面诅咒效果（实现见 WondrousResin）
+							if (Random.Float() < WondrousResin.extraCurseEffectChance()){
+								WondrousResin.forcePositive = true;
+								CursedWand.cursedZap(curWand,
+										curUser,
+										new Ballistica(curUser.pos, target, Ballistica.MAGIC_BOLT), new Callback() {
+											@Override
+											public void call() {
+												WondrousResin.forcePositive = false;
+												curWand.wandUsed();
+											}
+										});
+							} else {
 								curWand.wandUsed();
 							}
-						});
-					}
+						}
+					});
+				}
 					curWand.cursedKnown = true;
 					if (curWand.overLoadLeft > 0)
                         curWand.overLoadLeft -= 10;

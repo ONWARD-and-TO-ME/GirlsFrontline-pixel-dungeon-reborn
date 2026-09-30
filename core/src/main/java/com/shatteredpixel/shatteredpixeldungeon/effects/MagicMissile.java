@@ -86,7 +86,10 @@ public class MagicMissile extends Emitter {
 	public static final int PURPLE_CONE     = 111;
 	public static final int SPARK_CONE      = 112;
 	public static final int BLOOD_CONE      = 113;
-	
+
+	//use SPECK + the constant of the Speck you want. e.g. MagicMissile.SPECK + Speck.TOXIC
+	public static final int SPECK           = 1000;
+
 	public void reset( int type, int from, int to, Callback callback ) {
 		reset( type,
 				DungeonTilemap.raisedTileCenterToWorld( from ),
@@ -123,6 +126,14 @@ public class MagicMissile extends Emitter {
 		sx = speed.x;
 		sy = speed.y;
 		time = d.length() / SPEED;
+
+		//for now all specks share the same size and volume, this can easily be customized later if needed
+		if (type >= SPECK){
+			size( 10 );
+			pour( Speck.factory(type-SPECK), 0.02f);
+			revive();
+			return;
+		}
 
 		switch(type){
 			case MAGIC_MISSILE: default:

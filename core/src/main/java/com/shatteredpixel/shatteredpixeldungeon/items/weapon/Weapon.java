@@ -41,6 +41,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfKing;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Annoying;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Displacing;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Exhausting;
@@ -183,8 +185,10 @@ abstract public class Weapon extends KindOfWeapon {
 	public int proc( Char attacker, Char defender, int damage ) {
 
 		damage = enchantmentProc(attacker, defender, damage);
-		
-		if (!levelKnown && attacker == Dungeon.hero()) {
+
+		//遗忘碎片饰品：携带时禁用武器/护甲被动鉴定（实现见 ShardOfOblivion）
+		if (!ShardOfOblivion.passiveIDDisabled()
+				&& !levelKnown && attacker == Dungeon.hero()) {
 			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero(), this) );
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
@@ -200,7 +204,8 @@ abstract public class Weapon extends KindOfWeapon {
 	
 	public void onHeroGainExp( float levelPercent, Hero hero ){
 		levelPercent *= Talent.itemIDSpeedFactor(hero, this);
-		if (!levelKnown && isEquipped(hero) && availableUsesToID <= USES_TO_ID/2f) {
+		if (!ShardOfOblivion.passiveIDDisabled()
+				&& !levelKnown && isEquipped(hero) && availableUsesToID <= USES_TO_ID/2f) {
 			//gains enough uses to ID over 0.5 levels
 			availableUsesToID = Math.min(USES_TO_ID/2f, availableUsesToID + levelPercent * USES_TO_ID);
 		}
@@ -480,11 +485,12 @@ abstract public class Weapon extends KindOfWeapon {
 		
 		//30% chance to be cursed
 		//10% chance to be enchanted
+		//羊皮纸碎片饰品：改变诅咒/附魔出现概率（实现见 ParchmentScrap）
 		float effectRoll = Random.Float();
-		if (effectRoll < 0.3F * cursedChance) {
+		if (effectRoll < 0.3F * cursedChance * ParchmentScrap.curseChanceMultiplier()) {
 			enchant(Enchantment.randomCurse());
 			cursed = true;
-		} else if (effectRoll >= (1F - 0.1F * enchantChance)){
+		} else if (effectRoll >= (1F - 0.1F * enchantChance * ParchmentScrap.enchantChanceMultiplier())){
 			enchant();
 		}
 

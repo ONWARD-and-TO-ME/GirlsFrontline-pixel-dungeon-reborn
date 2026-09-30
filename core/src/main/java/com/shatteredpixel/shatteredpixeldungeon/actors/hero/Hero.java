@@ -136,6 +136,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ThirteenLeafClover;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEvasion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
@@ -743,9 +744,19 @@ public class Hero extends Char {
             }
         }
 		if (dmg < 0) dmg = 0;
-		
+
 		return dmg;
 	}
+
+	//十三叶草饰品：英雄的伤害掷骰可被其影响（实现见 ThirteenLeafClover）
+	public static int heroDamageIntRange(int min, int max ){
+		if (Random.Float() < ThirteenLeafClover.alterHeroDamageChance()){
+			return ThirteenLeafClover.alterDamageRoll(min, max);
+		} else {
+			return Random.NormalIntRange(min, max);
+		}
+	}
+
 	private float dmgMul(){
         float mul = 1 ;
         Hunger hunger = Dungeon.hero().buff(Hunger.class);
@@ -758,7 +769,7 @@ public class Hero extends Char {
             mul = Math.min(1.35f, mul);
         }
         return mul;
-    }
+	}
 	@Override
 	public float speed() {
 

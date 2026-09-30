@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -67,17 +68,21 @@ public class Mimic extends Mob {
 	}
 	
 	public ArrayList<Item> items;
-	
+
+	private boolean stealthy = false;
+
 	private static final String LEVEL	= "level";
 	private static final String ITEMS	= "items";
-	
+	private static final String STEALTHY= "stealthy";
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		if (items != null) bundle.put( ITEMS, items );
 		bundle.put( LEVEL, level );
+		bundle.put( STEALTHY, stealthy );
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
@@ -86,6 +91,7 @@ public class Mimic extends Mob {
 		}
 		level = bundle.getInt( LEVEL );
 		adjustStats(level);
+		stealthy = bundle.getBoolean(STEALTHY);
 		super.restoreFromBundle(bundle);
 		if (state != PASSIVE && alignment == Alignment.NEUTRAL){
 			alignment = Alignment.ENEMY;
@@ -114,10 +120,20 @@ public class Mimic extends Mob {
 	@Override
 	public String description() {
 		if (alignment == Alignment.NEUTRAL){
-			return Messages.get(Heap.class, "chest_desc") + "\n\n" + Messages.get(this, "hidden_hint");
+			//拟态怪之牙饰品：潜伏的拟态怪不再显示破绽提示（实现见 MimicTooth）
+			if (MimicTooth.stealthyMimics()){
+				return Messages.get(Heap.class, "chest_desc");
+			} else {
+				return Messages.get(Heap.class, "chest_desc") + "\n\n" + Messages.get(this, "hidden_hint");
+			}
 		} else {
 			return super.description();
 		}
+	}
+
+	//拟态怪之牙饰品：隐秘拟态怪的视觉行为使其更难被察觉（实现见 MimicTooth）
+	public boolean stealthy(){
+		return stealthy;
 	}
 
 	@Override
@@ -298,7 +314,12 @@ public class Mimic extends Mob {
 
 		//generate an extra reward for killing the mimic
 		m.generatePrize();
-		
+
+		//拟态怪之牙饰品：生成的拟态怪变为隐秘状态（实现见 MimicTooth）
+		if (MimicTooth.stealthyMimics()){
+			m.stealthy = true;
+		}
+
 		return m;
 	}
 
@@ -324,6 +345,11 @@ public class Mimic extends Mob {
 			}
 		} while (reward == null || Challenges.isItemBlocked(reward));
 		items.add(reward);
+
+		//拟态怪之牙饰品：隐秘拟态怪额外携带一件随机物品（实现见 MimicTooth）
+		if (MimicTooth.stealthyMimics()){
+			items.add(Generator.randomUsingDefaults());
+		}
 	}
 
 }

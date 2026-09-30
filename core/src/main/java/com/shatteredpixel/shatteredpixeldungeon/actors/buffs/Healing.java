@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.VialOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
@@ -64,12 +65,21 @@ public class Healing extends Buff {
 	}
 	
 	private int healingThisTick(){
-		return (int)GameMath.gate(1,
+		int healingThisTick = (int)GameMath.gate(1,
 				Math.round(healingLeft * percentHealPerTick) + flatHealPerTick,
 				healingLeft);
+		//鲜血药瓶饰品：爆发治疗分摊时限制每回合治疗量（实现见 VialOfBlood）
+		if (VialOfBlood.delayBurstHealing()){
+			healingThisTick = Math.min(healingThisTick, VialOfBlood.maxHealPerTurn());
+		}
+		return healingThisTick;
 	}
-	
+
 	public void setHeal(int amount, float percentPerTick, int flatPerTick){
+		//鲜血药瓶饰品：爆发治疗总量提升但分摊至多回合（实现见 VialOfBlood）
+		if (VialOfBlood.delayBurstHealing()){
+			amount = Math.round(amount * VialOfBlood.totalHealMultiplier());
+		}
 		healingLeft = amount;
 		percentHealPerTick = percentPerTick;
 		flatHealPerTick = flatPerTick;

@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.watabou.utils.Bundle;
@@ -316,11 +317,12 @@ public class Belongings implements Iterable<Item> {
 	}
 	
 	public void observe() {
-		if (weapon() != null) {
+		//遗忘碎片饰品：持有时武器/护甲/戒指不再随楼层观察被动鉴定（实现见 ShardOfOblivion）
+		if (weapon() != null && !ShardOfOblivion.passiveIDDisabled()) {
 			weapon().identify();
 			Badges.validateItemLevelAquired(weapon());
 		}
-        if (armor() != null) {
+        if (armor() != null && !ShardOfOblivion.passiveIDDisabled()) {
             armor().identify();
             Badges.validateItemLevelAquired(armor());
         }
@@ -332,7 +334,7 @@ public class Belongings implements Iterable<Item> {
 			misc().identify();
 			Badges.validateItemLevelAquired(misc());
 		}
-		if (ring() != null) {
+		if (ring() != null && !ShardOfOblivion.passiveIDDisabled()) {
 			ring().identify();
 			Badges.validateItemLevelAquired(ring());
 		}

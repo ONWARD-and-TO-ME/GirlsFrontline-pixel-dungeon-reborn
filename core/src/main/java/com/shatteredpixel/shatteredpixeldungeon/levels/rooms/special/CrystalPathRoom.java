@@ -30,9 +30,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ExoticCrystals;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -154,9 +157,13 @@ public class CrystalPathRoom extends SpecialRoom {
                     if (roll == 0) {
                         item = new StoneOfEnchantment();
                     } else if (roll == 1) {
-                        item = new PotionOfExperience();
+                        //异晶簇饰品：概率将经验药水升级为神启药水（实现见 ExoticCrystals）
+                        item = Random.Float() < ExoticCrystals.consumableExoticChance()
+                                ? new PotionOfDivineInspiration() : new PotionOfExperience();
                     } else {
-                        item = new ScrollOfTransmutation();
+                        //异晶簇饰品：概率将蜕变卷轴升级为超维卷轴（实现见 ExoticCrystals）
+                        item = Random.Float() < ExoticCrystals.consumableExoticChance()
+                                ? new ScrollOfMetamorphosis() : new ScrollOfTransmutation();
                     }
                     break;
             }
@@ -281,8 +288,11 @@ public class CrystalPathRoom extends SpecialRoom {
         scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));
         scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));
         scrolls.add(Generator.randomUsingDefaults(Generator.Category.SCROLL));
-        Potion p = new PotionOfExperience();
-        Scroll s = new ScrollOfTransmutation();
+        //异晶簇饰品：概率将保底奖励升级为稀有版本（实现见 ExoticCrystals）
+        Potion p = Random.Float() < ExoticCrystals.consumableExoticChance()
+                ? new PotionOfDivineInspiration() : new PotionOfExperience();
+        Scroll s = Random.Float() < ExoticCrystals.consumableExoticChance()
+                ? new ScrollOfMetamorphosis() : new ScrollOfTransmutation();
         boolean isEXP = Random.Int(2) == 0;
         if(p.isKnown() && s.isKnown()){
             potions.set(2, p);

@@ -23,11 +23,14 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.watabou.noosa.TextureFilm;
 
 public class MimicSprite extends MobSprite {
 
-	private Animation hiding;
+	protected Animation advancedHiding;
+
+	protected Animation hiding;
 
 	{
 		//adjust shadow slightly to account for 1 empty bottom pixel (used for border while hiding)
@@ -48,6 +51,10 @@ public class MimicSprite extends MobSprite {
 		texture( Assets.Sprites.MIMIC );
 
 		TextureFilm frames = new TextureFilm( texture, 16, 16 );
+
+		//拟态怪之牙饰品：隐秘拟态怪始终显示完全闭合的宝箱，无细微破绽动画（实现见 MimicTooth）
+		advancedHiding = new Animation( 1, true );
+		advancedHiding.frames( frames, 0+c);
 
 		hiding = new Animation( 1, true );
 		hiding.frames( frames, 0+c, 0+c, 0+c, 0+c, 0+c, 1+c);
@@ -71,24 +78,32 @@ public class MimicSprite extends MobSprite {
 	public void linkVisuals(Char ch) {
 		super.linkVisuals(ch);
 		if (ch.alignment == Char.Alignment.NEUTRAL) {
-			hideMimic();
+			hideMimic(ch);
 		}
 	}
 
 	public void hideMimic(){
-		play(hiding);
+		hideMimic(null);
+	}
+
+	public void hideMimic(Char ch){
+		if (ch instanceof Mimic && ((Mimic) ch).stealthy()){
+			play(advancedHiding);
+		} else {
+			play(hiding);
+		}
 		hideSleep();
 	}
 
 	@Override
 	protected boolean showPosIndicator() {
 		//潜伏（伪装成宝箱）状态下不显示位置图标
-		return curAnim != hiding;
+		return curAnim != hiding && curAnim != advancedHiding;
 	}
 
 	@Override
 	public void showSleep() {
-		if (curAnim == hiding){
+		if (curAnim == hiding || curAnim == advancedHiding){
 			return;
 		}
 		super.showSleep();

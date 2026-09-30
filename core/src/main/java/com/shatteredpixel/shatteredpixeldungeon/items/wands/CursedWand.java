@@ -54,6 +54,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.WondrousResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CursingTrap;
@@ -92,11 +93,58 @@ public class CursedWand {
 		cursedFX(user, bolt, new Callback() {
 			@Override
 			public void call() {
-				if (cursedEffect(origin, user, bolt.collisionPos)){
+				//奇妙树脂饰品：强制正面效果时使用简化的正面诅咒效果（实现见 WondrousResin）
+				if (WondrousResin.forcePositive && user == Dungeon.hero()){
+					if (positiveEffect(origin, user, bolt.collisionPos)){
+						if (afterZap != null) afterZap.call();
+					}
+				} else if (cursedEffect(origin, user, bolt.collisionPos)){
 					if (afterZap != null) afterZap.call();
 				}
 			}
 		});
+	}
+
+	//奇妙树脂饰品：简化正面诅咒效果池，仅包含无害或有益的常见效果（实现见 WondrousResin）
+	private static boolean positiveEffect(final Item origin, final Char user, final int targetPos){
+		Char target = Actor.findChar(targetPos);
+		switch (Random.Int(4)){
+			case 0: default:
+				//治疗
+				if (target != null && target.alignment == Char.Alignment.ENEMY){
+					target.HP = Math.min(target.HT, target.HP + target.HT/4);
+					target.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 4 );
+				} else {
+					user.HP = Math.min(user.HT, user.HP + user.HT/4);
+					user.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 4 );
+				}
+				tryForWandProc(target, origin);
+				return true;
+			case 1:
+				//燃烧目标
+				if (target != null){
+					Buff.affect(target, Burning.class).reignite(target);
+					tryForWandProc(target, origin);
+					return true;
+				}
+				return false;
+			case 2:
+				//冻结目标
+				if (target != null){
+					Buff.affect(target, Frost.class, Frost.DURATION);
+					tryForWandProc(target, origin);
+					return true;
+				}
+				return false;
+			case 3:
+				//传送目标
+				if (target != null){
+					ScrollOfTeleportation.teleportChar(target);
+					tryForWandProc(target, origin);
+					return true;
+				}
+				return false;
+		}
 	}
 
 	public static void tryForWandProc( Char target, Item origin ){

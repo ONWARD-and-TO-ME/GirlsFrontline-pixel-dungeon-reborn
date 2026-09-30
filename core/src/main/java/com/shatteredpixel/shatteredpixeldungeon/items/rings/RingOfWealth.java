@@ -34,10 +34,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.ArcaneCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ExoticCrystals;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -237,10 +240,18 @@ public class RingOfWealth extends Ring {
 				return i.quantity(i.quantity()*2);
 			case 1:
 				i = Generator.randomUsingDefaults(Generator.Category.POTION);
-				return Reflection.newInstance(ExoticPotion.regToExo.get(i.getClass()));
+				if (!(i instanceof ExoticPotion)) {
+					return Reflection.newInstance(ExoticPotion.regToExo.get(i.getClass()));
+				} else {
+					return Reflection.newInstance(i.getClass());
+				}
 			case 2:
 				i = Generator.randomUsingDefaults(Generator.Category.SCROLL);
-				return Reflection.newInstance(ExoticScroll.regToExo.get(i.getClass()));
+				if (!(i instanceof ExoticScroll)){
+					return Reflection.newInstance(ExoticScroll.regToExo.get(i.getClass()));
+				} else {
+					return Reflection.newInstance(i.getClass());
+				}
 			case 3:
 				return Random.Int(2) == 0 ? new ArcaneCatalyst() : new AlchemicalCatalyst();
 			case 4:
@@ -264,9 +275,10 @@ public class RingOfWealth extends Ring {
 			case 1:
 				return new StoneOfEnchantment();
 			case 2:
-				return new PotionOfExperience();
+				//异晶簇饰品：概率将稀有消耗品升级为更高阶版本（实现见 ExoticCrystals）
+				return Random.Float() < ExoticCrystals.consumableExoticChance() ? new PotionOfDivineInspiration() : new PotionOfExperience();
 			case 3:
-				return new ScrollOfTransmutation();
+				return Random.Float() < ExoticCrystals.consumableExoticChance() ? new ScrollOfMetamorphosis() : new ScrollOfTransmutation();
 		}
 	}
 

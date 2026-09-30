@@ -26,7 +26,7 @@ import com.watabou.noosa.TextureFilm;
 
 public class ItemSpriteSheet {
 
-	private static final int WIDTH = 32;
+	public static final int WIDTH = 32;
 	public static final int SIZE = 16;
 
 	public static TextureFilm film = new TextureFilm( Assets.Sprites.ITEMS, SIZE, SIZE );
@@ -704,16 +704,6 @@ public class ItemSpriteSheet {
 	public static final int BERRY 		  	= FOOD+12;
 	public static final int MACCOL        	= FOOD+13;
 	public static final int CINNAMON_ROLL	= FOOD+14;
-
-	//圣诞节行
-	public static final int XMASPIE      	= xy(9, 28);
-    public static final int XMASGIFT		= XMASPIE+1;
-    public static final int WHOLECAKE   	= XMASPIE+2;
-	public static final int SUGARZONGZI   	= XMASPIE+3;
-	public static final int SALTYZONGZI   	= XMASPIE+4;
-	public static final int CHOCO         	= XMASPIE+5;
-	public static final int NUTSMOONCAKE  	= XMASPIE+6;
-	public static final int SALTYMOONCAKE 	= XMASPIE+7;
 	static{
 		assignItemRect(MEAT,         15,11);
 		assignItemRect(STEAK,        15,11);
@@ -728,6 +718,18 @@ public class ItemSpriteSheet {
 		assignItemRect(MEAT_PIE,     16,11);
 		assignItemRect(BLANDFRUIT,   9, 12);
 		assignItemRect(BLAND_CHUNKS, 14,6);
+	}
+
+	//圣诞节行
+	public static final int XMASPIE      	= xy(9, 29);
+    public static final int XMASGIFT		= XMASPIE+1;
+    public static final int WHOLECAKE   	= XMASPIE+2;
+	public static final int SUGARZONGZI   	= XMASPIE+3;
+	public static final int SALTYZONGZI   	= XMASPIE+4;
+	public static final int CHOCO         	= XMASPIE+5;
+	public static final int NUTSMOONCAKE  	= XMASPIE+6;
+	public static final int SALTYMOONCAKE 	= XMASPIE+7;
+	static{
 		assignItemRect(BERRY,        11,11);
 		assignItemRect(MACCOL,       8, 14);
 		assignItemRect(CINNAMON_ROLL,8, 8);
@@ -739,6 +741,7 @@ public class ItemSpriteSheet {
 		assignItemRect(NUTSMOONCAKE, 15,14);
 		assignItemRect(SALTYMOONCAKE,16,14);
 	}
+	
 	//任务行
 	private static final int QUEST  =                                       xy(1, 29);  //32 slots
 	public static final int SKULL   = QUEST+0;
@@ -893,7 +896,48 @@ public class ItemSpriteSheet {
 	    assignItemRect(ClUSTER_KIT_B,    	 15, 12);
 	    assignItemRect(SPBULLET,    		 15, 15);
 	}
-	//16 free slots
+
+	//饰品行（17个饰品+饰品催化剂，对应破碎像素地牢的贴图顺序）
+	private static final int TRINKETS       =                               xy(1, 40);
+	public static final int RAT_SKULL       = TRINKETS+0;
+	public static final int PARCHMENT_SCRAP = TRINKETS+1;
+	public static final int PETRIFIED_SEED  = TRINKETS+2;
+	public static final int EXOTIC_CRYSTALS = TRINKETS+3;
+	public static final int MOSSY_CLUMP     = TRINKETS+4;
+	public static final int SUNDIAL         = TRINKETS+5;
+	public static final int CLOVER          = TRINKETS+6;
+	public static final int TRAP_MECHANISM  = TRINKETS+7;
+	public static final int MIMIC_TOOTH     = TRINKETS+8;
+	public static final int WONDROUS_RESIN  = TRINKETS+9;
+	public static final int EYE_OF_NEWT     = TRINKETS+10;
+	public static final int SALT_CUBE       = TRINKETS+11;
+	public static final int BLOOD_VIAL      = TRINKETS+12;
+	public static final int OBLIVION_SHARD  = TRINKETS+13;
+	public static final int CHAOTIC_CENSER  = TRINKETS+14;
+	public static final int FERRET_TUFT     = TRINKETS+15;
+	public static final int SPYGLASS        = TRINKETS+16;
+	public static final int TRINKET_CATA    = TRINKETS+17;
+	static{
+		assignItemRect(RAT_SKULL,       16, 11);
+		assignItemRect(PARCHMENT_SCRAP, 10, 14);
+		assignItemRect(PETRIFIED_SEED,   9,  9);
+		assignItemRect(EXOTIC_CRYSTALS, 15, 13);
+		assignItemRect(MOSSY_CLUMP,     12, 11);
+		assignItemRect(SUNDIAL,         16, 12);
+		assignItemRect(CLOVER,          11, 15);
+		assignItemRect(TRAP_MECHANISM,  13, 15);
+		assignItemRect(MIMIC_TOOTH,      8, 15);
+		assignItemRect(WONDROUS_RESIN,  12, 11);
+		assignItemRect(EYE_OF_NEWT,     12, 12);
+		assignItemRect(SALT_CUBE,       12, 13);
+		assignItemRect(BLOOD_VIAL,       6, 15);
+		assignItemRect(OBLIVION_SHARD,   7, 14);
+		assignItemRect(CHAOTIC_CENSER,  13, 15);
+		assignItemRect(FERRET_TUFT,     16, 15);
+		assignItemRect(SPYGLASS,        15, 15);
+		assignItemRect(TRINKET_CATA,    12, 11);
+	}
+	//14 free slots
 
 	//for smaller 8x8 icons that often accompany an item sprite
 	public static class Icons {

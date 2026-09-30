@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SugarZongzi;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.GuidePage;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.FigureEightBuilder;
@@ -346,7 +347,9 @@ public abstract class RegularLevel extends Level {
 				type = Heap.Type.CHEST;
 				break;
 			case 5:
-				if (Dungeon.cur().depth > 1 && findMob(cell) == null){
+				//拟态怪之牙饰品：增加宝箱怪生成概率（实现见 MimicTooth）
+				if (Dungeon.cur().depth > 1 && findMob(cell) == null
+						&& Random.Float() < (MimicTooth.mimicChanceMultiplier() - 1f)/4f){
 					mobs.add(Mimic.spawnAt(cell, toDrop));
 					continue;
 				}
@@ -360,7 +363,9 @@ public abstract class RegularLevel extends Level {
 			if ((toDrop instanceof Artifact && Random.Int(2) == 0) ||
 					(toDrop.isUpgradable() && Random.Int(4 - toDrop.level()) == 0)){
 
-				if (Dungeon.cur().depth > 1 && Random.Int(10) == 0 && findMob(cell) == null){
+				//拟态怪之牙饰品：增加金宝箱怪生成概率（实现见 MimicTooth）
+				float mimicChance = 1/10f * MimicTooth.mimicChanceMultiplier();
+				if (Dungeon.cur().depth > 1 && Random.Float() < mimicChance && findMob(cell) == null){
 					mobs.add(Mimic.spawnAt(cell, toDrop, GoldenMimic.class));
 				} else {
 					Heap dropped = drop(toDrop, cell);

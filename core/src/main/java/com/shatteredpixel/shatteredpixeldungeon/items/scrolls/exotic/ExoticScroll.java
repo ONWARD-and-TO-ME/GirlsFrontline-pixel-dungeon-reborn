@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -101,7 +102,8 @@ public abstract class ExoticScroll extends Scroll {
 	public void reset() {
 		super.reset();
 		if (handler != null && handler.contains(exoToReg.get(this.getClass()))) {
-			image = handler.image(exoToReg.get(this.getClass())) + 16;
+			//image 为普通卷轴贴图索引 + 一整行（WIDTH），跳转到同位置的大卷轴贴图
+			image = handler.image(exoToReg.get(this.getClass())) + ItemSpriteSheet.WIDTH;
 			rune = handler.label(exoToReg.get(this.getClass()));
 		}
 	}

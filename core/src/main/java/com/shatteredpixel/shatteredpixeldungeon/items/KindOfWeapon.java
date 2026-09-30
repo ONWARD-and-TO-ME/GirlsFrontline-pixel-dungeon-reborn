@@ -210,7 +210,8 @@ abstract public class KindOfWeapon extends EquipableItem {
 	abstract public int max(int lvl);
 
 	public int damageRoll( Char owner ) {
-        int dmg = Random.NormalIntRange( min(), max() );
+		//十三叶草饰品：英雄伤害掷骰可被其影响（实现见 ThirteenLeafClover.heroDamageIntRange）
+		int dmg = owner instanceof Hero ? Hero.heroDamageIntRange( min(), max() ) : Random.NormalIntRange( min(), max() );
         if (owner instanceof Hero && Dungeon.hero().enemy instanceof Mob) {
 			Mob enemy = (Mob) Dungeon.hero().enemy;
             if (enemy.surprisedBy(Dungeon.hero())) {

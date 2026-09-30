@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Camouflage;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SandalsOfNature;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Berry;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.PetrifiedSeed;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -115,8 +116,15 @@ public class HighGrass {
 			
 			if (naturalismLevel >= 0) {
 				// Seed, scales from 1/25 to 1/5
-				if (Random.Int(25 - (naturalismLevel * 5)) == 0) {
-					level.drop(Generator.random(Generator.Category.SEED), pos).sprite.drop();
+				//石化种子饰品：提高草的种子掉率并可能将种子变为石块（实现见 PetrifiedSeed）
+				float lootChance = 1f/(25f - (naturalismLevel * 5));
+				lootChance *= PetrifiedSeed.grassLootMultiplier();
+				if (Random.Float() < lootChance) {
+					if (Random.Float() < PetrifiedSeed.stoneInsteadOfSeedChance()){
+						level.drop(Generator.randomUsingDefaults(Generator.Category.STONE), pos).sprite.drop();
+					} else {
+						level.drop(Generator.random(Generator.Category.SEED), pos).sprite.drop();
+					}
 				}
 				
 				// Dew, scales from 1/6 to 1/3

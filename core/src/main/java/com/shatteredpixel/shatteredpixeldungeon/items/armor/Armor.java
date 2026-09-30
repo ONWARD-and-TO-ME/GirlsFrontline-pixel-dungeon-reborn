@@ -41,6 +41,8 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.AntiEntropy;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Bulk;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Corrosion;
@@ -731,7 +733,9 @@ public class Armor extends EquipableItem {
 			damage = glyph.proc( this, attacker, defender, damage );
 		}
 		
-		if (!levelKnown && defender == Dungeon.hero()) {
+		//遗忘碎片饰品：携带时禁用武器/护甲被动鉴定（实现见 ShardOfOblivion）
+		if (!ShardOfOblivion.passiveIDDisabled()
+				&& !levelKnown && defender == Dungeon.hero()) {
 			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero(), this) );
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
@@ -843,11 +847,12 @@ public class Armor extends EquipableItem {
 		
 		//30% chance to be cursed
 		//15% chance to be inscribed
+		//羊皮纸碎片饰品：改变诅咒/铭文出现概率（实现见 ParchmentScrap）
 		float effectRoll = Random.Float();
-		if (effectRoll < 0.3f) {
+		if (effectRoll < 0.3f * ParchmentScrap.curseChanceMultiplier()) {
 			inscribe(Glyph.randomCurse());
 			cursed = true;
-		} else if (effectRoll >= 0.85f){
+		} else if (effectRoll >= 1f - (0.15f * ParchmentScrap.enchantChanceMultiplier())){
 			inscribe();
 		}
 

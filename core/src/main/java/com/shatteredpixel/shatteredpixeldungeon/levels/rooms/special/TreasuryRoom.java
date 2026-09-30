@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -48,7 +49,9 @@ public class TreasuryRoom extends SpecialRoom {
 			do {
 				pos = level.pointToCell(random());
 			} while (level.map[pos] != Terrain.EMPTY || level.heaps.get( pos ) != null || level.findMob(pos) != null);
-			if (heapType == Heap.Type.CHEST && Dungeon.cur().depth > 1 && Random.Int( 5 ) == 0){
+			//拟态怪之牙饰品：增加宝箱怪生成概率（实现见 MimicTooth）
+			float mimicChance = 1/5f * MimicTooth.mimicChanceMultiplier();
+			if (heapType == Heap.Type.CHEST && Dungeon.cur().depth > 1 && Random.Float() < mimicChance){
 				level.mobs.add(Mimic.spawnAt(pos, new Gold().random()));
 			} else {
 				level.drop( new Gold().random(), pos ).type = heapType;

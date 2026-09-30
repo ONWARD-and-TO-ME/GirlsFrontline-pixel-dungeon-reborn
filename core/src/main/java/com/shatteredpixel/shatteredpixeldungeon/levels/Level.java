@@ -72,6 +72,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.EyeOfNewt;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MossyClump;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.HighGrass;
@@ -275,6 +279,13 @@ public abstract class Level implements Bundlable {
 					case 6:
 						feeling = Feeling.SECRETS;
 						break;
+				}
+
+				//苔藓团/陷阱机关饰品：可将普通层改写为对应生态层（实现见 MossyClump/TrapMechanism）
+				if (feeling == Feeling.NONE && Random.Float() < MossyClump.overrideNormalLevelChance()){
+					feeling = MossyClump.getNextFeeling();
+				} else if (feeling == Feeling.NONE && Random.Float() < TrapMechanism.overrideNormalLevelChance()){
+					feeling = TrapMechanism.getNextFeeling();
 				}
 			}
 		}
@@ -665,12 +676,14 @@ public abstract class Level implements Bundlable {
 	}
 
 	public float respawnCooldown(){
+		//维度日晷饰品：根据现实时间调整刷怪间隔（实现见 DimensionalSundial）
+		float sundialMulti = DimensionalSundial.spawnMultiplierAtCurrentTime();
 		if (Statistics.amuletObtained){
-			return TIME_TO_RESPAWN/2f;
+			return TIME_TO_RESPAWN/2f * sundialMulti;
 		} else if (Dungeon.level.feeling == Feeling.DARK){
-			return 2*TIME_TO_RESPAWN/3f;
+			return 2*TIME_TO_RESPAWN/3f * sundialMulti;
 		} else {
-			return TIME_TO_RESPAWN;
+			return TIME_TO_RESPAWN * sundialMulti;
 		}
 	}
 
@@ -1289,6 +1302,8 @@ public abstract class Level implements Bundlable {
 				viewDist *= HuntressTalent.farsightMultiplier((Hero) c);
 				// HK416天赋：2.5x ACOG镜视野加成
 				viewDist += HK416Talent.acogVisionBonus((Hero) c);
+				//蜥蜴之眼饰品：视野范围缩减（实现见 EyeOfNewt）
+				viewDist = Math.round(viewDist * EyeOfNewt.visionRangeMultiplier());
 			}
 			
 			ShadowCaster.castShadow( cx, cy, fieldOfView, blocking, viewDist );
@@ -1363,7 +1378,8 @@ public abstract class Level implements Bundlable {
 			} else {
 				Hero h = (Hero) c;
 				// 女猎（隼）强化感官：心灵视野范围（实现见 HuntressTalent）
-				int range = HuntressTalent.heightenedSensesRange(h);
+				//蜥蜴之眼饰品：心灵视野范围（实现见 EyeOfNewt）
+				int range = Math.max(HuntressTalent.heightenedSensesRange(h), EyeOfNewt.mindVisionRange());
 				if (range > 0) for (Mob mob : mobs) {
 					int p = mob.pos;
 					if (!fieldOfView[p] && distance(c.pos, p) <= range) {

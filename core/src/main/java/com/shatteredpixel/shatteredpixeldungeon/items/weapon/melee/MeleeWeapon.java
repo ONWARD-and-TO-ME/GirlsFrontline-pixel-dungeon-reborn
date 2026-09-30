@@ -76,7 +76,8 @@ public class MeleeWeapon extends Weapon {
 		if (owner instanceof Hero) {
 			int exStr = ((Hero)owner).STR() - STRReq();
 			if (exStr > 0) {
-				damage += Random.IntRange( 0, exStr );
+				//十三叶草饰品：英雄伤害掷骰可被其影响（实现见 Hero.heroDamageIntRange）
+				damage += Hero.heroDamageIntRange( 0, exStr );
 			}
 		}
 		

@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.HuntressTalent;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.herotalent.RogueTalent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -212,6 +213,11 @@ abstract public class MissileWeapon extends Weapon {
 
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
+		//遗忘碎片饰品：以未鉴定的投掷武器攻击时记录使用（实现见 ShardOfOblivion.ThrownUseTracker）
+		if (attacker == Dungeon.hero() && !levelKnown
+				&& Dungeon.hero().belongings.getItem(ShardOfOblivion.class) != null){
+			Buff.prolong(Dungeon.hero(), ShardOfOblivion.ThrownUseTracker.class, ShardOfOblivion.ThrownUseTracker.DURATION);
+		}
 		// 女猎（隼）共享附魔：命中时概率借用灵弓附魔（实现见 HuntressTalent）
 		if (attacker == Dungeon.hero() && HuntressTalent.rollSharedEnchantment(Dungeon.hero())){
 			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.hero())){

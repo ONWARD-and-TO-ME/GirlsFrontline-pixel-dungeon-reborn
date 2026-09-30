@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.Guidebook;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SaltCube;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -96,6 +97,9 @@ public class Hunger extends Buff implements Hero.Doom {
 				//超级小爱飞行时饱食度消耗翻倍
 				SuperAiFlight flight = target.buff(SuperAiFlight.class);
 				float step = (flight != null && flight.isActive()) ? STEP * 2f : STEP;
+
+				//盐块饰品：减缓饱食度消耗速度（实现见 SaltCube）
+				step *= SaltCube.hungerGainMultiplier();
 
 				float newLevel = level + step;
 				if (newLevel >= STARVING) {

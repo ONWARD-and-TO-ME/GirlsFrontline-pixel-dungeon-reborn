@@ -93,6 +93,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetributio
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.FerretTuft;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
@@ -109,6 +110,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrimTrap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
@@ -471,7 +473,15 @@ public abstract class Char extends Actor {
 
 		} else {
 
-			enemy.sprite.showStatus( CharSprite.NEUTRAL, enemy.defenseVerb() );
+			if (enemy.sprite != null){
+				if (tuftDodged){
+					//雪貂绒饰品：闪避成功时显示绒尾图标（实现见 FerretTuft）
+					enemy.sprite.showStatusWithIcon(CharSprite.NEUTRAL, enemy.defenseVerb(), FloatingText.TUFT);
+				} else {
+					enemy.sprite.showStatus( CharSprite.NEUTRAL, enemy.defenseVerb() );
+				}
+			}
+			tuftDodged = false;
 			if (visibleFight) {
 				//TODO enemy.defenseSound? currently miss plays for monks/crab even when they parry
 				Sample.INSTANCE.play(Assets.Sounds.MISS);
@@ -530,8 +540,17 @@ public abstract class Char extends Actor {
 		StickyAdhesion.StickyDeter defenderDeter = defender.buff(StickyAdhesion.StickyDeter.class);
 		if (defenderDeter != null) defRoll *= defenderDeter.factor();
 
+		//雪貂绒饰品：若本次闪避由绒尾加成达成则记录，用于显示特殊图标（实现见 FerretTuft）
+		if (defRoll < acuRoll*accMulti && (defRoll*FerretTuft.evasionMultiplier()) >= acuRoll*accMulti){
+			tuftDodged = true;
+		}
+		defRoll *= FerretTuft.evasionMultiplier();
+
 		return (acuRoll * accMulti) >= defRoll;
 	}
+
+	//TODO this is messy and hacky atm, should consider standardizing this so we can have many 'dodge reasons'
+	private static boolean tuftDodged = false;
 
 	public int attackSkill( Char target ) {
 		return 0;

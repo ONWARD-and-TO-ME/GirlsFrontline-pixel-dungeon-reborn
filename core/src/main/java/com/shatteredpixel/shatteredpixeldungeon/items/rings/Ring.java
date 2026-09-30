@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.ItemStatusHandler;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.ColorItem;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -411,6 +412,8 @@ public class Ring extends KindofMisc implements ColorItem {
 	
 	public void onHeroGainExp( float levelPercent, Hero hero ){
 		if (isIdentified() || !isEquipped(hero)) return;
+		//遗忘碎片饰品：携带时禁用戒指被动鉴定（实现见 ShardOfOblivion）
+		if (ShardOfOblivion.passiveIDDisabled()) return;
 		levelPercent *= Talent.itemIDSpeedFactor(hero, this);
 		//becomes IDed after 1 level
 		levelsToID -= levelPercent;

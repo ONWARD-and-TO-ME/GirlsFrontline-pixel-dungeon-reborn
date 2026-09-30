@@ -131,6 +131,24 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfPrismaticLight;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ChaoticCenser;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.CrackedSpyglass;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ExoticCrystals;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.EyeOfNewt;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.FerretTuft;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MossyClump;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.PetrifiedSeed;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SaltCube;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ThirteenLeafClover;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.VialOfBlood;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.WondrousResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.AR.G36;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.AR.Hk416;
@@ -251,7 +269,9 @@ public class Generator {
 		SCROLL	( 8, 8, Scroll.class ),
 		STONE   ( 1, 1, Runestone.class),
 		
-		GOLD	( 10, 10,   Gold.class );
+		GOLD	( 10, 10,   Gold.class ),
+
+		TRINKET ( 0, 0, Trinket.class );
 		
 		public Class<?>[] classes;
 
@@ -565,6 +585,27 @@ public class Generator {
 			};
 			ARTIFACT.defaultProbs = new float[]{ 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 			ARTIFACT.probs = ARTIFACT.defaultProbs.clone();
+
+			TRINKET.classes = new Class<?>[]{
+					RatSkull.class,
+					ParchmentScrap.class,
+					PetrifiedSeed.class,
+					ExoticCrystals.class,
+					MossyClump.class,
+					DimensionalSundial.class,
+					ThirteenLeafClover.class,
+					TrapMechanism.class,
+					MimicTooth.class,
+					WondrousResin.class,
+					EyeOfNewt.class,
+					SaltCube.class,
+					VialOfBlood.class,
+					ShardOfOblivion.class,
+					ChaoticCenser.class,
+					FerretTuft.class,
+					CrackedSpyglass.class };
+			TRINKET.defaultProbs = new float[]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+			TRINKET.probs = TRINKET.defaultProbs.clone();
 
 			for (Category category : Category.values())
 				if (category.classes.length != category.probs.length)

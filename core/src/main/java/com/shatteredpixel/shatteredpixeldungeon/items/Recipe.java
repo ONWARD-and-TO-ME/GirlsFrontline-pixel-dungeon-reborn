@@ -48,6 +48,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.ArcaneCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.BeaconOfReturning;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.CurseInfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.FeatherFall;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.MagicalInfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.MagicalPorter;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.PhaseShift;
@@ -175,6 +177,8 @@ public abstract class Recipe {
 		new Scroll.ScrollToStone(),
 		new ExoticPotion.PotionToExotic(),
 		new ExoticScroll.ScrollToExotic(),
+		new Trinket.UpgradeTrinket(),
+		new TrinketCatalyst.Recipe(),
 		new ArcaneResin.Recipe(),
 		new Alchemize.Recipe(),
 		new StewedMeat.oneMeat()
