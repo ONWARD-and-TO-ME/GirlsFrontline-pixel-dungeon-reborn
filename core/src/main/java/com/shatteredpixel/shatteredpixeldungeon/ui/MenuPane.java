@@ -77,7 +77,7 @@ public class MenuPane extends Component {
 	//局内系统时钟：显示日期与设备时间，位于菜单功能按钮下方，右对齐
 	private GradientBitmapText dateText;
 	private BitmapText clockText;
-	private Button dateButton;    //覆盖日期文字的透明点击区，0层且为节日时点击弹出节日介绍
+	private Button dateButton;    //覆盖日期文字的透明点击区，节日/特殊日时点击弹出节日介绍
 	private float clockAcc = 0f;
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd", Locale.getDefault() );
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat( "HH:mm", Locale.getDefault() );
@@ -223,12 +223,11 @@ public class MenuPane extends Component {
 		dateText.text( DATE_FORMAT.format( new Date() ) );
 		add( dateText );
 
-		//覆盖在日期文字上的透明按钮：仅地表（0层）且当前为节日/特殊日时点击生效
+		//覆盖在日期文字上的透明按钮：当前为节日/特殊日时点击生效（任意层数）
 		dateButton = new Button() {
 			@Override
 			protected void onClick() {
-				if (Dungeon.curDepth() == 0
-						&& (Holidays.holiday != Holidays.Holiday.NONE || SPDSettings.isSpecialDay())) {
+				if (Holidays.holiday != Holidays.Holiday.NONE || SPDSettings.isSpecialDay()) {
 					GameScene.show(new WndFestival());
 				}
 			}

@@ -34,7 +34,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
 
 /**
- * 节日介绍窗口：在地表（0层）点击带节日配色的日期文字时弹出，
+ * 节日介绍窗口：在任意层点击带节日配色的日期文字时弹出，
  * 展示当前节日的名称与一段简介。点击窗口外部即可关闭。
  */
 public class WndFestival extends Window {

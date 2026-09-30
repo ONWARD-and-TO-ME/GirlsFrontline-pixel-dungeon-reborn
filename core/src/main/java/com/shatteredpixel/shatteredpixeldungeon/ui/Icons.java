@@ -167,72 +167,94 @@ public enum Icons {
 		switch (type) {
 
 			case ENTER:
-				icon.frame( icon.texture.uvRectBySize( 0, 0, 16, 16 ) );          //开始游戏
+				icon.frame( icon.texture.uvRectBySize
+					( 0, 0, 16, 16 ) );          //开始游戏
 				break;
 			case GOLD:
-				icon.frame( icon.texture.uvRectBySize( 144, 0, 15, 12 ) );        //标题页金币
+				icon.frame( icon.texture.uvRectBySize
+					( 144, 0, 15, 12 ) );        //标题页金币
 				break;
 			case RANKINGS:
-				icon.frame( icon.texture.uvRectBySize( 16, 0, 16, 15 ) );        //排行榜
+				icon.frame( icon.texture.uvRectBySize
+					( 16, 0, 16, 15 ) );        //排行榜
 				break;
 			case BADGES:
-				icon.frame( icon.texture.uvRectBySize( 32, 0, 16, 16 ) );        //徽章
+				icon.frame( icon.texture.uvRectBySize
+					( 32, 0, 16, 16 ) );        //徽章
 				break;
 			case GOLDBAGES:
-				icon.frame( icon.texture.uvRectBySize( 48, 0, 16, 16 ) );        //全成就徽章
+				icon.frame( icon.texture.uvRectBySize
+					( 48, 0, 16, 16 ) );        //全成就徽章
 				break;
 			case NEWS:
-				icon.frame( icon.texture.uvRectBySize( 64, 0, 16, 15 ) );        //新闻
+				icon.frame( icon.texture.uvRectBySize
+					( 64, 0, 16, 15 ) );        //新闻
 				break;
 			case CHANGES:
-				icon.frame( icon.texture.uvRectBySize( 80, 0, 15, 15 ) );        //更新日志
+				icon.frame( icon.texture.uvRectBySize
+					( 80, 0, 15, 15 ) );        //更新日志
 				break;
 			case PREFS:
-				icon.frame( icon.texture.uvRectBySize( 96, 0, 14, 14 ) );        //偏好设置
+				icon.frame( icon.texture.uvRectBySize
+					( 96, 0, 14, 14 ) );        //偏好设置			
 				break;
 			case SETTINGS:
-				icon.frame( icon.texture.uvRectBySize( 112, 0, 12, 12 ) );     //设置(齿轮)
+				icon.frame( icon.texture.uvRectBySize
+					( 112, 0, 12, 12 ) );     //设置(齿轮)
 				break;
 			case GIRLPDS:
-				icon.frame( icon.texture.uvRectBySize( 128, 96, 24, 24 ) );       //少前地牢标题图标
+				icon.frame( icon.texture.uvRectBySize
+					( 128, 96, 24, 24 ) );       //少前地牢标题图标
 				break;
 			case SHPX:
-				icon.frame( icon.texture.uvRectBySize( 160, 160, 16, 16 ) );     //像素地牢图标
+				icon.frame( icon.texture.uvRectBySize
+					( 160, 160, 16, 16 ) );     //像素地牢图标
 				break;
 			case CHANGESLOG:
-				icon.frame( icon.texture.uvRectBySize( 128, 0, 10, 11 ) );       //变更日志(小)
+				icon.frame( icon.texture.uvRectBySize
+					( 128, 0, 10, 11 ) );       //变更日志(小)
 				break;
 
 			case STAIRS:
-				icon.frame( icon.texture.uvRectBySize( 192, 0, 13, 16 ) );       //楼梯/深度
+				icon.frame( icon.texture.uvRectBySize
+					( 192, 0, 13, 16 ) );       //楼梯/深度
 				break;
 			case WARRIOR:
-				icon.frame( icon.texture.uvRectBySize( 0, 16, 9, 12 ) );         //战士头像
+				icon.frame( icon.texture.uvRectBySize
+					( 0, 16, 9, 12 ) );         //战士头像
 				break;
 			case MAGE:
-				icon.frame( icon.texture.uvRectBySize( 16, 16, 14, 15 ) );       //法师头像
+				icon.frame( icon.texture.uvRectBySize
+					( 16, 16, 14, 15 ) );       //法师头像
 				break;
 			case ROGUE:
-				icon.frame( icon.texture.uvRectBySize( 32, 16, 15, 14 ) );       //盗贼头像
+				icon.frame( icon.texture.uvRectBySize
+					( 32, 16, 15, 14 ) );       //盗贼头像
 				break;
 			case HUNTRESS:
-				icon.frame( icon.texture.uvRectBySize( 48, 16, 15, 15 ) );       //女猎头像
+				icon.frame( icon.texture.uvRectBySize
+					( 48, 16, 15, 15 ) );       //女猎头像
 				break;
 			case TYPE561:
-				icon.frame( icon.texture.uvRectBySize( 64, 16, 12, 16 ) );       //561式头像
+				icon.frame( icon.texture.uvRectBySize
+					( 64, 16, 12, 16 ) );       //561式头像
 				break;
 			case GSH18:
-				icon.frame( icon.texture.uvRectBySize( 80, 16, 15, 12 ) );       //GSH18式头像
+				icon.frame( icon.texture.uvRectBySize
+					( 80, 16, 15, 12 ) );       //GSH18式头像
 				break;
 			case HK416:
-				icon.frame( icon.texture.uvRectBySize( 96, 16, 15, 15 ) );       //HK416式头像
+				icon.frame( icon.texture.uvRectBySize
+					( 96, 16, 15, 15 ) );       //HK416式头像
 				break;
 			case dandeline:
-				icon.frame( icon.texture.uvRectBySize( 128, 16, 15, 16 ) );       //丹德莱式头像
+				icon.frame( icon.texture.uvRectBySize
+					( 128, 16, 15, 16 ) );       //丹德莱式头像
 				break;
 
 			case EXIT:
-				icon.frame( icon.texture.uvRectBySize( 0, 32, 15, 11 ) );        //退出
+				icon.frame( icon.texture.uvRectBySize
+					( 0, 32, 15, 11 ) );        //退出
 				break;
 			case DISPLAY:
 				if (!PixelScene.landscape()){
@@ -241,245 +263,321 @@ public enum Icons {
 					return get(DISPLAY_LAND);                                    //横屏
 				}
 			case DISPLAY_PORT:
-				icon.frame( icon.texture.uvRectBySize( 16, 32, 12, 16 ) );      //竖屏显示
+				icon.frame( icon.texture.uvRectBySize
+					( 16, 32, 12, 16 ) );      //竖屏显示
 				break;
 			case DISPLAY_LAND:
-				icon.frame( icon.texture.uvRectBySize( 32, 32, 16, 12 ) );      //横屏显示
+				icon.frame( icon.texture.uvRectBySize
+					( 32, 32, 16, 12 ) );      //横屏显示
 				break;
 			case DATA:
-				icon.frame( icon.texture.uvRectBySize( 48, 32, 16, 15 ) );      //数据
+				icon.frame( icon.texture.uvRectBySize
+					( 48, 32, 16, 15 ) );      //数据
 				break;
 			case AUDIO:
-				icon.frame( icon.texture.uvRectBySize( 64, 32, 14, 14 ) );      //音频
+				icon.frame( icon.texture.uvRectBySize
+					( 64, 32, 14, 14 ) );      //音频
 				break;
 			case LANGS:
-				icon.frame( icon.texture.uvRectBySize( 80, 32, 14, 11 ) );      //语言
+				icon.frame( icon.texture.uvRectBySize
+					( 80, 32, 14, 11 ) );      //语言
 				break;
 			case CONTROLLER:
-				icon.frame( icon.texture.uvRectBySize( 96, 32, 16, 12 ) );      //控制器
+				icon.frame( icon.texture.uvRectBySize
+					( 96, 32, 16, 12 ) );      //控制器
 				break;
 			case STATS:
-				icon.frame( icon.texture.uvRectBySize( 112, 32, 16, 13 ) );     //统计
+				icon.frame( icon.texture.uvRectBySize
+					( 112, 32, 16, 13 ) );     //统计
 				break;
 			case CHALLENGE_OFF:
-				icon.frame( icon.texture.uvRectBySize( 128, 32, 14, 12 ) );     //挑战关
+				icon.frame( icon.texture.uvRectBySize
+					( 128, 32, 14, 12 ) );     //挑战关
 				break;
 			case CHALLENGE_ON:
-				icon.frame( icon.texture.uvRectBySize( 144, 32, 14, 12 ) );     //挑战开
+				icon.frame( icon.texture.uvRectBySize
+					( 144, 32, 14, 12 ) );     //挑战开
 				break;
 			case RENAME_OFF:
-				icon.frame( icon.texture.uvRectBySize( 160, 32, 15, 14 ) );     //重命名关
+				icon.frame( icon.texture.uvRectBySize
+					( 160, 32, 15, 14 ) );     //重命名关
 				break;
 			case RENAME_ON:
-				icon.frame( icon.texture.uvRectBySize( 176, 32, 15, 14 ) );     //重命名开
+				icon.frame( icon.texture.uvRectBySize
+					( 176, 32, 15, 14 ) );     //重命名开
 				break;
 			case LEFTARROW:
-				icon.frame( icon.texture.uvRectBySize( 0, 96, 14, 8 ) );        //左箭头
+				icon.frame( icon.texture.uvRectBySize
+					( 0, 112, 14, 8 ) );        //左箭头
 				break;
 			case RIGHTARROW:
-				icon.frame( icon.texture.uvRectBySize( 16, 96, 14, 8 ) );       //右箭头
+				icon.frame( icon.texture.uvRectBySize
+					( 16, 112, 14, 8 ) );       //右箭头
 				break;
 
             case UNCHECKED:
-                icon.frame( icon.texture.uvRectBySize( 0, 48, 12, 12 ) );       //未勾选
+                icon.frame( icon.texture.uvRectBySize
+					( 0, 48, 12, 12 ) );       //未勾选
                 break;
             case CHECKED:
-                icon.frame( icon.texture.uvRectBySize( 16, 48, 12, 12 ) );      //已勾选
+                icon.frame( icon.texture.uvRectBySize
+					( 16, 48, 12, 12 ) );      //已勾选
                 break;
             case UNLOCK:
-                icon.frame( icon.texture.uvRectBySize( 192, 64, 11, 10 ) );     //解锁
+                icon.frame( icon.texture.uvRectBySize
+					( 192, 64, 11, 10 ) );     //解锁
                 break;
             case LOCK:
-                icon.frame( icon.texture.uvRectBySize( 176, 64, 11, 10 ) );     //锁定
+                icon.frame( icon.texture.uvRectBySize
+					( 176, 64, 11, 10 ) );     //锁定
                 break;
 			case CLOSE:
-				icon.frame( icon.texture.uvRectBySize( 32, 48, 11, 11 ) );      //关闭(X)
+				icon.frame( icon.texture.uvRectBySize
+					( 32, 48, 11, 11 ) );      //关闭(X)
 				break;
 			case PLUS:
-				icon.frame( icon.texture.uvRectBySize( 48, 48, 11, 11 ) );      //加号
+				icon.frame( icon.texture.uvRectBySize
+					( 48, 48, 11, 11 ) );      //加号(+)
 				break;
 			case ARROW:
-				icon.frame( icon.texture.uvRectBySize( 80, 48, 11, 11 ) );      //箭头
+				icon.frame( icon.texture.uvRectBySize
+					( 80, 48, 11, 11 ) );      //箭头
 				break;
 			case INFO:
-				icon.frame( icon.texture.uvRectBySize( 96, 48, 14, 14 ) );      //信息(i)
+				icon.frame( icon.texture.uvRectBySize
+					( 96, 48, 14, 14 ) );      //信息(i)
 				break;
 			case WARNING:
-				icon.frame( icon.texture.uvRectBySize( 112, 48, 14, 14 ) );     //警告(!)
+				icon.frame( icon.texture.uvRectBySize
+					( 112, 48, 14, 14 ) );     //警告(!)
 				break;
 			case BACKPACK_LRG:
-				icon.frame( icon.texture.uvRectBySize( 128, 48, 16, 16 ) );     //大背包
+				icon.frame( icon.texture.uvRectBySize
+					( 128, 48, 16, 16 ) );     //大背包
 				break;
 			case TALENT:
-				icon.frame( icon.texture.uvRectBySize( 144, 48, 13, 13 ) );     //天赋
+				icon.frame( icon.texture.uvRectBySize
+					( 144, 48, 13, 13 ) );     //天赋
 				break;
 			case MAGNIFY:
-				icon.frame( icon.texture.uvRectBySize( 160, 48, 14, 14 ) );     //放大镜
+				icon.frame( icon.texture.uvRectBySize
+					( 160, 48, 14, 14 ) );     //放大镜
 				break;
 			case BUFFS:
-				icon.frame( icon.texture.uvRectBySize( 176, 48, 16, 15 ) );     //Buff列表
+				icon.frame( icon.texture.uvRectBySize
+					( 176, 48, 16, 15 ) );     //Buff列表
 				break;
 			case ENERGY:
-				icon.frame( icon.texture.uvRectBySize( 192, 48, 16, 16 ) );     //能量
+				icon.frame( icon.texture.uvRectBySize
+					( 192, 48, 16, 16 ) );     //能量
 				break;
 			case COIN_SML:
-				icon.frame( icon.texture.uvRectBySize( 208, 48, 7, 7 ) );       //小金币
+				icon.frame( icon.texture.uvRectBySize
+					( 208, 48, 7, 7 ) );       //小金币	
 				break;
 			case ENERGY_SML:
-				icon.frame( icon.texture.uvRectBySize( 208, 56, 8, 7 ) );       //小能量
+				icon.frame( icon.texture.uvRectBySize
+					( 208, 56, 8, 7 ) );       //小能量
 				break;
 			case POS_SHOW:
-				icon.frame( icon.texture.uvRectBySize( 224, 48, 5, 5 ) );       //位置显示
+				icon.frame( icon.texture.uvRectBySize
+					( 224, 48, 5, 5 ) );       //位置显示
 				break;
 			case BACKPACK:
-				icon.frame( icon.texture.uvRectBySize( 192, 32, 10, 10 ) );     //背包
+				icon.frame( icon.texture.uvRectBySize
+					( 192, 32, 10, 10 ) );     //背包
 				break;
 			case SCROLL_HOLDER:
-				icon.frame( icon.texture.uvRectBySize( 202, 32, 10, 10 ) );     //卷轴筒
+				icon.frame( icon.texture.uvRectBySize
+					( 202, 32, 10, 10 ) );     //卷轴筒
 				break;
 			case SEED_POUCH:
-				icon.frame( icon.texture.uvRectBySize( 212, 32, 10, 10 ) );     //种子袋
+				icon.frame( icon.texture.uvRectBySize
+					( 212, 32, 10, 10 ) );     //种子袋
 				break;
 			case WAND_HOLSTER:
-				icon.frame( icon.texture.uvRectBySize( 222, 32, 10, 10 ) );     //法杖袋
+				icon.frame( icon.texture.uvRectBySize
+					( 222, 32, 10, 10 ) );     //法杖袋
 				break;
 			case POTION_BANDOLIER:
-				icon.frame( icon.texture.uvRectBySize( 232, 32, 10, 10 ) );     //药剂带
+				icon.frame( icon.texture.uvRectBySize
+					( 232, 32, 10, 10 ) );     //药剂带
 				break;
 
 			case TARGET:
-				icon.frame( icon.texture.uvRectBySize( 0, 64, 16, 16 ) );       //目标
+				icon.frame( icon.texture.uvRectBySize
+					( 0, 64, 16, 16 ) );       //目标
 				break;
 			case SKULL:
-				icon.frame( icon.texture.uvRectBySize( 16, 64, 8, 8 ) );        //骷髅
+				icon.frame( icon.texture.uvRectBySize
+					( 16, 64, 8, 8 ) );        //骷髅
 				break;
 			case BUSY:
-				icon.frame( icon.texture.uvRectBySize( 24, 64, 8, 8 ) );        //忙碌(加载中)
+				icon.frame( icon.texture.uvRectBySize
+					( 24, 64, 8, 8 ) );        //忙碌(加载中)
 				break;
 			case COMPASS:
-				icon.frame( icon.texture.uvRectBySize( 16, 72, 7, 5 ) );        //指南针
+				icon.frame( icon.texture.uvRectBySize
+					( 16, 72, 7, 5 ) );        //指南针
 				break;
 			case SLEEP:
-				icon.frame( icon.texture.uvRectBySize( 32, 64, 9, 8 ) );        //睡眠
+				icon.frame( icon.texture.uvRectBySize
+					( 32, 64, 9, 8 ) );        //睡眠
 				break;
 			case ALERT:
-				icon.frame( icon.texture.uvRectBySize( 32, 72, 8, 8 ) );        //警觉
+				icon.frame( icon.texture.uvRectBySize
+					( 32, 72, 8, 8 ) );        //警觉
 				break;
 			case LOST:
-				icon.frame( icon.texture.uvRectBySize( 40, 72, 8, 8 ) );        //迷失
+				icon.frame( icon.texture.uvRectBySize
+					( 40, 72, 8, 8 ) );        //迷失
 				break;
 			case DEPTH:
-				icon.frame( icon.texture.uvRectBySize( 48, 64, 6, 7 ) );        //深度
+				icon.frame( icon.texture.uvRectBySize
+					( 48, 64, 6, 7 ) );        //深度
 				break;
 			case DEPTH_CHASM:
-				icon.frame( icon.texture.uvRectBySize( 56, 64, 7, 7 ) );        //深渊
+				icon.frame( icon.texture.uvRectBySize
+					( 56, 64, 7, 7 ) );        //深渊
 				break;
 			case DEPTH_WATER:
-				icon.frame( icon.texture.uvRectBySize( 64, 64, 7, 7 ) );        //水域
+				icon.frame( icon.texture.uvRectBySize
+					( 64, 64, 7, 7 ) );        //水域
 				break;
 			case DEPTH_GRASS:
-				icon.frame( icon.texture.uvRectBySize( 72, 64, 7, 7 ) );        //草地
+				icon.frame( icon.texture.uvRectBySize
+					( 72, 64, 7, 7 ) );        //草地
 				break;
 			case DEPTH_DARK:
-				icon.frame( icon.texture.uvRectBySize( 80, 64, 7, 7 ) );        //黑暗
+				icon.frame( icon.texture.uvRectBySize
+					( 80, 64, 7, 7 ) );        //黑暗
 				break;
 			case DEPTH_LARGE:
-				icon.frame( icon.texture.uvRectBySize( 88, 64, 7, 7 ) );        //大房间
+				icon.frame( icon.texture.uvRectBySize
+					( 88, 64, 7, 7 ) );        //大房间
 				break;
 			case DEPTH_TRAPS:
-				icon.frame( icon.texture.uvRectBySize( 96, 64, 7, 7 ) );        //陷阱
+				icon.frame( icon.texture.uvRectBySize
+					( 96, 64, 7, 7 ) );        //陷阱
 				break;
 			case DEPTH_SECRETS:
-				icon.frame( icon.texture.uvRectBySize( 104, 64, 7, 7 ) );       //秘密
+				icon.frame( icon.texture.uvRectBySize
+					( 104, 64, 7, 7 ) );       //秘密
 				break;
 			case CHAL_COUNT:
-				icon.frame( icon.texture.uvRectBySize( 48, 72, 7, 7 ) );        //挑战计数
+				icon.frame( icon.texture.uvRectBySize
+					( 48, 72, 7, 7 ) );        //挑战计数
+				break;
 
 			case LIBGDX:
-				icon.frame( icon.texture.uvRectBySize( 160, 144, 16, 13 ) );    //libGDX logo
+				icon.frame( icon.texture.uvRectBySize
+					( 160, 144, 16, 13 ) );    //libGDX logo
 				break;
 			case ALEKS:
-				icon.frame( icon.texture.uvRectBySize( 176, 144, 16, 13 ) );    //Aleks头像
+				icon.frame( icon.texture.uvRectBySize
+					( 176, 144, 16, 13 ) );    //Aleks头像
 				break;
 			case WATA:
-				icon.frame( icon.texture.uvRectBySize( 176, 160, 17, 12 ) );    //Watabou头像
+				icon.frame( icon.texture.uvRectBySize
+					( 176, 160, 17, 12 ) );    //Watabou头像
 				break;
 
 			//large icons are scaled down to match game's size
 			case CELESTI:
-				icon.frame( icon.texture.uvRectBySize( 0, 192, 32, 32 ) );      //Celesti头像(32x32)
+				icon.frame( icon.texture.uvRectBySize
+					( 0, 192, 32, 32 ) );      //Celesti头像(32x32)
 				icon.scale.set(PixelScene.align(0.49f));
 				break;
 			case KRISTJAN:
-				icon.frame( icon.texture.uvRectBySize( 32, 192, 32, 32 ) );      //Kristjan头像(32x32)
+				icon.frame( icon.texture.uvRectBySize
+					( 32, 192, 32, 32 ) );      //Kristjan头像(32x32)	
 				icon.scale.set(PixelScene.align(0.49f));
 				break;
 			case ARCNOR:
-				icon.frame( icon.texture.uvRectBySize( 64, 192, 32, 32 ) );     //Arcnor头像(32x32)
+				icon.frame( icon.texture.uvRectBySize
+					( 64, 192, 32, 32 ) );     //Arcnor头像(32x32)
 				icon.scale.set(PixelScene.align(0.49f));
 				break;
 			case PURIGRO:
-				icon.frame( icon.texture.uvRectBySize( 96, 192, 32, 32 ) );     //Purigro头像(32x32)
+				icon.frame( icon.texture.uvRectBySize
+					( 96, 192, 32, 32 ) );     //Purigro头像(32x32)
 				icon.scale.set(PixelScene.align(0.49f));
 				break;
 			case CUBE_CODE:
-				icon.frame( icon.texture.uvRectBySize( 128, 192, 27, 30 ) );    //Cube Code头像
+				icon.frame( icon.texture.uvRectBySize
+					( 128, 192, 27, 30 ) );    //Cube Code头像
 				icon.scale.set(PixelScene.align(0.49f));
 				break;
 
 			case SKIP:
-				icon.frame( icon.texture.uvRectBySize( 48, 96, 24, 14 ) );      //跳过按钮
+				icon.frame( icon.texture.uvRectBySize
+					( 48, 96, 24, 14 ) );      //跳过按钮
 				break;
 
 			/* Made Group */
 			case GIRLPD:
-				icon.frame( icon.texture.uvRectBySize( 144, 65, 16, 16 ) );     //少前地牢头像
+				icon.frame( icon.texture.uvRectBySize
+					( 144, 65, 16, 16 ) );     //少前地牢头像
 				break;
 			case BAKA:
-				icon.frame( icon.texture.uvRectBySize( 0, 145, 14, 14 ) );      //Baka头像
+				icon.frame( icon.texture.uvRectBySize
+					( 0, 145, 14, 14 ) );      //Baka头像
 				break;
 			case LANGLING:
-				icon.frame( icon.texture.uvRectBySize( 0, 161, 14, 14 ) );      //Langling头像
+				icon.frame( icon.texture.uvRectBySize
+					( 0, 161, 14, 14 ) );      //Langling头像
 				break;
 
 			case FTER:
-				icon.frame( icon.texture.uvRectBySize( 96, 145, 14, 14 ) );     //Fter头像
+				icon.frame( icon.texture.uvRectBySize
+					( 96, 145, 14, 14 ) );     //Fter头像
 				break;
 			case CHOCOSUKI:
-				icon.frame( icon.texture.uvRectBySize( 112, 145, 14, 14 ) );    //Chocosuki头像
+				icon.frame( icon.texture.uvRectBySize
+					( 112, 145, 14, 14 ) );    //Chocosuki头像
 				break;
 			case DOGE:
-				icon.frame( icon.texture.uvRectBySize( 128, 145, 14, 14 ) );    //Doge头像
+				icon.frame( icon.texture.uvRectBySize
+					( 128, 145, 14, 14 ) );    //Doge头像
 				break;
 
 			case WOLF:
-				icon.frame( icon.texture.uvRectBySize( 32, 145, 14, 14 ) );     //Wolf头像
+				icon.frame( icon.texture.uvRectBySize
+					( 32, 145, 14, 14 ) );     //Wolf头像
 				break;
 			case CATZS:
-				icon.frame( icon.texture.uvRectBySize( 208, 144, 19, 19 ) );    //Catzs头像
+				icon.frame( icon.texture.uvRectBySize
+					( 208, 144, 19, 19 ) );    //Catzs头像
 				break;
 			case SEA:
-				icon.frame( icon.texture.uvRectBySize( 64, 145, 14, 14 ) );     //Sea头像
+				icon.frame( icon.texture.uvRectBySize
+					( 64, 145, 14, 14 ) );     //Sea头像
 				break;
 			case ONWARD:
-				icon.frame( icon.texture.uvRectBySize( 80, 145, 14, 14 ) );     //Onward头像
+				icon.frame( icon.texture.uvRectBySize
+					( 80, 145, 14, 14 ) );     //Onward头像
 				break;
 
 			case LING:
-				icon.frame( icon.texture.uvRectBySize( 32, 160, 14, 14 ) );     //Ling头像
+				icon.frame( icon.texture.uvRectBySize
+					( 32, 160, 14, 14 ) );     //Ling头像
 				break;
 			case SHOWER:
-				icon.frame( icon.texture.uvRectBySize( 48, 160, 14, 14 ) );     //Shower头像
+				icon.frame( icon.texture.uvRectBySize
+					( 48, 160, 14, 14 ) );     //Shower头像
 				break;
 			case COLA:
-				icon.frame( icon.texture.uvRectBySize( 64, 160, 14, 14 ) );     //Cola头像
+				icon.frame( icon.texture.uvRectBySize
+					( 64, 160, 14, 14 ) );     //Cola头像
 				break;
 
 			case AWSL:
-				icon.frame( icon.texture.uvRectBySize( 96, 160, 14, 14 ) );     //AWSL头像
+				icon.frame( icon.texture.uvRectBySize
+					( 96, 160, 14, 14 ) );     //AWSL头像
 				break;
 			case ALEX:
-				icon.frame( icon.texture.uvRectBySize( 112, 160, 14, 14 ) );    //Alex头像
+				icon.frame( icon.texture.uvRectBySize
+					( 112, 160, 14, 14 ) );    //Alex头像
 				break;
 		}
 		return icon;
