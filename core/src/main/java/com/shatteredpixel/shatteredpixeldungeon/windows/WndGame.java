@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
@@ -110,7 +111,8 @@ public class WndGame extends Window {
 		}
 
 		// 返回地表（0层前进营地）：正常地牢存档中、0层已解锁（好结局徽章，debug 始终可用）
-		if(0!=GamesInProgress.curSlot && !heroDied
+		// 且需在前进营地"实时转播终端"处开启该按钮（默认关闭）
+		if(0!=GamesInProgress.curSlot && !heroDied && SPDSettings.returnSurfaceBtn()
 				&& (Badges.isUnlocked(Badges.Badge.HAPPY_END) || DeviceCompat.isDebug())){
 			addButton(curBtn = new RedButton( "返回地表" ) {
 				@Override

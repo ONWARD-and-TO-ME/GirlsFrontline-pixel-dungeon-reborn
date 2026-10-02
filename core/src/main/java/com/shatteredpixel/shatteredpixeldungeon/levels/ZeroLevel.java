@@ -20,6 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.RankingsScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
 import com.shatteredpixel.shatteredpixeldungeon.GirlsFrontlinePixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -243,6 +244,18 @@ public class ZeroLevel extends Level {
                     }
                 });
                 curBtn.icon(Icons.get(Icons.CHANGES));
+
+                //开关：控制普通存档ESC菜单中是否显示"返回地表"按钮（默认关）
+                final CheckBox chkSurface = new CheckBox("返回地表") {
+                    @Override
+                    protected void onClick() {
+                        super.onClick();
+                        SPDSettings.returnSurfaceBtn(!SPDSettings.returnSurfaceBtn());
+                        checked(SPDSettings.returnSurfaceBtn());
+                    }
+                };
+                chkSurface.checked(SPDSettings.returnSurfaceBtn());
+                addButton(chkSurface);
 
                 resize(WIDTH, pos);
             }

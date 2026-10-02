@@ -214,6 +214,8 @@ public class SPDSettings extends GameSettings {
 	public static final String KEY_ZERO_LEVEL_LABELS = "zero_level_labels";
 	//怪物脚底位置显示图标的开关（默认开启）
 	public static final String KEY_MOB_POS_INDICATOR = "mob_pos_indicator";
+	//普通存档ESC菜单中"返回地表"按钮的显示开关（默认关闭）
+	public static final String KEY_RETURN_SURFACE_BTN = "return_surface_btn";
 
 	//0 = mobile, 1 = mixed (large without inventory in main UI), 2 = large
 	public static void interfaceSize( int value ){
@@ -268,6 +270,15 @@ public class SPDSettings extends GameSettings {
 
 	public static boolean mobPosIndicator(){
 		return getBoolean( KEY_MOB_POS_INDICATOR, true );
+	}
+
+	//普通存档ESC菜单中"返回地表"按钮（默认关闭，在前进营地实时转播终端处切换）
+	public static void returnSurfaceBtn( boolean value ){
+		put( KEY_RETURN_SURFACE_BTN, value );
+	}
+
+	public static boolean returnSurfaceBtn(){
+		return getBoolean( KEY_RETURN_SURFACE_BTN, false );
 	}
 
 	public static void toolbarMode( String value ) {
