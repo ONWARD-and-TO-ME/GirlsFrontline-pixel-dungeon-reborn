@@ -88,7 +88,7 @@ public class AboutSceneV2 extends PixelScene {
 
 	//项目开源仓库地址（点击可跳转）
 	private static final String REPO_CURRENT =
-			"https://github.com/ONWARD-and-TO-ME/GirlsFrontline-pixel-dungeon-reborn";
+			"https://github.com/TO-ME-0/GirlsFrontline-pixel-dungeon-reborn";
 	private static final String[] REPO_LEGACY = {
 			"https://github.com/Cat-Zs/GirlsFrontline-pixel-dungeon-reborn",
 			"https://github.com/tamamoqian/GirlsFrontline-pixel-dungeon-pla56/tree/main",
@@ -508,7 +508,7 @@ public class AboutSceneV2 extends PixelScene {
 			float pos = title.bottom() + MARGIN;
 
 			pos = addLabel(pos, width, "目前使用：");
-			pos = addLinkButton(pos, width, "ONWARD-and-TO-ME", REPO_CURRENT);
+			pos = addLinkButton(pos, width, "TO-ME-0", REPO_CURRENT);
 			pos = addLabel(pos, width, "曾经的仓库：");
 			pos = addLinkButton(pos, width, "Cat-Zs", REPO_LEGACY[0]);
 			pos = addLinkButton(pos, width, "tamamoqian", REPO_LEGACY[1]);
