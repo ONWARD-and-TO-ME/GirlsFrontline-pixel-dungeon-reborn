@@ -66,8 +66,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.BadgeV2;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesGrid;
-import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesList;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CustomNoteButton;
@@ -1489,6 +1489,7 @@ public class WndJournal extends WndTabbed {
 
 		private RedButton btnLocal;
 		private RedButton btnGlobal;
+		private RedButton btnV2; //右上角：原版/V2徽章界面切换按钮
 
 		private RenderedTextBlock title;
 
@@ -1496,6 +1497,7 @@ public class WndJournal extends WndTabbed {
 		private Component badgesGlobal;
 
 		public static boolean global = false;
+		private boolean v2 = true; //默认显示V2徽章界面
 
 		@Override
 		protected void createChildren() {
@@ -1523,20 +1525,28 @@ public class WndJournal extends WndTabbed {
 				btnGlobal.icon(Icons.BADGES.get());
 				add(btnGlobal);
 
-				if (Badges.filterReplacedBadges(false).size() <= 8) {
-					badgesLocal = new BadgesList(false);
-				} else {
-					badgesLocal = new BadgesGrid(false);
-				}
-				add(badgesLocal);
+				badgesLocal = new BadgeV2.BadgesGrid(false);
+			add(badgesLocal);
 			} else {
 				title = PixelScene.renderTextBlock(Messages.get(this, "title_main_menu"), 9);
 				title.hardlight(Window.TITLE_COLOR);
 				add(title);
 			}
 
-			badgesGlobal = new BadgesGrid(true);
+			badgesGlobal = new BadgeV2.BadgesGrid(true);
 			add(badgesGlobal);
+
+			//右上角：原版/V2徽章界面切换按钮
+			btnV2 = new RedButton("原版", 6) {
+				@Override
+				protected void onClick() {
+					super.onClick();
+					v2 = !v2;
+					text(v2 ? "原版" : "V2");
+					rebuildGrids();
+				}
+			};
+			add(btnV2);
 		}
 
 		@Override
@@ -1545,15 +1555,37 @@ public class WndJournal extends WndTabbed {
 
 			if (btnLocal != null) {
 				btnLocal.setRect(x, y, width / 2, 18);
-				btnGlobal.setRect(x + width / 2, y, width / 2, 18);
+				btnGlobal.setRect(x + width / 2, y, width / 2 - 24, 18);
+				btnV2.setRect(x + width - 24, y, 24, 18);
 
 				badgesLocal.setRect(x, y + 20, width, height - 20);
 				badgesGlobal.setRect(x, y + 20, width, height - 20);
 			} else {
 				title.setPos(x + (width - title.width()) / 2, y + (12 - title.height()) / 2);
+				btnV2.setRect(x + width - 24, y, 24, 12);
 
 				badgesGlobal.setRect(x, y + 14, width, height - 14);
 			}
+		}
+
+		//按当前v2开关重建徽章网格（原版BadgesGrid 或 V2的BadgeV2.BadgesGrid）
+		private void rebuildGrids() {
+			if (badgesLocal != null) {
+				remove(badgesLocal);
+				badgesLocal = null;
+			}
+			if (badgesGlobal != null) {
+				remove(badgesGlobal);
+				badgesGlobal = null;
+			}
+			if (btnLocal != null) {
+				badgesLocal = v2 ? new BadgeV2.BadgesGrid(false) : new BadgesGrid(false);
+				add(badgesLocal);
+			}
+			badgesGlobal = v2 ? new BadgeV2.BadgesGrid(true) : new BadgesGrid(true);
+			add(badgesGlobal);
+			layout();
+			updateList();
 		}
 
 		private void updateList() {

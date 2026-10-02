@@ -21,11 +21,27 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBadgeV2;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.ui.Component;
+
+import java.util.ArrayList;
 
 /**
- * 徽章贴图索引 V2：为迭代 Badges 系统做准备（暂未被引用）。
- * 贴图文件 interfaces/badge1.png，每格 16*16 像素，每行 16 格，共 17 行。
+ * 徽章系统 V2：上半部分为徽章贴图索引，下半部分（嵌套类 BadgesGrid）为徽章界面。
+ * 界面采用可展开分类行的形式：点击行标题展开/折叠该行的徽章卡片。
+ * 解锁条件仍沿用原 Badges 系统。
+ * 贴图文件 interfaces/badges1.png，每格 16*16 像素，每行 16 格，共 17 行。
  * 行语义（自上而下）：
  *   1  角色图标徽章行
  *   2  物品徽章行
@@ -50,7 +66,16 @@ public class BadgeV2 {
 	public static final int WIDTH = 16; //每行16格
 	public static final int SIZE  = 16; //每格16*16像素
 
-	public static TextureFilm film = new TextureFilm( "interfaces/badge1.png", SIZE, SIZE );
+	public static final String BADGE_SHEET = "interfaces/badges1.png";
+
+	public static TextureFilm film = new TextureFilm( BADGE_SHEET, SIZE, SIZE );
+
+	//按贴图索引创建一个徽章图像
+	public static Image image( int index ){
+		Image im = new Image( BADGE_SHEET );
+		im.frame( film.get( index ) );
+		return im;
+	}
 
 	private static int xy(int x, int y){
 		x -= 1; y -= 1;
@@ -227,6 +252,7 @@ public class BadgeV2 {
 	public static final int CHAMPION_1              = CHALLENGE_BADGES+0;
 	public static final int CHAMPION_2              = CHALLENGE_BADGES+1;
 	public static final int CHAMPION_3              = CHALLENGE_BADGES+2;
+	public static final int CHAMPION_4              = CHALLENGE_BADGES+3;
 	//13 free slots
 
 	//第十六行 特殊徽章行（游戏局数+金币收集+节日）
@@ -252,5 +278,413 @@ public class BadgeV2 {
 		//全部17*16个格子均为16*16像素
 		for (int i = 0; i < WIDTH*17; i++)
 			assignItemRect(i, SIZE, SIZE);
+	}
+
+	//==========================================================================
+	// 徽章界面：可展开分类行 + 4列徽章卡片
+	//==========================================================================
+	public static class BadgesGrid extends ScrollPane {
+
+		private static final float SCALE = 0.8f; //整个控件统一缩放到原来的80%
+
+		private static final int N_COLS       = 8;    //每行4张卡片
+		private static final float HEADER_H   = 12 ;
+		private static final float CARD_ICON  = 14 ;  //卡片内图标显示尺寸
+		private static final float CARD_H     = 28 ;
+		private static final float CAT_GAP    = 1 * SCALE;
+		private static final float HEADER_FONT = 6;   //条头标题字号
+		private static final float CARD_FONT  = 4 ;    //卡片名称字号
+		//条头内部排版偏移
+		private static final float ARROW_X   = 6 * SCALE;
+		private static final float TITLE_X   = 22 * SCALE;
+		private static final float ICON_Y    = 1 * SCALE;
+		private static final float NAME_PAD  = 2 * SCALE;
+
+		private final ArrayList<Category> categories = new ArrayList<>();
+
+		public BadgesGrid( boolean global ) {
+			super( new Component() );
+
+			//已解锁徽章集合
+			ArrayList<Badges.Badge> unlocked = new ArrayList<>(
+					global ? Badges.allUnlocked() : Badges.localBadges());
+
+			//全局页：未解锁徽章只显示最低阶占位（与旧版行为一致）
+			ArrayList<Badges.Badge> lockedPlaceholders = new ArrayList<>();
+			if (global) {
+				for (Badges.Badge b : Badges.Badge.values()) {
+					if (!unlocked.contains(b) && !Badges.hidden.contains(b)) {
+						lockedPlaceholders.add(b);
+					}
+				}
+				Badges.filterHigherIncrementalBadges(lockedPlaceholders);
+			}
+
+			for (CatDef catDef : CATEGORY_DEFS) {
+				Category category = new Category(catDef, categories.isEmpty());
+				for (Def def : catDef.defs) {
+					boolean isUnlocked = unlocked.contains(def.badge);
+					if (isUnlocked || lockedPlaceholders.contains(def.badge)) {
+						category.cards.add(new Card(def, isUnlocked));
+					}
+				}
+				content.add(category);
+				categories.add(category);
+			}
+		}
+
+		@Override
+		protected void layout() {
+			float pos = 0;
+			for (Category category : categories) {
+				category.setRect(0, pos, width, category.heightForWidth(width));
+				pos += category.heightForWidth(width) + CAT_GAP;
+			}
+			content.setSize(width, pos);
+			super.layout();
+		}
+
+		//---------------- 数据定义 ----------------
+
+		private static final class Def {
+			final int sprite;
+			final Badges.Badge badge;
+			Def(int sprite, Badges.Badge badge) {
+				this.sprite = sprite;
+				this.badge = badge;
+			}
+		}
+
+		private static Def e( int sprite, Badges.Badge badge ) {
+			return new Def(sprite, badge);
+		}
+
+		private static final class CatDef {
+			final String titleKey;
+			final Def[] defs;
+			CatDef(String titleKey, Def... defs) {
+				this.titleKey = titleKey;
+				this.defs = defs;
+			}
+		}
+
+		private static final ArrayList<CatDef> CATEGORY_DEFS = new ArrayList<>();
+		static {
+			//1 角色图标徽章行
+			CATEGORY_DEFS.add(new CatDef("hero_v2",
+					e(MASTERY_WARRIOR,   Badges.Badge.MASTERY_WARRIOR),
+					e(MASTERY_MAGE,      Badges.Badge.MASTERY_MAGE),
+					e(MASTERY_ROGUE,     Badges.Badge.MASTERY_ROGUE),
+					e(MASTERY_HUNTRESS,  Badges.Badge.MASTERY_HUNTRESS),
+					e(MASTERY_TYPE561,   Badges.Badge.MASTERY_TYPE561),
+					e(MASTERY_GSH18,     Badges.Badge.MASTERY_GSH18),
+					e(MASTERY_HK416,     Badges.Badge.MASTERY_HK416),
+					e(MASTERY_DANDELION, Badges.Badge.MASTERY_DANDELION)));
+
+			//2 物品徽章行
+			CATEGORY_DEFS.add(new CatDef("item_v2",
+					e(ITEM_LEVEL_1, Badges.Badge.ITEM_LEVEL_1),
+					e(ITEM_LEVEL_2, Badges.Badge.ITEM_LEVEL_2),
+					e(ITEM_LEVEL_3, Badges.Badge.ITEM_LEVEL_3),
+					e(ITEM_LEVEL_4, Badges.Badge.ITEM_LEVEL_4),
+					e(ITEM_LEVEL_5, Badges.Badge.ITEM_LEVEL_5)));
+
+			//3 钻石徽章行
+			CATEGORY_DEFS.add(new CatDef("diamond_v2",
+					e(CRYSTAL_TROPHY, Badges.Badge.CRYSTAL_TROPHY)));
+
+			//4 击杀徽章行
+			CATEGORY_DEFS.add(new CatDef("kill_v2",
+					e(MONSTERS_SLAIN_1,  Badges.Badge.MONSTERS_SLAIN_1),
+					e(MONSTERS_SLAIN_2,  Badges.Badge.MONSTERS_SLAIN_2),
+					e(MONSTERS_SLAIN_3,  Badges.Badge.MONSTERS_SLAIN_3),
+					e(MONSTERS_SLAIN_4,  Badges.Badge.MONSTERS_SLAIN_4),
+					e(MONSTERS_SLAIN_5,  Badges.Badge.MONSTERS_SLAIN_5),
+					e(NO_MONSTERS_SLAIN, Badges.Badge.NO_MONSTERS_SLAIN),
+					e(GRIM_WEAPON,       Badges.Badge.GRIM_WEAPON),
+					e(KILL_EXCUTION,     Badges.Badge.KILL_EXCUTION),
+					e(KILL_SNAKE,        Badges.Badge.KILL_SNAKE),
+					e(KILL_CALC,         Badges.Badge.KILL_CALC),
+					e(KILL_DISPORE,      Badges.Badge.KILL_DISPORE),
+					e(KILL_ELPHELT,      Badges.Badge.KILL_ELPHELT),
+					e(ELPHELT_WEAPON,    Badges.Badge.ELPHELT_WEAPON)));
+
+			//5 食物徽章行
+			CATEGORY_DEFS.add(new CatDef("food_v2",
+					e(FOOD_EATEN_1, Badges.Badge.FOOD_EATEN_1),
+					e(FOOD_EATEN_2, Badges.Badge.FOOD_EATEN_2),
+					e(FOOD_EATEN_3, Badges.Badge.FOOD_EATEN_3),
+					e(FOOD_EATEN_4, Badges.Badge.FOOD_EATEN_4),
+					e(FOOD_EATEN_5, Badges.Badge.FOOD_EATEN_5)));
+
+			//6 等级徽章行
+			CATEGORY_DEFS.add(new CatDef("level_v2",
+					e(LEVEL_REACHED_1, Badges.Badge.LEVEL_REACHED_1),
+					e(LEVEL_REACHED_2, Badges.Badge.LEVEL_REACHED_2),
+					e(LEVEL_REACHED_3, Badges.Badge.LEVEL_REACHED_3),
+					e(LEVEL_REACHED_4, Badges.Badge.LEVEL_REACHED_4),
+					e(LEVEL_REACHED_5, Badges.Badge.LEVEL_REACHED_5)));
+
+			//7 炼药徽章行
+			CATEGORY_DEFS.add(new CatDef("alchemy_v2",
+					e(ITEMS_CRAFTED_1, Badges.Badge.ITEMS_CRAFTED_1),
+					e(ITEMS_CRAFTED_2, Badges.Badge.ITEMS_CRAFTED_2),
+					e(ITEMS_CRAFTED_3, Badges.Badge.ITEMS_CRAFTED_3),
+					e(ITEMS_CRAFTED_4, Badges.Badge.ITEMS_CRAFTED_4),
+					e(ITEMS_CRAFTED_5, Badges.Badge.ITEMS_CRAFTED_5)));
+
+			//8 力量徽章行
+			CATEGORY_DEFS.add(new CatDef("strength_v2",
+					e(STRENGTH_ATTAINED_1, Badges.Badge.STRENGTH_ATTAINED_1),
+					e(STRENGTH_ATTAINED_2, Badges.Badge.STRENGTH_ATTAINED_2),
+					e(STRENGTH_ATTAINED_3, Badges.Badge.STRENGTH_ATTAINED_3),
+					e(STRENGTH_ATTAINED_4, Badges.Badge.STRENGTH_ATTAINED_4),
+					e(STRENGTH_ATTAINED_5, Badges.Badge.STRENGTH_ATTAINED_5)));
+
+			//9 职业徽章行
+			CATEGORY_DEFS.add(new CatDef("class_v2",
+					e(UNLOCK_WARRIOR,    Badges.Badge.UNLOCK_WARRIOR),
+					e(UNLOCK_MAGE,       Badges.Badge.UNLOCK_MAGE),
+					e(UNLOCK_ROGUE,      Badges.Badge.UNLOCK_ROGUE),
+					e(UNLOCK_HUNTRESS,   Badges.Badge.UNLOCK_HUNTRESS),
+					e(UNLOCK_TYPE561,    Badges.Badge.UNLOCK_TYPE561),
+					e(UNLOCK_GSH18,      Badges.Badge.UNLOCK_GSH18),
+					e(UNLOCK_HK416,      Badges.Badge.UNLOCK_HK416),
+					e(UNLOCK_DANDELION,  Badges.Badge.UNLOCK_DANDELION),
+					e(MASTERY_COMBO,     Badges.Badge.MASTERY_COMBO)));
+
+			//10 探索徽章行
+			CATEGORY_DEFS.add(new CatDef("explore_v2",
+					e(PIRANHAS,                    Badges.Badge.PIRANHAS),
+					e(BAG_BOUGHT_VELVET_POUCH,     Badges.Badge.BAG_BOUGHT_VELVET_POUCH),
+					e(BAG_BOUGHT_SCROLL_HOLDER,     Badges.Badge.BAG_BOUGHT_SCROLL_HOLDER),
+					e(BAG_BOUGHT_POTION_BANDOLIER,  Badges.Badge.BAG_BOUGHT_POTION_BANDOLIER),
+					e(BAG_BOUGHT_MAGICAL_HOLSTER,   Badges.Badge.BAG_BOUGHT_MAGICAL_HOLSTER),
+					e(ALL_BAGS_BOUGHT,              Badges.Badge.ALL_BAGS_BOUGHT),
+					e(FOUND_RATMOGRIFY,             Badges.Badge.FOUND_RATMOGRIFY)));
+
+			//11 鉴定徽章行
+			CATEGORY_DEFS.add(new CatDef("identify_v2",
+					e(ALL_POTIONS_IDENTIFIED,   Badges.Badge.ALL_POTIONS_IDENTIFIED),
+					e(ALL_SCROLLS_IDENTIFIED,   Badges.Badge.ALL_SCROLLS_IDENTIFIED),
+					e(ALL_WEAPONS_IDENTIFIED,   Badges.Badge.ALL_WEAPONS_IDENTIFIED),
+					e(ALL_ARMOR_IDENTIFIED,     Badges.Badge.ALL_ARMOR_IDENTIFIED),
+					e(ALL_WANDS_IDENTIFIED,     Badges.Badge.ALL_WANDS_IDENTIFIED),
+					e(ALL_RINGS_IDENTIFIED,     Badges.Badge.ALL_RINGS_IDENTIFIED),
+					e(ALL_ARTIFACTS_IDENTIFIED, Badges.Badge.ALL_ARTIFACTS_IDENTIFIED),
+					e(ALL_ITEMS_IDENTIFIED,     Badges.Badge.ALL_ITEMS_IDENTIFIED),
+					e(IDENTIFY,                 Badges.Badge.Identify),
+					e(DEGRADE_EQUIPMENT,        Badges.Badge.Degrade_Equipment)));
+
+			//12 死因徽章行
+			CATEGORY_DEFS.add(new CatDef("death_v2",
+					e(DEATH_FROM_FIRE,    Badges.Badge.DEATH_FROM_FIRE),
+					e(DEATH_FROM_POISON,  Badges.Badge.DEATH_FROM_POISON),
+					e(DEATH_FROM_GAS,     Badges.Badge.DEATH_FROM_GAS),
+					e(DEATH_FROM_HUNGER,  Badges.Badge.DEATH_FROM_HUNGER),
+					e(DEATH_FROM_FALLING, Badges.Badge.DEATH_FROM_FALLING),
+					e(DEATH_FROM_GLYPH,   Badges.Badge.DEATH_FROM_GLYPH)));
+
+			//13 boss徽章行
+			CATEGORY_DEFS.add(new CatDef("boss_v2",
+					e(BOSS_SLAIN_1,           Badges.Badge.BOSS_SLAIN_1),
+					e(BOSS_SLAIN_2,           Badges.Badge.BOSS_SLAIN_2),
+					e(BOSS_SLAIN_3,           Badges.Badge.BOSS_SLAIN_3),
+					e(BOSS_SLAIN_4,           Badges.Badge.BOSS_SLAIN_4),
+					e(BOSS_SLAIN_1_WARRIOR,   Badges.Badge.BOSS_SLAIN_1_WARRIOR),
+					e(BOSS_SLAIN_1_MAGE,      Badges.Badge.BOSS_SLAIN_1_MAGE),
+					e(BOSS_SLAIN_1_ROGUE,     Badges.Badge.BOSS_SLAIN_1_ROGUE),
+					e(BOSS_SLAIN_1_HUNTRESS,  Badges.Badge.BOSS_SLAIN_1_HUNTRESS),
+					e(BOSS_SLAIN_1_TYPE561,   Badges.Badge.BOSS_SLAIN_1_TYPE561),
+					e(BOSS_SLAIN_1_GSH18,     Badges.Badge.BOSS_SLAIN_1_GSH18),
+					e(BOSS_SLAIN_1_HK416,     Badges.Badge.BOSS_SLAIN_1_HK416),
+					e(BOSS_SLAIN_1_ALL_CLASSES, Badges.Badge.BOSS_SLAIN_1_ALL_CLASSES)));
+
+			//14 结局徽章行
+			CATEGORY_DEFS.add(new CatDef("ending_v2",
+					e(VICTORY,             Badges.Badge.VICTORY),
+					e(VICTORY_WARRIOR,     Badges.Badge.VICTORY_WARRIOR),
+					e(VICTORY_MAGE,        Badges.Badge.VICTORY_MAGE),
+					e(VICTORY_ROGUE,       Badges.Badge.VICTORY_ROGUE),
+					e(VICTORY_HUNTRESS,    Badges.Badge.VICTORY_HUNTRESS),
+					e(VICTORY_TYPE561,     Badges.Badge.VICTORY_TYPE561),
+					e(VICTORY_GSH18,       Badges.Badge.VICTORY_GSH18),
+					e(VICTORY_HK416,       Badges.Badge.VICTORY_HK416),
+					e(VICTORY_ALL_CLASSES, Badges.Badge.VICTORY_ALL_CLASSES),
+					e(HAPPY_END,           Badges.Badge.HAPPY_END),
+					e(YASD,                Badges.Badge.YASD)));
+
+			//15 挑战徽章行
+			CATEGORY_DEFS.add(new CatDef("challenge_v2",
+					e(CHAMPION_1, Badges.Badge.CHAMPION_1),
+					e(CHAMPION_2, Badges.Badge.CHAMPION_2),
+					e(CHAMPION_3, Badges.Badge.CHAMPION_3)));
+
+			//16 特殊徽章行
+			CATEGORY_DEFS.add(new CatDef("special_v2",
+					e(GAMES_PLAYED_1, Badges.Badge.GAMES_PLAYED_1),
+					e(GAMES_PLAYED_2, Badges.Badge.GAMES_PLAYED_2),
+					e(GAMES_PLAYED_3, Badges.Badge.GAMES_PLAYED_3),
+					e(GAMES_PLAYED_4, Badges.Badge.GAMES_PLAYED_4),
+					e(GAMES_PLAYED_5, Badges.Badge.GAMES_PLAYED_5),
+					e(GOLD_COLLECTED_1, Badges.Badge.GOLD_COLLECTED_1),
+					e(GOLD_COLLECTED_2, Badges.Badge.GOLD_COLLECTED_2),
+					e(GOLD_COLLECTED_3, Badges.Badge.GOLD_COLLECTED_3),
+					e(GOLD_COLLECTED_4, Badges.Badge.GOLD_COLLECTED_4),
+					e(GOLD_COLLECTED_5, Badges.Badge.GOLD_COLLECTED_5),
+					e(XMAS_GIFT, Badges.Badge.XMASGift)));
+		}
+
+		//---------------- 可展开分类 ----------------
+
+		private class Category extends Component {
+
+			final CatDef def;
+			final ArrayList<Card> cards = new ArrayList<>();
+			boolean expanded;
+
+			private Button header;
+			private NinePatch bar;
+			private Image arrow;
+			private RenderedTextBlock title;
+
+			Category(CatDef def, boolean expanded) {
+				this.def = def;
+				this.expanded = expanded;
+
+				header = new Button() {
+					@Override
+					protected void onClick() {
+						Category.this.expanded = !Category.this.expanded;
+						Sample.INSTANCE.play(Assets.Sounds.CLICK, 0.7f, 0.7f, 1.2f);
+						//必须显式调用 BadgesGrid.layout()：
+						//匿名 Button 内部直接写 layout() 会解析成 Button.layout，
+						//而不是外层 Category/BadgesGrid 的 layout，导致展开完全不生效
+						BadgesGrid.this.layout();
+					}
+				};
+				bar = Chrome.get(Chrome.Type.BLANK);
+				bar.hardlight(0x33373B);
+				header.add(bar);
+
+				arrow = Icons.ARROW.get();
+				arrow.hardlight(0xDDDDDD);
+				arrow.originToCenter();  //必须在设置scale前用原始尺寸确定旋转中心
+				arrow.scale.set(SCALE);
+				header.add(arrow);
+
+				title = PixelScene.renderTextBlock(HEADER_FONT);
+				title.text(Messages.get(BadgeV2.class, def.titleKey));
+				title.hardlight(0xFFFFFF);
+				header.add(title);
+
+				add(header);
+			}
+
+			float heightForWidth( float w ) {
+				if (!expanded || cards.isEmpty()) return HEADER_H;
+				int rows = (cards.size() + N_COLS - 1) / N_COLS;
+				return HEADER_H + 1 + rows * CARD_H;
+			}
+
+			@Override
+			protected void layout() {
+				header.setRect(x, y, width, HEADER_H);
+
+				//条头内部排版
+				bar.x = header.x;
+				bar.y = header.y;
+				bar.size(header.width(), header.height());
+				arrow.x = header.x + ARROW_X;
+				arrow.y = header.y + (HEADER_H - arrow.height()) / 2f;
+				PixelScene.align(arrow);
+				title.setPos(header.x + TITLE_X, header.y + (HEADER_H - title.height()) / 2f);
+				PixelScene.align(title);
+
+				//三角箭头：收起朝右，展开朝下
+				arrow.angle = expanded ? 90f : 0f;
+
+				//移除旧卡片（未挂在本组时remove无副作用）
+				for (Card card : cards) {
+					remove(card);
+				}
+
+				if (expanded && !cards.isEmpty()) {
+					float cardW = width / N_COLS;
+					float top = header.bottom() + 1;
+					for (int i = 0; i < cards.size(); i++) {
+						int row = i / N_COLS;
+						int col = i % N_COLS;
+						Card card = cards.get(i);
+						card.setRect(x + col * cardW, top + row * CARD_H, cardW, CARD_H);
+						add(card);
+					}
+				}
+			}
+		}
+
+		//---------------- 徽章卡片 ----------------
+
+		private class Card extends Button {
+
+			final Def def;
+			final boolean unlocked;
+
+			private NinePatch bg;
+			private Image icon;
+			private RenderedTextBlock name;
+
+			Card(Def def, boolean unlocked) {
+				this.def = def;
+				this.unlocked = unlocked;
+
+				bg = Chrome.get(Chrome.Type.BLANK);
+				bg.hardlight(unlocked ? 0x232629 : 0x17191C);
+				add(bg);
+
+				icon = image(def.sprite);
+				icon.scale.set(CARD_ICON / SIZE);
+				if (!unlocked) icon.brightness(0.4f);
+				add(icon);
+
+				name = PixelScene.renderTextBlock(CARD_FONT);
+				if (unlocked) {
+					name.text(def.badge.title());
+					name.hardlight(0xCBCBCB);
+				} else {
+					name.text(Messages.get(BadgeV2.class, "locked_name_v2"));
+					name.hardlight(0x666666);
+				}
+				name.align(RenderedTextBlock.CENTER_ALIGN);
+				add(name);
+			}
+
+			@Override
+			protected void layout() {
+				bg.x = x;
+				bg.y = y;
+				bg.size(width, height);
+
+				icon.x = x + (width - icon.width()) / 2f;
+				icon.y = y + ICON_Y;
+				PixelScene.align(icon);
+
+				name.maxWidth((int) (width - NAME_PAD));
+				name.align(RenderedTextBlock.CENTER_ALIGN);
+				name.setPos(x + (width - name.width()) / 2f, y + CARD_ICON + NAME_PAD);
+				PixelScene.align(name);
+			}
+
+			@Override
+			protected void onClick() {
+				Sample.INSTANCE.play(Assets.Sounds.CLICK, 0.7f, 0.7f, 1.2f);
+				Game.scene().add(new WndBadgeV2(def.sprite, def.badge, unlocked));
+			}
+
+			@Override
+			protected String hoverText() {
+				return unlocked ? def.badge.title() : null;
+			}
+		}
 	}
 }

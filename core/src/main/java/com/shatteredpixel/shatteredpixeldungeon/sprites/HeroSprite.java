@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
@@ -76,36 +77,17 @@ public class HeroSprite extends CharSprite {
     }
     public void updateArmor(int armorTier) {
 
-        TextureFilm film = new TextureFilm( tiers(), armorTier, FRAME_WIDTH, FRAME_HEIGHT );
-
-        idle = new Animation( 5, true );
-        idle.frames( film, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 );
-
-        run = new Animation( RUN_FRAMERATE, true );
-        run.frames( film, 2, 3, 4, 5, 6, 7 );
-
-        die = new Animation( 6, false );
-        die.frames( film, 8, 9, 10, 11, 12, 13 );
-
-        attack = new Animation( 23, false );
-        attack.frames( film, 14, 15, 16, 17, 18, 17, 16, 14 );
-
-        zap = attack.clone();
-
-        operate = new Animation( 6, false );
-        operate.frames( film, 28, 29, 28, 29 );
-
-        fly = new Animation( 1, true );
-        fly.frames( film, 27 );
-
-        read = new Animation( 12, false );
-        read.frames( film, 19, 20, 21, 22, 23, 24, 25, 26, 20, 19  );
+        setupAnimations(new TextureFilm( tiers(), armorTier, FRAME_WIDTH, FRAME_HEIGHT ));
 
         play(idle);
     }
-	public void updateArmor() {
 
-		TextureFilm film = new TextureFilm( tiers(), ((Hero)ch).tier(), FRAME_WIDTH, FRAME_HEIGHT );
+	/**
+	 * 用给定的帧胶片构建全部动作动画。
+	 * superAI.png 为 682x23 的单行图集（31 帧），比标准角色图集（660 宽、30 帧/行）多一帧，
+	 * 但仍覆盖动画用到的 0~29 帧索引，因此可以共用同一套帧序列。
+	 */
+	private void setupAnimations(TextureFilm film) {
 
 		idle = new Animation( 5, true );
 		idle.frames( film, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 );
@@ -129,6 +111,18 @@ public class HeroSprite extends CharSprite {
 
 		read = new Animation( 12, false );
 		read.frames( film, 19, 20, 21, 22, 23, 24, 25, 26, 20, 19  );
+	}
+
+	public void updateArmor() {
+
+		Hero hero = (Hero) ch;
+		if (hero.subClass == HeroSubClass.SUPER_AI) {
+			//转职"超级小爱"后：所有护甲都固定引用 superAI.png（单行图集，不随护甲等级变化）
+			texture( Assets.Sprites.SUPERAI );
+			setupAnimations(new TextureFilm( TextureCache.get( Assets.Sprites.SUPERAI ), FRAME_WIDTH, FRAME_HEIGHT ));
+		} else {
+			setupAnimations(new TextureFilm( tiers(), hero.tier(), FRAME_WIDTH, FRAME_HEIGHT ));
+		}
 
 		if (ch.isAlive())
 			idle();

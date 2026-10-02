@@ -1031,6 +1031,11 @@ public class Badges {
 	public static boolean isUnlocked( Badge badge ) {
 		return global.contains( badge );
 	}
+
+	//本次游戏中已解锁徽章（只读快照，不含任何过滤；供V2徽章界面使用）
+	public static Collection<Badge> localBadges(){
+		return new ArrayList<>(local);
+	}
 	
 	public static HashSet<Badge> allUnlocked(){
 		loadGlobal();

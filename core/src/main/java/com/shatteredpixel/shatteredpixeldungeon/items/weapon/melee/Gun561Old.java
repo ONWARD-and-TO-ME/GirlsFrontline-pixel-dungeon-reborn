@@ -46,7 +46,8 @@ public class Gun561Old extends ShootGun_OLD {
 		hasCharge=false;
 		image = ItemSpriteSheet.GUN561;
 		RCH = 2;
-	}
+		bones = false;
+		}
 
 	@Override
 	public int min(int lvl) {

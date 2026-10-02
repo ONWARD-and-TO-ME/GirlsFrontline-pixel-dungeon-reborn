@@ -440,7 +440,7 @@ public class ItemSpriteSheet {
 	}
 		
 	//神器行
-	private static final int ARTIFACTS          =                            xy(1, 16);  //32 slots
+	private static final int ARTIFACTS          =                            xy(1, 16);  //16 slots
 	public static final int ARTIFACT_CLOAK      = ARTIFACTS+0;
 	public static final int ARTIFACT_ARMBAND    = ARTIFACTS+1;
 	public static final int ARTIFACT_CAPE       = ARTIFACTS+2;
@@ -457,25 +457,25 @@ public class ItemSpriteSheet {
 	public static final int ARTIFACT_CHALICE1   = ARTIFACTS+13;
 	public static final int ARTIFACT_CHALICE2   = ARTIFACTS+14;
 	public static final int ARTIFACT_CHALICE3   = ARTIFACTS+15;
-	public static final int ARTIFACT_SANDALS    = ARTIFACTS+16;
 
-	//因为扩容贴图的宽度所以这里重新开始计算
+	//贴图中神器第二行以 SANDALS 开头（沿用了16列时代的两行布局，与上面的16格行衔接）
 	public static final int ARTIFACT2      = xy(1, 17);
-	public static final int ARTIFACT_SHOES      = ARTIFACT2+0;
-	public static final int ARTIFACT_BOOTS      = ARTIFACT2+1;
-	public static final int ARTIFACT_GREAVES    = ARTIFACT2+2;
-	public static final int ARTIFACT_ROSE1      = ARTIFACT2+3;
-	public static final int ARTIFACT_ROSE2      = ARTIFACT2+4;
-	public static final int ARTIFACT_ROSE3      = ARTIFACT2+5;
-	public static final int ARTIFACT_UNKNOWN    = ARTIFACT2+6;
-	public static final int ARTIFACT_UNKNOWN2   = ARTIFACT2+7;
-	public static final int ARTIFACT_UNKNOWN3   = ARTIFACT2+8;
-	public static final int REDBOOK             = ARTIFACT2+9;
-	public static final int REDBOOK2            = ARTIFACT2+10;
-	public static final int REDBOOK3            = ARTIFACT2+11;
-	public static final int FAIRY_COMMANDER     = ARTIFACT2+12; // 指挥妖精
-	public static final int FAIRY_GEMINI        = ARTIFACT2+13; // 双生妖精
-	public static final int FAIRY_SUCCOR        = ARTIFACT2+14; // 增援妖精
+	public static final int ARTIFACT_SANDALS    = ARTIFACT2+0;
+	public static final int ARTIFACT_SHOES      = ARTIFACT2+1;
+	public static final int ARTIFACT_BOOTS      = ARTIFACT2+2;
+	public static final int ARTIFACT_GREAVES    = ARTIFACT2+3;
+	public static final int ARTIFACT_ROSE1      = ARTIFACT2+4;
+	public static final int ARTIFACT_ROSE2      = ARTIFACT2+5;
+	public static final int ARTIFACT_ROSE3      = ARTIFACT2+6;
+	public static final int ARTIFACT_UNKNOWN    = ARTIFACT2+7;
+	public static final int ARTIFACT_UNKNOWN2   = ARTIFACT2+8;
+	public static final int ARTIFACT_UNKNOWN3   = ARTIFACT2+9;
+	public static final int REDBOOK             = ARTIFACT2+10;
+	public static final int REDBOOK2            = ARTIFACT2+11;
+	public static final int REDBOOK3            = ARTIFACT2+12;
+	public static final int FAIRY_COMMANDER     = ARTIFACT2+13; // 指挥妖精
+	public static final int FAIRY_GEMINI        = ARTIFACT2+14; // 双生妖精
+	public static final int FAIRY_SUCCOR        = ARTIFACT2+15; // 增援妖精
 	static{
 		assignItemRect(ARTIFACT_CLOAK,      16,  14);
 		assignItemRect(ARTIFACT_ARMBAND,    16, 13);

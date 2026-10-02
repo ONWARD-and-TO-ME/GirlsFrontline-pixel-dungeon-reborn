@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndChooseSubclass;
@@ -127,6 +128,8 @@ public class TengusMask extends Item {
 			Buff.affect(curUser, SuperAiFlight.class);
 			// 自动获得磁轨加速弹配件
 			new BeamFocuser().collect();
+			// 切换为 superAI.png 专属形象（此后所有护甲均使用该精灵图）
+			((HeroSprite) curUser.sprite).updateArmor();
 		}
 
 		curUser.sprite.operate( curUser.pos );
