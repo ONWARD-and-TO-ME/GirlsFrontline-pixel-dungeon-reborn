@@ -37,7 +37,7 @@ public class DreamerSprite extends FistSprite {
 	public DreamerSprite() {
 		super();
 		
-		texture( Assets.DREAMER );
+		texture( Assets.Sprites.DREAMER );
 		
 		TextureFilm frames = new TextureFilm( texture, 24, 24 );
 		

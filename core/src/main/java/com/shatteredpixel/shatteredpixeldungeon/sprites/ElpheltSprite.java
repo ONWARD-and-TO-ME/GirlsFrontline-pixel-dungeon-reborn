@@ -23,7 +23,7 @@ public class ElpheltSprite extends MobSprite {
     public ElpheltSprite() {
         super();
 
-        texture( Assets.ELPHELT );
+        texture( Assets.Sprites.ELPHELT );
 
         TextureFilm frames = new TextureFilm( texture, 23, 25 );
 

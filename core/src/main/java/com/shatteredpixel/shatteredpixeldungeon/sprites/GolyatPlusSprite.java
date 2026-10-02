@@ -31,7 +31,7 @@ public class GolyatPlusSprite extends MobSprite {
     public GolyatPlusSprite() {
         super();
 
-        texture( Assets.GOLYATPLUS );
+        texture( Assets.Sprites.GOLYATPLUS );
 
         TextureFilm frames = new TextureFilm( texture, 26, 23 );
 

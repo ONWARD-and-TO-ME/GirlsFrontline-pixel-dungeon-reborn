@@ -39,7 +39,7 @@ public class AlchemistSprite extends FistSprite {
 	public AlchemistSprite() {
 		super();
 
-		texture( Assets.ALCHEMIST );
+		texture( Assets.Sprites.ALCHEMIST );
 
 		TextureFilm frames = new TextureFilm( texture, 20, 23 );
 

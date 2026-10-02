@@ -33,7 +33,7 @@ public class YogSprite extends MobSprite {
 
 		perspectiveRaise = 5 / 16f;
 
-		texture( Assets.MASTAR_HEAD );
+		texture( Assets.Sprites.MASTAR_HEAD );
 		
 		TextureFilm frames = new TextureFilm( texture, 36, 52 );
 		

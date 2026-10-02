@@ -30,7 +30,7 @@ public class TyphootinSprite extends MobSprite {
     public TyphootinSprite() {
         super();
 
-        texture( Assets.TYPHOOTIN );
+        texture( Assets.Sprites.TYPHOOTIN );
 
         TextureFilm frames = new TextureFilm( texture, 48, 38 );
 

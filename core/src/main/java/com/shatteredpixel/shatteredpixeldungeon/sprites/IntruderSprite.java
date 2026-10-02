@@ -29,7 +29,7 @@ public class IntruderSprite extends MobSprite {
     public IntruderSprite() {
         super();
 
-        texture( Assets.INTRUDER );
+        texture( Assets.Sprites.INTRUDER );
 
         TextureFilm frames = new TextureFilm( texture, 17, 17 );
 

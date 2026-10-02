@@ -29,7 +29,7 @@ public class CyclopsSprite extends MobSprite {
     public CyclopsSprite() {
         super();
 
-        texture( Assets.ACYCLOPS );
+        texture( Assets.Sprites.ACYCLOPS );
 
         TextureFilm frames = new TextureFilm( texture, 20, 20 );
 

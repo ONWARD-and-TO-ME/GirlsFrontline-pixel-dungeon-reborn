@@ -41,7 +41,7 @@ public class HydraSprite extends MobSprite {
     public HydraSprite() {
         super();
 
-        texture( Assets.HYDRA );
+        texture( Assets.Sprites.HYDRA );
 
         TextureFilm frames = new TextureFilm( texture, 48, 35 );
 

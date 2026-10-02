@@ -29,7 +29,7 @@ public class DisloliSprite extends MobSprite {
     public DisloliSprite() {
         super();
 
-        texture( Assets.DISLOLI );
+        texture( Assets.Sprites.DISLOLI );
 
         TextureFilm frames = new TextureFilm( texture, 19, 19 );
 

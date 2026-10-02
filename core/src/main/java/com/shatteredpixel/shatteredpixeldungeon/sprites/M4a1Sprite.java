@@ -35,7 +35,7 @@ public class M4a1Sprite extends MobSprite {
 
 		perspectiveRaise = 0.2f;
 
-		texture( Assets.M4A1 );
+		texture( Assets.Sprites.M4A1 );
 		
 		TextureFilm frames = new TextureFilm( texture, 17, 20 );
 		

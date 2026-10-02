@@ -29,7 +29,7 @@ public class ShieldedSprite extends MobSprite {
 	public ShieldedSprite() {
 		super();
 
-		texture( Assets.SVESPID );
+		texture( Assets.Sprites.SVESPID );
 
 		TextureFilm frames = new TextureFilm( texture, 20, 21 );
 

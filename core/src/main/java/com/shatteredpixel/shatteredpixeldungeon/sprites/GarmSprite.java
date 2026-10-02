@@ -37,7 +37,7 @@ public class GarmSprite extends FistSprite {
 	public GarmSprite() {
 		super();
 
-		texture( Assets.GARM );
+		texture( Assets.Sprites.GARM );
 		
 		TextureFilm frames = new TextureFilm( texture, 36, 27 );
 		

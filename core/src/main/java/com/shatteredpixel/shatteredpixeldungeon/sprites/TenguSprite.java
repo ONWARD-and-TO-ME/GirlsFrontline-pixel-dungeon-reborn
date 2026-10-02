@@ -33,7 +33,7 @@ public class TenguSprite extends MobSprite {
 	public TenguSprite() {
 		super();
 		
-		texture( Assets.URO );
+		texture( Assets.Sprites.URO );
 
 		TextureFilm frames = new TextureFilm( texture, 26, 21 );
 

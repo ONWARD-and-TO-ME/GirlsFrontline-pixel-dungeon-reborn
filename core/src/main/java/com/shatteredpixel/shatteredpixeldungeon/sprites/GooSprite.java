@@ -48,7 +48,7 @@ public class GooSprite extends MobSprite {
 	public GooSprite() {
 		super();
 
-		texture( Assets.EXCU );
+		texture( Assets.Sprites.EXCU );
 
 		TextureFilm frames = new TextureFilm( texture, 26, 24 );
 

@@ -29,7 +29,7 @@ public class DragunSprite extends MobSprite {
     public DragunSprite() {
         super();
 
-        texture( Assets.DRAGUN );
+        texture( Assets.Sprites.DRAGUN );
 
         TextureFilm frames = new TextureFilm( texture, 21, 27 );
 

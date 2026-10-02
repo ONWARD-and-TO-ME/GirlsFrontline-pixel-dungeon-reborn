@@ -233,7 +233,7 @@ public enum Icons {
 				break;
 			case HUNTRESS:
 				icon.frame( icon.texture.uvRectBySize
-					( 48, 16, 15, 15 ) );       //女猎头像
+					( 48, 16, 16, 16 ) );       //女猎头像
 				break;
 			case TYPE561:
 				icon.frame( icon.texture.uvRectBySize

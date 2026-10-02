@@ -39,7 +39,7 @@ public class AgentSprite extends FistSprite {
 	public AgentSprite() {
 		super();
 		
-		texture( Assets.AGENT );
+		texture( Assets.Sprites.AGENT );
 		
 		TextureFilm frames = new TextureFilm( texture, 26, 24 );
 		
@@ -92,7 +92,7 @@ public class AgentSprite extends FistSprite {
         public AgentSpriteRe() {
             super();
 
-            texture( Assets.AGENT );
+            texture( Assets.Sprites.AGENT );
 
             TextureFilm frames = new TextureFilm( texture, 26, 24 );
 

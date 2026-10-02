@@ -29,7 +29,7 @@ public class AegisSprite extends MobSprite {
     public AegisSprite() {
         super();
 
-        texture( Assets.AEGIS );
+        texture( Assets.Sprites.AEGIS );
 
         TextureFilm frames = new TextureFilm( texture, 15, 16 );
 

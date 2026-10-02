@@ -42,7 +42,7 @@ public class TyphoonSprite extends MobSprite {
     public TyphoonSprite() {
         super();
 
-        texture( Assets.TYPHOON );
+        texture( Assets.Sprites.TYPHOON );
 
         TextureFilm frames = new TextureFilm( texture, 76, 48 );
 
@@ -133,7 +133,7 @@ public class TyphoonSprite extends MobSprite {
         public TyphoonSpriteRe() {
             super();
 
-            texture( Assets.TYPHOON );
+            texture( Assets.Sprites.TYPHOON );
 
             TextureFilm frames = new TextureFilm( texture, 76, 48 );
 

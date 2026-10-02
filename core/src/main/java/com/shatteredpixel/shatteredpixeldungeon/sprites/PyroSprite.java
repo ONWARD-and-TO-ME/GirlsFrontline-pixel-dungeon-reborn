@@ -31,7 +31,7 @@ public class PyroSprite extends MobSprite{
     public PyroSprite() {
         super();
 
-        texture( Assets.PYRO );
+        texture( Assets.Sprites.PYRO );
 
         TextureFilm frames = new TextureFilm( texture, 20, 19 );
 

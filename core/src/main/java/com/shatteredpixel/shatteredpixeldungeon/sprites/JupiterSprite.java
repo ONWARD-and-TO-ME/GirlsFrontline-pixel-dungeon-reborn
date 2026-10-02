@@ -41,7 +41,7 @@ public class JupiterSprite extends MobSprite {
     public JupiterSprite() {
         super();
 
-        texture( Assets.JUPITER );
+        texture( Assets.Sprites.JUPITER );
 
         TextureFilm frames = new TextureFilm( texture, 73, 38 );
 

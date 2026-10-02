@@ -75,7 +75,7 @@ public class FncSprite extends MobSprite {
 
         int c =id*8;
 
-        texture( Assets.FNC );
+        texture( Assets.Sprites.FNC );
 
         TextureFilm frames = new TextureFilm( texture, 20, 24 );
 

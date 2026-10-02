@@ -31,7 +31,7 @@ public class Mg5Sprite extends MobSprite {
     public Mg5Sprite() {
         super();
 
-        texture( Assets.MG5 );
+        texture( Assets.Sprites.MG5 );
 
         TextureFilm frames = new TextureFilm( texture, 22, 22 );
 

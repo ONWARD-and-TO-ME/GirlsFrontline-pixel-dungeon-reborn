@@ -41,7 +41,7 @@ public class NemeumSprite extends MobSprite {
     public NemeumSprite() {
         super();
 
-        texture( Assets.NEMEUM );
+        texture( Assets.Sprites.NEMEUM );
 
         TextureFilm frames = new TextureFilm( texture, 26, 21 );
 

@@ -29,7 +29,7 @@ public class BruteSprite extends MobSprite {
 	public BruteSprite() {
 		super();
 		
-		texture( Assets.VESPID );
+		texture( Assets.Sprites.VESPID );
 
 		TextureFilm frames = new TextureFilm( texture, 20, 21 );
 

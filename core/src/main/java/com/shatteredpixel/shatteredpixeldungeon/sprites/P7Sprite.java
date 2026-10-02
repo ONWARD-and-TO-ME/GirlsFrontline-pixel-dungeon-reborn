@@ -32,7 +32,7 @@ public class P7Sprite extends MobSprite {
 	public P7Sprite() {
 		super();
 		
-		texture( Assets.P7 );
+		texture( Assets.Sprites.P7 );
 		
 		TextureFilm frames = new TextureFilm( texture, 17, 22 );
 		

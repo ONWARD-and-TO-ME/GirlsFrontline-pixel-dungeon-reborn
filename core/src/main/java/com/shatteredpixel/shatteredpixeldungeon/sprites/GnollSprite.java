@@ -30,7 +30,7 @@ public class GnollSprite extends MobSprite {
 	public GnollSprite() {
 		super();
 		
-		texture( Assets.PROWLER );
+		texture( Assets.Sprites.PROWLER );
 
 		TextureFilm frames = new TextureFilm( texture, 18, 16 );
 
